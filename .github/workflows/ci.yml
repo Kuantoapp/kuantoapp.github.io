@@ -2,24 +2,50 @@ name: CI
 on:
   pull_request:
     branches: [main]
+permissions:
+  contents: read
+  pull-requests: read
 jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - name: Bloquear basura versionada (venv, node_modules, .env, claves)
+
+      - name: La rama debe llamarse <tu-usuario>/<tema>
+        env:
+          HEAD: ${{ github.head_ref }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          bad=$(git ls-files | grep -E '(^|/)(node_modules|venv|\.venv|__pycache__)/|(^|/)\.env$|\.(pem|key)$' || true)
+          case "$HEAD" in "$AUTHOR"/*) ;; *) echo "Rama '$HEAD' debe empezar por '$AUTHOR/'"; exit 1;; esac
+
+      - name: Bloquear ficheros sensibles o dependencias versionadas
+        run: |
+          bad=$(git ls-files | grep -Ei '(^|/)(node_modules|venv|\.venv|__pycache__)/|(^|/)\.env[^/]*$|(^|/)(credentials|secrets?)[^/]*\.(json|ya?ml|txt)$|(^|/)id_(rsa|ed25519)$|\.(pem|key|p12|pfx)$|(^|/)\.pgpass$' | grep -v '\.env\.example$' || true)
           if [ -n "$bad" ]; then echo "Ficheros prohibidos:"; echo "$bad"; exit 1; fi
-      - uses: gitleaks/gitleaks-action@v2
+
+      - name: Secretos, API keys y tokens (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - name: Lint y formato
-        run: pip install ruff && ruff check . && ruff format --check .
-      - name: Tests
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+
+      - name: Python (solo si hay)
         run: |
-          pip install pytest
-          [ -f requirements.txt ] && pip install -r requirements.txt
-          pytest -q || [ $? -eq 5 ]  # 5 = aún no hay tests
+          if git ls-files | grep -qE '\.py$|^requirements.*\.txt$|^pyproject.toml$'; then
+            pip install ruff pytest pip-audit
+            ruff check . && ruff format --check .
+            [ -f requirements.txt ] && pip install -r requirements.txt && pip-audit -r requirements.txt
+            pytest -q || [ $? -eq 5 ]  # 5 = aún no hay tests
+          else echo "Sin Python"; fi
+
+      - name: Node (solo si hay)
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            npm audit --audit-level=high
+            npm run --if-present lint && npm test --if-present
+          else echo "Sin Node"; fi
