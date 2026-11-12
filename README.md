@@ -26,3 +26,4 @@ Las reglas completas (también para agentes) están en [AGENTS.md](AGENTS.md).
 ```bash
 git worktree add ../dm-<tema> -b <usuario>/<tema> origin/main
 ```
+
