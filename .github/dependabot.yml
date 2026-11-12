@@ -1,5 +1,6 @@
 version: 2
+# Un PR por ecosistema en vez de uno por paquete.
 updates:
-  - { package-ecosystem: pip, directory: "/", schedule: { interval: weekly } }
-  - { package-ecosystem: npm, directory: "/", schedule: { interval: weekly } }
-  - { package-ecosystem: github-actions, directory: "/", schedule: { interval: weekly } }
+  - { package-ecosystem: pip, directory: "/", schedule: { interval: weekly }, groups: { pip: { patterns: ["*"] } } }
+  - { package-ecosystem: npm, directory: "/", schedule: { interval: weekly }, groups: { npm: { patterns: ["*"] } } }
+  - { package-ecosystem: github-actions, directory: "/", schedule: { interval: weekly }, groups: { actions: { patterns: ["*"] } } }

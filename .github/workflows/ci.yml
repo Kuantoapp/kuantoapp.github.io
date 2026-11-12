@@ -18,7 +18,11 @@ jobs:
           HEAD: ${{ github.head_ref }}
           AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          case "$HEAD" in "$AUTHOR"/*) ;; *) echo "Rama '$HEAD' debe empezar por '$AUTHOR/'"; exit 1;; esac
+          case "$HEAD" in
+            "$AUTHOR"/*) ;;
+            dependabot/*) [ "$AUTHOR" = "dependabot[bot]" ] || { echo "Las ramas dependabot/ son solo de Dependabot"; exit 1; } ;;
+            *) echo "Rama '$HEAD' debe empezar por '$AUTHOR/'"; exit 1;;
+          esac
 
       - name: Bloquear ficheros sensibles o dependencias versionadas
         run: |
