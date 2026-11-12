@@ -30,7 +30,7 @@ Toda dependencia espacial que el modelo no explique acaba en los residuos. Un mo
 
 | Pieza | Escenario | Qué exige |
 |---|---|---|
-| Imputar el alquiler de municipios sin dato (corona C) | **Caso B** | Validación por bloques espaciales (grupos de municipios contiguos) o buffer, no aleatoria. `Wy` del test calculado solo con vecinos de train. Comparar con un modelo de referencia simple. Intervalo conformal y cobertura medida. |
+| Imputar el alquiler de municipios sin dato (corona C) | **Caso B** | Validación por bloques espaciales (grupos de municipios contiguos) o buffer, no aleatoria. `Wy` del test calculado solo con vecinos de train. Comparar con un modelo de referencia simple. Modelo de árboles con distancias derivadas; kriging o retardo de residuos como mejora, validados por bloques. Intervalo conformal **calibrado por corona** (Mondrian o CQR) y cobertura medida por grupo. |
 | Alquiler por barrio en Madrid capital | Caso A | Tabla de paso código postal → barrio con pesos por viviendas, declarada. |
 | Sobrecarga por sección censal | — | Moran y LISA de la sobrecarga para el mapa de la Administración. Clústeres alto-alto = zonas prioritarias. |
 | Focalizar el Bono | — | LISA **bivariante** de sobrecarga frente a tasa de solicitudes aceptadas: clústeres de mucha sobrecarga con poca ayuda alrededor. Tasas de municipios pequeños suavizadas con Bayes empírico. |

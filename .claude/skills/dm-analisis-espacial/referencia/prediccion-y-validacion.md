@@ -11,6 +11,14 @@ Los modelos de regresión espacial son inferenciales. Para **predecir**, el curs
 5. Repite la validación y el Moran de residuos.
 6. Ensamble de modelos si mejora, e intervalo de predicción.
 
+## Qué funciona mejor, según la literatura reciente
+
+- **Árboles sí, redes profundas no.** En la tesis de Geerts (KU Leuven, 2025), los modelos de árboles (LightGBM, CatBoost, RF) siguen siendo lo mejor para valorar viviendas. Las redes de grafos (GNN) no superan a un árbol que tenga las coordenadas. El aprendizaje profundo solo compensa si los árboles no pueden con los datos. Es un argumento para no complicar la imputación.
+- **Distancias derivadas ≈ coordenadas.** En la misma tesis, LightGBM rinde algo mejor con un buen conjunto de distancias derivadas (43 distancias a ciudades, autovías, servicios…) que con las coordenadas en bruto. Lo que peor funciona es usar el municipio como variable ficticia más la distancia al centro.
+- **Kriging de residuos (regresión-kriging).** Se entrena el modelo de ML, se interpolan sus residuos con kriging y se suman a la predicción. Mejora la precisión en Varsovia (ML + kriging ordinario de residuos), en Acapulco (RF + kriging) y en la valoración catastral de suelo de Primorie (regresión lineal + kriging). Con zonas en lugar de puntos, la alternativa equivalente es corregir con el retardo `W·residuo` de los vecinos con dato. **Valídalo por bloques**: si no, el kriging de residuos parece mejor de lo que es.
+- **Pérdida espacial en boosting (MI-GBT).** Geerts propone sumar al error cuadrático una penalización por la autocorrelación local (I de Moran local) de los residuos, para reducir a la vez el error y el patrón espacial que queda. Hay implementación en Python. Es una opción innovadora si los retardos `Wy` no bastan, no un punto de partida.
+- **Ojo al leer la I de Moran de los residuos.** Si los residuos no tienen patrón espacial pero el error es grande, puede ser por **variables omitidas** que varían mucho entre vecinos, no porque el modelo haya captado bien el espacio. Mira siempre el error junto al Moran.
+
 ## Fuga espacial: cómo calcular `Wy` en el test
 
 `Wy` del test es la media ponderada del `y` de las observaciones de **train** que rodean a cada observación de test. **Nunca** con el `y` del propio test, que es lo que se quiere predecir.
@@ -35,6 +43,8 @@ La partición define la pregunta que responde la métrica:
 
 - Conformal partido sencillo: con un conjunto de calibración (o el test, en la versión más simple del curso), calcula el cuantil 95 % del error absoluto, o del relativo, y da `pred ± q95` o `pred · (1 ± q95_rel)`.
 - La garantía de cobertura supone intercambiabilidad. Con dependencia espacial y caso B, **calibra con la misma partición por bloques** y comprueba la cobertura real por zonas, no solo la global.
+- **El conformal garantiza la cobertura media, no la de cada grupo.** Geerts (2025, cap. 7) compara métodos de incertidumbre en tres mercados: los conformales dan intervalos estrechos pero pierden cobertura en clases de precio extremas y en atípicos geográficos. Si importa la cobertura por corona, calibra **por grupos** (conformal de Mondrian: un cuantil por corona) o usa **regresión cuantílica conformalizada** (CQR), cuyo ancho se adapta a cada zona.
+- Mide cuatro cosas: cobertura, anchura media del intervalo, asimetría y cómo varían ambas entre grupos. Un intervalo que cubre el 90 % pero es enorme no sirve para la demo.
 
 ## Variables de accesibilidad con datos abiertos
 
@@ -57,6 +67,8 @@ Los modelos con datos públicos fallan más donde hay menos dato, y eso suele co
 
 - error y cobertura del intervalo **por corona y por quintil de renta**, no solo globales;
 - si el error es mayor en las zonas que la Administración debería priorizar, se dice y se ensancha el intervalo.
+
+**LLMs y cifras:** en Geerts (2025, cap. 8), los LLMs con diez ejemplos cercanos estiman precios de forma razonable, pero razonan mal con la localización y dan intervalos poco fiables. Refuerza la regla del asistente: las cifras salen siempre del modelo y del MCP, nunca del LLM.
 
 Las decisiones automatizadas con datos de localización que afecten a personas son de alto riesgo en el marco europeo. Este proyecto **simula** criterios de ayuda y no decide por nadie, y así debe decirse.
 
