@@ -2,6 +2,8 @@
 
 Investigado el 12/11/2026 en BOE, INE (API Tempus), Eurostat y seg-social.es. **Antes de usar un valor, comprueba que la norma o la publicación citada sigue siendo la vigente o la última**; si cambia el año, este fichero se rehace.
 
+**Contenido:** 1. Salario mínimo interprofesional (SMI) · 2. IPREM 2026 · 3. Ingreso Mínimo Vital (IMV) 2026 · 4. Renta Mínima de Inserción (RMI) de la Comunidad de Madrid 2026 · 5. Umbral de riesgo de pobreza, escala de equivalencia y AROPE (INE, ECV) · 6. Sobrecarga del coste de la vivienda · 7. Alquiler: IRAV, SERPAVI y zonas tensionadas · 8. Salarios del INE · Resumen de cambios importantes de 2026
+
 Fecha de consulta: 12-11-2026. Ámbito: España y Comunidad de Madrid.
 
 Estados usados:
@@ -9,7 +11,7 @@ Estados usados:
 - **VERIFICADO (indirecto)**: comprobado por cálculo o por coherencia con otra cifra oficial, sin leer el texto literal.
 - **NO VERIFICADO**: solo aparece en prensa o en webs secundarias, o no se encontró la fuente primaria. Se indica qué se encontró.
 
-APIs usadas, reutilizables en Python:
+APIs usadas, reutilizables al implementar:
 - INE Tempus: `https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/{id}?nult=N` (JSON).
 - Eurostat: `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{dataset}?geo=ES&...` (JSON-stat 2.0).
 
@@ -28,7 +30,7 @@ APIs usadas, reutilizables en Python:
 
 - **2026:** Real Decreto 126/2026, de 18 de febrero. BOE núm. 44, de 19-02-2026, **BOE-A-2026-3815**. Entró en vigor el 20-02-2026, con efectos económicos desde el **1-01-2026** (disposición final tercera). https://www.boe.es/eli/es/rd/2026/02/18/126/con
 - **2025:** Real Decreto 87/2025, de 11 de febrero. BOE núm. 37, de 12-02-2025, **BOE-A-2025-2576**. Efectos desde el 1-01-2025; hoy con vigencia agotada. https://www.boe.es/eli/es/rd/2025/02/11/87/con
-- Para Python: anual = mensual × 14 (1.221 × 14 = 17.094). El mensual prorrateado en 12 pagas sería 1.424,50 €; es un cálculo propio, no una cifra de la norma.
+- Al implementar: anual = mensual × 14 (1.221 × 14 = 17.094). El mensual prorrateado en 12 pagas sería 1.424,50 €; es un cálculo propio, no una cifra de la norma.
 - Contexto (NO VERIFICADO en el BOE, solo en prensa): un real decreto-ley anterior que prorrogaba el SMI de 2025 no fue convalidado el 27-01-2026. Ese mismo día se publicó el RDL 5/2026 sobre la tributación del SMI.
 
 ## 2. IPREM 2026
@@ -98,7 +100,7 @@ Cuantías publicadas por la Seguridad Social, en euros, para "2026": https://www
 ### Escala OCDE modificada
 - 1 para el primer adulto, 0,5 para cada persona de 14 o más años y 0,3 para cada menor de 14.
 - **VERIFICADO (indirecto):** 12.220,4 × (1 + 0,5 + 0,3 + 0,3) = 12.220,4 × 2,1 = 25.662,84, que coincide con la tabla 9964.
-- El texto metodológico literal del INE no se leyó en esta sesión.
+- El texto metodológico literal del INE no se leyó en la consulta del 12/11/2026.
 
 ### Indicadores 2025 (ingresos 2024)
 
@@ -115,7 +117,7 @@ Cuantías publicadas por la Seguridad Social, en euros, para "2026": https://www
 
 \*Las cifras de Madrid para los componentes salen del texto del PDF de la nota de prensa (fila "Madrid, Comunidad de 19,4 12,7 8,4 3,5"). El orden de esas dos columnas lo deduje de la cabecera; conviene confirmarlo en la tabla 76847/67989.
 
-- **AROPE (Europa 2030):** población que cumple al menos uno de tres criterios: riesgo de pobreza, carencia material y social severa, o baja intensidad en el empleo. Así lo define la nota del INE (VERIFICADO). El detalle operativo de los componentes (7 de 13 conceptos de carencia; intensidad laboral < 20 % en la población de 0 a 64 años) es la definición de Eurostat, que **no leí en esta sesión: NO VERIFICADO**.
+- **AROPE (Europa 2030):** población que cumple al menos uno de tres criterios: riesgo de pobreza, carencia material y social severa, o baja intensidad en el empleo. Así lo define la nota del INE (VERIFICADO). El detalle operativo de los componentes (7 de 13 conceptos de carencia; intensidad laboral < 20 % en la población de 0 a 64 años) es la definición de Eurostat, que **no leí en la consulta del 12/11/2026: NO VERIFICADO**.
 - Otro indicador del INE: tasa de pobreza con umbral fijo en 2008 (tablas 59962 y 59972, actualizadas el 1-10-2026).
 
 ## 6. Sobrecarga del coste de la vivienda

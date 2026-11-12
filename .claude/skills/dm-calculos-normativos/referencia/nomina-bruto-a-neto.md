@@ -2,6 +2,8 @@
 
 Trabajador por cuenta ajena del Régimen General residente en la Comunidad de Madrid. Investigado el 12/11/2026 en los textos consolidados del BOE y los PDF de la AEAT. **Antes de usar un valor, comprueba que la norma citada sigue vigente en la fecha del cálculo**; si cambia el año, este fichero se rehace.
 
+**Contenido:** Fuentes primarias usadas · 1. Cotizaciones a la Seguridad Social 2026 (Régimen General) · 2. IRPF: retención sobre rendimientos del trabajo en 2026 · 3. Comunidad de Madrid: escala y mínimos autonómicos en 2026 · 4. Deducciones por alquiler para jóvenes (solo en la declaración anual; no afectan a la nómina) · 5. Casos de control · 6. Resumen de lo que queda NO VERIFICADO
+
 Fecha de la investigación: 12/11/2026. Todos los textos se descargaron ese día de BOE (texto consolidado) y de la sede de la AEAT. Estados posibles:
 - **VERIFICADO**: leído en la fuente primaria citada.
 - **VERIFICADO (indirecto)**: el valor aparece en otra fuente oficial que cita la norma, pero no se ha leído la norma original.
@@ -44,7 +46,7 @@ Totales del trabajador, derivados de lo anterior: **6,50 %** con contrato indefi
 
 - Al pasar de temporal a indefinido se aplica el tipo de indefinido desde la fecha de la transformación (ORDEN art. 33.2.a).3.º). VERIFICADO.
 - Las horas extra «no serán computables a efectos de determinar la base reguladora de las prestaciones» (ORDEN art. 5). VERIFICADO.
-- La regla de que las horas extra quedan fuera de la BCC pero dentro de la base de AT/EP (y por tanto de la base de desempleo y FP) está en el art. 147.2 del TRLGSS. No he leído ese artículo en esta sesión: **NO VERIFICADO** en la fuente. La ORDEN, art. 33.1, sí confirma que la base de desempleo, FOGASA y FP «será la correspondiente a las contingencias de accidentes de trabajo y enfermedades profesionales», y que las horas extra se excluyen de la base reguladora de desempleo.
+- La regla de que las horas extra quedan fuera de la BCC pero dentro de la base de AT/EP (y por tanto de la base de desempleo y FP) está en el art. 147.2 del TRLGSS. No he leído ese artículo en la consulta del 12/11/2026: **NO VERIFICADO** en la fuente. La ORDEN, art. 33.1, sí confirma que la base de desempleo, FOGASA y FP «será la correspondiente a las contingencias de accidentes de trabajo y enfermedades profesionales», y que las horas extra se excluyen de la base reguladora de desempleo.
 
 ### 1.2 Cotización adicional de solidaridad (ORDEN art. 17; art. 19 bis y DT 42.ª TRLGSS)
 
@@ -251,7 +253,7 @@ Redacción de la Ley 5/2024, de 20 de noviembre (BOE-A-2025-3303), para periodos
 
 ### 4.2 Deducciones estatales por alquiler
 
-1. **Régimen transitorio** (LIRPF DT 15.ª). Solo para contratos firmados antes del 01/01/2015 por los que ya se pagó alquiler antes de esa fecha y se tuvo derecho a la deducción en un periodo anterior a 2015. Se aplica con los arts. 67.1, 68.7 y 77.1 en su redacción a 31/12/2014. Desde el 08/10/2026, el RDL 29/2026 añade el apartado 3: es **incompatible** con la nueva deducción del art. 68.6 para la misma vivienda y el mismo periodo. VERIFICADO (texto consolidado). Las cuantías de 2014 (10,05 %, base máxima de 9.040 €, base imponible < 24.107,20 €) no se han leído en esta sesión: **NO VERIFICADO**.
+1. **Régimen transitorio** (LIRPF DT 15.ª). Solo para contratos firmados antes del 01/01/2015 por los que ya se pagó alquiler antes de esa fecha y se tuvo derecho a la deducción en un periodo anterior a 2015. Se aplica con los arts. 67.1, 68.7 y 77.1 en su redacción a 31/12/2014. Desde el 08/10/2026, el RDL 29/2026 añade el apartado 3: es **incompatible** con la nueva deducción del art. 68.6 para la misma vivienda y el mismo periodo. VERIFICADO (texto consolidado). Las cuantías de 2014 (10,05 %, base máxima de 9.040 €, base imponible < 24.107,20 €) no se han leído en la consulta del 12/11/2026: **NO VERIFICADO**.
 2. **Nueva deducción estatal por alquiler de la vivienda habitual** (LIRPF art. 68.6, añadido por el RDL 29/2026, art. 6). En vigor desde el 08/10/2026. Texto VERIFICADO:
    - Para contribuyentes con base imponible **< 33.007,20 €**: deducción del **10 %** de lo pagado de alquiler.
    - Base máxima: **11.630 €** si la base imponible ≤ 23.007,20 €. Entre 23.007,20 € y 33.007,20 €: 11.630 − 1,163 × (base imponible − 23.007,20).

@@ -20,7 +20,7 @@ Cómo leer cada resultado, qué suele estar mal cuando no cuadra y qué ajustar.
 ## Lectura de resultados
 
 - **Retención no es impuesto.** La retención es un pago a cuenta calculado con la situación que el trabajador comunica; la cuota final sale de la declaración. Para «lo que entra en la cuenta cada mes», la retención es lo correcto; dilo así en la app.
-- **Neto mensual frente a anual.** Con 14 pagas, el neto de un mes normal es menor que el anual ÷ 12. Si se compara con un alquiler mensual, decide y declara cuál usas; lo coherente para «lo que sobra al mes» es el **anual ÷ 12**.
+- **Neto mensual frente a anual.** Con 14 pagas, el neto de un mes normal es menor que el anual ÷ 12. Si se compara con un gasto mensual (alquiler, transporte), decide y declara cuál usas; lo coherente para un saldo mensual medio es el **anual ÷ 12**.
 - **Saltos legales.** Algunas reglas tienen escalones (perder una ayuda al pasar un umbral). Un salto ahí no es un error, pero hay que mostrarlo porque cambia decisiones.
 - **Descuentos temporales.** Si un precio depende de una ayuda con fecha de fin, el resultado tiene dos lecturas: con y sin la ayuda. Muestra las dos o di cuál usas.
 - **Umbrales convencionales frente a legales.** El 30 % del esfuerzo es una convención (y criterio de la Ley 12/2023 para zonas tensionadas, sobre la renta media); el 40 % es la definición de Eurostat sobre la renta disponible. No son intercambiables: cita cuál usas.

@@ -1,6 +1,6 @@
 ---
-description: Implementar, comprobar e interpretar cálculos que aplican una norma o una tarifa oficial. Bruto a neto (cotizaciones a la Seguridad Social, retención de IRPF y cuota autonómica de Madrid), indicadores legales (SMI, IPREM, IMV, umbral de pobreza, sobrecarga de vivienda, IRAV), requisitos y cuantías de ayudas (Bono Alquiler Joven, Plan Estatal de Vivienda, bono social), tarifas de transporte por zona, valor del tiempo y tributos locales. Úsala al escribir o cambiar uno de estos cálculos, al fijar sus parámetros o al dudar de una cifra legal. No es para el análisis espacial (dm-eda-espacial, dm-modelado-espacial).
-when_to_use: Calcular el neto desde el bruto, ¿cuánto se retiene de IRPF?, ¿cuánto cotiza el trabajador?, 12 o 14 pagas, ¿cumple los requisitos del Bono Alquiler Joven?, ¿cuántas veces el IPREM?, ¿cuánto cuesta el abono de esta zona?, ¿qué pasa si se acaba el descuento del abono?, ¿está este hogar sobrecargado?, ¿qué umbral uso, 30 % o 40 %?, ¿cuánto vale una hora de viaje?, actualizar los parámetros al año nuevo, ¿esta cifra legal está bien?
+description: Implementar, comprobar, simular e interpretar cualquier cálculo que aplica una norma, una tarifa o una convocatoria oficial, y fijar sus parámetros con cita a la fuente primaria. Por ejemplo, bruto a neto (cotizaciones, retención y cuota de IRPF), indicadores legales (SMI, IPREM, IMV, umbral de pobreza, sobrecarga de vivienda, índices de alquiler), requisitos y cuantías de ayudas o subvenciones, tarifas y precios públicos, impuestos y tasas, valor del tiempo. Úsala al escribir o cambiar uno de estos cálculos, al simular un cambio de regla o al dudar de una cifra legal. No es para el análisis espacial (dm-eda-espacial, dm-modelado-espacial).
+when_to_use: Calcular el neto desde el bruto, ¿cuánto se retiene de IRPF?, ¿cuánto cotiza el trabajador?, 12 o 14 pagas, ¿cumple los requisitos de esta ayuda?, ¿cuántas veces el IPREM?, ¿cuánto cuesta este título de transporte?, ¿qué pasa si se acaba un descuento o cambia un umbral?, ¿está este hogar sobrecargado?, ¿qué umbral uso, 30 % o 40 %?, ¿cuánto vale una hora de viaje?, añadir un cálculo legal nuevo, actualizar los parámetros al año nuevo, ¿esta cifra legal está bien?
 ---
 
 # Cálculos normativos
@@ -11,7 +11,7 @@ Un cálculo normativo aplica una regla que alguien publicó: una ley, un reglame
 
 **Ninguna cifra legal sale de la memoria**, ni de la tuya ni de la de otro modelo. Cada parámetro (tipo, tramo, tope, umbral, precio, edad de corte) se toma de la **fuente primaria** y se guarda con su cita: norma, artículo o tabla, identificador BOE o BOCM, fecha de publicación, periodo de vigencia y URL. Lo que no se ha podido comprobar en la fuente se marca `verificado: False` y se dice en la salida.
 
-Las tablas de [referencia/](referencia/) recogen los valores ya investigados para 2026, con su fuente y su estado. Son **punto de partida, no fuente**: antes de usar un valor en el código, comprueba que la norma citada sigue vigente para la fecha del cálculo.
+Las tablas de [referencia/](referencia/) son una **instantánea** de lo investigado el 12/11/2026 para los cálculos que el proyecto preveía entonces, con su fuente y su estado. Son **punto de partida, no fuente**: antes de usar un valor en el código, comprueba que la norma citada sigue vigente para la fecha del cálculo. Si el proyecto necesita un cálculo que no está ahí, sigue el mismo método (sección «Ámbito nuevo o año nuevo»); no hace falta que esté en la referencia para hacerlo bien.
 
 ## Antes de empezar: conectar con el desarrollo del proyecto
 
@@ -33,6 +33,8 @@ Esta skill es general. Qué cálculos hacen falta y para qué perfil sale del es
 - **La lógica no contiene cifras legales**: solo lee parámetros. Cambiar de año es cambiar de fichero, no tocar funciones.
 - **Dinero con `decimal.Decimal`** y el redondeo que diga la norma (normalmente al céntimo, mitad hacia arriba); el tipo de retención, como lo redondee el algoritmo oficial. `float` solo para agregados estadísticos, nunca para una cifra individual que se va a comparar al céntimo.
 - **Funciones puras** (entrada → salida, sin leer ficheros ni red), vectorizables después sobre un DataFrame.
+- **Requisitos que se explican:** una función de elegibilidad devuelve si cumple **y qué requisito falla** (con su artículo), no solo `True` o `False`. Así se puede contar por qué queda fuera cada caso.
+- **Escenarios con las mismas funciones:** para simular un cambio de regla (otro umbral, un descuento que se acaba, un criterio nuevo), se pasa otro conjunto de parámetros a la misma función, con nombre propio (`escenario="sin_descuento"`). Nunca se copia la función para cambiar una cifra. El escenario oficial y el simulado se presentan juntos y el simulado se etiqueta como tal.
 
 ## Flujo para implementar un cálculo
 
@@ -43,6 +45,18 @@ Esta skill es general. Qué cálculos hacen falta y para qué perfil sale del es
 5. **Casos límite:** cada umbral exacto y un céntimo a cada lado (tramos, mínimo exento de retención, base mínima y máxima, renta máxima de una ayuda, precio máximo del alquiler, edad de corte el día del cumpleaños), 12 y 14 pagas, contrato temporal e indefinido, cambio de norma a mitad de año.
 6. **Propiedades que deben cumplirse siempre** (tests con muchos valores, por ejemplo con `hypothesis` o una rejilla): ver la tabla de abajo.
 7. **Declara las simplificaciones** en el código, en la app y en `docs/decisiones.md`: retención frente a cuota final del IRPF, situación familiar supuesta, deducciones que no se aplican, descuentos que dependen de una ayuda temporal.
+
+## Ámbito nuevo o año nuevo
+
+Cuando el proyecto pida un cálculo que la referencia no cubre, o cambie el año:
+
+1. **Localiza la fuente primaria** del ámbito: BOE (texto consolidado y su versión en la fecha del cálculo), boletín autonómico, sede del organismo que lo aplica (AEAT, Seguridad Social, INE, consorcio de transportes, ayuntamiento) o la convocatoria. Prensa, blogs o asesorías solo sirven para encontrarla.
+2. **Comprueba cambios recientes:** reales decretos-leyes que modifican la norma y si se convalidaron o derogaron, prórrogas presupuestarias, cambios a mitad de año. Son la causa más frecuente de cifras desfasadas.
+3. **Transcribe** al módulo de parámetros del año con su cita y su estado; lo no confirmado, `verificado=False`.
+4. **Casos de referencia** de la propia fuente, como en el flujo de abajo.
+5. **Actualiza la referencia** de esta skill si el ámbito se va a reutilizar: un fichero por tema con la fecha de consulta, la tabla de valores con fuente y estado, y una sección final «No verificado». Para años nuevos, se crea la tabla nueva; la del año anterior se conserva mientras haya datos de ese año.
+
+Para una búsqueda larga en la web, delega en un subagente que lea las fuentes y devuelva la tabla con citas; tú revisas el resultado y lo pasas al código.
 
 ## Contrastar cada resultado con lo que debe dar
 
@@ -88,6 +102,8 @@ Guía de lectura y errores frecuentes: [interpretar-resultados.md](referencia/in
 - Sin tests de casos límite: los errores de estos cálculos viven en los umbrales.
 
 ## Referencia
+
+Instantánea del 12/11/2026 (España y Comunidad de Madrid). Cada fichero empieza con su contenido y termina con lo que quedó sin verificar.
 
 | Tema | Fichero |
 |---|---|

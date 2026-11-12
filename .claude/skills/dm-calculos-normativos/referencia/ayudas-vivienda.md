@@ -2,12 +2,14 @@
 
 Investigado el 12/11/2026 en BOE, BOCM y la sede de la Comunidad de Madrid. **Antes de usar una regla, comprueba que la norma o la convocatoria citada sigue vigente para la fecha que simulas**; las convocatorias cambian cada año.
 
+**Contenido:** 0. Resumen · 1. Bono Alquiler Joven estatal: Real Decreto 42/2022 · 2. El BAJ en la Comunidad de Madrid · 3. Plan Estatal de Vivienda 2026-2030: RD 326/2026 · 4. Otras ayudas o deducciones de la Comunidad de Madrid al alquiler para jóvenes en 2026 · 5. «Unidad de convivencia» e ingresos computables · 6. Cambios importantes en 2026 · 7. No verificado / pendiente
+
 Fecha de la consulta: 12-11-2026. Fuentes: BOE (texto consolidado), BOCM (PDF oficiales), sede.comunidad.madrid, comunidad.madrid y sede.agenciatributaria.gob.es. La web del Ministerio (mivau.gob.es) devolvió 403 y no se pudo consultar.
 Leyenda: **[V]** verificado en el texto oficial citado · **[NO VERIFICADO]** no confirmado en fuente primaria (se indica qué se encontró).
 
 ---
 
-## 0. Resumen para el simulador
+## 0. Resumen
 
 | Ayuda | Estado en Madrid a 12-11-2026 | Edad | Renta máxima | Alquiler máximo vivienda / habitación | Cuantía | Duración | Procedimiento |
 |---|---|---|---|---|---|---|---|

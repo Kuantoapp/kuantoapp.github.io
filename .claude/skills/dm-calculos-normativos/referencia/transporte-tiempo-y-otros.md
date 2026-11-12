@@ -2,7 +2,9 @@
 
 Investigado el 12/11/2026 en BOE, BOCM, CRTM, Comisión Europea, MITECO y webs municipales. **Antes de usar un valor, comprueba que la norma o la tarifa citada sigue vigente en la fecha del cálculo**: los descuentos de transporte y del bono social dependen de normas temporales.
 
-Fecha de la consulta: 12/11/2026. Todas las cifras salen de documentos oficiales descargados y leídos en esta sesión, salvo las marcadas **NO VERIFICADO**.
+**Contenido:** 1. Tarifas 2026 del transporte público (CRTM) · 2. Zonificación tarifaria · 3. Valor del tiempo de viaje · 4. IBI y Catastro · 5. Bono social eléctrico y pobreza energética · Cambios importantes de 2026
+
+Fecha de la consulta: 12/11/2026. Todas las cifras salen de documentos oficiales descargados y leídos en la consulta del 12/11/2026, salvo las marcadas **NO VERIFICADO**.
 
 Etiquetas usadas:
 - **VERIFICADO**: leído en el documento oficial que se cita.
@@ -232,7 +234,7 @@ Como contraste, usar HEATCO actualizado (38 % para commuting) y el valor de ADIF
 | Valdemoro | 0,522 % (más tipos diferenciados en usos no residenciales) | Ordenanza fiscal nº 1, art. 9.3, aprobación definitiva | BOCM nº 300, 17/12/2025, **BOCM-20251217-113** | VERIFICADO |
 | Alcalá de Henares, Getafe, Leganés, Alcorcón | — | — | — | **NO VERIFICADO** |
 
-Fórmula de la cuota: cuota íntegra = base liquidable × tipo. La base liquidable es el valor catastral menos la reducción por ponencia nueva, cuando la haya. La mecánica sale del TRLRHL, arts. 65-72 (**artículos NO VERIFICADOS en esta sesión**). Quedan fuera las bonificaciones municipales: familia numerosa, solar, etc.
+Fórmula de la cuota: cuota íntegra = base liquidable × tipo. La base liquidable es el valor catastral menos la reducción por ponencia nueva, cuando la haya. La mecánica sale del TRLRHL, arts. 65-72 (**artículos NO VERIFICADOS en la consulta del 12/11/2026**). Quedan fuera las bonificaciones municipales: familia numerosa, solar, etc.
 
 ### 4.2 Valor catastral frente a valor de referencia
 
@@ -248,7 +250,7 @@ Texto refundido de la Ley del Catastro Inmobiliario (RDLeg 1/2004), **BOE-A-2004
   - Se apoya en un informe anual del mercado inmobiliario y en un mapa de valores con ámbitos homogéneos y módulos de valor medio.
   - Lleva un **factor de minoración al mercado** fijado por orden ministerial. Su valor (habitualmente 0,9) está **NO VERIFICADO**.
   - Calendario: resolución anual antes del 30 de octubre del año anterior y anuncio en el BOE en los primeros 20 días de diciembre. Se consulta en la Sede del Catastro.
-- **Para qué sirve cada uno.** Todo este punto está **NO VERIFICADO** artículo por artículo en esta sesión; procede de conocimiento previo y hay que confirmarlo en el BOE.
+- **Para qué sirve cada uno.** Todo este punto está **NO VERIFICADO** artículo por artículo en la consulta del 12/11/2026; procede de conocimiento previo y hay que confirmarlo en el BOE.
   - Valor catastral: base imponible del **IBI** (TRLRHL), imputación de rentas inmobiliarias en el **IRPF** y cálculo del **IIVTNU** (plusvalía municipal).
   - Valor de referencia: base imponible mínima en el **ITP-AJD**, el **ISD** y el **Impuesto sobre el Patrimonio** desde el 1/1/2022, por la Ley 11/2021.
 
