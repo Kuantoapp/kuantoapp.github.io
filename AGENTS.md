@@ -60,6 +60,10 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
 - `git push --force` sobre `main`, o saltarse la CI o el check `revision`.
 - Reescribir código que no toca la issue "ya que estaba".
 
+## Subagentes y skills
+
+Antes de crear o modificar algo en `.claude/agents/` o `.claude/skills/`, lee `.claude/README.md`: índice, reglas y qué va en cada sitio. La CI lo valida.
+
 ## Al terminar
 
 - Si tomaste una decisión que afecta a los demás (fuente de datos, formato, librería), añade una línea a `docs/decisiones.md` en el mismo PR.

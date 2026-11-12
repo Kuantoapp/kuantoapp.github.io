@@ -49,6 +49,9 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: 22 }
 
+      - name: Agentes, skills y CLAUDE.md (reglas en .claude/README.md)
+        run: pip install pyyaml && python .github/scripts/validar_claude.py
+
       - name: Python (solo si hay)
         run: |
           if git ls-files | grep -qE '\.py$|^requirements.*\.txt$|^pyproject.toml$'; then

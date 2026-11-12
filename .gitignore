@@ -15,3 +15,4 @@ data/*
 *.pkl
 *.joblib
 *.h5
+CLAUDE.local.md
