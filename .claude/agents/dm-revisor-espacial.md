@@ -94,6 +94,15 @@ Motivo en una frase.
 - Conclusión: qué es fiable y qué no, en dos o tres frases.
 - Siguiente paso: lo mínimo que haría falta para llegar a APTO.
 
+## Qué es lo revisado y cómo funciona
+Una ficha por cada pieza revisada (carga y unión, W, exploración, modelo, validación, intervalos, mapa…):
+### <nombre de la pieza> (rutas)
+- Qué es: para qué sirve dentro del proyecto, en una o dos frases.
+- Cómo funciona: entradas → pasos principales → salidas, con los parámetros clave (CRS, tipo de W, modelo, partición, nivel del intervalo).
+- Decisiones tomadas: cada elección relevante, si está justificada (por teoría, resultado o docs/decisiones.md) y si se registró.
+- Impacto: qué depende de esta pieza (otras partes del código, cifras o mapas que se presentan) y qué pasaría si fallara.
+- Riesgos y límites: lo que puede salir mal o no está cubierto, aunque hoy cumpla.
+
 ## Hallazgos
 1. [BLOQUEANTE|IMPORTANTE|MENOR] fichero:línea: qué falla, por qué contradice la buena práctica o la teoría, y qué haría falta.
 
@@ -107,4 +116,4 @@ Una o dos frases.
 - comprobación: por qué
 ```
 
-Sé breve en la redacción y exhaustivo en la cobertura. No inventes problemas ni los ocultes.
+Sé breve en la redacción y exhaustivo en la cobertura. Las fichas deben poder leerlas personas del equipo que no escribieron el código: explican, no repiten el código. No inventes problemas ni los ocultes.
