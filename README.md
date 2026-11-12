@@ -16,6 +16,8 @@ app/                      la demo
 
 ## Cómo trabajamos (GitHub Flow)
 
+El repo está pensado para **bucles agénticos**: los agentes cierran el ciclo solos, con el menor coste posible, y la calidad, la seguridad y la precisión las aseguran hooks, CI y agentes revisores. Las personas deciden y aprueban lo sensible. Detalle en [AGENTS.md](AGENTS.md#el-bucle-agéntico).
+
 1. **Issue** con la plantilla "Tarea": qué hay que hacer y cuándo está hecho. Asígnatela.
 2. **Rama** `<usuario>/<tema>` desde `main`, en su propio worktree si la trabaja un agente.
 3. **PR draft** pronto, título `tipo(área): qué cambia`, con `Closes #N`.

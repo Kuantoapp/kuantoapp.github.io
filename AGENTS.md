@@ -2,6 +2,32 @@
 
 Casi todo el código lo escriben agentes. Estas reglas existen para que tres personas con varios agentes cada una no se pisen y para que cada PR se pueda revisar en minutos.
 
+## El bucle agéntico
+
+Todo el repo está montado para que un agente cierre el ciclo solo, **barato y bien**, y que el humano solo tenga que decidir. La calidad, la seguridad y la precisión las garantizan máquinas (hooks, CI, revisores), no la vigilancia humana.
+
+**Ciclo:** issue → rama y worktree → implementar con la skill del área → hook de ruff y tests locales → revisor del área (por ejemplo, `dm-revisor-espacial`) → PR draft con auto-merge → CI → merge.
+
+**El humano solo interviene para:** decidir (y queda en `docs/decisiones.md`), aprobar PRs de autores que no son de confianza o que tocan reglas (`.github/`, `.claude/`, `AGENTS.md`), y responder ambigüedades reales.
+
+### Coste mínimo
+
+- **Lee lo justo:** busca con `grep` antes de abrir ficheros; lee el rango que necesitas, no ficheros enteros; no releas lo que ya tienes.
+- **Reutiliza:** funciones de `src/` y decisiones ya tomadas. Para cambiar unas líneas, edita; no reescribas el fichero.
+- **Agrupa** comandos independientes en una sola llamada. Nada de sondeos en bucle: `gh pr checks --watch` espera por ti.
+- **Subagentes** solo si separan contexto o trabajan en paralelo de verdad, pidiendo un resumen corto.
+- **Modelo según la tarea, no el más barato:** lo que cuesta es el total, y un modelo que acierta a la primera ahorra repeticiones y revisiones. `opus` para razonar, diseñar, modelizar y revisar; `sonnet` para implementar lo que ya está definido; `haiku` solo para búsquedas o resúmenes mecánicos.
+- **Datos:** desarrolla con una muestra pequeña; la ejecución completa, una vez y al final.
+- **Corta a tiempo:** si el mismo fallo resiste tres intentos, para y pregunta con el diagnóstico. No sigas probando a ciegas.
+
+### Precisión y calidad sin humano en medio
+
+- **Nada está hecho sin prueba:** un test en verde, una salida o una cifra comprobada. Si algo no se pudo verificar, se dice.
+- **Resultados contrastados** con lo que deben dar (teoría, valores de control, una segunda vía) antes de darlos por buenos. Las skills `dm-*` traen el procedimiento.
+- **Las reglas que no pueden fallar son hooks, `deny` o CI**, no texto: si una regla de este fichero se incumple dos veces, se convierte en una de esas.
+- **Cambios pequeños y verificables:** un PR, un cambio; cuanto más pequeño, más barato de revisar y de deshacer.
+- **Pregunta solo si la respuesta cambia lo que haces y no está en el repo.** Si supones, deja el supuesto escrito en el código y en `docs/decisiones.md`.
+
 ## Antes de escribir código
 
 1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida). No lo contradigas sin abrir una issue.
