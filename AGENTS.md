@@ -15,7 +15,8 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
 - **Lee lo justo:** busca con `grep` antes de abrir ficheros; lee el rango que necesitas, no ficheros enteros; no releas lo que ya tienes.
 - **Reutiliza:** funciones de `src/` y decisiones ya tomadas. Para cambiar unas líneas, edita; no reescribas el fichero.
 - **Agrupa** comandos independientes en una sola llamada. Nada de sondeos en bucle: `gh pr checks --watch` espera por ti.
-- **Subagentes** solo si separan contexto o trabajan en paralelo de verdad, con el modelo más barato que haga bien la tarea (`haiku` para buscar o resumir, `sonnet` por defecto) y pidiendo un resumen corto.
+- **Subagentes** solo si separan contexto o trabajan en paralelo de verdad, pidiendo un resumen corto.
+- **Modelo según la tarea, no el más barato:** lo que cuesta es el total, y un modelo que acierta a la primera ahorra repeticiones y revisiones. `opus` para razonar, diseñar, modelizar y revisar; `sonnet` para implementar lo que ya está definido; `haiku` solo para búsquedas o resúmenes mecánicos.
 - **Datos:** desarrolla con una muestra pequeña; la ejecución completa, una vez y al final.
 - **Corta a tiempo:** si el mismo fallo resiste tres intentos, para y pregunta con el diagnóstico. No sigas probando a ciegas.
 

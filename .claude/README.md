@@ -33,7 +33,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 
 | Principio | Cómo se cumple |
 |---|---|
-| **Barato** | La descripción solo se activa cuando toca (casos concretos y para qué *no* es). `SKILL.md` corto; el detalle en `referencia/`, que solo se lee si hace falta. Agentes con `tools` mínimas y el modelo más barato que haga bien la tarea. Salidas cortas y con estructura fija |
+| **Barato** | La descripción solo se activa cuando toca (casos concretos y para qué *no* es). `SKILL.md` corto; el detalle en `referencia/`, que solo se lee si hace falta. Agentes con `tools` mínimas y el modelo adecuado a la tarea: el coste que cuenta es el total, y uno que acierta a la primera evita repeticiones. Salidas cortas y con estructura fija |
 | **Preciso** | Procedimiento paso a paso, no consejos sueltos. Cada resultado se contrasta con lo que debe dar (teoría, valores de control, segunda vía) antes de aceptarlo |
 | **Autónomo** | Lee el estado del proyecto (`docs/decisiones.md`, `data/README.md`, `src/`) en lugar de preguntar lo que ya está escrito. Condición de parada clara: cuándo terminar, cuándo preguntar |
 | **General** | Nada atado a una idea o a datos concretos: los ejemplos son orientativos y lo específico se lee del proyecto |
@@ -59,7 +59,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 2. `name` y `description` son obligatorios. La `description` dice **cuándo** delegar en él, en una o dos frases (máx. 500 caracteres). Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
 3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor no lleva `Edit` ni `Write`.
 4. Una sola responsabilidad por agente. Si hace dos cosas, son dos agentes.
-5. `model`: `haiku` para trabajo simple (buscar, resumir), `sonnet` por defecto, `opus` solo si lo justifica. Nada de `permissionMode: bypassPermissions`.
+5. `model` según la tarea: `opus` para razonar, diseñar, modelizar o revisar con criterio (los revisores, siempre); `sonnet` para implementar o ejecutar procedimientos ya definidos; `haiku` solo para búsquedas o resúmenes mecánicos. Nada de `permissionMode: bypassPermissions`.
 6. El cuerpo es su prompt de sistema completo: el subagente no ve la conversación ni el prompt de Claude Code. Pide que devuelva un resumen corto.
 7. Solo campos documentados (la CI rechaza los demás, porque Claude Code los ignora sin avisar).
 
