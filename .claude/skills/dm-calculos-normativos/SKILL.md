@@ -28,7 +28,13 @@ Esta skill es general. Qué cálculos hacen falta y para qué perfil sale del es
 
 - **Un único módulo de parámetros por año**, separado de la lógica (por ejemplo `src/<paquete>/normativa/parametros_2026.py` o un YAML). Cada valor con su cita y su estado:
   ```python
-  SS_TRABAJADOR_CC = Parametro(0.0470, "Orden de cotización 2026, art. X", "BOE-A-2026-XXXX", "2026-01-01", verificado=True)
+  SS_TRABAJADOR_CC = Parametro(
+      0.0470,
+      "Orden PJC/297/2026, art. 4.a)",
+      "BOE-A-2026-7296",
+      "2026-01-01",
+      verificado=True,
+  )
   ```
 - **La lógica no contiene cifras legales**: solo lee parámetros. Cambiar de año es cambiar de fichero, no tocar funciones.
 - **Dinero con `decimal.Decimal`** y el redondeo que diga la norma (normalmente al céntimo, mitad hacia arriba); el tipo de retención, como lo redondee el algoritmo oficial. `float` solo para agregados estadísticos, nunca para una cifra individual que se va a comparar al céntimo.
