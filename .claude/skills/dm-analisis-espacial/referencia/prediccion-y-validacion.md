@@ -39,6 +39,20 @@ La partición define la pregunta que responde la métrica:
 - Los métodos que aprovechan la cercanía brillan con validación aleatoria y fallan al extrapolar. Si el uso real es el caso B, la validación aleatoria **sobreestima** el rendimiento.
 - Elige el tamaño de bloque o el radio del buffer con el **alcance** del semivariograma o la distancia a la que la I de Moran deja de ser significativa (correlograma).
 
+## Selección de variables con validación espacial
+
+Meyer, Reudenbach, Wöllauer y Nauss (2019) muestran que la validación espacial **no basta**: las variables muy autocorrelacionadas (coordenadas, distancias a las esquinas del área, altitud) dejan que el modelo **reproduzca los datos de entrenamiento** sin saber predecir zonas nuevas. El síntoma es visual: el mapa de predicciones tiene artefactos en bandas o bloques que siguen a esas variables.
+
+- **Selección hacia delante con validación espacial** (*spatial forward feature selection*): se empieza con los mejores pares de variables y se añaden de una en una, **evaluando cada modelo con validación por bloques**. Se queda solo lo que mejora la predicción espacial. En R es `CAST::ffs`. En Python, `SequentialFeatureSelector` de scikit-learn con `cv` = los folds de `GroupKFold` por bloques.
+- La **eliminación recursiva** (RFE) con importancias del modelo completo no detecta el problema: la importancia de las coordenadas sale alta precisamente porque sobreajustan.
+- **Cómo encaja con Geerts (2025)**, que encuentra útiles las coordenadas: él trabaja con transacciones densas (caso A, interpolar). Para imputar municipios sin dato (caso B), no metas coordenadas ni identificadores de zona en bruto. Usa variables con significado (renta, tiempo a polos, valor catastral) y deja que la selección espacial decida.
+- **Área de aplicabilidad** (Meyer y Pebesma, 2021; `CAST::aoa`): para cada zona a predecir se mide cuánto se parecen sus variables a las de entrenamiento. Las que caen fuera se marcan como «fuera del ámbito del modelo». Para la corona C es un buen complemento de la marca «estimado»: hay estimaciones con modelo y estimaciones fuera de su ámbito.
+
+Otras técnicas de selección revisadas y descartadas para este proyecto:
+- **Boosting geoaditivo** (Kneib, Hothorn y Tutz, 2009; R `mboost`): elige entre efectos lineales, suaves, espaciales y coeficientes variables. Elegante y cercano a los P-splines de Montero et al., pero sin equivalente directo en Python.
+- **Penalización en modelos mixtos** (SCAD, LASSO adaptativo).
+- **PCA** sobre indicadores socioeconómicos: reduce la colinealidad, pero cada componente mezcla variables y se pierde la explicación en la ficha de cada municipio.
+
 ## Intervalos conformales
 
 - Conformal partido sencillo: con un conjunto de calibración (o el test, en la versión más simple del curso), calcula el cuantil 95 % del error absoluto, o del relativo, y da `pred ± q95` o `pred · (1 ± q95_rel)`.

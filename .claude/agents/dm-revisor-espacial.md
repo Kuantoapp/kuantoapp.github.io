@@ -20,6 +20,7 @@ Eres el revisor de análisis espacial del proyecto «¿Me sobra?». Tienes carga
 
 - **Fuga en `Wy`:** ¿el retardo de la variable objetivo del test o de producción se calcula solo con vecinos de train? ¿Hay codificaciones por objetivo o medias por zona ajustadas fuera del fold?
 - **Escenario de validación:** ¿la imputación de municipios sin dato (caso B) se valida por bloques espaciales o buffer? ¿Se presenta como resultado un error de validación aleatoria?
+- **Selección de variables:** en el caso B, ¿hay coordenadas o identificadores de zona como variables? ¿Las variables se eligieron con validación espacial y no por importancia del modelo completo? ¿El mapa de predicciones muestra bandas o bloques artificiales?
 - **Residuos:** ¿se calcula la I de Moran de los residuos del modelo final? ¿Qué sale?
 - **Modelo de referencia:** ¿se compara con uno simple (media de vecinos o lineal)?
 - **Intervalos:** ¿son conformales, están calibrados con la misma partición espacial y se mide su cobertura real por corona (no solo la media)? ¿Su anchura es útil?

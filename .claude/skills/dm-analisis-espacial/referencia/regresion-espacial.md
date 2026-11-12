@@ -54,6 +54,8 @@ Anselin (1988), LeSage y Pace (2009), Elhorst (2014), Pebesma y Bivand (2023, *S
 
 - Chasco, C. (2025). *Basic Exploratory Spatial Data Analysis in GeoDa Software* (preprint, UAM). Mapas de caja, percentiles, Bayes empírico y ESDA de variables discretas, con ejemplos de Madrid.
 - Moura, A. C. M. y Fonseca, B. M. (2020). ESDA of vegetation cover in urban areas. *Sustainability*. Moran y LISA bivariantes.
+- Meyer, H., Reudenbach, C., Wöllauer, S. y Nauss, T. (2019). Importance of spatial predictor variable selection in machine learning applications. *Ecological Modelling*. Selección hacia delante con validación espacial; las coordenadas sobreajustan.
+- Kneib, T., Hothorn, T. y Tutz, G. (2009). Variable selection and model choice in geoadditive regression models. *Biometrics*. Boosting por componentes.
 - Geerts, M. (2025). *Geospatial Machine Learning for Real Estate Valuation*. Tesis doctoral, KU Leuven. Árboles geoespaciales (geoRF), pérdida espacial para boosting (MI-GBT), GNN, cuantificación de la incertidumbre y LLMs.
 - Kriging de residuos sobre ML: estudios de Varsovia (*Housing price prediction: machine learning and geostatistical methods*) y de Acapulco (Hernández-López y Wences, regresión hedónica con RF y kriging). Valoración catastral masiva en Primorie (Rusia): regresión con kriging para suelo, RuleFit para pisos.
 - Trindade Neves, F., Aparicio, M. y de Castro Neto, M. (2024). The impacts of open data and XAI on real estate price predictions in smart cities. *Applied Sciences* 14, 2209. Datos abiertos de accesibilidad y SHAP.

@@ -30,7 +30,7 @@ Toda dependencia espacial que el modelo no explique acaba en los residuos. Un mo
 
 | Pieza | Escenario | Qué exige |
 |---|---|---|
-| Imputar el alquiler de municipios sin dato (corona C) | **Caso B** | Validación por bloques espaciales (grupos de municipios contiguos) o buffer, no aleatoria. `Wy` del test calculado solo con vecinos de train. Comparar con un modelo de referencia simple. Modelo de árboles con distancias derivadas; kriging o retardo de residuos como mejora, validados por bloques. Intervalo conformal **calibrado por corona** (Mondrian o CQR) y cobertura medida por grupo. |
+| Imputar el alquiler de municipios sin dato (corona C) | **Caso B** | Validación por bloques espaciales (grupos de municipios contiguos) o buffer, no aleatoria. `Wy` del test calculado solo con vecinos de train. Comparar con un modelo de referencia simple. Modelo de árboles con distancias derivadas, sin coordenadas en bruto, y variables elegidas con **selección hacia delante con validación por bloques**; kriging o retardo de residuos como mejora, validados por bloques. Intervalo conformal **calibrado por corona** (Mondrian o CQR) y cobertura medida por grupo. |
 | Alquiler por barrio en Madrid capital | Caso A | Tabla de paso código postal → barrio con pesos por viviendas, declarada. |
 | Sobrecarga por sección censal | — | Moran y LISA de la sobrecarga para el mapa de la Administración. Clústeres alto-alto = zonas prioritarias. |
 | Focalizar el Bono | — | LISA **bivariante** de sobrecarga frente a tasa de solicitudes aceptadas: clústeres de mucha sobrecarga con poca ayuda alrededor. Tasas de municipios pequeños suavizadas con Bayes empírico. |
@@ -42,6 +42,7 @@ Toda dependencia espacial que el modelo no explique acaba en los residuos. Un mo
 
 - **Fuga espacial en la validación.** `Wy` del conjunto de test calculado con el **propio valor de test** (el `y` que se quiere predecir). Para el test, `Wy` es la media ponderada de los vecinos de **train**.
 - Validación aleatoria para presumir de error bajo en el **caso B**.
+- Coordenadas o identificadores de zona como variables en el caso B, o variables elegidas por importancia del modelo completo (RFE). El modelo memoriza en vez de predecir, y el mapa muestra artefactos.
 - Distancias o áreas calculadas en grados (EPSG:4326).
 - Unir tablas por nombre de municipio («Las Rozas de Madrid» frente a «Rozas de Madrid, Las»).
 - W sin normalizar por filas, o islas sin tratar (`zero.policy` en R, `silence_warnings` y revisión manual en Python).
