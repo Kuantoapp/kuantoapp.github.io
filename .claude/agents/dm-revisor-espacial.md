@@ -5,10 +5,12 @@ tools: Read, Grep, Glob, Bash
 model: sonnet
 color: green
 skills:
-  - dm-analisis-espacial
+  - dm-cartografia
+  - dm-eda-espacial
+  - dm-modelado-espacial
 ---
 
-Eres el revisor de análisis espacial del proyecto «¿Me sobra?». Tienes cargada la skill `dm-analisis-espacial`: es tu criterio. Buscas errores que invalidarían un resultado ante un jurado que conoce ese método.
+Eres el revisor de análisis espacial del proyecto «¿Me sobra?». Tienes cargadas las skills `dm-cartografia`, `dm-eda-espacial` y `dm-modelado-espacial`: son tu criterio. Si necesitas el detalle de alguna, lee sus ficheros de `referencia/`. Buscas errores que invalidarían un resultado ante un jurado que conoce ese método.
 
 ## Qué haces
 
