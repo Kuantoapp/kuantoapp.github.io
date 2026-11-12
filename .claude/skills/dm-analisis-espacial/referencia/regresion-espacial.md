@@ -49,3 +49,9 @@ En SAR y SDM un cambio en X de una zona afecta a esa zona (**efecto directo**) y
 ## Referencias del curso
 
 Anselin (1988), LeSage y Pace (2009), Elhorst (2014), Pebesma y Bivand (2023, *Spatial Data Science*), Rey, Arribas-Bel y Wolf (2020, *Geographic Data Science with Python*).
+
+## Lecturas complementarias
+
+- Chasco, C. (2025). *Basic Exploratory Spatial Data Analysis in GeoDa Software* (preprint, UAM). Mapas de caja, percentiles, Bayes empírico y ESDA de variables discretas, con ejemplos de Madrid.
+- Moura, A. C. M. y Fonseca, B. M. (2020). ESDA of vegetation cover in urban areas. *Sustainability*. Moran y LISA bivariantes.
+- Trindade Neves, F., Aparicio, M. y de Castro Neto, M. (2024). The impacts of open data and XAI on real estate price predictions in smart cities. *Applied Sciences* 14, 2209. Datos abiertos de accesibilidad y SHAP.

@@ -36,6 +36,30 @@ La partición define la pregunta que responde la métrica:
 - Conformal partido sencillo: con un conjunto de calibración (o el test, en la versión más simple del curso), calcula el cuantil 95 % del error absoluto, o del relativo, y da `pred ± q95` o `pred · (1 ± q95_rel)`.
 - La garantía de cobertura supone intercambiabilidad. Con dependencia espacial y caso B, **calibra con la misma partición por bloques** y comprueba la cobertura real por zonas, no solo la global.
 
+## Variables de accesibilidad con datos abiertos
+
+Trindade Neves, Aparicio y de Castro Neto (2024, Lisboa) reducen un 8 % el error de un XGBoost con variables de datos abiertos: **distancia al punto de interés más cercano** (metro, tren, salud, colegios, parques) y **número de puntos de interés en radios** de 75, 250 y 500 m alrededor de cada vivienda.
+
+- Calcula las distancias en EPSG:25830 o, mejor, el **tiempo en red** (la ficha ya tiene matrices de tiempo GTFS).
+- **Sesgo geográfico del dato abierto:** los propios autores avisan de que los puntos de interés están más completos en zonas urbanas que en periurbanas. En la corona C, «no hay farmacia a menos de 1 km» puede ser falta de dato. Comprueba la cobertura de cada capa por corona antes de usarla.
+- Su validación es una partición aleatoria 80/20. Con la localización exacta como variable, eso es el caso A. **No sirve como referencia de error para extrapolar.** Es un buen argumento para justificar la validación por bloques ante el jurado.
+
+## Explicabilidad
+
+- **SHAP** (`shap.TreeExplainer` en modelos de árboles) da la contribución de cada variable a cada predicción. Es útil para la ficha de un municipio estimado: «se estima alto sobre todo por su renta y su tiempo a Madrid».
+- Con retardos espaciales (`Wy`, `WX`), SHAP reparte entre variables correlacionadas y la contribución del «vecindario» puede quedar repartida. Agrupa los retardos al interpretar e informa de su peso conjunto.
+- Mapa de los valores SHAP de una variable por municipio: muestra dónde pesa más, una forma visual de **heterogeneidad espacial**.
+- Para heterogeneidad con inferencia: GWR o **MGWR** (GWR multiescala, un ancho de banda por variable: unas relaciones son locales y otras regionales).
+
+## Equidad territorial del error
+
+Los modelos con datos públicos fallan más donde hay menos dato, y eso suele coincidir con las zonas de menor renta o más rurales. Antes de publicar una estimación:
+
+- error y cobertura del intervalo **por corona y por quintil de renta**, no solo globales;
+- si el error es mayor en las zonas que la Administración debería priorizar, se dice y se ensancha el intervalo.
+
+Las decisiones automatizadas con datos de localización que afecten a personas son de alto riesgo en el marco europeo. Este proyecto **simula** criterios de ayuda y no decide por nadie, y así debe decirse.
+
 ## Para «¿Me sobra?»
 
 - **Imputación del alquiler en municipios sin dato = caso B.** Validación por bloques (por ejemplo, `GroupKFold` con grupos de municipios contiguos o por corona) o buffer. Reporta el error de esta validación, no el de la aleatoria.

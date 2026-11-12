@@ -22,3 +22,11 @@ El curso usa R. El proyecto usa Python. Comprueba la firma exacta en la document
 | Coroplético | `tmap`, `ggplot2` | `geopandas.plot(scheme=...)` con `mapclassify` |
 
 **Islas:** en `libpysal`, `w.islands` lista las zonas sin vecinos. Trátalas antes de calcular Moran o estimar.
+
+| Tarea (complementos) | Python |
+|---|---|
+| Moran y LISA bivariantes | `esda.Moran_BV(x, y, w)`, `esda.Moran_Local_BV(x, y, w)` |
+| Tasas suavizadas con Bayes empírico | `esda.smoothing.Empirical_Bayes(eventos, poblacion)`, `Spatial_Empirical_Bayes(eventos, poblacion, w)` |
+| Mapa de caja, percentiles, desviaciones | `mapclassify.BoxPlot(y, hinge=1.5)`, `Percentiles`, `StdMean` |
+| Explicabilidad | `shap.TreeExplainer(modelo).shap_values(X)` |
+| GWR multiescala | `mgwr.gwr.MGWR` con `mgwr.sel_bw.Sel_BW(..., multi=True)` |

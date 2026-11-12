@@ -46,7 +46,15 @@ Contrasta con **permutaciones** (999) en lugar de suponer normalidad. Acompaña 
 - **Gi y Gi\* de Getis-Ord local:** puntos calientes y fríos. Gi\* incluye la propia zona.
 - Un patrón global nulo puede esconder clústeres locales. Mira siempre las dos escalas.
 
+## Análisis bivariante
+
+- **I de Moran bivariante:** relaciona x en cada zona con el retardo `Wy` de **otra** variable en sus vecinas. Responde a si donde hay mucho de x, alrededor hay poco o mucho de y.
+- **LISA bivariante:** lo mismo zona a zona. Por ejemplo, alto-bajo = zona con x alto rodeada de y bajo (Moura y Fonseca, 2020, relacionan vegetación y renta así).
+- Ojo: no controla la autocorrelación de x consigo misma. Es exploratorio y no sustituye a un modelo.
+
 ## Para este proyecto
+
+- **Focalizar el Bono Alquiler Joven:** LISA bivariante entre la sobrecarga y la tasa de solicitudes aceptadas del Bono por municipio. Los clústeres de mucha sobrecarga con poca ayuda alrededor son exactamente la decisión 6.2.1 de la ficha.
 
 - Sobrecarga por sección censal: LISA para localizar clústeres alto-alto, que son las zonas a señalar a la Administración.
 - Variable «lo que sobra» por municipio: I de Moran para afirmar o descartar que «vivir lejos no compensa» tiene patrón territorial.

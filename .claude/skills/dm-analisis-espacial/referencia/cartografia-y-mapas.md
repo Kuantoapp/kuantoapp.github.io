@@ -26,7 +26,9 @@
   Di cuál usas en la leyenda.
 - **Paleta:** secuencial para magnitudes, **divergente** cuando hay un punto medio con significado (por ejemplo, 0 € o el 30 % de sobrecarga). Apta para daltónicos.
 - **Prueba del mapa barajado:** el mismo mapa con los valores permutados al azar. Si el real «parece» igual de agrupado, no hay patrón visual.
-- Zonas con poca población dan tasas inestables: márcalas o suavízalas.
+- **Mapa de caja (box map):** seis clases, los cuartiles más los atípicos inferiores y superiores (bisagra de 1,5 o 3 veces el rango intercuartílico). Es el mejor primer mapa para ver valores extremos. Alternativas: mapa de percentiles (1, 10, 50, 90, 99) y mapa de desviaciones típicas (Chasco, 2025, con ejemplos de Madrid).
+- **Tasas de zonas con poca población** (municipios pequeños de la corona C): son inestables y dominan los extremos del mapa. **Suaviza con Bayes empírico**, global o espacial: acerca cada tasa a la media, más cuanto menor es su población. Pinta la tasa suavizada y deja la cruda en la ficha de la zona.
+- **Variables discretas** (corona tarifaria, tipo de municipio): mapa de valores únicos y mapa de co-localización para ver dónde coinciden categorías de dos variables.
 - **Mapas condicionales:** un mapa por intervalo de otra variable, para ver relaciones.
 - **Cartogramas** (contiguos, no contiguos, Dorling): deforman el área según una variable, por ejemplo la población. Útiles para que Madrid capital no quede diminuta frente a la sierra.
 

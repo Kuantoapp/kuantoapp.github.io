@@ -33,7 +33,9 @@ Toda dependencia espacial que el modelo no explique acaba en los residuos. Un mo
 | Imputar el alquiler de municipios sin dato (corona C) | **Caso B** | Validación por bloques espaciales (grupos de municipios contiguos) o buffer, no aleatoria. `Wy` del test calculado solo con vecinos de train. Comparar con un modelo de referencia simple. Intervalo conformal y cobertura medida. |
 | Alquiler por barrio en Madrid capital | Caso A | Tabla de paso código postal → barrio con pesos por viviendas, declarada. |
 | Sobrecarga por sección censal | — | Moran y LISA de la sobrecarga para el mapa de la Administración. Clústeres alto-alto = zonas prioritarias. |
-| Mapas de la demo | — | Coroplético con clasificación explicada en la leyenda, la marca «estimado» visible y paleta apta para daltónicos. |
+| Focalizar el Bono | — | LISA **bivariante** de sobrecarga frente a tasa de solicitudes aceptadas: clústeres de mucha sobrecarga con poca ayuda alrededor. Tasas de municipios pequeños suavizadas con Bayes empírico. |
+| Variables para imputar | — | Accesibilidad con datos abiertos (distancia o tiempo al punto de interés más cercano, conteos en radios), revisando su cobertura en la corona C. SHAP para explicar cada estimación. |
+| Mapas de la demo | — | Primero un mapa de caja para ver atípicos. Coroplético con clasificación explicada en la leyenda, la marca «estimado» visible y paleta apta para daltónicos. |
 | Precio de la vivienda en Madrid | — | Montero, Mínguez y Fernández-Avilés (2018) comparan modelos hedónicos espaciales con datos de Madrid. Los no lineales con heterogeneidad espacial predicen mejor. Ver [regresion-espacial.md](referencia/regresion-espacial.md). |
 
 ## Errores que invalidan un resultado
@@ -45,7 +47,8 @@ Toda dependencia espacial que el modelo no explique acaba en los residuos. Un mo
 - W sin normalizar por filas, o islas sin tratar (`zero.policy` en R, `silence_warnings` y revisión manual en Python).
 - Estimar un modelo SAR por mínimos cuadrados ordinarios: es inconsistente. Hace falta máxima verosimilitud o variables instrumentales.
 - Interpretar el coeficiente β de un SAR o un SDM como efecto marginal: hay efectos directos e indirectos.
-- Coroplético de valores absolutos (población, número de solicitudes) en vez de tasas.
+- Coroplético de valores absolutos (población, número de solicitudes) en vez de tasas, o tasas de municipios diminutos sin suavizar.
+- Error o cobertura del intervalo informados solo en global, sin mirarlos por corona y por renta. El modelo suele fallar más justo donde la Administración debe actuar.
 
 ## Herramientas en Python
 
