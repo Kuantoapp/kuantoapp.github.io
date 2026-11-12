@@ -1,0 +1,31 @@
+name: Revision
+# Sustituye la aprobación obligatoria de GitHub: los autores de confianza mergean con la CI en verde;
+# el resto necesita la aprobación de uno de ellos sobre el último commit.
+# Cambiar este fichero exige aprobación de @yeraybc (CODEOWNERS de /.github/).
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+permissions:
+  pull-requests: read
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Autor de confianza o aprobado por uno
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          TRUSTED: "yeraybc izan-diaz"
+        run: |
+          for t in $TRUSTED; do [ "$AUTHOR" = "$t" ] && { echo "Autor de confianza: $AUTHOR"; exit 0; }; done
+          ok=$(gh api "repos/$REPO/pulls/$PR/reviews" --paginate \
+            --jq ".[] | select(.state==\"APPROVED\" and .commit_id==\"$HEAD\") | .user.login" \
+            | grep -xF -f <(tr ' ' '\n' <<<"$TRUSTED") | head -1 || true)
+          [ -n "$ok" ] && { echo "Aprobado por $ok"; exit 0; }
+          echo "PR de $AUTHOR: necesita aprobación de uno de: $TRUSTED sobre el último commit"; exit 1

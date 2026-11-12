@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push origin main*)",
+      "Bash(git reset --hard*)",
+      "Bash(gh pr merge --admin*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) command -v ruff >/dev/null || exit 0; ruff format -q \"$f\"; ruff check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
