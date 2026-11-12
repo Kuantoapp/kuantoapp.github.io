@@ -64,3 +64,4 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
 
 - Si tomaste una decisión que afecta a los demás (fuente de datos, formato, librería), añade una línea a `docs/decisiones.md` en el mismo PR.
 - Borra el worktree al mergear: `git worktree remove ../dm-<tema>`.
+
