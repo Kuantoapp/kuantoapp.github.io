@@ -27,6 +27,19 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
 
+## Principios de diseño
+
+Cada agente y skill existe para que los bucles agénticos sean **baratos, precisos y autónomos sin perder calidad ni seguridad**. Un PR que añada o cambie uno debe cumplir:
+
+| Principio | Cómo se cumple |
+|---|---|
+| **Barato** | La descripción solo se activa cuando toca (casos concretos y para qué *no* es). `SKILL.md` corto; el detalle en `referencia/`, que solo se lee si hace falta. Agentes con `tools` mínimas y el modelo más barato que haga bien la tarea. Salidas cortas y con estructura fija |
+| **Preciso** | Procedimiento paso a paso, no consejos sueltos. Cada resultado se contrasta con lo que debe dar (teoría, valores de control, segunda vía) antes de aceptarlo |
+| **Autónomo** | Lee el estado del proyecto (`docs/decisiones.md`, `data/README.md`, `src/`) en lugar de preguntar lo que ya está escrito. Condición de parada clara: cuándo terminar, cuándo preguntar |
+| **General** | Nada atado a una idea o a datos concretos: los ejemplos son orientativos y lo específico se lee del proyecto |
+| **Seguro** | Sin permisos de más; los efectos (push, PR, borrar) solo con `disable-model-invocation: true` o con aprobación; lo que no puede fallar, en `deny` o hooks |
+| **Verificable** | Termina en algo comprobable: un test, una salida, un veredicto con evidencia |
+
 ## Dónde va cada cosa
 
 | Necesito… | Usa | Ubicación |
