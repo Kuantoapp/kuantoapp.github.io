@@ -7,7 +7,16 @@ when_to_use: Leer un shapefile, GeoJSON o GeoParquet, comprobar o cambiar el CRS
 
 Base de cualquier análisis espacial: si la unión o el CRS fallan, todo lo que viene después (`dm-eda-espacial`, `dm-modelado-espacial`) es falso.
 
-**Contexto del proyecto:** qué unidades, fuentes y mapas se usan lo decide el equipo y cambia con el desarrollo. Consúltalo en `docs/decisiones.md` y en `ideas/`; los ejemplos de esta skill son orientativos.
+## Antes de empezar: conectar con el desarrollo del proyecto
+
+Esta skill es general. Qué unidades, fuentes y mapas se usan sale del estado actual del proyecto; no lo supongas ni lo copies de los ejemplos.
+
+1. **Qué unidades y ámbito:** lee `docs/decisiones.md` (unidad territorial, ámbito, mapas previstos) y, si hace falta, la ficha vigente en `ideas/`. Las fichas son borradores: manda lo decidido.
+2. **Qué fuentes:** lee `data/README.md`. Cada capa nueva se documenta ahí (URL, año, licencia, CRS original).
+3. **Qué hay ya hecho:** busca cargas, CRS fijados y tablas de paso existentes y reutilízalos:
+   `grep -rnE "read_file|read_parquet|to_crs|EPSG|25830|sjoin|overlay|codigo_ine|cusec" src notebooks`.
+   Si el proyecto ya fija un CRS o un tipo de código, se sigue ese.
+4. **Qué falta por decidir:** si la unidad o el año de la cartografía no están claros, pregunta; si supones, escríbelo.
 
 ## CRS
 
@@ -42,17 +51,28 @@ Códigos postales, secciones, barrios, distritos y zonificaciones de transporte 
 
 Detalle de clasificaciones, paletas y trampas visuales en [mapas-de-presentacion.md](referencia/mapas-de-presentacion.md). Para mapas que sirven para explorar (caja, barajado, Bayes empírico), `dm-eda-espacial`.
 
-## Razonar cada resultado
+## Contrastar cada resultado con lo que debe salir
 
-Después de cada carga, unión o paso entre unidades:
+Después de cada carga, unión, paso entre unidades o medida, compara con lo que es correcto por definición o por la fuente oficial. Si no cuadra, se diagnostica y se corrige **antes de seguir**: una unión que pierde zonas en silencio invalida todo lo posterior.
 
-1. **Qué dice:** cuántas filas entran, cuántas salen, cuántas zonas quedan sin dato y cuántos datos sin zona.
-2. **Si es fiable:** ¿el total de la variable se conserva? ¿Los pesos suman 1? ¿El CRS es el esperado? ¿Las áreas y distancias tienen magnitudes plausibles (un municipio no mide 0,003 ni 3 millones de km²)?
-3. **Si es coherente:** el número de zonas coincide con el ámbito (por ejemplo, 179 municipios en la Comunidad de Madrid, 21 distritos en la capital); los códigos huérfanos tienen explicación (cambios de código, zonas sin población).
-4. **Qué implica:** corregir antes de seguir. Una unión que pierde zonas en silencio invalida todo lo posterior.
-5. **Registrarlo:** supuestos de las tablas de paso y zonas excluidas, en `docs/decisiones.md`.
+| Comprobación | Lo correcto | Si no se cumple |
+|---|---|---|
+| Número de zonas tras una unión | El del ámbito oficial (por ejemplo, 179 municipios en la Comunidad de Madrid, 21 distritos en la capital) | Códigos con formato distinto, años de cartografía distintos, ceros perdidos |
+| Zonas sin dato y datos sin zona | Ninguno, o cada uno con explicación | Revisar códigos huérfanos uno a uno |
+| Total de una variable tras un paso entre unidades | Igual antes y después | Pesos mal calculados |
+| Pesos de cada unidad de origen | Suman 1 | Superposición incompleta o geometrías inválidas |
+| Suma de áreas | ≈ superficie oficial del ámbito | CRS en grados, geometrías duplicadas o huecos |
+| Distancias | Positivas y menores que la extensión del territorio | CRS en grados o coordenadas intercambiadas (latitud y longitud) |
+| CRS de cada capa | El esperado y explícito | Reproyectar; nunca asignar a ciegas |
+| Geometrías | Válidas (`is_valid`), sin vacías | `make_valid` o revisar la fuente |
 
 En un mapa: compara al menos dos clasificaciones. Si el mensaje cambia mucho con la clasificación, el mapa engaña y hay que decirlo o cambiarlo.
+
+## Al terminar: dejar el trabajo conectado
+
+- Cargas, reproyecciones y tablas de paso van a funciones de `src/` reutilizables, con un test de los controles de arriba (recuento de zonas, totales conservados).
+- Capas nuevas documentadas en `data/README.md`; supuestos de las tablas de paso y zonas excluidas, en `docs/decisiones.md`.
+- Antes de dar los datos por buenos o de abrir el PR, pide la revisión de `dm-revisor-espacial`.
 
 ## Python
 

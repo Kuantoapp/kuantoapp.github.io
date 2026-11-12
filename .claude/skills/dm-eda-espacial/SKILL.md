@@ -1,15 +1,22 @@
 ---
 description: Análisis exploratorio espacial (ESDA) e interpretación de sus resultados. Matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi* (hotspots), Moran y LISA bivariantes, correlograma, mapas de caja, tasas suavizadas con Bayes empírico y patrones de puntos (K y L de Ripley, densidad kernel). Úsala para saber si una variable tiene patrón territorial, localizar clústeres o atípicos, construir o elegir una W, analizar ubicaciones de servicios o leer qué significa un Moran o un LISA. No es para mapas finales (dm-cartografia) ni para entrenar modelos (dm-modelado-espacial).
-when_to_use: ¿Hay autocorrelación espacial?, ¿dónde están los clústeres alto-alto?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿qué modelo pide esta variable?, interpretar una salida de esda o pointpats.
+when_to_use: ¿Hay autocorrelación espacial?, ¿dónde están los clústeres alto-alto?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿qué modelo pide esta variable?, interpretar una salida de esda o pointpats, ¿este patrón es real o un artefacto?
 ---
 
 # Exploración espacial (ESDA)
 
 Método de la asignatura *Análisis de Datos Espaciales* (UCM), completado con Chasco (2025), Moura y Fonseca (2020) y Herrera-Gómez, en Python.
 
-**Contexto del proyecto:** qué variables y unidades se exploran lo decide el equipo y cambia con el desarrollo. Consúltalo en `docs/decisiones.md` y en `ideas/`; los ejemplos de esta skill son orientativos.
+## Antes de empezar: conectar con el desarrollo del proyecto
 
-Antes de explorar, los datos tienen que estar unidos por código oficial y con el CRS correcto (`dm-cartografia`). Para modelizar después, `dm-modelado-espacial`.
+Esta skill es general. Qué variable, unidad y pregunta se exploran sale del estado actual del proyecto; no lo supongas ni lo copies de los ejemplos.
+
+1. **Qué se pregunta:** lee `docs/decisiones.md` (idea elegida, variables, unidad territorial) y, si hace falta, la ficha vigente en `ideas/`. Las fichas son borradores: manda lo decidido.
+2. **Con qué datos:** lee `data/README.md` (fuentes, años, cobertura) y comprueba que las capas existen en `data/`.
+3. **Qué hay ya hecho:** busca W, cargas y mapas existentes y reutilízalos:
+   `grep -rnE "libpysal|weights|Queen|KNN|esda|Moran|mapclassify|pointpats" src notebooks`.
+4. **Qué falta por decidir:** si la unidad o la variable no están claras, pregunta; si supones, escríbelo.
+5. Requisito previo: datos unidos por código oficial y con el CRS correcto (`dm-cartografia`). Para modelizar después, `dm-modelado-espacial`.
 
 ## Flujo
 
@@ -35,17 +42,35 @@ Si el dato son **ubicaciones** (servicios, paradas, empresas) y no zonas, el mé
 | ¿Están los servicios donde está la población? | Intensidad observada frente a la esperada por población (Poisson no homogéneo) |
 | ¿Qué tamaño de bloque uso para validar? | Correlograma |
 
-## Razonar cada resultado
+## Contrastar cada resultado con la teoría
 
-Ningún resultado se da por bueno sin estos cinco pasos:
+Un resultado solo se acepta cuando **coincide con lo que la teoría dice que debe salir**, o cuando la diferencia está explicada y comprobada:
 
-1. **Qué dice:** el valor frente a su referencia (por ejemplo, I frente a E[I]) y su significación.
-2. **Si es fiable:** ¿se mantiene con otra W, sin las zonas atípicas, con tasas suavizadas?
-3. **Si es coherente:** con la teoría del fenómeno y con los mapas.
-4. **Qué implica para lo siguiente:** estructura espacial y validación espacial en el modelo, W elegida, escala, familia de modelo.
-5. **Registrarlo** en `docs/decisiones.md`.
+1. **Antes de calcular**, escribe qué esperas (por la teoría del fenómeno y por el mapa): ¿agrupamiento positivo?, ¿a qué escala?, ¿dónde?
+2. **Calcula** y compara con lo esperado y con los **valores de control** de abajo.
+3. **Si no cuadra**, diagnostica con una comprobación concreta (W, islas, atípicos, tasas sin suavizar, unión mal hecha) antes de interpretar.
+4. **Ajusta** solo lo que el diagnóstico señala y repite.
+5. **Corrobora** por una segunda vía: otra W; Moran frente a Geary; LISA frente a Gi\*; mapa barajado frente al test.
+6. **Acepta** solo si cuadra y es estable con esas variantes. Si no, se informa como resultado frágil.
+7. **Registra** en `docs/decisiones.md` la W, la escala y lo que el ESDA implica para el modelo.
 
-Guía de lectura de Moran, LISA, Gi\*, bivariantes, tasas suavizadas, correlograma y funciones K y L: [interpretar-resultados.md](referencia/interpretar-resultados.md).
+| Comprobación | Lo correcto | Si no se cumple |
+|---|---|---|
+| Filas de W | Suman 1; ninguna zona sin vecinos sin tratar | W mal construida |
+| I de Moran | Comparada con E[I] = −1/(n−1); con W normalizada, entre −1 y 1 aprox. | W o variable mal calculadas |
+| Moran frente a Geary | Dirección coherente (I > E[I] ↔ C < 1) | Atípicos o W problemática: revisar antes de concluir |
+| Suma de los Moran locales | Proporcional al global | Cálculo local erróneo |
+| Tasa suavizada (Bayes empírico) | Entre la tasa cruda y la media global; se mueve más cuanto menor es la población | Población o eventos mal pasados |
+| Correlograma | La I suele bajar al aumentar la distancia u orden | Si sube: tendencia o efecto frontera |
+| Función L bajo aleatoriedad | ≈ 0, dentro de la envolvente | Ventana o intensidad mal definidas |
+
+Guía completa de lectura y de qué hacer después: [interpretar-resultados.md](referencia/interpretar-resultados.md).
+
+## Al terminar: dejar el trabajo conectado
+
+- La W y las funciones de exploración reutilizables van a `src/`, para que el modelo use **la misma W** que el ESDA.
+- Lo que el ESDA implica para el modelo (estructura espacial, escala del patrón, familia de modelo) se anota en `docs/decisiones.md`.
+- Antes de dar un patrón por bueno o de abrir el PR, pide la revisión de `dm-revisor-espacial`.
 
 ## Errores a evitar
 

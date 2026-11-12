@@ -2,6 +2,17 @@
 
 Cada salida se lee con cuatro preguntas: **qué dice**, **si es fiable**, **si es coherente con la teoría y con lo anterior**, y **qué ajuste implica**. Un número sin esa lectura no se da por bueno.
 
+## Qué esperar según la teoría (escríbelo antes de ejecutar)
+
+- Si el ESDA dio una I de Moran fuerte en `y`, un modelo sin estructura espacial dejará residuos con I > 0, y uno con estructura espacial debería reducirla.
+- Si la dependencia viene de variables no observadas que comparten los vecinos, ganará el SEM; si viene de contagio real entre zonas, el SAR. La teoría del fenómeno dice cuál es más plausible.
+- La validación por bloques dará más error que la aleatoria, y la brecha crecerá cuanto más dependa el modelo de la cercanía.
+- Añadir variables con significado reduce el error y el Moran de residuos a la vez; añadir coordenadas reduce el error aleatorio pero no el de bloques.
+- La cobertura de un intervalo calibrado coincide con la nominal en global y se degrada en los grupos con menos datos.
+- El signo de cada variable es el que predice la teoría del fenómeno (escríbelo por variable).
+
+Si lo obtenido se aparta de esto, el bucle de contraste de la skill decide qué comprobar y qué ajustar.
+
 ## I de Moran de los residuos
 
 | Resultado | Lectura | Siguiente paso |

@@ -1,15 +1,23 @@
 ---
 description: Entrenar, validar, interpretar y ajustar modelos con datos territoriales. Predicción o imputación de zonas sin dato con ML y retardos espaciales (Wy sin fuga), validación aleatoria frente a espacial (bloques, buffer), selección de variables con validación espacial, kriging y regresión-kriging, intervalos conformales por grupo, equidad del error, SHAP, y regresión espacial SAR/SEM/SDM con tests LM. Úsala al partir train/test, elegir variables o modelo, leer residuos, variogramas o métricas y decidir qué ajustar. No es para preparar geometrías (dm-cartografia) ni para la exploración inicial (dm-eda-espacial).
-when_to_use: Imputar o predecir un valor por zona, spatial cross-validation, ¿mi modelo tiene fuga?, ¿los residuos tienen patrón?, ¿SAR o SEM?, ¿cómo leo este variograma?, ¿por qué la validación por bloques da peor que la aleatoria?, calcular o evaluar intervalos de predicción, explicar una predicción por zona.
+when_to_use: Imputar o predecir un valor por zona, spatial cross-validation, ¿mi modelo tiene fuga?, ¿los residuos tienen patrón?, ¿SAR o SEM?, ¿cómo leo este variograma?, ¿por qué la validación por bloques da peor que la aleatoria?, calcular o evaluar intervalos de predicción, explicar una predicción por zona, ¿este resultado tiene sentido según la teoría?
 ---
 
 # Modelado espacial
 
 Método de la asignatura *Análisis de Datos Espaciales* (UCM), actualizado con literatura de 2018–2025 (Montero et al., Meyer et al., Geerts), en Python.
 
-**Contexto del proyecto:** las variables, unidades territoriales y usos concretos los decide el equipo y cambian con el desarrollo. Consúltalos en `docs/decisiones.md` y en `ideas/`; no los supongas. Los ejemplos de esta skill son orientativos.
+## Antes de empezar: conectar con el desarrollo del proyecto
 
-Requisitos previos: datos unidos por código y con el CRS correcto (`dm-cartografia`), y una W revisada con su I de Moran (`dm-eda-espacial`).
+Esta skill es general. Lo concreto (variable, unidad, uso, datos) sale del estado actual del proyecto, que cambia; no lo supongas ni lo copies de los ejemplos.
+
+1. **Qué se busca:** lee `docs/decisiones.md` (idea elegida, variable objetivo, unidad territorial, uso del resultado) y, si hace falta, la ficha vigente en `ideas/`. Las fichas son borradores: manda lo decidido.
+2. **Con qué datos:** lee `data/README.md` (fuentes, años, cobertura, licencias). Comprueba que los datos que vas a usar están ahí y en `data/`.
+3. **Qué hay ya hecho:** busca y reutiliza lo existente antes de escribir nada:
+   `grep -rnE "to_crs|libpysal|weights|GroupKFold|esda|spreg|conformal" src notebooks`.
+   Si ya hay una W, una partición por bloques o una función de carga, úsala; no la dupliques.
+4. **Qué falta por decidir:** si el uso (interpolar o extrapolar, explicar o predecir) o la variable no están decididos, **pregunta** a la persona; si tienes que suponer, escribe el supuesto en el código y en `docs/decisiones.md`.
+5. Requisitos previos: datos unidos por código y con el CRS correcto (`dm-cartografia`), y una W revisada con su I de Moran (`dm-eda-espacial`).
 
 ## Regla de oro
 
@@ -41,17 +49,40 @@ Validar el caso B al azar da un error engañosamente bajo. Ver [prediccion-y-val
 
 Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto vale X aquí?»: MCO → Moran de residuos → tests LM (Anselin) o comparación por AIC (LeSage y Pace) → SAR, SEM o SDM por máxima verosimilitud → efectos directos e indirectos. Ver [regresion-espacial.md](referencia/regresion-espacial.md). Superficies continuas: [interpolacion.md](referencia/interpolacion.md).
 
-## Razonar cada resultado
+## Contrastar cada resultado con la teoría
 
-Ningún resultado se da por bueno sin estos cinco pasos:
+Un resultado solo se acepta cuando **coincide con lo que la teoría dice que debe salir**, o cuando la diferencia está explicada y comprobada. El bucle es:
 
-1. **Qué dice:** el valor, su significación o su incertidumbre, en una frase.
-2. **Si es fiable:** ¿se mantiene con otra W, otra partición, otra semilla, otro bloque?
-3. **Si es coherente:** con la teoría (signos, magnitudes), con el ESDA previo y con el uso del modelo.
-4. **Qué ajuste implica:** el siguiente paso concreto, o «no tocar», con su motivo.
-5. **Registrarlo** en `docs/decisiones.md` si cambia el modelo, la validación o la interpretación.
+1. **Antes de ejecutar**, escribe qué esperas según la teoría y el ESDA (signo, rango, orden de magnitud, qué modelo debería ganar).
+2. **Ejecuta** y compara con lo esperado y con los **valores de control** de abajo.
+3. **Si no cuadra**, no lo expliques a posteriori: diagnostica la causa (dato, unión, fuga, W, partición, especificación) con una comprobación concreta.
+4. **Ajusta** solo lo que el diagnóstico señala (un cambio cada vez) y vuelve al paso 2.
+5. **Corrobora** con una segunda vía independiente: otra W, otra partición o semilla, otro método (LM y AIC; Moran y mapa de residuos; validación aleatoria y por bloques).
+6. **Acepta** solo si cuadra y es estable. Si no se resuelve, se informa como limitación, no se presenta como resultado.
+7. **Registra** en `docs/decisiones.md` lo que se ajustó y por qué.
 
-Guía de lectura de residuos, tests LM, variogramas, métricas, intervalos y SHAP: [interpretar-resultados.md](referencia/interpretar-resultados.md).
+Valores de control que la teoría exige (con W normalizada por filas):
+
+| Comprobación | Lo correcto | Si no se cumple |
+|---|---|---|
+| ρ y λ | Entre −1 y 1 | Error de W o de estimación |
+| Efecto total en SAR | β / (1 − ρ); el directo, algo mayor que β si ρ > 0 | Cálculo de efectos erróneo |
+| Media de residuos | ≈ 0, también por grupo de zonas | Sesgo sistemático en ese grupo |
+| Error por bloques frente a aleatorio | Mayor o igual | Si es menor: fuga, partición mal hecha o bloques que no separan |
+| Modelo frente a referencias | Mejor, con la misma validación | No aporta: no se presenta |
+| Cobertura del intervalo | ≈ nominal, en global y por grupo | Recalibrar (Mondrian, CQR, bloques) |
+| Semivariograma | Pepita ≥ 0; meseta ≈ varianza del dato; alcance menor que la extensión del territorio | Modelo de variograma mal ajustado o tendencia |
+| Varianza de kriging | Mínima junto a los datos, crece al alejarse | Error de ajuste o de coordenadas |
+| Signos de SHAP o coeficientes | Los que predice la teoría del fenómeno | Investigar colinealidad, fuga o variable mal construida |
+
+Guía completa de lectura y de qué ajustar: [interpretar-resultados.md](referencia/interpretar-resultados.md).
+
+## Al terminar: dejar el trabajo conectado
+
+- La lógica reutilizable va a `src/` (no se queda en un notebook) con un test pequeño de lo no trivial, según `AGENTS.md`.
+- Las métricas finales se guardan junto con la validación que las produjo (partición, W, semilla).
+- La decisión de modelo, validación y supuestos, en `docs/decisiones.md`.
+- Antes de dar el resultado por bueno o de abrir el PR, pide la revisión de `dm-revisor-espacial`.
 
 ## Errores que invalidan un resultado
 
