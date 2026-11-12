@@ -54,9 +54,8 @@ Contrasta con **permutaciones** (999) en lugar de suponer normalidad. Acompaña 
 - **LISA bivariante:** lo mismo zona a zona. Por ejemplo, alto-bajo = zona con x alto rodeada de y bajo (Moura y Fonseca, 2020, relacionan vegetación y renta así).
 - Ojo: no controla la autocorrelación de x consigo misma. Es exploratorio y no sustituye a un modelo.
 
-## Para este proyecto
+## Usos típicos
 
-- **Focalizar el Bono Alquiler Joven:** LISA bivariante entre la sobrecarga y la tasa de solicitudes aceptadas del Bono por municipio. Los clústeres de mucha sobrecarga con poca ayuda alrededor son exactamente la decisión 6.2.1 de la ficha.
-
-- Sobrecarga por sección censal: LISA para localizar clústeres alto-alto, que son las zonas a señalar a la Administración.
-- Variable «lo que sobra» por municipio: I de Moran para afirmar o descartar que «vivir lejos no compensa» tiene patrón territorial.
+- **Necesidad frente a recurso:** LISA bivariante entre un indicador de necesidad y otro de cobertura de una ayuda o servicio. Los clústeres de mucha necesidad con poco recurso alrededor señalan dónde actuar.
+- **Zonas prioritarias:** LISA de un indicador de problema por unidad fina (sección censal, barrio); los alto-alto son los focos.
+- **Contrastar una hipótesis territorial** («esto pasa más lejos del centro»): I de Moran de la variable y, después, un modelo que incluya la distancia.

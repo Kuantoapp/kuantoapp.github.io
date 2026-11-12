@@ -1,55 +1,73 @@
 ---
-description: Análisis exploratorio de datos espaciales (ESDA) del proyecto. Matrices de pesos W, I de Moran global y local (LISA), Getis-Ord, Moran y LISA bivariantes, mapas exploratorios (caja, percentiles, mapa barajado) y tasas suavizadas con Bayes empírico. Úsala al explorar cómo se reparte una variable por municipios, barrios o secciones, al buscar clústeres o atípicos territoriales, o al construir una W.
-when_to_use: Ver si la sobrecarga o lo que sobra tiene patrón territorial, localizar clústeres alto-alto para la vista de la Administración, cruzar sobrecarga con ayudas del Bono, revisar tasas de municipios pequeños, elegir la W que luego usará un modelo.
+description: Análisis exploratorio espacial (ESDA) e interpretación de sus resultados. Matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi* (hotspots), Moran y LISA bivariantes, correlograma, mapas de caja, tasas suavizadas con Bayes empírico y patrones de puntos (K y L de Ripley, densidad kernel). Úsala para saber si una variable tiene patrón territorial, localizar clústeres o atípicos, construir o elegir una W, analizar ubicaciones de servicios o leer qué significa un Moran o un LISA. No es para mapas finales (dm-cartografia) ni para entrenar modelos (dm-modelado-espacial).
+when_to_use: ¿Hay autocorrelación espacial?, ¿dónde están los clústeres alto-alto?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿qué modelo pide esta variable?, interpretar una salida de esda o pointpats.
 ---
 
 # Exploración espacial (ESDA)
 
-Método de la asignatura *Análisis de Datos Espaciales* (UCM), completado con Chasco (2025) y Moura y Fonseca (2020), en Python. Parte del jurado conoce este método: nómbralo bien (W, I de Moran, LISA).
+Método de la asignatura *Análisis de Datos Espaciales* (UCM), completado con Chasco (2025), Moura y Fonseca (2020) y Herrera-Gómez, en Python.
 
-Antes de explorar, los datos tienen que estar unidos por código oficial y en EPSG:25830: ver la skill `dm-cartografia`. Para modelizar después, `dm-modelado-espacial`.
+**Contexto del proyecto:** qué variables y unidades se exploran lo decide el equipo y cambia con el desarrollo. Consúltalo en `docs/decisiones.md` y en `ideas/`; los ejemplos de esta skill son orientativos.
+
+Antes de explorar, los datos tienen que estar unidos por código oficial y con el CRS correcto (`dm-cartografia`). Para modelizar después, `dm-modelado-espacial`.
 
 ## Flujo
 
-1. **Mapa de caja** de la variable: cuartiles más atípicos (bisagra 1,5). Es el primer mapa: enseña los extremos. Ver [mapas-exploratorios.md](referencia/mapas-exploratorios.md).
-2. **Tasas de zonas pequeñas:** si la variable es una tasa y hay municipios con poca población, **suaviza con Bayes empírico** antes de mirar patrones.
+1. **Mapa de caja** de la variable: cuartiles más atípicos (bisagra 1,5). Revisa si los atípicos son errores de dato. Ver [mapas-exploratorios.md](referencia/mapas-exploratorios.md).
+2. **Tasas de zonas pequeñas:** si la variable es una tasa y hay zonas con poca población, **suaviza con Bayes empírico** antes de buscar patrones.
 3. **Mapa barajado:** el mismo mapa con los valores permutados entre zonas. Si el real no parece más agrupado, no hay patrón visual.
-4. **W:** contigüidad reina para polígonos; k vecinos si hay zonas muy desiguales o islas. **Normalizada por filas.** Revisa `w.islands`. Prueba una segunda W y comprueba que las conclusiones se mantienen. Ver [pesos-y-autocorrelacion.md](referencia/pesos-y-autocorrelacion.md).
+4. **W exógena:** contigüidad reina para polígonos; k vecinos si hay zonas muy desiguales o islas. **Normalizada por filas.** Revisa las islas. Prueba una segunda W. Ver [pesos-y-autocorrelacion.md](referencia/pesos-y-autocorrelacion.md).
 5. **I de Moran global** con 999 permutaciones y su diagrama de dispersión.
-6. **LISA:** clústeres alto-alto, bajo-bajo y atípicos espaciales, solo los significativos. Con muchas zonas, umbral más estricto o FDR. **Gi\*** para puntos calientes y fríos.
-7. **Bivariante** cuando la pregunta cruza dos variables: Moran y LISA bivariantes.
-8. **Antes de pasar a modelizar:** el tipo de variable decide la familia de modelo (una tasa como la sobrecarga pide un modelo para proporciones, no una regresión lineal) y el diagrama con LOWESS dice si la relación es lineal. Ver [exploracion-multivariante.md](referencia/exploracion-multivariante.md).
+6. **LISA** (solo significativos tras corregir comparaciones múltiples) y **Gi\*** para puntos calientes y fríos.
+7. **Correlograma:** a qué distancia u orden deja de haber dependencia. Esa escala fija el tamaño de bloque de la validación espacial.
+8. **Bivariante** cuando la pregunta cruza dos variables (por ejemplo, necesidad frente a recurso): Moran y LISA bivariantes.
+9. **Antes de modelizar:** el tipo de variable decide la familia de modelo (una proporción no es una regresión lineal) y un diagrama con LOWESS dice si la relación es lineal. Ver [exploracion-multivariante.md](referencia/exploracion-multivariante.md).
 
-Si el dato son **ubicaciones** (farmacias, centros de salud, paradas) y no zonas, el método es otro: patrones de puntos, con la población como referencia y no la aleatoriedad completa. Ver [patrones-de-puntos.md](referencia/patrones-de-puntos.md).
+Si el dato son **ubicaciones** (servicios, paradas, empresas) y no zonas, el método es otro: patrones de puntos, con la población como referencia y no la aleatoriedad completa. Ver [patrones-de-puntos.md](referencia/patrones-de-puntos.md).
 
-## Aplicación a «¿Me sobra?»
+## Patrones de uso habituales
 
 | Pregunta | Técnica |
 |---|---|
-| ¿«Lo que sobra» tiene patrón territorial? | Moran global por municipio; LISA para ver dónde |
-| ¿Dónde están los hogares sobrecargados? | LISA de la sobrecarga por sección censal: los alto-alto son las zonas a señalar |
-| ¿Dónde hay mucha sobrecarga y poca ayuda? (decisión 6.2.1) | **LISA bivariante** sobrecarga frente a tasa de solicitudes aceptadas del Bono, con tasas suavizadas |
-| ¿Hay municipios con valores raros? | Mapa de caja antes de modelizar; revisar si son errores de dato |
+| ¿Esta variable tiene patrón territorial? | Moran global con dos W; LISA para ver dónde |
+| ¿Dónde se concentra un problema? | LISA o Gi\*: los clústeres alto-alto son las zonas prioritarias |
+| ¿Dónde hay mucha necesidad y poco recurso? | LISA bivariante necesidad frente a recurso, con tasas suavizadas |
+| ¿Están los servicios donde está la población? | Intensidad observada frente a la esperada por población (Poisson no homogéneo) |
+| ¿Qué tamaño de bloque uso para validar? | Correlograma |
+
+## Razonar cada resultado
+
+Ningún resultado se da por bueno sin estos cinco pasos:
+
+1. **Qué dice:** el valor frente a su referencia (por ejemplo, I frente a E[I]) y su significación.
+2. **Si es fiable:** ¿se mantiene con otra W, sin las zonas atípicas, con tasas suavizadas?
+3. **Si es coherente:** con la teoría del fenómeno y con los mapas.
+4. **Qué implica para lo siguiente:** estructura espacial y validación espacial en el modelo, W elegida, escala, familia de modelo.
+5. **Registrarlo** en `docs/decisiones.md`.
+
+Guía de lectura de Moran, LISA, Gi\*, bivariantes, tasas suavizadas, correlograma y funciones K y L: [interpretar-resultados.md](referencia/interpretar-resultados.md).
 
 ## Errores a evitar
 
-- Moran o LISA con W sin normalizar o con islas sin tratar, o con una W construida con la propia variable (W tiene que ser exógena).
-- Concluir que los servicios «están agrupados» frente a aleatoriedad completa: siguen a la población. Compara con la intensidad esperada por población.
+- Moran o LISA con W sin normalizar, con islas sin tratar o con una W construida con la propia variable.
+- Conclusiones que solo se sostienen con una W.
+- Clústeres LISA sin corregir por comparaciones múltiples.
+- Tasas de zonas diminutas sin suavizar: dominan los extremos.
+- Concluir que los servicios «están agrupados» frente a aleatoriedad completa: siguen a la población.
+- Tratar el LISA bivariante como causal.
 - Quitar atípicos sin mirar si son errores de dato o fenómenos reales.
-- Leer clústeres LISA sin corregir por comparaciones múltiples.
-- Tasas de municipios diminutos sin suavizar: dominan los extremos.
-- Tratar el LISA bivariante como causal: es exploratorio y no controla la autocorrelación de cada variable.
 
 ## Python
 
 | Tarea | Función |
 |---|---|
-| W reina, k vecinos, distancia | `libpysal.weights.Queen.from_dataframe(gdf)`, `KNN.from_dataframe(gdf, k=5)`, `DistanceBand`; `w.transform = "r"` |
+| W reina, k vecinos, distancia | `libpysal.weights.Queen.from_dataframe(gdf)`, `KNN.from_dataframe(gdf, k=5)`, `DistanceBand`; `w.transform = "r"`; `w.islands` |
 | Retardo espacial | `libpysal.weights.lag_spatial(w, y)` |
 | Moran global y local | `esda.Moran(y, w, permutations=999)`, `esda.Moran_Local(y, w)` |
 | Getis-Ord local | `esda.G_Local(y, w, star=True)` |
 | Bivariante | `esda.Moran_BV(x, y, w)`, `esda.Moran_Local_BV(x, y, w)` |
 | Bayes empírico | `esda.smoothing.Empirical_Bayes(eventos, poblacion)`, `Spatial_Empirical_Bayes(eventos, poblacion, w)` |
 | Mapa de caja, percentiles | `mapclassify.BoxPlot(y, hinge=1.5)`, `Percentiles` |
+| Patrones de puntos | `pointpats` (`PointPattern`, funciones G, K, L con simulación) |
 
-En R (curso): `spdep::poly2nb`, `nb2listw(style="W")`, `moran.mc`, `localmoran`, `localG`. Comprueba la firma exacta en la versión instalada.
+En R (curso): `spdep::poly2nb`, `nb2listw(style="W")`, `moran.mc`, `localmoran`, `localG`, `spatstat`. Comprueba la firma exacta en la versión instalada.

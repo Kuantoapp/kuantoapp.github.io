@@ -1,6 +1,6 @@
 # Patrones de puntos
 
-Basado en el tema 4 del curso. Sirve cuando **la ubicación es el dato**: farmacias, centros de salud, paradas, empresas. En «¿Me sobra?» aparece al construir variables de accesibilidad y al estudiar dónde están los servicios; en la idea «Cerca» sería central.
+Basado en el tema 4 del curso. Sirve cuando **la ubicación es el dato**: farmacias, centros de salud, paradas, empresas. Aparece al construir variables de accesibilidad y al estudiar si los servicios están donde está la población.
 
 ## Conceptos
 
@@ -29,7 +29,7 @@ Compara siempre con **envolventes de simulación** (muchas realizaciones de CSR)
 G, K y L **suponen intensidad constante**. Los servicios urbanos siguen a la población: siempre saldrán «agrupados» frente a CSR, y eso no dice nada.
 
 - Usa como referencia la población: **proceso de Poisson no homogéneo** con λ(s) = exp(α + β·población(s)), y las versiones no homogéneas de K y L.
-- La pregunta útil para el proyecto es si hay **menos servicios de los que tocarían por población** en una zona: intensidad observada frente a la modelizada con la población. Ese déficit es una variable con significado para el modelo y para el mapa de la Administración.
+- La pregunta útil suele ser si hay **menos servicios de los que tocarían por población** en una zona: intensidad observada frente a la modelizada con la población. Ese déficit es una variable con significado para un modelo o para un mapa de prioridades.
 - Las capas de puntos de interés de datos abiertos pueden estar incompletas fuera de la ciudad (ver `dm-modelado-espacial`). Un «déficit» puede ser falta de dato.
 
 ## Python

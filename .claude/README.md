@@ -23,7 +23,7 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 | `dm-cartografia` | skill | proyecto | CRS, uniones por código oficial, tablas de paso de código postal y mapas de la demo |
 | `dm-eda-espacial` | skill | proyecto | Exploración espacial: W, Moran y LISA (también bivariantes), mapas de caja y tasas con Bayes empírico |
 | `dm-modelado-espacial` | skill | proyecto | Imputar, predecir y explicar: validación A o B, `Wy` sin fuga, selección espacial de variables, intervalos por grupo, equidad del error, regresión espacial |
-| `dm-revisor-espacial` | agente | proyecto | Revisa (sin corregir) cartografía, exploración y modelos espaciales. Precarga las tres skills espaciales |
+| `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las tres skills espaciales |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
 
