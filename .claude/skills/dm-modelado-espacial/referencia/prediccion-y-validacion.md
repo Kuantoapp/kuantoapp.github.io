@@ -16,7 +16,8 @@ Los modelos de regresión espacial son inferenciales. Para **predecir**, el curs
 - **Árboles sí, redes profundas no.** En la tesis de Geerts (KU Leuven, 2025), los modelos de árboles (LightGBM, CatBoost, RF) siguen siendo lo mejor para valorar viviendas. Las redes de grafos (GNN) no superan a un árbol que tenga las coordenadas. El aprendizaje profundo solo compensa si los árboles no pueden con los datos. Es un argumento para no complicar la imputación.
 - **Distancias derivadas ≈ coordenadas.** En la misma tesis, LightGBM rinde algo mejor con un buen conjunto de distancias derivadas (43 distancias a ciudades, autovías, servicios…) que con las coordenadas en bruto. Lo que peor funciona es usar el municipio como variable ficticia más la distancia al centro.
 - **Kriging de residuos (regresión-kriging).** Se entrena el modelo de ML, se interpolan sus residuos con kriging y se suman a la predicción. Mejora la precisión en Varsovia (ML + kriging ordinario de residuos), en Acapulco (RF + kriging) y en la valoración catastral de suelo de Primorie (regresión lineal + kriging). Con zonas en lugar de puntos, la alternativa equivalente es corregir con el retardo `W·residuo` de los vecinos con dato. **Valídalo por bloques**: si no, el kriging de residuos parece mejor de lo que es.
-- **Pérdida espacial en boosting (MI-GBT).** Geerts propone sumar al error cuadrático una penalización por la autocorrelación local (I de Moran local) de los residuos, para reducir a la vez el error y el patrón espacial que queda. Hay implementación en Python. Es una opción innovadora si los retardos `Wy` no bastan, no un punto de partida.
+- **Pérdida espacial en boosting (MI-GBT).** Geerts (cap. 5) propone que la pérdida sea una combinación lineal del error habitual y de un error sobre la **I de Moran local** del objetivo. Así el modelo aprende también a reproducir el patrón espacial. El marco aprende la W de k vecinos, el tipo de pérdida local y su peso. En cuatro conjuntos de datos mejora a XGBoost y LightGBM base (con LightGBM, también en vivienda), deja menos autocorrelación en los residuos y supera con claridad a la regresión de procesos gaussianos y a una red neuronal geoespacial (PE-GNN). Hay implementación en Python en GitHub. Es una opción innovadora si los retardos `Wy` no bastan, no un punto de partida.
+- **Árboles geoespaciales (GeoTree, geoRF).** Geerts (caps. 3 y 4) sustituye los cortes horizontales y verticales sobre las coordenadas por cortes oblicuos y gaussianos. Con eso consigue árboles más pequeños, fronteras que se pueden dibujar en el mapa y un rendimiento a la par de los mejores GBT en vivienda. No hay paquete estándar: útil como idea para explicar, no para implementar en un datatón.
 - **Ojo al leer la I de Moran de los residuos.** Si los residuos no tienen patrón espacial pero el error es grande, puede ser por **variables omitidas** que varían mucho entre vecinos, no porque el modelo haya captado bien el espacio. Mira siempre el error junto al Moran.
 
 ## Fuga espacial: cómo calcular `Wy` en el test
@@ -58,7 +59,18 @@ Otras técnicas de selección revisadas y descartadas para este proyecto:
 - Conformal partido sencillo: con un conjunto de calibración (o el test, en la versión más simple del curso), calcula el cuantil 95 % del error absoluto, o del relativo, y da `pred ± q95` o `pred · (1 ± q95_rel)`.
 - La garantía de cobertura supone intercambiabilidad. Con dependencia espacial y caso B, **calibra con la misma partición por bloques** y comprueba la cobertura real por zonas, no solo la global.
 - **El conformal garantiza la cobertura media, no la de cada grupo.** Geerts (2025, cap. 7) compara métodos de incertidumbre en tres mercados: los conformales dan intervalos estrechos pero pierden cobertura en clases de precio extremas y en atípicos geográficos. Si importa la cobertura por corona, calibra **por grupos** (conformal de Mondrian: un cuantil por corona) o usa **regresión cuantílica conformalizada** (CQR), cuyo ancho se adapta a cada zona.
-- Mide cuatro cosas: cobertura, anchura media del intervalo, asimetría y cómo varían ambas entre grupos. Un intervalo que cubre el 90 % pero es enorme no sirve para la demo.
+- **Marco de evaluación de Geerts (cap. 7)**, sacado de entrevistas con tasadores y banca:
+
+  | Requisito | Qué se mide |
+  |---|---|
+  | R1 Cobertura | La cobertura real alcanza la nominal (por ejemplo, el 90 %) |
+  | R2 Eficiencia | Anchura media del intervalo (MPIW); la **puntuación de Winkler** equilibra cobertura y anchura |
+  | R3 Asimetría | Dónde cae el valor real dentro del intervalo; no debe estar sesgado siempre hacia un lado |
+  | R4–R6 Robustez | Que cobertura, anchura y asimetría **no cambien entre subconjuntos**: por precio real, precio predicho, densidad de datos y atípicos geográficos |
+
+- Los expertos esperan que el intervalo crezca **en proporción al precio**: modeliza el alquiler en logaritmos y construye el intervalo en esa escala. Al volver a euros, será asimétrico y proporcional.
+- Según ese marco, los conformales dan intervalos precisos pero sin robustez de cobertura; los métodos bayesianos de árboles (XBART) y los de *dropout* son los más equilibrados. Para el datatón: conformal por grupos (Mondrian o CQR), que es sencillo, más la tabla de robustez por corona y por densidad de datos.
+- Un intervalo que cubre el 90 % pero es enorme no sirve para la demo.
 
 ## Variables de accesibilidad con datos abiertos
 

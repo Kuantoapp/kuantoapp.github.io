@@ -21,6 +21,8 @@ Matriz n×n, no aleatoria, con ceros en la diagonal. `w_ij` mide la intensidad d
 | Por **bloques** | Pertenencia a un grupo (comunidad, distrito) | Todos los del bloque son vecinos |
 
 - **Normalización por filas**: cada fila suma 1, así que `Wy` es la media ponderada de los vecinos. Hace comparables las zonas con muchos y pocos vecinos.
+- **W debe ser exógena:** se define con la geografía (contigüidad, distancia) o con algo que no dependa del fenómeno estudiado. No construyas W con la renta o el alquiler si luego son la variable o una explicativa del modelo.
+- Ante la duda, menos orden: un modelo con vecindad de orden bajo antes que uno de orden alto.
 - W es el punto débil del método: los resultados pueden cambiar con ella. Prueba al menos dos (por ejemplo, reina y k=5) y declara cuál usas.
 - Revisa las **islas** (zonas sin vecinos, como enclaves o municipios separados): o les asignas vecinos (k vecinos) o las excluyes, y lo dices.
 
@@ -43,7 +45,7 @@ Contrasta con **permutaciones** (999) en lugar de suponer normalidad. Acompaña 
 - **I de Moran local:** una por zona. Su suma es proporcional a la I global, así que mide cuánto aporta cada zona al patrón.
 - Cuadrantes del diagrama de Moran: **alto-alto** y **bajo-bajo** (clústeres), **alto-bajo** y **bajo-alto** (atípicos espaciales).
 - **Mapa de significación:** solo se pintan las zonas con p < 0,05 tras las permutaciones. Con muchas zonas, mencionar el problema de las comparaciones múltiples (por ejemplo, umbral más estricto o FDR).
-- **Gi y Gi\* de Getis-Ord local:** puntos calientes y fríos. Gi\* incluye la propia zona.
+- **Gi y Gi\* de Getis-Ord local:** puntos calientes y fríos. Gi\* incluye la propia zona, así que funciona también con zonas sin vecinos.
 - Un patrón global nulo puede esconder clústeres locales. Mira siempre las dos escalas.
 
 ## Análisis bivariante

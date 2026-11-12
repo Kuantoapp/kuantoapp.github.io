@@ -26,12 +26,13 @@ Validar el caso B al azar da un error engañosamente bajo. Ver [prediccion-y-val
 
 ## Flujo para predecir (imputación)
 
-1. **Modelo de referencia** simple: media de vecinos con dato (`Wy`) o regresión lineal. El modelo final tiene que batirlo.
+1. **Modelos de referencia:** uno simple (media de vecinos con dato `Wy`, o lineal) y uno fuerte e interpretable (**GAM con deriva espacial**, el mejor en Madrid según Montero et al.). LightGBM tiene que batir a los dos con la misma validación.
 2. **Variables:** con significado (renta, valor catastral, tiempo a polos, accesibilidad con datos abiertos). En el caso B, **sin coordenadas ni identificadores de zona**. Elegidas con **selección hacia delante evaluada por bloques**.
 3. **Retardos espaciales** `Wy` y `WX`, con `Wy` del test y de producción calculado **solo con vecinos de train**.
 4. **Modelo de árboles** (LightGBM). Las redes profundas no compensan aquí.
 5. **Residuos:** I de Moran. Si quedan patrones, corrige con kriging o el retardo de residuos de vecinos, validado por bloques.
-6. **Intervalos conformales calibrados por grupo** (corona) o CQR; cobertura y anchura medidas por grupo.
+6. **Intervalos conformales calibrados por grupo** (corona) o CQR, en escala logarítmica para que crezcan con el alquiler. Tabla de cobertura, anchura (MPIW o Winkler) y asimetría por corona y por densidad de datos.
+   **Una sola forma de recoger el espacio suele bastar** (covariables por zona, deriva o retardos): si añadir otra no mejora la validación por bloques, no la dejes.
 7. **Equidad:** error y cobertura por corona y quintil de renta. Zonas fuera del **área de aplicabilidad** del modelo marcadas.
 8. **Explicación:** SHAP por municipio, con los retardos agrupados.
 
@@ -59,6 +60,7 @@ Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto
 | MCO con tests LM; SAR y SEM | `spreg.OLS(y, X, w=w, spat_diag=True, moran=True)`, `spreg.ML_Lag`, `spreg.ML_Error`, `spreg.GM_Lag` |
 | GWR y MGWR | `mgwr.gwr.GWR`, `mgwr.gwr.MGWR` con `Sel_BW(..., multi=True)` |
 | Kriging | `pykrige.ok.OrdinaryKriging`, `pykrige.uk.UniversalKriging` |
+| GAM con deriva espacial | `pygam.LinearGAM(s(0) + s(1) + te(i_x, i_y))` |
 | Explicabilidad | `shap.TreeExplainer(modelo).shap_values(X)` |
 
 En R (curso): `spatialreg::lagsarlm`, `errorsarlm`, `impacts()`, `gstat`, `spatialsample`, `CAST::ffs`, `CAST::aoa`. Comprueba la firma exacta en la versión instalada.

@@ -18,6 +18,9 @@ Antes de explorar, los datos tienen que estar unidos por código oficial y en EP
 5. **I de Moran global** con 999 permutaciones y su diagrama de dispersión.
 6. **LISA:** clústeres alto-alto, bajo-bajo y atípicos espaciales, solo los significativos. Con muchas zonas, umbral más estricto o FDR. **Gi\*** para puntos calientes y fríos.
 7. **Bivariante** cuando la pregunta cruza dos variables: Moran y LISA bivariantes.
+8. **Antes de pasar a modelizar:** el tipo de variable decide la familia de modelo (una tasa como la sobrecarga pide un modelo para proporciones, no una regresión lineal) y el diagrama con LOWESS dice si la relación es lineal. Ver [exploracion-multivariante.md](referencia/exploracion-multivariante.md).
+
+Si el dato son **ubicaciones** (farmacias, centros de salud, paradas) y no zonas, el método es otro: patrones de puntos, con la población como referencia y no la aleatoriedad completa. Ver [patrones-de-puntos.md](referencia/patrones-de-puntos.md).
 
 ## Aplicación a «¿Me sobra?»
 
@@ -30,7 +33,9 @@ Antes de explorar, los datos tienen que estar unidos por código oficial y en EP
 
 ## Errores a evitar
 
-- Moran o LISA con W sin normalizar o con islas sin tratar.
+- Moran o LISA con W sin normalizar o con islas sin tratar, o con una W construida con la propia variable (W tiene que ser exógena).
+- Concluir que los servicios «están agrupados» frente a aleatoriedad completa: siguen a la población. Compara con la intensidad esperada por población.
+- Quitar atípicos sin mirar si son errores de dato o fenómenos reales.
 - Leer clústeres LISA sin corregir por comparaciones múltiples.
 - Tasas de municipios diminutos sin suavizar: dominan los extremos.
 - Tratar el LISA bivariante como causal: es exploratorio y no controla la autocorrelación de cada variable.

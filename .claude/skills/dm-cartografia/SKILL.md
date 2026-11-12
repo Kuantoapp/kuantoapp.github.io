@@ -11,7 +11,8 @@ Base de cualquier análisis espacial del proyecto: si la unión o el CRS fallan,
 
 - **ETRS89 / UTM 30N, EPSG:25830** (metros) para **medir**: distancias, buffers, áreas, W por distancia.
 - **EPSG:4326** (grados) para guardar, intercambiar y servir a MapLibre, que reproyecta a Web Mercator (EPSG:3857). Nunca para medir.
-- Comprueba `gdf.crs` al cargar cada capa y reproyecta explícitamente con `gdf.to_crs(25830)`. No asumas el CRS de un fichero.
+- Comprueba `gdf.crs` al cargar cada capa y reproyecta explícitamente con `gdf.to_crs(25830)`. No asumas el CRS de un fichero; un shapefile sin `.prj` no tiene CRS conocido.
+- No mezcles 25830 (ETRS89) con 32630 (WGS84 UTM) ni con 4258 sin reproyectar. Tabla completa, formatos y fuentes oficiales en [sistemas-y-fuentes.md](referencia/sistemas-y-fuentes.md).
 
 ## Identificadores y uniones
 
@@ -42,7 +43,10 @@ Barrios, distritos del MITMA, secciones del INE y códigos postales no coinciden
 - **Cartograma** (contiguo o Dorling) por población si Madrid capital queda diminuta frente a la sierra.
 - Leyenda con unidad, fuente bajo el mapa y «© OpenStreetMap contributors» si se usa OSM.
 
-Para mapas que sirven para explorar y no para presentar (caja, barajado, Bayes empírico), ver `dm-eda-espacial`.
+- Las **coronas tarifarias** son ordinales: paleta secuencial por pasos, no cualitativa.
+- Cuantiles fallan con variables muy asimétricas o con muchos empates; para colas largas, head/tail breaks o escala logarítmica.
+
+Tabla de clasificaciones, paletas y trampas visuales en [mapas-de-presentacion.md](referencia/mapas-de-presentacion.md). Para mapas que sirven para explorar y no para presentar (caja, barajado, Bayes empírico), ver `dm-eda-espacial`.
 
 ## Python
 

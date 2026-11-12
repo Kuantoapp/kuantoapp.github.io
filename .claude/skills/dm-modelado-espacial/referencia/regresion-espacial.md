@@ -46,6 +46,25 @@ En SAR y SDM un cambio en X de una zona afecta a esa zona (**efecto directo**) y
 
 *Housing price prediction: parametric versus semi-parametric spatial hedonic models*, Journal of Geographical Systems 20:27–55. Usa unas 10.500 viviendas de Madrid y compara modelos hedónicos espaciales paramétricos (SAR, SEM, SDM, SDEM…) con semiparamétricos: splines penalizados (P-splines) para tendencias espaciales suaves y relaciones no lineales, estimados como modelos mixtos. Evalúa fuera de muestra. Conclusión: predicen mejor los modelos no lineales que recogen la **heterogeneidad espacial** y relaciones flexibles entre características y precio. Es la referencia natural para justificar que la imputación del alquiler no sea un modelo lineal simple.
 
+**Resultados** (RMSPE frente al hedónico sin espacio, validación cruzada en 5 grupos de más de 2.000 viviendas, W de vecinos a menos de 1,5 km):
+
+| Modelo | Mejora del RMSPE |
+|---|---|
+| SLM / SAR | ≈ 0 % (ρ = 0,11: casi no hay contagio en el precio) |
+| SDM | 5,2 % |
+| SDEM | 8,2 % |
+| **SEM** | **8,5 %** (λ = 0,92: la dependencia está en lo que no se observa) |
+| Deriva espacial con P-splines sobre las coordenadas | 8,7–10,3 % |
+| GAM (relaciones no lineales suaves) | 8,8–10,7 % |
+| **GAM + deriva espacial (PSSD-GAM)** | **≈ 13 %**, el mejor |
+| Añadir SAR o SDM a GAM + deriva | sin mejora |
+
+**Lecciones para el proyecto:**
+- La dependencia del precio de la vivienda en Madrid es **sobre todo residual** (SEM gana a SAR): faltan variables con patrón espacial, más que contagio.
+- **Basta con una forma de recoger el espacio.** Las covariables por zona, una deriva espacial suave y los retardos compiten por el mismo efecto; una vez metida una, añadir otra apenas mejora.
+- Las relaciones no lineales importan tanto como el espacio. Un **GAM con deriva espacial** es un modelo de referencia fuerte e interpretable frente al que medir LightGBM (en Python, `pygam` con un término `te()` sobre las coordenadas).
+- Su validación deja vecinos de train junto a los de test: es el caso A. Las cifras no valen como referencia para extrapolar.
+
 ## Referencias del curso
 
 Anselin (1988), LeSage y Pace (2009), Elhorst (2014), Pebesma y Bivand (2023, *Spatial Data Science*), Rey, Arribas-Bel y Wolf (2020, *Geographic Data Science with Python*).
