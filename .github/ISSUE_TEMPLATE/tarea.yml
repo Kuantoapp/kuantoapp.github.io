@@ -1,0 +1,21 @@
+name: Tarea
+description: Un trabajo concreto que cabe en un PR
+body:
+  - type: textarea
+    id: que
+    attributes:
+      label: Qué hay que hacer
+      description: Lo bastante claro para pasárselo a un agente tal cual.
+    validations: { required: true }
+  - type: textarea
+    id: hecho
+    attributes:
+      label: Cuándo está hecho
+      placeholder: "- [ ] src/indice.py calcula X\n- [ ] test en tests/"
+    validations: { required: true }
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options: [datos, src, app, pitch, infra]
+    validations: { required: true }

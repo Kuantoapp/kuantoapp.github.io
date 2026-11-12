@@ -1,1 +1,6 @@
-* @yeraybc
+# Solo lo que define las reglas exige la aprobación de Yeray.
+# El resto del código lo controla .github/workflows/revision.yml (autores de confianza).
+/.github/ @yeraybc
+/.claude/ @yeraybc
+/AGENTS.md @yeraybc
+/CLAUDE.md @yeraybc

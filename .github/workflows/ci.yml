@@ -2,6 +2,7 @@ name: CI
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 permissions:
   contents: read
   pull-requests: read
@@ -23,6 +24,17 @@ jobs:
         run: |
           bad=$(git ls-files | grep -Ei '(^|/)(node_modules|venv|\.venv|__pycache__)/|(^|/)\.env[^/]*$|(^|/)(credentials|secrets?)[^/]*\.(json|ya?ml|txt)$|(^|/)id_(rsa|ed25519)$|\.(pem|key|p12|pfx)$|(^|/)\.pgpass$' | grep -v '\.env\.example$' || true)
           if [ -n "$bad" ]; then echo "Ficheros prohibidos:"; echo "$bad"; exit 1; fi
+          big=$(git ls-files -z | xargs -0 sh -c 'find "$@" -maxdepth 0 -type f -size +5M' _)
+          if [ -n "$big" ]; then echo "Ficheros >5 MB (van en data/, sin versionar):"; echo "$big"; exit 1; fi
+
+      - name: PR pequeño (<=800 líneas sin lockfiles; etiqueta pr-grande para saltarlo)
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'pr-grande') }}
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          n=$(git diff --numstat "$BASE"...HEAD -- . ':!*.lock' ':!*-lock.json' ':!*-lock.yaml' | awk '{s+=$1+$2} END {print s+0}')
+          echo "Líneas cambiadas: $n"
+          [ "$n" -le 800 ] || { echo "PR demasiado grande: pártelo (ver AGENTS.md)"; exit 1; }
 
       - name: Secretos, API keys y tokens (gitleaks)
         uses: gitleaks/gitleaks-action@v2

@@ -1,0 +1,6 @@
+# Lockfiles colapsados en el diff de los PR (no cuentan para revisión)
+package-lock.json linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+uv.lock linguist-generated=true
+poetry.lock linguist-generated=true
+* text=auto eol=lf
