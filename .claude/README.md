@@ -20,6 +20,8 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 
 | Nombre | Tipo | Origen | Para qué |
 |---|---|---|---|
+| `dm-analisis-espacial` | skill | proyecto | Método de análisis espacial de la asignatura de la UCM: W, Moran y LISA, regresión espacial, validación por bloques o buffer, kriging, mapas y CRS, en Python |
+| `dm-revisor-espacial` | agente | proyecto | Revisa (sin corregir) fugas en `Wy`, validación espacial, residuos, CRS, uniones y mapas. Precarga `dm-analisis-espacial` |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
 
