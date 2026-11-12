@@ -24,7 +24,8 @@ CAMPOS_SKILL = {
 }  # fmt: skip
 MODELOS = {"sonnet", "opus", "haiku", "fable", "inherit"}
 COLORES = {"red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan"}
-KEBAB = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+# Prefijo dm-: una skill personal con el mismo nombre taparía la del proyecto
+KEBAB = re.compile(r"^dm(-[a-z0-9]+)+$")
 FILA = re.compile(r"^\|\s*`?([^|`]+?)`?\s*\|\s*(agente|skill)\s*\|")
 
 
@@ -64,7 +65,9 @@ def validar(raiz: Path) -> list[str]:
                 f"{rel}: campo desconocido '{campo}' (Claude Code lo ignoraría)"
             )
         if not KEBAB.fullmatch(name):
-            errores.append(f"{rel}: name '{name}' debe ir en minúsculas con guiones")
+            errores.append(
+                f"{rel}: name '{name}' debe empezar por dm- y ir en minúsculas con guiones"
+            )
         elif ruta.stem != name:
             errores.append(f"{rel}: el fichero debe llamarse {name}.md")
         desc = str(fm.get("description", "")).strip()
@@ -94,7 +97,7 @@ def validar(raiz: Path) -> list[str]:
         skill = carpeta / "SKILL.md"
         if not KEBAB.fullmatch(carpeta.name) or carpeta.name.lower() == "synced":
             errores.append(
-                f"{rel}: nombre de carpeta no válido (minúsculas con guiones, no 'synced')"
+                f"{rel}: nombre de carpeta no válido (dm-, minúsculas con guiones)"
             )
         if not skill.exists():
             errores.append(f"{rel}: falta SKILL.md")

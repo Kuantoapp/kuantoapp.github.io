@@ -4,6 +4,16 @@
 La CI (`.github/scripts/validar_claude.py`) comprueba que todo lo de esta carpeta cumple estas reglas y aparece en el índice.
 Claude Code no carga este fichero: es para las personas y para revisar los PR.
 
+## Uso en equipo
+
+Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tiene los mismos agentes, skills, permisos y hooks. Para que de verdad sea igual para los tres:
+
+1. **Primera vez:** `git pull`, abre `claude` en la raíz del repo y acepta el diálogo de confianza. Sin eso no se activan los hooks ni los permisos `allow` (los `deny` sí, desde el principio). Instala `ruff` y `jq` para que funcione el hook.
+2. **Comprueba** que ves los del índice: `/agents` lista los agentes y escribir `/dm-` lista las skills.
+3. **Usa los del proyecto, no tus copias.** Si una skill personal de `~/.claude/skills/` se llama igual que una del proyecto, gana la personal. Por eso todo lo del proyecto empieza por `dm-`. Si mejoras algo, hazlo en el repo con un PR, no en tu copia.
+4. **Lo personal no se comparte:** tu `~/.claude/CLAUDE.md` y `CLAUDE.local.md` se suman a `AGENTS.md`. No metas ahí reglas que contradigan las del proyecto.
+5. **Tras un pull que cambie `.claude/`:** los agentes y skills editados se recargan solos. Si aparece una carpeta nueva, ejecuta `/reload-skills` o reinicia `claude`.
+
 ## Índice
 
 <!-- Una fila por agente o skill. La CI falla si falta alguno o sobra una fila. -->
@@ -28,7 +38,7 @@ Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este 
 
 ## Reglas para subagentes (`.claude/agents/<nombre>.md`)
 
-1. El fichero se llama igual que `name`, en minúsculas con guiones: `revisor-datos.md` → `name: revisor-datos`.
+1. El fichero se llama igual que `name`, con prefijo `dm-`, en minúsculas y con guiones: `dm-revisor-datos.md` → `name: dm-revisor-datos`.
 2. `name` y `description` son obligatorios. La `description` dice **cuándo** delegar en él, en una o dos frases (máx. 500 caracteres). Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
 3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor no lleva `Edit` ni `Write`.
 4. Una sola responsabilidad por agente. Si hace dos cosas, son dos agentes.
@@ -38,7 +48,7 @@ Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este 
 
 ## Reglas para skills (`.claude/skills/<nombre>/SKILL.md`)
 
-1. La carpeta se llama como la skill, en minúsculas con guiones. Si pones `name`, debe coincidir con la carpeta.
+1. La carpeta se llama como la skill, con prefijo `dm-`, en minúsculas y con guiones (`dm-abrir-pr`). Si pones `name`, debe coincidir con la carpeta.
 2. `description` obligatoria: primero el caso de uso, con las palabras que diría alguien del equipo. `description` + `when_to_use` ≤ 1.536 caracteres.
 3. `SKILL.md` de menos de 500 líneas. El detalle va en ficheros de apoyo dentro de la carpeta (`referencia.md`, `scripts/…`), enlazados desde `SKILL.md`.
 4. Skills con efectos (push, abrir PR, borrar datos, desplegar) llevan `disable-model-invocation: true`: solo se lanzan a mano con `/<nombre>`.

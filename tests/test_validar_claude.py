@@ -8,18 +8,22 @@ assert _spec and _spec.loader
 validar_claude = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(validar_claude)
 
-AGENTE = "---\nname: revisor\ndescription: Revisa diffs. Úsalo de forma proactiva.\ntools: Read, Grep\nmodel: haiku\n---\nPrompt.\n"
+AGENTE = "---\nname: dm-revisor\ndescription: Revisa diffs. Úsalo de forma proactiva.\ntools: Read, Grep\nmodel: haiku\n---\nPrompt.\n"
 SKILL = "---\ndescription: Abre un PR siguiendo AGENTS.md\ndisable-model-invocation: true\n---\nPasos.\n"
-INDICE = "## Índice\n| Nombre | Tipo | Origen | Para qué |\n|---|---|---|---|\n| `revisor` | agente | proyecto | x |\n| `abrir-pr` | skill | proyecto | x |\n"
+INDICE = "## Índice\n| Nombre | Tipo | Origen | Para qué |\n|---|---|---|---|\n| `dm-revisor` | agente | proyecto | x |\n| `dm-abrir-pr` | skill | proyecto | x |\n"
 
 
 def repo(
-    tmp_path: Path, agente=AGENTE, skill=SKILL, indice=INDICE, nombre_agente="revisor"
+    tmp_path: Path,
+    agente=AGENTE,
+    skill=SKILL,
+    indice=INDICE,
+    nombre_agente="dm-revisor",
 ) -> Path:
     (tmp_path / ".claude/agents").mkdir(parents=True)
-    (tmp_path / ".claude/skills/abrir-pr").mkdir(parents=True)
+    (tmp_path / ".claude/skills/dm-abrir-pr").mkdir(parents=True)
     (tmp_path / f".claude/agents/{nombre_agente}.md").write_text(agente)
-    (tmp_path / ".claude/skills/abrir-pr/SKILL.md").write_text(skill)
+    (tmp_path / ".claude/skills/dm-abrir-pr/SKILL.md").write_text(skill)
     (tmp_path / ".claude/README.md").write_text(indice)
     return tmp_path
 
@@ -44,14 +48,16 @@ def test_agente_sin_tools_campo_raro_y_bypass(tmp_path):
 
 def test_agente_fichero_distinto_de_name(tmp_path):
     errores = validar_claude.validar(repo(tmp_path, nombre_agente="otro"))
-    assert any("debe llamarse revisor.md" in e for e in errores)
+    assert any("debe llamarse dm-revisor.md" in e for e in errores)
 
 
 def test_frontmatter_roto_y_sin_description(tmp_path):
     errores = "\n".join(
         validar_claude.validar(
             repo(
-                tmp_path, agente="Sin frontmatter\n", skill="---\nname: abrir-pr\n---\n"
+                tmp_path,
+                agente="Sin frontmatter\n",
+                skill="---\nname: dm-abrir-pr\n---\n",
             )
         )
     )
@@ -69,14 +75,22 @@ def test_skill_name_distinto_de_carpeta(tmp_path):
 
 def test_indice_desincronizado(tmp_path):
     indice = INDICE.replace(
-        "| `abrir-pr` | skill | proyecto | x |\n",
+        "| `dm-abrir-pr` | skill | proyecto | x |\n",
         "| `fantasma` | agente | yeray | x |\n",
     )
     errores = "\n".join(validar_claude.validar(repo(tmp_path, indice=indice)))
-    assert "falta la fila de 'abrir-pr'" in errores
+    assert "falta la fila de 'dm-abrir-pr'" in errores
     assert "'fantasma' no corresponde" in errores
 
 
 def test_commands_prohibido(tmp_path):
     (repo(tmp_path) / ".claude/commands").mkdir()
     assert any("commands" in e for e in validar_claude.validar(tmp_path))
+
+
+def test_sin_prefijo_dm(tmp_path):
+    agente = AGENTE.replace("name: dm-revisor", "name: revisor")
+    errores = validar_claude.validar(
+        repo(tmp_path, agente=agente, nombre_agente="revisor")
+    )
+    assert any("debe empezar por dm-" in e for e in errores)
