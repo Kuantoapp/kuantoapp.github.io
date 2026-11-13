@@ -42,6 +42,15 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
           }
         ]
+      },
+      {
+        "matcher": "SubagentHandback",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -61,6 +70,10 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/entorno.py\""
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" enlazar"
           }
         ]
       }
@@ -71,39 +84,21 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/docs_al_dia.py\" --stop"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" --hook"
           },
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/validar_claude.py\" --hook"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --stop"
           }
         ]
       }
     ],
-    "PreToolUse": [
+    "SubagentStop": [
       {
-        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "matcher": "dm-revisor-espacial|dm-auditor-calculos-normativos|dm-verificador-fuentes|dm-trazador-cifras",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
           }
         ]
       }

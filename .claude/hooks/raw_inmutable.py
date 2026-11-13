@@ -1,6 +1,7 @@
 """Hook: data/raw/ admite descargas nuevas, pero nada de lo descargado se cambia ni se borra.
 
-pre  (PreToolUse, Edit|Write|MultiEdit|NotebookEdit|Bash): bloquea con exit 2 y explica por qué.
+pre      (PreToolUse, Edit|Write|MultiEdit|NotebookEdit|Bash): bloquea con exit 2 y explica por qué.
+enlazar  (SessionStart): en un worktree, data/raw apunta a la del checkout principal (una sola copia original).
 post (PostToolUse, Bash|Write): deja en solo lectura lo descargado, para que tampoco un script lo pise.
 Falla cerrado: si el propio hook falla y la acción menciona data/raw, la bloquea.
 """
@@ -11,6 +12,7 @@ import json
 import os
 import re
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -167,13 +169,62 @@ def motivo(evento: dict, base: Path) -> str | None:
     return motivo_fichero(ruta, herramienta, base) if ruta else None
 
 
+def compartir_raw(base: Path) -> str:
+    """En un worktree, data/raw es un enlace a la del checkout principal; data/processed sigue siendo propia de la rama."""
+
+    def git(*args: str) -> str:
+        r = subprocess.run(
+            ["git", "-C", str(base), *args], capture_output=True, check=False, text=True
+        )
+        return r.stdout.strip()
+
+    arriba, comun = (
+        git("rev-parse", "--show-toplevel"),
+        git("rev-parse", "--path-format=absolute", "--git-common-dir"),
+    )
+    if not arriba or not comun or Path(comun).name != ".git":
+        return ""
+    principal, aqui = Path(comun).parent.resolve(), Path(arriba).resolve()
+    destino = principal / RAW
+    destino.mkdir(parents=True, exist_ok=True)
+    if aqui == principal:
+        return ""
+    # shortcut: enlaces simbólicos de macOS y Linux; en Windows haría falta modo desarrollador o una unión
+    enlace = aqui / RAW
+    if enlace.is_symlink() and enlace.resolve() == destino.resolve():
+        return ""
+    if enlace.exists():
+        if enlace.is_dir() and not any(enlace.iterdir()):
+            enlace.rmdir()
+        else:
+            return f"{enlace} tiene ficheros propios: muévelos a {destino} y bórrala para compartir los datos originales"
+    enlace.parent.mkdir(parents=True, exist_ok=True)
+    enlace.symlink_to(destino, target_is_directory=True)
+    return f"data/raw de este worktree enlazada a {destino} (una sola copia de los datos originales)"
+
+
 def main() -> int:
     modo = sys.argv[1] if len(sys.argv) > 1 else "pre"
     base = raiz()
+    if modo == "enlazar":
+        try:
+            aviso = compartir_raw(base)
+        except OSError as e:
+            aviso = f"no se pudo enlazar data/raw con el checkout principal ({e!r})"
+        if aviso:
+            print(aviso)
+        return 0
     if modo == "post":
         solo_lectura(base)
         return 0
     texto = sys.stdin.read()
+    if not (
+        base / RAW
+    ).exists():  # sesión que no pasó por SessionStart (p. ej. un worktree nuevo)
+        try:
+            compartir_raw(base)
+        except OSError:
+            pass
     try:
         m = motivo(json.loads(texto), base)
     except Exception as e:  # noqa: BLE001 — falla cerrado solo si la acción podía tocar data/raw

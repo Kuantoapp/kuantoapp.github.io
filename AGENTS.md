@@ -6,7 +6,7 @@ Casi todo el código lo escriben agentes. Estas reglas existen para que tres per
 
 Todo el repo está montado para que un agente cierre el ciclo solo, **barato y bien**, y que el humano solo tenga que decidir. La calidad, la seguridad y la precisión las garantizan máquinas (hooks, CI, revisores), no la vigilancia humana.
 
-**Ciclo:** issue → rama y worktree → implementar con la skill del área → hook de ruff y tests locales → revisor del área (por ejemplo, `dm-revisor-espacial`) → PR draft con auto-merge → CI → merge.
+**Ciclo:** issue → rama y worktree → implementar con la skill del área → hook de ruff y tests locales → **commit** → revisor del área (obligatorio, ver «Revisores obligatorios») → PR draft con su veredicto y auto-merge → CI → merge.
 
 **El humano solo interviene para:** decidir (y queda en `docs/decisiones.md`), aprobar PRs de autores que no son de confianza o que tocan reglas (`.github/`, `.claude/`, `AGENTS.md`), y responder ambigüedades reales.
 
@@ -41,6 +41,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
   ```bash
   git worktree add ../dm-<tema> -b <usuario>/<tema> origin/main
   ```
+- **Datos en worktrees:** `data/raw/` es una sola copia para todos. En un worktree, un hook enlaza su `data/raw` con la del checkout principal al abrir Claude Code, así nadie descarga dos veces. Antes de descargar, mira si ya está. `data/processed/` es propia de cada worktree, porque depende del código de su rama.
 - Ramas cortas: vive horas, no días. Antes de abrir o actualizar el PR: `git fetch && git rebase origin/main`.
 
 ## Dónde va cada cosa
@@ -65,6 +66,25 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
   Tipos: `feat`, `fix`, `data`, `docs`, `refactor`, `test`, `chore`. Ej.: `feat(src): índice de vulnerabilidad por municipio`.
 - Abre el PR como **draft** pronto; pásalo a "ready" cuando la CI esté en verde.
 - Rellena la plantilla del PR, incluida la sección de agente.
+
+## Revisores obligatorios
+
+Si un PR toca un área con revisor, su veredicto tiene que estar en el PR y ser del código actual. La CI lo exige (`.github/scripts/revisiones.py`).
+
+| Si el PR cambia… | Revisor |
+|---|---|
+| Código de `src/`, `app/` o `notebooks/` que usa geometrías, W o modelos espaciales (geopandas, pysal, kriging, `to_crs`…) | `dm-revisor-espacial` |
+| Código con cálculos normativos (IRPF, cotizaciones, SMI, IPREM, ayudas, tarifas, bruto y neto) | `dm-auditor-calculos-normativos` |
+| Textos que ve el público (`app/`, `docs/pitch/`) | `dm-trazador-cifras` |
+| Fuentes de datos (`data/README.md`) | `dm-verificador-fuentes` |
+
+1. **Haz commit antes de pedir la revisión:** el veredicto vale para ese commit. Si después cambia algo de su área, caduca y hay que repetirla.
+2. Lanza el revisor. Un hook registra su veredicto solo (en `.git/`, sin versionar).
+3. Ejecuta `python .github/scripts/revisiones.py --resumen` y pega su salida en el PR (sección «Revisión por agentes»). Si falta un revisor, lo dice.
+4. **NO APTO** bloquea el merge: corrige y repite. **APTO CON RESERVAS** pasa, con las reservas a la vista.
+5. Si el área se detectó por error (por ejemplo, un comentario que nombra «neto»), escribe `- dm-…: NO APLICA — motivo`. Queda visible en el PR para quien lo revise.
+
+Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el trabajo ya confirmado.
 
 ## Revisión y merge
 
