@@ -26,7 +26,7 @@ ESPERADO = {
     (
         'revisiones.py" --registrar',
         "SubagentStop",
-        "dm-revisor-espacial|dm-auditor-calculos-normativos|dm-verificador-fuentes|dm-trazador-cifras",
+        "dm-revisor-espacial|dm-auditor-calculos-normativos|dm-verificador-fuentes|dm-trazador-cifras|dm-revisor-codigo",
     ),
 }
 
