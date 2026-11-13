@@ -139,6 +139,12 @@ def test_reglas_de_agentes(tmp_path):
     assert "precarga la skill 'dm-no-existe'" in errores
     assert "disable-model-invocation y no se puede precargar" in errores
 
+    agente = AGENTE.replace("model: haiku", "model: haiku\nmemory: project")
+    errores = "\n".join(
+        validar_claude.validar(repo(tmp_path / "memoria", agente=agente))
+    )
+    assert "un revisor no lleva memory" in errores
+
 
 def test_validador_desde_hook(tmp_path):
     import json
