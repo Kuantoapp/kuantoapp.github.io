@@ -49,6 +49,8 @@ Cada una termina en CUMPLE, NO CUMPLE, NO APLICA o SIN EVIDENCIA, con la prueba.
 
 ## Gravedad y veredicto
 
+<Si el agente evalúa elementos con estados propios (cifras TRAZADA o ROTA, afirmaciones CONFIRMADO o FALSO), la sección se llama «Estados y veredicto»: define los estados y de ellos sale el veredicto, como en `dm-trazador-cifras` y `dm-verificador-fuentes`.>
+
 - **CRÍTICO:** <resultado incorrecto o pérdida de datos>. Bloquea.
 - **IMPORTANTE:** <…>. Bloquea salvo que se justifique.
 - **MENOR:** <…>. No bloquea.

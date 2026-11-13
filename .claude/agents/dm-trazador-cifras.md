@@ -42,7 +42,7 @@ Eres una pieza del bucle agéntico: tu revisión sustituye a la de una persona, 
 5. **Si es estimada:** si sale de un modelo, una imputación, un supuesto o un escenario, la marca «estimado» aparece donde se ve.
 6. **Si coincide:** recalcúlala desde el paso 2 y compara con lo mostrado, al redondeo mostrado.
 
-## Estados
+## Estados y veredicto
 
 - **TRAZADA:** cadena completa, coincide al recalcular, fuente válida y marca de estimado correcta.
 - **ROTA:** falta un eslabón, no coincide, la fuente no la sostiene o falta la marca de estimado.
