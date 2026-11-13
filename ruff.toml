@@ -1,0 +1,5 @@
+# Los scripts que ejecutan los hooks corren con el python3 del sistema (3.9 en macOS):
+# ruff no debe «modernizarlos» con sintaxis que esa versión no entiende.
+[per-file-target-version]
+".claude/hooks/*.py" = "py39"
+".github/scripts/*.py" = "py39"

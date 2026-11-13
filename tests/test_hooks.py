@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -109,28 +110,44 @@ def test_raw_falla_cerrado(tmp_path):
 
 
 def test_hooks_funcionan_con_python_de_macos(tmp_path):
-    """macOS trae Python 3.9: si el hook no arranca, Claude Code lo trata como aviso y no bloquea."""
+    """macOS trae Python 3.9: si un hook no arranca, Claude Code lo trata como aviso y no bloquea nada.
+
+    Recorre todos los hooks de .claude/settings.json que ejecutan python3, en todos sus modos.
+    """
     py39 = Path("/usr/bin/python3")
     if not py39.exists():
         return
+    raiz = Path(__file__).parents[1]
+    hooks = json.loads((raiz / ".claude/settings.json").read_text())["hooks"]
+    comandos = {
+        h["command"]
+        for es in hooks.values()
+        for e in es
+        for h in e["hooks"]
+        if h["command"].startswith("python3 ")
+    }
+    assert len(comandos) >= 8
     base = proyecto(tmp_path)
     evento = json.dumps(
         {
             "tool_name": "Edit",
             "tool_input": {"file_path": str(base / "data/raw/ine.csv")},
+            "cwd": str(base),
         }
     )
-    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(base)}
-    for script, args in [(HOOK_RAW, ["pre"]), (CIFRAS, ["--hook"])]:
+    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(raiz)}
+    for comando in sorted(comandos):
+        partes = shlex.split(comando.replace("$CLAUDE_PROJECT_DIR", str(raiz)))
         r = subprocess.run(
-            [str(py39), script, *args],
+            [str(py39), *partes[1:]],
             input=evento,
             capture_output=True,
             check=False,
             text=True,
             env=entorno,
+            cwd=base,
         )
-        assert "Traceback" not in r.stderr, r.stderr
+        assert "Traceback" not in r.stderr, f"{comando}: {r.stderr[-300:]}"
 
 
 def test_raw_post_deja_solo_lectura(tmp_path):

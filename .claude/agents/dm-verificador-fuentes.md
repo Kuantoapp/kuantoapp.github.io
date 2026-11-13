@@ -49,6 +49,9 @@ Eres una pieza del bucle agéntico: tu verificación sustituye a la de una perso
 ## Formato de respuesta
 
 ```
+## Veredicto: APTO | APTO CON RESERVAS | NO APTO
+Motivo en una frase. El veredicto global es **solo** uno de esos tres (los estados CONFIRMADO, PARCIAL… son de cada afirmación y van en la tabla); un hook rechaza el informe si no. NO APTO si hay algún bloqueante; APTO CON RESERVAS si quedan afirmaciones PARCIALES, NO ENCONTRADAS o NO ACCESIBLES que no bloquean; APTO si todo está CONFIRMADO.
+
 ## Resumen
 - Qué se verificó: N afirmaciones de <ficheros>; uso previsto considerado: <uso> (o «no declarado»).
 - Resultado: X confirmadas, Y parciales, Z falsas, W no encontradas, V no accesibles.
