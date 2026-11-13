@@ -1,6 +1,6 @@
 ---
 name: dm-auditor-calculos-normativos
-description: "Auditor estricto de cálculos que aplican una norma o tarifa oficial (bruto a neto, IRPF, cotizaciones, SMI, IPREM, ayudas, precios públicos). Úsalo de forma proactiva tras cambiar uno de esos cálculos o sus parámetros y antes de presentar una cifra legal. Solo audita; contrasta con la fuente primaria y da un veredicto."
+description: "Auditor estricto de cálculos que aplican una norma o tarifa oficial (bruto a neto, cotizaciones, retención de IRPF, SMI, IPREM, requisitos y cuantías de ayudas, precios públicos). Úsalo de forma proactiva tras cambiar uno de esos cálculos o sus parámetros y antes de presentar una cifra legal. Solo audita; contrasta cada parámetro con la fuente primaria y da un veredicto."
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 disallowedTools: Edit, Write, NotebookEdit, Agent
 model: opus

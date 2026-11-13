@@ -1,6 +1,6 @@
 ---
 name: dm-verificador-fuentes
-description: "Verificador de solo lectura de afirmaciones sobre datos, normas y licencias contra el publicador original. Úsalo de forma proactiva para resolver marcas «(verificar)», antes de añadir una fuente a data/README.md y antes de presentar una cifra citada. Devuelve estado, evidencia y texto corregido; no edita."
+description: "Verificador de solo lectura de afirmaciones sobre datos, normas y licencias (existencia, cobertura, año, licencia, vigencia, cifras) contra el publicador original. Úsalo de forma proactiva para resolver marcas «(verificar)», antes de añadir una fuente a data/README.md y antes de presentar una cifra citada. Devuelve estado, evidencia y texto corregido; no edita."
 tools: Read, Grep, Glob, WebFetch, WebSearch
 disallowedTools: Edit, Write, NotebookEdit, Bash, Agent
 model: opus

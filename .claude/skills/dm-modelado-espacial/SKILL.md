@@ -1,6 +1,6 @@
 ---
-description: "Entrena, valida, interpreta y ajusta modelos con datos territoriales: predicción o imputación por zona con retardos Wy sin fuga, validación aleatoria frente a espacial (bloques, buffer), selección de variables, kriging, intervalos conformales por grupo, equidad del error, SHAP y regresión SAR, SEM o SDM. No prepara geometrías (dm-cartografia) ni hace la exploración inicial (dm-eda-espacial)."
-when_to_use: "Partir train y test, elegir variables o modelo, leer residuos, variogramas o métricas; ¿mi modelo tiene fuga?, ¿SAR o SEM?, ¿por qué el error por bloques es peor que el aleatorio?, calcular intervalos de predicción, explicar una predicción por zona."
+description: "Entrena, valida, interpreta y ajusta modelos con datos territoriales, contrastando cada resultado con la teoría: imputación o predicción por zona con retardos Wy sin fuga, validación aleatoria frente a espacial (bloques, buffer), selección de variables, kriging, intervalos conformales por grupo, equidad del error, SHAP y regresión SAR, SEM o SDM. No prepara geometrías (dm-cartografia) ni hace la exploración inicial (dm-eda-espacial)."
+when_to_use: "Partir train y test, spatial cross-validation, elegir variables o modelo, leer residuos, variogramas o métricas; ¿mi modelo tiene fuga?, ¿SAR o SEM?, ¿por qué el error por bloques es peor que el aleatorio?, calcular intervalos, explicar una predicción, ¿este resultado tiene sentido según la teoría?"
 ---
 
 # Modelado espacial

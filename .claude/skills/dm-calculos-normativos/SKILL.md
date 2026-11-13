@@ -1,6 +1,6 @@
 ---
-description: "Implementa, comprueba y simula cálculos que aplican una norma, tarifa o convocatoria oficial, con cada parámetro citado a la fuente primaria y casos de referencia: bruto a neto (cotizaciones, IRPF), indicadores legales (SMI, IPREM, IMV, umbrales de pobreza o sobrecarga), requisitos y cuantías de ayudas, precios públicos, impuestos y tasas. No verifica fuentes de datos (dm-verificacion-fuentes) ni hace análisis espacial."
-when_to_use: "¿Cuánto es el neto de este bruto?, ¿cuánto se retiene o se cotiza?, 12 o 14 pagas, ¿cumple los requisitos de esta ayuda?, ¿cuántas veces el IPREM?, ¿cuánto cuesta este título de transporte?, ¿qué pasa si cambia un umbral o se acaba un descuento?, actualizar parámetros al año nuevo, ¿esta cifra legal está bien?"
+description: "Implementa, comprueba y simula cálculos que aplican una norma, tarifa o convocatoria oficial, con cada parámetro citado a la fuente primaria y casos de referencia: bruto a neto (cotizaciones, retención y cuota de IRPF), indicadores legales (SMI, IPREM, IMV, pobreza, sobrecarga de vivienda), requisitos y cuantías de ayudas o subvenciones, precios públicos, impuestos, tasas y valor del tiempo. No verifica fuentes de datos (dm-verificacion-fuentes)."
+when_to_use: "¿Cuánto es el neto de este bruto?, ¿cuánto se retiene o se cotiza?, 12 o 14 pagas, ¿cumple los requisitos de esta ayuda?, ¿cuántas veces el IPREM?, ¿cuánto cuesta este título de transporte?, ¿está sobrecargado este hogar?, ¿qué pasa si cambia un umbral o se acaba un descuento?, actualizar parámetros al año nuevo, ¿esta cifra legal está bien?"
 ---
 
 # Cálculos normativos
