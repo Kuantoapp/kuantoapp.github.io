@@ -7,7 +7,7 @@ when_to_use: "Refactorizar o simplificar, mover lógica de un notebook a src/, d
 
 El mejor código es el que no se escribe: cada línea hay que leerla, probarla y arreglarla después, y con varios agentes escribiendo a la vez el código de más se multiplica. Se resuelve **la tarea entera** con **el menor código nuevo**: perezoso con la solución, nunca con el cambio.
 
-Adaptado de la skill `ponytail` (licencia MIT) al contexto de este repo. Las reglas núcleo están en `AGENTS.md` y se aplican siempre; aquí está el procedimiento completo para refactorizar, simplificar o decidir si algo hace falta.
+Adaptado de la skill `ponytail` (licencia MIT) al contexto de este repo. Las reglas núcleo están en `AGENTS.md` y se aplican siempre a todo el código, y ruff (`ruff.toml`) rechaza al editar y en la CI lo que una máquina puede detectar: argumentos sin usar, código comentado, funciones demasiado complejas, más de 5 parámetros y `print` olvidados; aquí está el procedimiento completo para refactorizar, simplificar o decidir si algo hace falta.
 
 ## Antes de empezar: conectar con el desarrollo del proyecto
 
