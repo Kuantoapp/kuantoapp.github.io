@@ -85,3 +85,57 @@ def test_error_de_red_no_deja_nada(tmp_path):
     assert (
         list(raw.iterdir()) == [] and list((tmp_path / "data").glob(".*parcial")) == []
     )
+
+
+class Respuesta(io.BytesIO):
+    def __init__(
+        self, contenido: bytes, url: str = "https://x.es/a.csv", longitud=None
+    ):
+        super().__init__(contenido)
+        self.url = url
+        self.headers = {"Content-Length": str(longitud)} if longitud else {}
+
+
+def test_corte_redireccion_y_extension(tmp_path):
+    raw = tmp_path / "data/raw"
+    casos = [
+        (lambda p, timeout: Respuesta(b"abc", longitud=10), "csv", "incompleta"),
+        (
+            lambda p, timeout: Respuesta(b"abc", url="http://x.es/a.csv"),
+            "csv",
+            "sin https",
+        ),
+        (servidor(b"abc"), "csv/../../fuera", "Extensión no válida"),
+    ]
+    for abrir, ext, error in casos:
+        with pytest.raises(SystemExit, match=error):
+            dsc.descargar("https://x.es/a.csv", "a", ext, raw, HOY, abrir)
+    assert (
+        list(raw.iterdir()) == [] and list((tmp_path / "data").glob(".*parcial")) == []
+    )
+    f = dsc.descargar(
+        "https://x.es/a.csv",
+        "a",
+        "CSV",
+        raw,
+        HOY,
+        lambda p, timeout: Respuesta(b"abc", longitud=3),
+    )
+    assert f.name == "a_2026-11-13.csv"
+
+
+def test_comprobar_solo_la_tabla_de_fuentes(tmp_path):
+    raw = tmp_path / "data/raw"
+    raw.mkdir(parents=True)
+    readme = tmp_path / "data/README.md"
+    readme.write_text(
+        "# Datos\n\n| Nombre | Fichero en `raw/` | SHA-256 |\n|---|---|---|\n"
+        "| Vacía | | `abc` |\n| Rota | `a|b.csv` | `abc` |\n\n"
+        "| Campo | Fichero en `raw/` | SHA-256 |\n|---|---|---|\n| renta | `x.csv` | `abc` |\n",
+        encoding="utf-8",
+    )
+    problemas = dsc.comprobar(readme, raw)
+    assert problemas == [
+        "Vacía: sin fichero en data/README.md",
+        "fila mal formada (¿un | dentro de una celda?): Rota",
+    ]

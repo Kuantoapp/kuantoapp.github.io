@@ -11,13 +11,14 @@ import re
 from datetime import date
 from pathlib import Path
 
-CARPETAS = ("docs", "data", "ideas", "src", "app", "notebooks")
-EXTENSIONES = {".md", ".py", ".txt", ".html", ".csv", ".yml", ".yaml", ".json"}
+# Solo texto que escriben personas y agentes; nunca datos (pesados y a veces en latin-1)
+CARPETAS = ("docs", "ideas", "src", "app", "notebooks")
+EXTENSIONES = {".md", ".py", ".txt", ".html"}
 HITO = re.compile(r"^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.+?)\s*\|")
 
 
 def leer(ruta: Path) -> str:
-    return ruta.read_text(encoding="utf-8") if ruta.exists() else ""
+    return ruta.read_text(encoding="utf-8", errors="replace") if ruta.exists() else ""
 
 
 def pendientes(decisiones: str) -> list[str]:
@@ -44,31 +45,34 @@ def hitos(decisiones: str, hoy: date) -> list[str]:
 
 
 def verificar(base: Path) -> tuple[int, list[str]]:
-    por_fichero = {}
+    rutas = [base / "data/README.md"]
     for carpeta in CARPETAS:
-        for ruta in (base / carpeta).rglob("*"):
-            if (
-                ruta.suffix in EXTENSIONES
-                and "raw" not in ruta.parts
-                and ruta.is_file()
-            ):
-                n = leer(ruta).lower().count("(verificar")
-                if n:
-                    por_fichero[ruta.relative_to(base).as_posix()] = n
+        rutas += [r for r in (base / carpeta).rglob("*") if r.suffix in EXTENSIONES]
+    por_fichero = {}
+    for ruta in rutas:
+        n = leer(ruta).lower().count("(verificar") if ruta.is_file() else 0
+        if n:
+            por_fichero[ruta.relative_to(base).as_posix()] = n
     top = sorted(por_fichero.items(), key=lambda x: -x[1])[:3]
     return sum(por_fichero.values()), [f"{f} ({n})" for f, n in top]
 
 
+def tabla_fuentes(readme: str) -> tuple[list[str], list[list[str]]]:
+    """La primera tabla de data/README.md (la de fuentes): termina en la primera línea que no es fila."""
+    filas = []
+    for linea in readme.splitlines():
+        if not linea.startswith("|"):
+            if filas:
+                break
+            continue
+        if not linea.startswith("|---"):
+            filas.append([c.strip() for c in linea.strip().strip("|").split("|")])
+    return (filas[0], filas[1:]) if filas else ([], [])
+
+
 def descargas_que_faltan(base: Path) -> list[str]:
     """Filas de la tabla de fuentes de data/README.md cuyo fichero no está en data/raw de este equipo."""
-    filas = [
-        [c.strip() for c in linea.strip().strip("|").split("|")]
-        for linea in leer(base / "data/README.md").splitlines()
-        if linea.startswith("|") and not linea.startswith("|---")
-    ]
-    if not filas:
-        return []
-    cabecera, filas = filas[0], filas[1:]
+    cabecera, filas = tabla_fuentes(leer(base / "data/README.md"))
     col = next((i for i, c in enumerate(cabecera) if c.startswith("Fichero")), None)
     if col is None:
         return []
@@ -87,26 +91,50 @@ def descargas_que_faltan(base: Path) -> list[str]:
 def contexto(base: Path, hoy: date) -> str:
     decisiones = leer(base / "docs/decisiones.md")
     lineas = []
-    proximos = hitos(decisiones, hoy)
-    if proximos:
-        lineas.append("Próximos hitos: " + "; ".join(proximos))
-    sin_decidir = pendientes(decisiones)
-    if sin_decidir:
-        lineas.append(
+
+    def seccion(nombre, calcular):
+        # Cada parte por separado: si una falla, las demás se siguen mostrando
+        try:
+            texto = calcular()
+        except Exception as e:  # noqa: BLE001
+            texto = f"{nombre}: no se pudo calcular ({e!r})"
+        if texto:
+            lineas.append(texto)
+
+    def _hitos():
+        proximos = hitos(decisiones, hoy)
+        return "Próximos hitos: " + "; ".join(proximos) if proximos else ""
+
+    def _pendientes():
+        sin_decidir = pendientes(decisiones)
+        if not sin_decidir:
+            return ""
+        return (
             "Sin decidir aún (no lo supongas; pregunta o deja el supuesto escrito): "
             + "; ".join(sin_decidir)
         )
-    total, top = verificar(base)
-    if total:
-        lineas.append(
+
+    def _verificar():
+        total, top = verificar(base)
+        return (
             f"Marcas «(verificar)» abiertas: {total}, sobre todo en " + ", ".join(top)
+            if total
+            else ""
         )
-    faltan = descargas_que_faltan(base)
-    if faltan:
-        lineas.append(
+
+    def _faltan():
+        faltan = descargas_que_faltan(base)
+        if not faltan:
+            return ""
+        return (
             f"Faltan {len(faltan)} descargas de data/README.md en este equipo (ver «Cómo obtenerla»): "
             + ", ".join(faltan[:5])
         )
+
+    seccion("Hitos", _hitos)
+    seccion("Decisiones pendientes", _pendientes)
+    seccion("Marcas «(verificar)»", _verificar)
+    seccion("Descargas", _faltan)
     if not lineas:
         return ""
     return (
