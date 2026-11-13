@@ -203,6 +203,8 @@ def registrar(evento: dict) -> int:
         "veredicto": m.group(1),
         "sha": git("rev-parse", "HEAD", cwd=raiz),
         "sucio": bool(git("status", "--porcelain", "--untracked-files=no", cwd=raiz)),
+        # Qué estaba sin confirmar: el veredicto solo no vale si alguno es de su área
+        "sucios": git("diff", "--name-only", "HEAD", cwd=raiz).splitlines(),
         "rama": git("branch", "--show-current", cwd=raiz),
         "fecha": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "motivo": (motivo[0] if motivo else "")[:200],
@@ -235,7 +237,8 @@ def validos(raiz: Path, por_revisor: dict[str, set[str]]) -> dict[str, dict]:
         if (
             r in por_revisor
             and r not in vistos
-            and not fila.get("sucio")
+            and not (set(fila.get("sucios", [])) & por_revisor[r])
+            and not (fila.get("sucio") and "sucios" not in fila)  # registros antiguos
             and vigente(fila["sha"], por_revisor[r], raiz) is None
         ):
             vistos[r] = fila

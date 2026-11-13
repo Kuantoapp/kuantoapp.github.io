@@ -259,3 +259,24 @@ def test_informe_sin_veredicto_valido_se_rechaza(tmp_path):
         "dm-verificador-fuentes: APTO CON RESERVAS"
         in hook(base, "--resumen", {}).stdout
     )
+
+
+def test_cambios_sin_confirmar_solo_invalidan_su_area(tmp_path):
+    """Caso real: un veredicto se perdía porque había otro fichero, fuera de su área, sin confirmar."""
+    evento = {
+        "hook_event_name": "PreToolUse",
+        "agent_type": "dm-verificador-fuentes",
+        "agent_id": "a1",
+        "tool_input": {"message": "## Veredicto: APTO\nSin fuentes nuevas."},
+    }
+    for carpeta, sin_confirmar, vale in [
+        ("fuera", "src/util.py", True),
+        ("dentro", "data/README.md", False),
+    ]:
+        base = repo(tmp_path / carpeta)
+        commit(base, "data/README.md", "fuentes\n")
+        commit(base, "src/util.py", "x = 1\n")
+        (base / sin_confirmar).write_text("cambiado\n")
+        hook(base, "--registrar", {**evento, "cwd": str(base)})
+        salida = hook(base, "--resumen", {}).stdout
+        assert ("dm-verificador-fuentes: APTO" in salida) is vale, sin_confirmar
