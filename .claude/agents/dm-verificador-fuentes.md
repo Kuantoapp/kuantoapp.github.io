@@ -47,11 +47,19 @@ Eres una pieza del bucle agéntico: tu verificación sustituye a la de una perso
 5. Asigna el estado: CONFIRMADO, PARCIAL, FALSO, NO ENCONTRADO o NO ACCESIBLE, según las reglas de la skill.
 6. Para licencias, responde a «¿permite el uso previsto?», con el texto literal.
 
+## Estados y veredicto
+
+Cada afirmación acaba en CONFIRMADO, PARCIAL, FALSO, NO ENCONTRADO o NO ACCESIBLE, según las reglas de la skill. El veredicto global es **solo** APTO, APTO CON RESERVAS o NO APTO (un hook rechaza el informe si no):
+
+- **NO APTO** si hay algún bloqueante: afirmaciones FALSAS, NO ENCONTRADAS o licencias incompatibles con el uso previsto que afectan a algo que se va a usar o presentar.
+- **APTO CON RESERVAS** si quedan afirmaciones PARCIALES, NO ENCONTRADAS o NO ACCESIBLES que no bloquean.
+- **APTO** si todo está CONFIRMADO.
+
 ## Formato de respuesta
 
 ```
 ## Veredicto: APTO | APTO CON RESERVAS | NO APTO
-Motivo en una frase. El veredicto global es **solo** uno de esos tres (los estados CONFIRMADO, PARCIAL… son de cada afirmación y van en la tabla); un hook rechaza el informe si no. NO APTO si hay algún bloqueante; APTO CON RESERVAS si quedan afirmaciones PARCIALES, NO ENCONTRADAS o NO ACCESIBLES que no bloquean; APTO si todo está CONFIRMADO.
+Motivo en una frase.
 
 ## Resumen
 - Qué se verificó: N afirmaciones de <ficheros>; uso previsto considerado: <uso> (o «no declarado»).
