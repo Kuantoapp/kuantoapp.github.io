@@ -180,11 +180,14 @@ def compartir_raw(base: Path) -> str:
 
     arriba, comun = (
         git("rev-parse", "--show-toplevel"),
-        git("rev-parse", "--path-format=absolute", "--git-common-dir"),
+        git("rev-parse", "--git-common-dir"),
     )
     if not arriba or not comun or Path(comun).name != ".git":
         return ""
-    principal, aqui = Path(comun).parent.resolve(), Path(arriba).resolve()
+    comun_abs = (
+        Path(comun) if Path(comun).is_absolute() else base / comun
+    )  # git antiguo: sin --path-format
+    principal, aqui = comun_abs.parent.resolve(), Path(arriba).resolve()
     destino = principal / RAW
     destino.mkdir(parents=True, exist_ok=True)
     if aqui == principal:

@@ -136,6 +136,12 @@ def test_registro_resumen_y_stop(tmp_path):
     assert (
         hook(base, "--stop", {"cwd": str(base), "stop_hook_active": True}).stdout == ""
     )
+    # Si el revisor que falta ya está corriendo en segundo plano, no se insiste
+    corriendo = {
+        "cwd": str(base),
+        "background_tasks": [{"type": "subagent", "agent_type": "dm-revisor-espacial"}],
+    }
+    assert hook(base, "--stop", corriendo).stdout == ""
     # El agente entrega su informe por SubagentHandback: queda registrado
     informe = "## Veredicto: APTO CON RESERVAS\nFalta probar otra W.\n## Resumen…"
     evento = {

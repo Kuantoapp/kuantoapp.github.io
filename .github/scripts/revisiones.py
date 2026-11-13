@@ -148,10 +148,10 @@ def comprobar_pr(
 
 
 def registro(raiz: Path) -> Path:
-    comun = Path(
-        git("rev-parse", "--path-format=absolute", "--git-common-dir", cwd=raiz)
-        or raiz / ".git"
-    )
+    comun = Path(git("rev-parse", "--git-common-dir", cwd=raiz) or ".git")
+    comun = (
+        comun if comun.is_absolute() else raiz / comun
+    )  # sin --path-format: vale con git antiguo
     return (
         comun / "dm-revisiones.jsonl"
     )  # dentro de .git: compartido por los worktrees y nunca versionado
@@ -268,7 +268,12 @@ def stop(evento: dict, raiz: Path, base: str) -> int:
     pendiente = {f for fs in por_revisor.values() for f in fs}
     if not por_revisor or git("status", "--porcelain", "--", *pendiente, cwd=raiz):
         return 0  # sin área revisable, o aún trabajando (sin confirmar): no interrumpir
-    faltan = sorted(set(por_revisor) - set(validos(raiz, por_revisor)))
+    en_marcha = {
+        t.get("agent_type")
+        for t in evento.get("background_tasks") or []
+        if t.get("type") == "subagent"
+    }
+    faltan = sorted(set(por_revisor) - set(validos(raiz, por_revisor)) - en_marcha)
     if faltan:
         lista = "\n- ".join(f"{r} ({REVISORES[r]})" for r in faltan)
         razon = (
