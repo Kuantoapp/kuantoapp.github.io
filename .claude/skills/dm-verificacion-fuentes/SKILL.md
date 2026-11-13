@@ -1,6 +1,6 @@
 ---
-description: "Verifica contra el publicador original afirmaciones sobre datos, normas y licencias: si un dato o una API existe y qué cobertura, año, nivel territorial, formato y descarga tiene; si su licencia o condiciones de uso permiten el uso previsto; si una norma sigue vigente, derogada o convalidada; si una cifra citada coincide con la publicada. No audita cálculos legales (dm-calculos-normativos) ni descarga o incorpora fuentes (dm-nueva-fuente)."
-when_to_use: "Resolver marcas «(verificar)», comprobar una fuente antes de añadirla a data/README.md, citar una cifra en el pitch; ¿este dato existe?, ¿de qué año es el último?, ¿llega a sección o barrio?, ¿qué licencia tiene?, ¿se puede publicar en la demo o en un MCP?, ¿se puede hacer scraping de esta web?, ¿de dónde sale esta cifra?"
+description: "Verifica contra el publicador original afirmaciones sobre datos, normas y licencias: si un dato o una API existe y su cobertura, año, nivel territorial y formato; si su licencia o condiciones de uso permiten el uso previsto; si una norma sigue vigente, derogada o convalidada. Para resolver marcas «(verificar)», validar una fuente antes de data/README.md o una cifra del pitch, delega en el agente dm-verificador-fuentes. No audita cálculos legales (dm-calculos-normativos) ni descarga o incorpora fuentes (dm-nueva-fuente)."
+when_to_use: "Una duda rápida en la conversación sobre una fuente o una norma; ¿este dato existe?, ¿de qué año es el último?, ¿llega a sección o barrio?, ¿qué licencia tiene?, ¿se puede publicar en la demo?, ¿se puede hacer scraping?"
 ---
 
 # Verificación de fuentes

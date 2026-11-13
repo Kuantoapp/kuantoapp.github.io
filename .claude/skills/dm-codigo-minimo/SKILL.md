@@ -1,5 +1,5 @@
 ---
-description: "Escribe o cambia código con el cambio más pequeño que resuelve la tarea entera: alcance antes de escribir, escalera de opciones (¿hace falta?, ¿ya está en src/?, librería estándar, dependencia instalada, una línea), sin abstracciones, opciones ni capas que nadie pidió, test de la lógica no trivial y atajos marcados. No revisa código ajeno (dm-revisor-codigo) ni cubre seguridad (dm-revisor-seguridad)."
+description: "Simplifica, refactoriza o decide si hace falta una clase, una capa o una dependencia, con el cambio más pequeño que resuelve la tarea entera: alcance antes de escribir, escalera de opciones (¿hace falta?, ¿ya está en src/?, librería estándar, dependencia instalada, una línea), sin abstracciones, opciones ni capas que nadie pidió, test de la lógica no trivial y atajos marcados. Para escribir código corriente bastan las reglas de AGENTS.md. No revisa código ajeno (dm-revisor-codigo) ni cubre seguridad (dm-revisor-seguridad)."
 when_to_use: "Refactorizar o simplificar, mover lógica de un notebook a src/, decidir si añadir una clase, una capa o una dependencia; ¿esto está sobrediseñado?, hazlo más simple, ¿hace falta esta clase?, ¿meto una librería para esto?, ¿dónde pongo esta función?"
 ---
 
