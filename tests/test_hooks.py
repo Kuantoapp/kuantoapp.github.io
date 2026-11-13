@@ -119,12 +119,13 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
         return
     raiz = Path(__file__).parents[1]
     hooks = json.loads((raiz / ".claude/settings.json").read_text())["hooks"]
+    # Último recurso del lanzador (.claude/hooks/py): el python3 del sistema ejecuta el script directamente
     comandos = {
         h["command"]
         for es in hooks.values()
         for e in es
         for h in e["hooks"]
-        if h["command"].startswith("python3 ")
+        if "hooks/py" in h["command"]
     }
     assert len(comandos) >= 8
     base = proyecto(tmp_path)
@@ -138,8 +139,9 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
     entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(raiz)}
     for comando in sorted(comandos):
         partes = shlex.split(comando.replace("$CLAUDE_PROJECT_DIR", str(raiz)))
+        script_y_args = [x for x in partes[2:] if x != "--critico"]
         r = subprocess.run(
-            [str(py39), *partes[1:]],
+            [str(py39), *script_y_args],
             input=evento,
             capture_output=True,
             check=False,
