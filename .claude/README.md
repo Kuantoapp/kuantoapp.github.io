@@ -46,8 +46,11 @@ Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powers
 | `dm-trazador-cifras` | agente | proyecto | Rastrea cada cifra que ve el público hasta el código, la consulta y el dato que la producen; comprueba fuente y marca de estimado. Precarga `dm-verificacion-fuentes` |
 | `dm-nueva-fuente` | skill | proyecto | Incorporar o actualizar una fuente de datos de principio a fin: descarga reproducible a `data/raw` con fecha y SHA-256 (script solo stdlib), fila en `data/README.md`, verificación, perfil y carga en `src/` con test; comprueba que todo el equipo tiene los mismos ficheros |
 | `dm-diccionario-datos` | skill | izan | Diccionario `<nombre>.DATA.md` de un CSV pesado en `docs/datos/` (tipos, nulos, rangos, muestras, avisos de latin-1 y de formato numérico español) para trabajar sin leer el fichero entero. Solo stdlib |
-| `dm-revisor-codigo` | agente | izan | Revisión estricta (sin corregir) de código Python: corrección, fallos silenciosos en pipelines de datos, convenciones del repo, tests y simplicidad. Adaptado de los revisores de ECC |
+| `dm-revisor-codigo` | agente | izan | Revisión estricta (sin corregir) de código Python: corrección, fallos silenciosos en pipelines de datos, convenciones del repo, tests y código mínimo. Adaptado de los revisores de ECC; precarga `dm-codigo-minimo` |
 | `dm-revisor-seguridad` | agente | izan | Revisión de seguridad de solo lectura: secretos, entradas no confiables, SSRF, deserialización, HTML inseguro en la demo, prompt injection y dependencias. Adaptado de `security-reviewer` de ECC |
+| `dm-codigo-minimo` | skill | yeray | Escribir o cambiar código con el cambio más pequeño que resuelve la tarea entera: escalera de opciones, sin abstracciones ni opciones de más, test de la lógica no trivial y atajos marcados. Adaptada de `ponytail` (MIT); la precarga `dm-revisor-codigo` |
+| `dm-humanizar` | skill | yeray | Quitar el tono de IA a textos en español (pitch, app, nota metodológica, README, PR) sin cambiar lo que dicen ni tocar cifras, fuentes ni marcas de estimado. Adaptada de `humanizer` (MIT) |
+| `dm-abogado-del-diablo` | agente | yeray | Auditoría adversaria de lo que no es código (decisiones, idea, planes, análisis, pitch): supuestos, pruebas, alternativas, viabilidad, preguntas del jurado y efectos no buscados, con cómo reforzar cada punto. Solo lectura |
 | `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las cuatro skills espaciales |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
@@ -82,7 +85,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 
 1. El fichero se llama igual que `name`, con prefijo `dm-`, en minúsculas y con guiones: `dm-revisor-datos.md` → `name: dm-revisor-datos`.
 2. `name` y `description` son obligatorios. La `description` dice **qué hace y cuándo** delegar en él, en dos o tres frases (máx. 400 caracteres, lo valida la CI): el detalle va en el cuerpo, que solo se carga al ejecutarse. Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
-3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor, auditor, verificador o trazador no lleva `Edit`, `Write`, `MultiEdit` ni `NotebookEdit` (lo valida la CI). Las skills de `skills:` deben existir y no tener `disable-model-invocation`.
+3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor, auditor, verificador, trazador o abogado del diablo no lleva `Edit`, `Write`, `MultiEdit` ni `NotebookEdit` (lo valida la CI). Las skills de `skills:` deben existir y no tener `disable-model-invocation`.
 4. Una sola responsabilidad por agente. Si hace dos cosas, son dos agentes.
 5. `model` según la tarea: `opus` para razonar, diseñar, modelizar o revisar con criterio (los revisores, siempre); `sonnet` para implementar o ejecutar procedimientos ya definidos; `haiku` solo para búsquedas o resúmenes mecánicos. Nada de `permissionMode: bypassPermissions`.
 6. El cuerpo es su prompt de sistema completo: el subagente no ve la conversación ni el prompt de Claude Code. Pide que devuelva un resumen corto.
