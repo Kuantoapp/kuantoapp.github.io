@@ -17,6 +17,7 @@ ESPERADO = {
     ('raw_inmutable.py" enlazar', "SessionStart", None),
     ('entorno.py"', "SessionStart", None),
     ('contexto.py"', "SessionStart", None),
+    ('contexto.py" --stop', "Stop", None),
     ("ruff", "PostToolUse", "Edit|Write|MultiEdit"),
     ('cifras_con_fuente.py" --hook', "PostToolUse", "Edit|Write|MultiEdit"),
     ('validar_claude.py" --hook', "PostToolUse", "Edit|Write|MultiEdit"),

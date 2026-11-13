@@ -248,6 +248,28 @@ def validos(raiz: Path, por_revisor: dict[str, set[str]]) -> dict[str, dict]:
     return vistos
 
 
+def anterior(raiz: Path, revisor: str) -> str | None:
+    """Commit de la última revisión de ese revisor en esta rama, aunque haya caducado: desde ahí, revisión incremental."""
+    for fila in reversed(filas(raiz)):
+        sha = fila.get("sha", "")
+        if fila.get("agente") == revisor and ok(
+            "merge-base", "--is-ancestor", sha, "HEAD", cwd=raiz
+        ):
+            return sha[:7]
+    return None
+
+
+def que_falta(revisor: str, raiz: Path) -> str:
+    texto = f"{revisor} ({REVISORES[revisor]})"
+    sha = anterior(raiz, revisor)
+    if sha:
+        texto += (
+            f": ya revisó {sha}; pídele una revisión incremental «desde {sha}» "
+            "con la lista de hallazgos que corregiste"
+        )
+    return texto
+
+
 def resumen(raiz: Path, base: str) -> int:
     por_revisor = exigidos(cambiados(base, raiz), raiz)
     hechos = validos(raiz, por_revisor)
@@ -261,7 +283,7 @@ def resumen(raiz: Path, base: str) -> int:
     faltan = sorted(set(por_revisor) - set(hechos))
     for r in faltan:
         print(
-            f"Falta: {r} ({REVISORES[r]}). Haz commit y pide la revisión.",
+            f"Falta: {que_falta(r, raiz)}. Haz commit y pide la revisión.",
             file=sys.stderr,
         )
     return 1 if faltan else 0
@@ -302,7 +324,7 @@ def stop(evento: dict, raiz: Path, base: str) -> int:
         }
         faltan = [r for r in faltan if r in por_revisor]
     if faltan:
-        lista = "\n- ".join(f"{r} ({REVISORES[r]})" for r in faltan)
+        lista = "\n- ".join(que_falta(r, raiz) for r in faltan)
         razon = (
             f"El trabajo confirmado toca áreas con revisor obligatorio y falta su veredicto:\n- {lista}\n"
             "Lanza esos agentes ahora, corrige lo que digan y añade al PR la salida de "

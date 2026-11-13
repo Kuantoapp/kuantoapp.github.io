@@ -110,6 +110,10 @@
           {
             "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --stop"
+          },
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/contexto.py\" --stop"
           }
         ]
       }
