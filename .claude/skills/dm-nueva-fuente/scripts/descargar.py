@@ -71,7 +71,11 @@ def descargar(
                 for trozo in iter(lambda: r.read(1 << 20), b""):
                     f.write(trozo)
             # http.client no avisa si la conexión se corta antes de tiempo: se compara con lo anunciado
-            if declarado and parcial.stat().st_size != int(declarado):
+            if (
+                declarado
+                and declarado.isdigit()
+                and parcial.stat().st_size != int(declarado)
+            ):
                 raise SystemExit(
                     f"Descarga incompleta de {url}: {parcial.stat().st_size} de {declarado} bytes."
                 )
@@ -87,6 +91,7 @@ def descargar(
 
 def tabla_fuentes(readme: Path) -> tuple[list[str], list[list[str]]]:
     """La primera tabla de data/README.md (la de fuentes): termina en la primera línea que no es fila."""
+    # Copia del parser de .claude/hooks/contexto.py (los dos scripts son independientes): cambia ambos a la vez
     filas = []
     for linea in readme.read_text(encoding="utf-8").splitlines():
         if not linea.startswith("|"):

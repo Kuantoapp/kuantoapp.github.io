@@ -59,6 +59,7 @@ def verificar(base: Path) -> tuple[int, list[str]]:
 
 def tabla_fuentes(readme: str) -> tuple[list[str], list[list[str]]]:
     """La primera tabla de data/README.md (la de fuentes): termina en la primera línea que no es fila."""
+    # Copia del parser de .claude/skills/dm-nueva-fuente/scripts/descargar.py (los dos scripts son independientes): cambia ambos a la vez
     filas = []
     for linea in readme.splitlines():
         if not linea.startswith("|"):

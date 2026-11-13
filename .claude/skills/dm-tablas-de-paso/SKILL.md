@@ -17,7 +17,7 @@ Una tabla de paso dice qué parte de cada unidad de origen cae en cada unidad de
 ## Flujo
 
 1. **¿Anidan?** Si cada origen cae entero en un destino (secciones en distritos o en municipios), no hace falta reparto: se agrega por el código. Compruébalo siempre con la superposición, no lo supongas: anida si la fracción mayor de cada origen es ≥ 0,99.
-2. **¿Hay una correspondencia oficial?** Antes de construirla, busca si el publicador la da (por ejemplo, una relación de cambios del seccionado entre años, si existe (verificar)). Se confirma con `dm-verificacion-fuentes`.
+2. **¿Hay una correspondencia oficial?** Antes de construirla, busca si el publicador la da y confírmalo con `dm-verificacion-fuentes`. Para el seccionado, el INE no publica una correspondencia entre secciones de años distintos (no encontrada el 2026-11-13): sí la geometría de cada año y, con cada callejero del censo electoral, un fichero de variaciones respecto al anterior.
 3. **Si no anidan, elige el peso**, de mejor a peor:
    - **Puntos** con la unidad de destino y de origen (portales, edificios con viviendas): se cuentan los puntos de cada par.
    - **Dasimétrico:** variable auxiliar (población en rejilla, viviendas) repartida en cada pieza de la superposición.
@@ -46,7 +46,7 @@ Código de los controles y de la pureza en [metodos-y-controles.md](referencia/m
 
 ## Casos frecuentes
 
-- **Código postal:** responde a la logística del reparto, no a un marco estadístico, y sus límites no forman parte de la cartografía estadística oficial (verificar qué publica cada organismo antes de elegir capa). El mejor peso son los portales con su código postal, si la fuente de portales lo trae (verificar). Cualquier capa de polígonos de código postal es una aproximación: declara cuál usas.
+- **Código postal:** responde a la logística del reparto, no a un marco estadístico, y sus límites no forman parte de la cartografía estadística oficial. La capa de polígonos es de Correos y el CNIG solo puede mostrarla, no darla en descarga (convenio CNIG-Correos, BOE-A-2023-11522, cláusulas 2.ª y 4.ª; comprobado el 2026-11-13). El mejor peso son los portales con su código postal: CartoCiudad los trae (campo `cod_postal` de la capa `portalpk_publi`, CC BY 4.0, descarga por provincia en el CNIG). Los tramos del callejero del INE traen sección y, según el diseño de 1997, código postal (verificar en el diseño actual). Cualquier capa de polígonos de código postal en descarga es una aproximación no oficial: declara cuál usas.
 - **Seccionado de años distintos:** las secciones se dividen, se fusionan y a veces reutilizan un código con otra geometría. Nunca unas años distintos por el código sin comprobar la geometría: superpón las dos capas con pesos de población.
 - **Zonas de transporte o rejillas:** igual que cualquier unidad que no anida. Para rejillas de población, la propia rejilla es el peso.
 
