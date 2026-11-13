@@ -1,7 +1,7 @@
 # Agentes y skills del proyecto
 
 Índice central de los subagentes y skills de Claude Code que usa el equipo, y reglas para añadirlos.
-La CI (`.github/scripts/validar_claude.py`) comprueba que todo lo de esta carpeta cumple estas reglas y aparece en el índice.
+`.github/scripts/validar_claude.py` comprueba que todo lo de esta carpeta cumple estas reglas y aparece en el índice: un hook lo ejecuta en cuanto un agente edita algo de `.claude/`, `AGENTS.md` o `CLAUDE.md` (y le devuelve los errores para que los corrija), y la CI lo repite en cada PR.
 Claude Code no carga este fichero: es para las personas y para revisar los PR.
 
 ## Uso en equipo
@@ -27,6 +27,7 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 | `dm-auditor-calculos-normativos` | agente | proyecto | Auditoría estricta (sin corregir) de esos cálculos contra la fuente primaria vigente, con tabla de parámetros, casos de test propuestos y veredicto. Precarga `dm-calculos-normativos` |
 | `dm-verificacion-fuentes` | skill | proyecto | Cruzar con el publicador original cualquier afirmación sobre datos, normas o licencias: existencia, cobertura, año, nivel territorial, descarga, licencia frente al uso previsto y cifras publicadas, con estados y evidencia reproducible |
 | `dm-verificador-fuentes` | agente | proyecto | Verificación estricta de solo lectura (sin `Bash`, `Edit` ni `Write`) de marcas «(verificar)», fuentes nuevas y cifras citadas; propone el texto corregido. Precarga `dm-verificacion-fuentes` |
+| `dm-trazador-cifras` | agente | proyecto | Rastrea cada cifra que ve el público hasta el código, la consulta y el dato que la producen; comprueba fuente y marca de estimado. Precarga `dm-verificacion-fuentes` |
 | `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las tres skills espaciales |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
@@ -52,7 +53,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 | Una regla que solo aplica a parte del repo | regla con `paths` | `.claude/rules/<tema>.md` |
 | Un procedimiento de varios pasos (PR, descargar datos, preparar demo) | skill | `.claude/skills/<nombre>/SKILL.md` |
 | Una tarea delegable con su propio contexto y herramientas limitadas (revisar, auditar, explorar) | subagente | `.claude/agents/<nombre>.md` |
-| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json` |
+| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/` |
 | Preferencias personales | `CLAUDE.local.md` (no se versiona) | raíz |
 
 `.claude/commands/` está prohibido: las skills lo sustituyen y admiten ficheros de apoyo.
@@ -61,7 +62,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 
 1. El fichero se llama igual que `name`, con prefijo `dm-`, en minúsculas y con guiones: `dm-revisor-datos.md` → `name: dm-revisor-datos`.
 2. `name` y `description` son obligatorios. La `description` dice **qué hace y cuándo** delegar en él, en dos o tres frases (máx. 400 caracteres, lo valida la CI): el detalle va en el cuerpo, que solo se carga al ejecutarse. Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
-3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor no lleva `Edit` ni `Write`.
+3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor, auditor, verificador o trazador no lleva `Edit`, `Write`, `MultiEdit` ni `NotebookEdit` (lo valida la CI). Las skills de `skills:` deben existir y no tener `disable-model-invocation`.
 4. Una sola responsabilidad por agente. Si hace dos cosas, son dos agentes.
 5. `model` según la tarea: `opus` para razonar, diseñar, modelizar o revisar con criterio (los revisores, siempre); `sonnet` para implementar o ejecutar procedimientos ya definidos; `haiku` solo para búsquedas o resúmenes mecánicos. Nada de `permissionMode: bypassPermissions`.
 6. El cuerpo es su prompt de sistema completo: el subagente no ve la conversación ni el prompt de Claude Code. Pide que devuelva un resumen corto.
@@ -71,7 +72,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 
 1. La carpeta se llama como la skill, con prefijo `dm-`, en minúsculas y con guiones (`dm-abrir-pr`). Si pones `name`, debe coincidir con la carpeta.
 2. `description` obligatoria, en tercera persona («Prepara…», «Verifica…»): primero el caso de uso clave, después los términos concretos que diría alguien del equipo y al final para qué **no** es (y qué skill usar). `when_to_use` lleva frases o preguntas de ejemplo que la disparan. Juntas, máx. 800 caracteres (lo valida la CI): Claude Code corta cada entrada a 1.536 y, si el listado de todas las skills no cabe en su presupuesto, quita la descripción entera de las menos usadas. Por eso `.claude/settings.json` sube ese presupuesto al 2 % (`skillListingBudgetFraction`).
-3. `SKILL.md` de menos de 500 líneas. El detalle va en ficheros de apoyo dentro de la carpeta (`referencia.md`, `scripts/…`), enlazados desde `SKILL.md`.
+3. `SKILL.md` de menos de 500 líneas. El detalle va en ficheros de apoyo dentro de la carpeta (`referencia/…`, `scripts/…`), **todos enlazados directamente desde `SKILL.md`** (un solo nivel; lo que no se enlaza, Claude no lo encuentra) y sin enlaces rotos. Los de más de 100 líneas empiezan con una línea «Contenido» que lista sus secciones. `when_to_use` es obligatorio en el proyecto.
 4. Skills con efectos (push, abrir PR, borrar datos, desplegar) llevan `disable-model-invocation: true`: solo se lanzan a mano con `/<nombre>`.
 5. `allowed-tools` solo con lo que la skill necesita.
 

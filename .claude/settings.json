@@ -20,6 +20,39 @@
             "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) command -v ruff >/dev/null || exit 0; ruff format -q \"$f\"; ruff check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" --hook"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/validar_claude.py\" --hook"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+          }
+        ]
       }
     ]
   },

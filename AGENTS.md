@@ -79,6 +79,18 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
 - Lógica nueva no trivial (cálculo de indicadores, joins, parsers) lleva al menos un test pequeño en `tests/`.
 - Sin dependencias nuevas sin justificarlas en el PR. Si añades una, va a `requirements.txt` con versión fijada.
 
+## Cifras con fuente
+
+- **Ningún número llega al público sin su fuente.** En `app/` y `docs/pitch/` (`.md`, `.html`, `.txt`), cada línea con una cifra lleva una nota `[^id]` definida en el mismo fichero o «fuente: …». Si la cifra sale de un modelo, una imputación o un supuesto, dice además «estimado». Un hook lo comprueba al editar y la CI en cada PR.
+- Una línea con números que no son datos (una página, un identificador) se exime con `<!-- sin-fuente: motivo -->`.
+- Antes de una demo, un ensayo o un PR que cambie cifras visibles, pasa `dm-trazador-cifras`: rastrea cada cifra hasta la consulta y el dato que la producen.
+
+## Datos originales intocables
+
+- `data/raw/` guarda las descargas tal cual: se puede **descargar un fichero nuevo**, pero no editarlo, sobrescribirlo, moverlo ni borrarlo. Un hook lo impide y deja lo descargado en solo lectura.
+- Para actualizar una fuente, descárgala con otro nombre (por ejemplo con la fecha) y cambia `data/README.md`. Lo derivado va a `data/processed/`.
+- Para descomprimir dentro de `data/raw/`, sin sobrescribir: `tar -xkf` o `unzip -n`.
+
 ## Prohibido
 
 - Versionar datos (`csv`, `parquet`, `geojson` grandes…), modelos entrenados o ficheros de más de 5 MB. Van en `data/` (ignorado) y su origen se documenta en `data/README.md`.

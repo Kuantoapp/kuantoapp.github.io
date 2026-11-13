@@ -9,7 +9,7 @@ validar_claude = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(validar_claude)
 
 AGENTE = "---\nname: dm-revisor\ndescription: Revisa diffs. Úsalo de forma proactiva.\ntools: Read, Grep\nmodel: haiku\n---\nPrompt.\n"
-SKILL = "---\ndescription: Abre un PR siguiendo AGENTS.md\ndisable-model-invocation: true\n---\nPasos.\n"
+SKILL = "---\ndescription: Abre un PR siguiendo AGENTS.md\nwhen_to_use: Abrir un PR, subir la rama\ndisable-model-invocation: true\n---\nPasos.\n"
 INDICE = "## Índice\n| Nombre | Tipo | Origen | Para qué |\n|---|---|---|---|\n| `dm-revisor` | agente | proyecto | x |\n| `dm-abrir-pr` | skill | proyecto | x |\n"
 
 
@@ -109,3 +109,57 @@ def test_descripciones_largas(tmp_path):
     )
     assert "el detalle va en el cuerpo" in errores
     assert f"> {validar_claude.MAX_DESC_SKILL} caracteres" in errores
+
+
+def test_reglas_de_la_guia_en_skills(tmp_path):
+    skill = SKILL.replace(
+        "Abre un PR siguiendo AGENTS.md", "Úsala para abrir un PR"
+    ).replace("when_to_use: Abrir un PR, subir la rama\n", "")
+    skill += "Ver [detalle](referencia/detalle.md) y [roto](referencia/no-existe.md).\n"
+    base = repo(tmp_path, skill=skill)
+    ref = base / ".claude/skills/dm-abrir-pr/referencia"
+    ref.mkdir()
+    (ref / "detalle.md").write_text("# Detalle\n" + "línea\n" * 120)
+    (ref / "huerfano.md").write_text("# Nadie me enlaza\n")
+    errores = "\n".join(validar_claude.validar(base))
+    assert "falta when_to_use" in errores
+    assert "tercera persona" in errores
+    assert "enlace roto a referencia/no-existe.md" in errores
+    assert "huerfano.md: no se enlaza" in errores
+    assert "detalle.md: más de 100 líneas sin índice" in errores
+
+
+def test_reglas_de_agentes(tmp_path):
+    agente = AGENTE.replace(
+        "tools: Read, Grep",
+        "tools: Read, Grep, Edit\nskills:\n  - dm-no-existe\n  - dm-abrir-pr",
+    )
+    errores = "\n".join(validar_claude.validar(repo(tmp_path, agente=agente)))
+    assert "un revisor solo lee" in errores
+    assert "precarga la skill 'dm-no-existe'" in errores
+    assert "disable-model-invocation y no se puede precargar" in errores
+
+
+def test_validador_desde_hook(tmp_path):
+    import json
+    import os
+    import subprocess
+    import sys
+
+    base = repo(tmp_path, agente=AGENTE.replace("tools: Read, Grep\n", ""))
+    script = Path(__file__).parents[1] / ".github/scripts/validar_claude.py"
+    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(base)}
+
+    def lanzar(ruta: Path) -> subprocess.CompletedProcess:
+        evento = json.dumps({"tool_input": {"file_path": str(ruta)}})
+        return subprocess.run(
+            [sys.executable, script, "--hook"],
+            input=evento,
+            capture_output=True,
+            text=True,
+            env=entorno,
+        )
+
+    r = lanzar(base / ".claude/agents/dm-revisor.md")
+    assert r.returncode == 2 and "falta tools" in r.stderr
+    assert lanzar(base / "src/otro.py").returncode == 0
