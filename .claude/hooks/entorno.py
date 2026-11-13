@@ -8,6 +8,7 @@ from __future__ import annotations  # puede ejecutarse con el Python 3.9 de macO
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 # shortcut: rutas de .venv de macOS y Linux; en Windows serían .venv/Scripts
@@ -22,6 +23,12 @@ def avisos(base: Path) -> list[str]:
     )
     venv = base / ".venv/bin/python"
     out = []
+    actual = f"{sys.version_info[0]}.{sys.version_info[1]}"
+    if fijada and actual != fijada:
+        out.append(
+            f"los hooks del proyecto se están ejecutando con Python {actual} ({sys.executable}), no con el {fijada} del equipo: "
+            f"siguen funcionando, pero ejecuta `{ARREGLO}` para que usen el del proyecto"
+        )
     if not shutil.which("uv"):
         out.append(
             "falta uv (instala Python y dependencias): https://docs.astral.sh/uv/getting-started/installation/"

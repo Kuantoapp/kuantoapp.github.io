@@ -26,11 +26,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" --hook"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" --hook"
           },
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/validar_claude.py\" --hook"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/validar_claude.py\" --hook"
           }
         ]
       },
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
           }
         ]
       }
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" --critico \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
           }
         ]
       },
@@ -59,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
           }
         ]
       }
@@ -69,11 +69,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/entorno.py\""
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/entorno.py\""
           },
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" enlazar"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" enlazar"
           }
         ]
       }
@@ -83,11 +83,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/docs_al_dia.py\" --stop"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/docs_al_dia.py\" --stop"
           },
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --stop"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --stop"
           }
         ]
       }
@@ -98,7 +98,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
           }
         ]
       }

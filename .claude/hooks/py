@@ -1,0 +1,42 @@
+#!/bin/sh
+# Lanza un script de hook con el Python del proyecto, no con el del sistema (en macOS, el 3.9 de Apple):
+#   1. .venv/bin/python (la versión de .python-version)
+#   2. uv run con la versión de .python-version (la descarga sola si falta)
+#   3. python3 del sistema (último recurso: los scripts de hooks siguen siendo compatibles con 3.9)
+# Uso: sh .claude/hooks/py [--critico] script.py [args…]
+# Con --critico, si no hay Python o el intérprete no arranca y la acción menciona data/raw, BLOQUEA (exit 2):
+# una protección que no se puede ejecutar no debe dejar pasar en silencio.
+# shortcut: sh de macOS y Linux; en Windows haría falta un lanzador .cmd o Git Bash.
+
+critico=0
+[ "$1" = "--critico" ] && { critico=1; shift; }
+raiz="${CLAUDE_PROJECT_DIR:-.}"
+entrada=$(cat)
+arreglo="ejecuta 'uv venv && uv pip install -r requirements-dev.txt' en la raíz del repo (instala uv si no lo tienes: https://docs.astral.sh/uv/)"
+
+toca_raw() { printf '%s' "$entrada" | grep -q 'data/raw'; }
+
+if [ -x "$raiz/.venv/bin/python" ]; then
+  set -- "$raiz/.venv/bin/python" "$@"
+elif command -v uv >/dev/null 2>&1; then
+  version=$(cat "$raiz/.python-version" 2>/dev/null || echo 3)
+  set -- uv run --quiet --no-project --python "$version" python "$@"
+elif command -v python3 >/dev/null 2>&1; then
+  set -- python3 "$@"
+else
+  if [ "$critico" = 1 ] && toca_raw; then
+    echo "Bloqueado: no hay Python para el hook que protege data/raw; $arreglo." >&2
+    exit 2
+  fi
+  echo "Hooks del proyecto sin Python: $arreglo." >&2
+  exit 1
+fi
+
+printf '%s' "$entrada" | "$@"
+estado=$?
+# 0 = sigue, 2 = el script bloquea a propósito; otro código = el intérprete o el script fallaron
+if [ "$estado" -ne 0 ] && [ "$estado" -ne 2 ] && [ "$critico" = 1 ] && toca_raw; then
+  echo "Bloqueado: el hook que protege data/raw no pudo ejecutarse (código $estado); $arreglo." >&2
+  exit 2
+fi
+exit "$estado"

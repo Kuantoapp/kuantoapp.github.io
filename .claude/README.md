@@ -53,7 +53,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 | Una regla que solo aplica a parte del repo | regla con `paths` | `.claude/rules/<tema>.md` |
 | Un procedimiento de varios pasos (PR, descargar datos, preparar demo) | skill | `.claude/skills/<nombre>/SKILL.md` |
 | Una tarea delegable con su propio contexto y herramientas limitadas (revisar, auditar, explorar) | subagente | `.claude/agents/<nombre>.md` |
-| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/`. Debe funcionar con Python 3.9 (el de macOS): `ruff.toml` lo fija y `tests/test_hooks.py` ejecuta todos los hooks con él; `tests/test_settings.py` comprueba que cada uno está en su evento |
+| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/`. En `settings.json` se lanza con `sh "$CLAUDE_PROJECT_DIR/.claude/hooks/py" [--critico] <script>`: usa el Python del proyecto (`.venv` o, si aún no existe, `uv`) y solo como último recurso el `python3` del sistema (el 3.9 de macOS); con `--critico`, si no puede ejecutar el hook y la acción toca `data/raw`, bloquea y explica cómo arreglarlo. Por ese último recurso el script sigue siendo compatible con 3.9: `ruff.toml` lo fija y `tests/test_hooks.py` ejecuta todos los hooks con él; `tests/test_settings.py` comprueba que cada uno está en su evento |
 | Preferencias personales | `CLAUDE.local.md` (no se versiona) | raíz |
 
 `.claude/commands/` está prohibido: las skills lo sustituyen y admiten ficheros de apoyo.
