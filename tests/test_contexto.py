@@ -1,4 +1,4 @@
-"""Hook SessionStart de contexto: hitos, decisiones pendientes, «(verificar)» y descargas que faltan."""
+"""Hook SessionStart de contexto: fechas clave, decisiones pendientes, «(verificar)» y descargas que faltan."""
 
 import importlib.util
 from datetime import date
@@ -14,7 +14,7 @@ DECISIONES = """# Registro
 - 2026-11-12 · Flujo GitHub · porque · PR
 - _Pendiente_ · Idea elegida (plan1 / plan2)
 
-## Hitos
+## Fechas clave
 
 | Fecha | Hito |
 |---|---|
@@ -57,6 +57,13 @@ def proyecto(tmp_path: Path) -> Path:
     (tmp_path / "ideas/plan1/ficha.md").write_text(
         "Dato A (verificar)\nDato B (Verificar año)\n"
     )
+    # Estructura libre: cualquier carpeta cuenta, salvo tests/ y las menciones entre «»
+    (tmp_path / "analisis").mkdir()
+    (tmp_path / "analisis/notas.md").write_text(
+        "Las marcas «(verificar)» se resuelven\n"
+    )
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests/test_x.py").write_text("x = '(verificar)'\n")
     return tmp_path
 
 

@@ -3,7 +3,7 @@
 Una línea por decisión, la más reciente arriba. Los agentes leen esto antes de trabajar.
 Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 
-- 2026-11-13 · Cada fuente de `data/README.md` lleva el SHA-256 de su fichero, descargado con fecha en el nombre (skill `dm-nueva-fuente`); las tablas de paso entre unidades tienen su propia skill (`dm-tablas-de-paso`) y los hitos del equipo van en la sección «Hitos» de este fichero · cada persona descarga su copia y sin huella nadie sabe si trabaja con los mismos datos; las tablas de paso cambian cifras sin que nada falle; y un hook de inicio de sesión recuerda a cada agente lo pendiente · contexto, tablas de paso y fuentes
+- 2026-11-13 · Cada fuente de `data/README.md` lleva el SHA-256 de su fichero, descargado con fecha en el nombre (skill `dm-nueva-fuente`); las tablas de paso entre unidades tienen su propia skill (`dm-tablas-de-paso`) y las fechas clave del equipo van en la sección «Fechas clave» de este fichero · cada persona descarga su copia y sin huella nadie sabe si trabaja con los mismos datos; las tablas de paso cambian cifras sin que nada falle; y un hook de inicio de sesión recuerda a cada agente lo pendiente · contexto, tablas de paso y fuentes
 - 2026-11-13 · Los diccionarios de datos (`<nombre>.DATA.md`, skill `dm-diccionario-datos`) se versionan en `docs/datos/` · las descargas originales son inmutables y `data/` no se versiona; así el equipo comparte el perfil sin descargar · revisores de ECC y diccionario
 - 2026-11-13 · Hooks también en Windows: `py` delega en `py-windows` cuando detecta Git Bash y cada hook puede tener su `<script>_windows.py`; entradas `PowerShell` en `settings.json` para `data/raw` · un miembro del equipo trabaja en Windows y la herramienta PowerShell de Claude Code no la cubre el matcher `Bash`; los hooks de macOS no cambian · hooks Windows
 - 2026-11-13 · Los hooks se lanzan con el Python del proyecto (`.venv`, si no `uv`, y como último recurso el del sistema) mediante `.claude/hooks/py`; el de `data/raw` bloquea si no puede ejecutarse · el Python de Apple no se puede actualizar y una protección que no arranca no debe dejar pasar en silencio · lanzador de hooks
@@ -16,11 +16,11 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 - _Pendiente_ · Idea elegida (plan1 / plan2 / plan3)
 - _Pendiente_ · Stack de `src/` y `app/`
 
-## Hitos
+## Fechas clave
 
-Fechas que el equipo tiene que tener presentes. El hook de inicio de sesión (`.claude/hooks/contexto.py`) muestra a cada agente las tres siguientes con los días que faltan. Formato: `| AAAA-MM-DD | hito |`.
+Fechas fijas que el equipo tiene que tener presentes (no son tareas: las tareas van en issues). El hook de inicio de sesión (`.claude/hooks/contexto.py`) muestra a cada agente las tres siguientes con los días que faltan. Formato: `| AAAA-MM-DD | hito |`.
 
-| Fecha | Hito |
+| Fecha | Qué pasa |
 |---|---|
 | 2026-11-22 | Datos y cálculos congelados (propuesta de la ficha de plan1, por confirmar) |
 | 2026-11-26 | Presentación ante el jurado (fecha de la organización) |

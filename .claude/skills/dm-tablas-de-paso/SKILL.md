@@ -30,7 +30,9 @@ Una tabla de paso dice qué parte de cada unidad de origen cae en cada unidad de
 6. **Comprueba** los controles de abajo. Si alguno falla, se corrige antes de usar la tabla.
 7. **Mide la incertidumbre:** la **pureza** de cada destino (parte de su peso que viene de orígenes enteros, sin repartir). Un valor de un destino con pureza baja es una estimación y se presenta como tal.
 
-## Controles (todos, cada vez)
+## Contrastar cada resultado con lo que debe salir
+
+Todos, cada vez:
 
 | Comprobación | Lo correcto | Si no se cumple |
 |---|---|---|
@@ -42,7 +44,7 @@ Una tabla de paso dice qué parte de cada unidad de origen cae en cada unidad de
 | Número de destinos | El del ámbito oficial | Ver `dm-cartografia` |
 | Segunda vía | Un total oficial del destino (por ejemplo, población por distrito publicada) se parece al reconstruido | El peso no representa bien lo que se reparte |
 
-Código de los controles y de la pureza en [metodos-y-controles.md](referencia/metodos-y-controles.md). Va a `src/` como función con su test.
+Código de los controles y de la pureza en [metodos-y-controles.md](referencia/metodos-y-controles.md). Va a `src/` como función con su test. Errores frecuentes, al final de esa referencia.
 
 ## Casos frecuentes
 
@@ -55,3 +57,15 @@ Código de los controles y de la pureza en [metodos-y-controles.md](referencia/m
 - La tabla se guarda en `data/processed/` con columnas `origen, destino, peso, peso_destino, metodo` y la función que la construye va a `src/`, con un test de los controles (suma de pesos y total conservado) sobre un ejemplo pequeño.
 - El método, la variable auxiliar y su año, y las zonas excluidas, en `docs/decisiones.md`; en la nota metodológica, el supuesto y la pureza de los destinos que se presentan.
 - Antes de usarla en resultados o de abrir el PR, revisión de `dm-revisor-espacial` (obligatoria si el código usa geometrías).
+
+## Python
+
+Funciones de [metodos-y-controles.md](referencia/metodos-y-controles.md), listas para copiar a `src/`:
+
+| Tarea | Función |
+|---|---|
+| Tabla por área, dasimétrica o por puntos (con cobertura) | `tabla_paso_area`, `tabla_paso_dasimetrica`, `tabla_paso_puntos` |
+| Pasar una extensiva | `pasar_extensiva` |
+| Controles y pureza | `comprobar_tabla`, `pureza` |
+
+Si el equipo prefiere una librería, `tobler` (PySAL) hace interpolación areal y dasimétrica; no está en el proyecto y añadirla exige justificarla en el PR.

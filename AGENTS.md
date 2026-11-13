@@ -30,7 +30,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
 
 ## Antes de escribir código
 
-1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida) y los hitos. No lo contradigas sin abrir una issue. Al abrir sesión, un hook te resume lo pendiente: próximos hitos, decisiones sin tomar, marcas «(verificar)» y descargas que te faltan.
+1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida) y las fechas clave. No lo contradigas sin abrir una issue. Al abrir sesión, un hook te resume lo pendiente: próximas fechas clave, decisiones sin tomar, marcas «(verificar)» y descargas que te faltan.
 2. Trabaja sobre **una issue**. Si no existe, pídesela al humano o créala (`gh issue create`). El PR la cierra con `Closes #N`.
 3. Busca en `src/` antes de crear nada nuevo: reutiliza funciones existentes.
 
