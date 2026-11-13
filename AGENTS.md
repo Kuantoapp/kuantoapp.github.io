@@ -75,6 +75,7 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
 
 ## Calidad mínima (lo que comprueba la CI)
 
+- Entorno: Python de `.python-version` y herramientas de `requirements-dev.txt`, en `.venv` (`uv venv && uv pip install -r requirements-dev.txt`). Así local y CI usan las mismas versiones.
 - Python: `ruff check . && ruff format --check . && pytest -q`. Ejecútalo antes de hacer push. En Claude Code, un hook (`.claude/settings.json`) ya formatea y revisa cada `.py` al editarlo.
 - Lógica nueva no trivial (cálculo de indicadores, joins, parsers) lleva al menos un test pequeño en `tests/`.
 - Sin dependencias nuevas sin justificarlas en el PR. Si añades una, va a `requirements.txt` con versión fijada.
@@ -101,6 +102,22 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l�
 ## Subagentes y skills
 
 Antes de crear o modificar algo en `.claude/agents/` o `.claude/skills/`, lee `.claude/README.md`: índice, reglas y qué va en cada sitio. La CI lo valida.
+
+## Documentación al día
+
+Cada cambio arrastra su documentación en el mismo PR. Qué tocar según lo que cambies:
+
+| Si cambias… | Actualiza |
+|---|---|
+| Hooks o `.claude/settings.json` | `AGENTS.md` o `.claude/README.md` |
+| CI o `.github/scripts/` | `AGENTS.md`, `README.md` o `.claude/README.md` |
+| Dependencias o `.python-version` | `docs/decisiones.md` o `README.md` |
+| Agentes o skills | su fila del índice en `.claude/README.md` |
+| Una fuente de datos (una URL nueva en el código) | `data/README.md` |
+| Una decisión que afecta a los demás | `docs/decisiones.md` |
+| Un fichero que se nombra en la documentación (mover, renombrar, borrar) | Los documentos que lo nombran |
+
+`.github/scripts/docs_al_dia.py` lo comprueba en la CI, junto con las rutas y enlaces rotos de la documentación. En Claude Code, un hook `Stop` te lo recuerda antes de terminar. Si de verdad no hace falta, escribe en el PR «Docs: sin cambios — motivo».
 
 ## Al terminar
 

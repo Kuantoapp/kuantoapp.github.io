@@ -43,7 +43,7 @@ KEBAB = re.compile(r"^dm(-[a-z0-9]+)+$")
 FILA = re.compile(r"^\|\s*`?([^|`]+?)`?\s*\|\s*(agente|skill)\s*\|")
 # Guía de autoría de skills: la description va en tercera persona
 SEGUNDA_PERSONA = re.compile(
-    r"\b(úsala|úsame|usa esta|puedes|te ayud\w*|ayudarte)\b", re.I
+    r"\b(úsala|úsame|usa esta|puedes|te ayud\w*|ayudarte)\b", re.IGNORECASE
 )
 # Quien revisa no corrige: sin herramientas de edición
 SOLO_LECTURA = re.compile(r"revisor|auditor|verificador|trazador")
@@ -239,7 +239,7 @@ def desde_hook() -> int:
     try:
         ruta = Path(json.load(sys.stdin).get("tool_input", {}).get("file_path") or "")
         rel = ruta.resolve().relative_to(raiz).as_posix()
-    except Exception:
+    except Exception:  # noqa: BLE001 — un hook no debe romper la sesión
         return 0
     if not rel.startswith(VIGILADOS):
         return 0

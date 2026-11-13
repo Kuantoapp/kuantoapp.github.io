@@ -26,7 +26,7 @@ NO_ES_CIFRA = [
     re.compile(r"\bv?\d+\.\d+\.\d+\b"),  # versiones
 ]
 NOTA = re.compile(r"\[\^([\w-]+)\](?!:)")
-DEF_NOTA = re.compile(r"^\[\^([\w-]+)\]:", re.M)
+DEF_NOTA = re.compile(r"^\[\^([\w-]+)\]:", re.MULTILINE)
 
 
 def es_cifra(texto: str) -> bool:
@@ -89,7 +89,7 @@ def desde_hook() -> int:
     """PostToolUse: revisa el fichero editado. Si el evento no se entiende, no bloquea (la CI lo cubre)."""
     try:
         ruta = json.load(sys.stdin).get("tool_input", {}).get("file_path") or ""
-    except Exception:
+    except Exception:  # noqa: BLE001 — un hook no debe romper la sesión
         return 0
     return main([ruta]) if ruta else 0
 
