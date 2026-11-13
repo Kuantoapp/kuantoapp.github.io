@@ -43,9 +43,16 @@ Cada una termina en CUMPLE, NO CUMPLE, NO APLICA o SIN EVIDENCIA, con la prueba 
 - Reutiliza `src/` en vez de duplicar; la lógica que funciona en un notebook se movió a `src/`.
 - Lógica nueva no trivial (indicador, join, parser) con al menos un test pequeño en `tests/` que fallaría si la lógica se rompe.
 - Sin dependencias nuevas sin fijar en `requirements.txt` ni justificar.
-- Sin código «por si acaso»: opciones, capas o abstracciones que nadie usa. Lo más simple que resuelve la issue.
+- Sin código «por si acaso»: opciones, capas o abstracciones que nadie usa. Lo más simple que resuelve la issue (estándar: `dm-codigo-minimo`).
 - Sin rutas absolutas ni específicas de un sistema operativo: `pathlib.Path`, rutas relativas a la raíz del repo; el código corre igual en macOS, Linux y Windows.
 - No toca código ajeno a la issue.
+
+**Código mínimo** (cada hallazgo, con el cambio concreto que lo reduce)
+- Borrar: código muerto, opciones sin uso, funcionalidades especulativas.
+- Reutilizar: lo que ya existe en `src/` (di la ruta) o lo que ya hace la stdlib o una dependencia instalada; una dependencia nueva para pocas líneas.
+- YAGNI: abstracción con una sola implementación, configuración que nadie cambia.
+- Unir: casi-copias que tienen que cambiar a la vez. Separar: una función que hace varias cosas sin relación (por tareas, nunca por número de líneas).
+- Un comentario `# shortcut: <límite>, <cuándo mejorarlo>` es una decisión, no un hallazgo, salvo que el uso previsto ya supere el límite.
 
 **Legibilidad**
 - Nombres claros; funciones de una responsabilidad; anidación de más de 3 niveles justificada.

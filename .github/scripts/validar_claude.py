@@ -46,7 +46,7 @@ SEGUNDA_PERSONA = re.compile(
     r"\b(úsala|úsame|usa esta|puedes|te ayud\w*|ayudarte)\b", re.IGNORECASE
 )
 # Quien revisa no corrige: sin herramientas de edición
-SOLO_LECTURA = re.compile(r"revisor|auditor|verificador|trazador")
+SOLO_LECTURA = re.compile(r"revisor|auditor|verificador|trazador|abogado")
 EDICION = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 ENLACE = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
 

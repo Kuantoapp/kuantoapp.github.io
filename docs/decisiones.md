@@ -15,6 +15,7 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 - 2026-11-12 · Flujo GitHub Flow: ramas `<usuario>/<tema>`, PR con squash a `main`, 1 revisión · tres personas con agentes, historial lineal y revisable · estructura del repo
 - _Pendiente_ · Idea elegida (plan1 / plan2 / plan3)
 - _Pendiente_ · Stack de `src/` y `app/`
+- _Pendiente_ · Bases del concurso: criterios y pesos del jurado, formato de entrega y duración de la presentación
 
 ## Fechas clave
 
