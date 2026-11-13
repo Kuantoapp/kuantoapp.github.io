@@ -2,7 +2,7 @@ name: CI
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
 permissions:
   contents: read
   pull-requests: read
@@ -45,21 +45,24 @@ jobs:
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
 
       - uses: actions/setup-python@v7
-        with: { python-version: "3.12" }
+        with: { python-version-file: .python-version }
       - uses: actions/setup-node@v7
         with: { node-version: 22 }
 
       - name: Agentes, skills y CLAUDE.md (reglas en .claude/README.md)
-        run: pip install pyyaml && python .github/scripts/validar_claude.py
+        run: pip install -r requirements-dev.txt && python .github/scripts/validar_claude.py
 
       - name: Cifras que ve el público con su fuente (app/ y docs/pitch/)
         run: python .github/scripts/cifras_con_fuente.py
 
+      - name: Documentación al día (cambios con su documentación y sin referencias rotas)
+        run: python .github/scripts/docs_al_dia.py
+
       - name: Python (solo si hay)
         run: |
           if git ls-files | grep -qE '\.py$|^requirements.*\.txt$|^pyproject.toml$'; then
-            pip install ruff pytest pip-audit
             ruff check . && ruff format --check .
+            pip-audit -r requirements-dev.txt
             [ -f requirements.txt ] && pip install -r requirements.txt && pip-audit -r requirements.txt
             pytest -q || [ $? -eq 5 ]  # 5 = aún no hay tests
           else echo "Sin Python"; fi

@@ -156,6 +156,7 @@ def test_validador_desde_hook(tmp_path):
             [sys.executable, script, "--hook"],
             input=evento,
             capture_output=True,
+            check=False,
             text=True,
             env=entorno,
         )

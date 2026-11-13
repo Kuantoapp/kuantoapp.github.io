@@ -14,6 +14,16 @@ notebooks/<usuario>/      exploración personal
 app/                      la demo
 ```
 
+## Primera vez
+
+Todo el equipo usa el mismo Python (el de `.python-version`) y las mismas herramientas, con [uv](https://docs.astral.sh/uv/getting-started/installation/), que descarga esa versión de Python sola:
+
+```bash
+uv venv && uv pip install -r requirements-dev.txt
+```
+
+Activa el entorno con `source .venv/bin/activate`. Después, abre `claude` en la raíz y acepta el diálogo de confianza (ver [.claude/README.md](.claude/README.md#uso-en-equipo)).
+
 ## Cómo trabajamos (GitHub Flow)
 
 El repo está pensado para **bucles agénticos**: los agentes cierran el ciclo solos, con el menor coste posible, y la calidad, la seguridad y la precisión las aseguran hooks, CI y agentes revisores. Las personas deciden y aprueban lo sensible. Detalle en [AGENTS.md](AGENTS.md#el-bucle-agéntico).

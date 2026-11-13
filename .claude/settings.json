@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) command -v ruff >/dev/null || exit 0; ruff format -q \"$f\"; ruff check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) r=\"$CLAUDE_PROJECT_DIR/.venv/bin/ruff\"; [ -x \"$r\" ] || r=$(command -v ruff) || exit 0; \"$r\" format -q \"$f\"; \"$r\" check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
           }
         ]
       },
@@ -51,6 +51,26 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/entorno.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/docs_al_dia.py\" --stop"
           }
         ]
       }

@@ -15,3 +15,4 @@ Closes #
 - [ ] Sin dependencias nuevas (o justificadas aquí)
 - [ ] Sin secretos, datos ni ficheros pesados
 - [ ] Si decidí algo que afecta al equipo, está en `docs/decisiones.md`
+- [ ] Documentación relacionada al día (si no hace falta, escribe abajo «Docs: sin cambios — motivo»)

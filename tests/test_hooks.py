@@ -36,6 +36,7 @@ def hook(tmp_path: Path, herramienta: str, entrada: dict) -> int:
         [sys.executable, HOOK_RAW, "pre"],
         input=evento,
         capture_output=True,
+        check=False,
         text=True,
         env=entorno,
     )
@@ -91,6 +92,7 @@ def test_raw_falla_cerrado(tmp_path):
         [sys.executable, HOOK_RAW, "pre"],
         input=roto,
         capture_output=True,
+        check=False,
         text=True,
         env=entorno,
     )
@@ -99,6 +101,7 @@ def test_raw_falla_cerrado(tmp_path):
         [sys.executable, HOOK_RAW, "pre"],
         input="{roto",
         capture_output=True,
+        check=False,
         text=True,
         env=entorno,
     )
@@ -123,6 +126,7 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
             [str(py39), script, *args],
             input=evento,
             capture_output=True,
+            check=False,
             text=True,
             env=entorno,
         )
@@ -192,6 +196,7 @@ def test_cifras_desde_hook(tmp_path):
         [sys.executable, CIFRAS, "--hook"],
         input=evento,
         capture_output=True,
+        check=False,
         text=True,
         env=entorno,
     )

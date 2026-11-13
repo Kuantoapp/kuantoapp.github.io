@@ -176,7 +176,7 @@ def main() -> int:
     texto = sys.stdin.read()
     try:
         m = motivo(json.loads(texto), base)
-    except Exception as e:  # falla cerrado solo si la acción podía tocar data/raw
+    except Exception as e:  # noqa: BLE001 — falla cerrado solo si la acción podía tocar data/raw
         if RAW in texto:
             print(
                 f"Bloqueado: el hook de data/raw falló ({e!r}) y no puede garantizar nada. {AYUDA}",
