@@ -7,6 +7,9 @@ Nada de esta carpeta se versiona salvo este fichero. Cada fuente se documenta aq
 
 ## Fuentes
 
-| Nombre | URL | Licencia | Cómo obtenerla | Fichero en `raw/` |
-|---|---|---|---|---|
-| _ejemplo_ | https://… | CC BY 4.0 | `python -m src.descargas ine` | `ine_renta.csv` |
+Para añadir o actualizar una fuente, sigue la skill `dm-nueva-fuente`: descarga con fecha en el nombre y deja aquí su SHA-256. `python .claude/skills/dm-nueva-fuente/scripts/descargar.py --comprobar` dice si tus ficheros son los mismos que los del resto del equipo.
+
+
+| Nombre | URL | Licencia | Cómo obtenerla | Fichero en `raw/` | SHA-256 |
+|---|---|---|---|---|---|
+| _ejemplo_ | https://… | CC BY 4.0 | `python .claude/skills/dm-nueva-fuente/scripts/descargar.py https://… --nombre ine_renta` | `ine_renta_2026-11-13.csv` | `9f86d0…` |

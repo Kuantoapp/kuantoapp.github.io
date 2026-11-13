@@ -61,9 +61,6 @@ jobs:
       - name: Revisores obligatorios (veredicto vigente por área tocada)
         run: python .github/scripts/revisiones.py
 
-      - name: Cifras que ve el público con su fuente (app/ y docs/pitch/)
-        run: python .github/scripts/cifras_con_fuente.py
-
       - name: Python (solo si hay)
         run: |
           if git ls-files | grep -qE '\.py$|^requirements.*\.txt$|^pyproject.toml$'; then

@@ -66,7 +66,7 @@ Motivo en una frase. El veredicto global es **solo** uno de esos tres (los estad
 
 ## Propuestas de cambio
 1. fichero:línea · texto actual → texto propuesto · quién lo aplica (sesión principal o dueño de la ficha)
-2. Filas nuevas o corregidas para data/README.md (Nombre | URL | Licencia | Cómo obtenerla | Fichero)
+2. Filas nuevas o corregidas para data/README.md (Nombre | URL | Licencia | Cómo obtenerla | Fichero | SHA-256; el SHA-256 lo pone quien descarga)
 
 ## Para comprobar en bruto
 - Cifra o texto clave · URL (mejor de API) · qué debe aparecer exactamente (la sesión principal lo lee con curl o python)

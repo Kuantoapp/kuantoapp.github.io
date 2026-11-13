@@ -30,7 +30,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
 
 ## Antes de escribir código
 
-1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida). No lo contradigas sin abrir una issue.
+1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida) y los hitos. No lo contradigas sin abrir una issue. Al abrir sesión, un hook te resume lo pendiente: próximos hitos, decisiones sin tomar, marcas «(verificar)» y descargas que te faltan.
 2. Trabaja sobre **una issue**. Si no existe, pídesela al humano o créala (`gh issue create`). El PR la cierra con `Closes #N`.
 3. Busca en `src/` antes de crear nada nuevo: reutiliza funciones existentes.
 
@@ -110,7 +110,7 @@ Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el tr
 ## Datos originales intocables
 
 - `data/raw/` guarda las descargas tal cual: se puede **descargar un fichero nuevo**, pero no editarlo, sobrescribirlo, moverlo ni borrarlo. Un hook lo impide y deja lo descargado en solo lectura.
-- Para actualizar una fuente, descárgala con otro nombre (por ejemplo con la fecha) y cambia `data/README.md`. Lo derivado va a `data/processed/`.
+- Para añadir o actualizar una fuente, sigue la skill `dm-nueva-fuente`: descarga con la fecha en el nombre, deja su SHA-256 en `data/README.md` y comprueba con `--comprobar` que tienes los mismos ficheros que el resto. Lo derivado va a `data/processed/`.
 - Para descomprimir dentro de `data/raw/`, sin sobrescribir: `tar -xkf` o `unzip -n`.
 
 ## Prohibido

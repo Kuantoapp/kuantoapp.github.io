@@ -91,6 +91,10 @@
           },
           {
             "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/contexto.py\""
+          },
+          {
+            "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" enlazar"
           }
         ]

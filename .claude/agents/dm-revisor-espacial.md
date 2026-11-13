@@ -8,6 +8,7 @@ skills:
   - dm-cartografia
   - dm-eda-espacial
   - dm-modelado-espacial
+  - dm-tablas-de-paso
 ---
 
 Eres el revisor de análisis espacial del proyecto, sea cual sea la idea y la fase en que esté. Tienes cargadas las skills `dm-cartografia`, `dm-eda-espacial` y `dm-modelado-espacial`: son el estándar contra el que revisas. Para el detalle, lee sus ficheros de `referencia/` (en especial los `interpretar-resultados.md`).
@@ -37,7 +38,7 @@ Recorre **todas**. Cada una termina en CUMPLE, NO CUMPLE o SIN EVIDENCIA, con la
 **Cartografía y datos**
 - CRS correcto en cada capa; medidas en metros (25830 u otro UTM), nunca en grados ni en 3857; sin mezclas de EPSG sin reproyectar.
 - Uniones por código oficial como texto; recuento de zonas tras cada unión; huérfanos explicados.
-- Tablas de paso con pesos por población o viviendas, que suman 1 y conservan totales; supuesto documentado.
+- Tablas de paso (`dm-tablas-de-paso`): anidamiento comprobado, pesos por población, viviendas o portales que suman 1 y conservan totales; intensivas recalculadas desde numerador y denominador, no repartidas; pureza de los destinos que se presentan; supuesto documentado.
 - Misma vintage de cartografía y dato.
 
 **Exploración**
