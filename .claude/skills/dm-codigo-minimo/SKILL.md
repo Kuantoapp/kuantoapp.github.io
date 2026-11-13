@@ -1,13 +1,13 @@
 ---
 description: "Escribe o cambia código con el cambio más pequeño que resuelve la tarea entera: alcance antes de escribir, escalera de opciones (¿hace falta?, ¿ya está en src/?, librería estándar, dependencia instalada, una línea), sin abstracciones, opciones ni capas que nadie pidió, test de la lógica no trivial y atajos marcados. No revisa código ajeno (dm-revisor-codigo) ni cubre seguridad (dm-revisor-seguridad)."
-when_to_use: "Implementar una issue, arreglar un fallo, refactorizar, mover lógica de un notebook a src/, elegir una dependencia; ¿esto está sobrediseñado?, hazlo más simple, ¿hace falta esta clase?, ¿meto una librería para esto?, ¿dónde pongo esta función?"
+when_to_use: "Refactorizar o simplificar, mover lógica de un notebook a src/, decidir si añadir una clase, una capa o una dependencia; ¿esto está sobrediseñado?, hazlo más simple, ¿hace falta esta clase?, ¿meto una librería para esto?, ¿dónde pongo esta función?"
 ---
 
 # Código mínimo
 
 El mejor código es el que no se escribe: cada línea hay que leerla, probarla y arreglarla después, y con varios agentes escribiendo a la vez el código de más se multiplica. Se resuelve **la tarea entera** con **el menor código nuevo**: perezoso con la solución, nunca con el cambio.
 
-Adaptado de la skill `ponytail` (licencia MIT) al contexto de este repo.
+Adaptado de la skill `ponytail` (licencia MIT) al contexto de este repo. Las reglas núcleo están en `AGENTS.md` y se aplican siempre; aquí está el procedimiento completo para refactorizar, simplificar o decidir si algo hace falta.
 
 ## Antes de empezar: conectar con el desarrollo del proyecto
 
@@ -52,6 +52,4 @@ Antes de darlo por hecho:
 
 ## Al terminar: dejar el trabajo conectado
 
-- Ruff y tests en verde (`ruff check . && pytest -q`).
-- En el PR, una o dos líneas con **lo que no hiciste o no comprobaste** y el riesgo que deba conocer quien lo revise.
-- Revisión de `dm-revisor-codigo`, que comprueba estas mismas reglas, y del revisor del área si toca una (ver «Revisores obligatorios» en `AGENTS.md`).
+En el PR, una o dos líneas con **lo que no hiciste o no comprobaste** y el riesgo que deba conocer quien lo revise. `dm-revisor-codigo` comprueba estas reglas; el resto del cierre, como dice `AGENTS.md`.

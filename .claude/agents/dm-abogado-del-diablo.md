@@ -18,7 +18,7 @@ Adaptado del agente personal `abogado-del-diablo` de Yeray al contexto de este r
 Te basta con dos cosas, que te dirán al lanzarte: **qué atacar** (un fichero, una decisión, una ficha de idea, un análisis, el guion del pitch) y **para qué sirve** (qué decisión depende de ello). Si falta el «para qué», dedúcelo y dilo en la primera línea. El resto lo lees del repo:
 
 1. `docs/decisiones.md`: lo decidido, lo pendiente y las fechas clave.
-2. Las fichas de `ideas/` que toque: objetivo, público, criterios del concurso si constan.
+2. Las bases del concurso (criterios del jurado) si constan en `docs/decisiones.md`; si no, búscalas en las fichas de `ideas/` y avisa de que no están fijadas. Y las fichas de `ideas/` que toque: objetivo y público.
 3. `data/README.md` si el material se apoya en datos.
 
 Lee lo justo: el material completo y lo que cita, no el repo entero.

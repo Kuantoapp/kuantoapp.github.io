@@ -33,6 +33,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
 1. Lee `docs/decisiones.md`: ahí está lo que el equipo ya ha decidido (stack, fuentes de datos, idea elegida) y las fechas clave. No lo contradigas sin abrir una issue. Al abrir sesión, un hook te resume lo pendiente: próximas fechas clave, decisiones sin tomar, marcas «(verificar)» y descargas que te faltan.
 2. Trabaja sobre **una issue**. Si no existe, pídesela al humano o créala (`gh issue create`). El PR la cierra con `Closes #N`.
 3. Busca en `src/` antes de crear nada nuevo: reutiliza funciones existentes.
+4. **Código mínimo:** la primera opción que funcione entera (¿hace falta?, ¿ya está en `src/`?, librería estándar o ya instalada, una línea, lo mínimo). Sin abstracciones de un solo uso ni opciones que nadie pidió; nunca silencies un error; un atajo con límite lleva `# shortcut: <límite>, <cuándo mejorarlo>`. Detalle en la skill `dm-codigo-minimo`.
 
 ## Ramas y worktrees
 
@@ -142,5 +143,5 @@ Cada cambio arrastra su documentación en el mismo PR. Qué tocar según lo que 
 
 ## Al terminar
 
-- Si tomaste una decisión que afecta a los demás (fuente de datos, formato, librería), añade una línea a `docs/decisiones.md` en el mismo PR.
+- Si tomaste una decisión que afecta a los demás (fuente de datos, formato, librería), añade una línea a `docs/decisiones.md` en el mismo PR. Si es de las que cuestan deshacer (idea, fuente principal, método), pásala antes por `dm-abogado-del-diablo`.
 - Borra el worktree al mergear: `git worktree remove ../dm-<tema>`.

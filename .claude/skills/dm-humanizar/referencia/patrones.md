@@ -2,7 +2,7 @@
 
 Contenido: A. Escenificar en vez de afirmar (1-5) · B. Ritmo por regla (6-11) · C. Inflar y tomar prestada la autoridad (12-18) · D. Formato por regla (19-21) · E. Restos del chat y del borrador (22-25) · F. Escribir para el lector equivocado (26).
 
-Numerados de más a menos fuertes. Del 1 al 5 basta verlos una vez para actuar; los marcados como *débil* necesitan otras señales en el mismo pasaje. Los ejemplos son orientativos: las cifras de los ejemplos son inventadas.
+Numerados de más a menos fuertes. Del 1 al 5 basta verlos una vez para actuar; los marcados como *débil* necesitan otras señales en el mismo pasaje. Cada «Después» usa solo lo que dice su «Antes»: humanizar nunca añade datos. Donde una frase mejoraría con un dato que no está, se deja un hueco `<…>` para que lo dé el equipo.
 
 ## A. Escenificar en vez de afirmar
 
@@ -11,28 +11,28 @@ Numerados de más a menos fuertes. Del 1 al 5 basta verlos una vez para actuar; 
 **Señales:** no es X, sino Y; no solo X, sino también Y; no se trata de X, se trata de Y; X más que Y; el mismo contraste partido en dos frases («Esto no significa X. Significa Y.»); la coletilla negativa («…, sin complicaciones»).
 **Problema:** la mitad negativa niega algo que nadie dijo, para que la positiva parezca mayor. Di la idea directamente. El contraste se queda solo si corrige una creencia que el lector tiene de verdad o si las dos mitades informan.
 > Antes: No es solo un mapa, es una herramienta para entender la ciudad.
-> Después: El mapa muestra en qué barrios el alquiler supera el 30 % de la renta.
+> Después: El mapa ayuda a entender la ciudad. *(Mejor aún: `<qué muestra el mapa>`, si el equipo lo da.)*
 
 ### 2. Frases de cierre y fragmentos dramáticos
 
 **Señales:** un párrafo de una frase que repite el anterior; «Y eso lo cambia todo.»; «Ahí está la clave.»; «Piénsalo.»; el mismo cierre tras cada sección; una frase que explica el ejemplo que el lector acaba de ver («Esto demuestra la importancia de…»); una ristra de fragmentos («Sin datos. Sin contexto. Sin respuestas.»).
 **Problema:** pide al lector que se pare en una idea en vez de añadirle algo. Corta el cierre que repite; quédate con él si aporta un hecho o una consecuencia nueva. Une los fragmentos en una frase con una afirmación concreta.
 > Antes: Los datos estaban dispersos. Sin formato común. Sin actualizar. Y eso lo cambia todo.
-> Después: Los datos estaban repartidos en portales distintos, con formatos diferentes y años sin actualizar.
+> Después: Los datos estaban dispersos, sin un formato común y sin actualizar.
 
 ### 3. Sentencias que suenan profundas
 
 **Señales:** la verdadera pregunta es, en el fondo, lo que realmente importa, la clave está en, en esencia, X es el Y de Z, el lenguaje de, la moneda de.
 **Problema:** una idea corriente vestida de verdad oculta. Sustitúyela por la afirmación concreta.
-> Antes: En el fondo, la verdadera pregunta es cuánto vale el tiempo.
-> Después: La pregunta es cuánto cuesta en dinero cada hora de transporte.
+> Antes: En el fondo, la verdadera pregunta es cuánto vale el tiempo que se pasa en el transporte.
+> Después: La pregunta es cuánto vale el tiempo que se pasa en el transporte.
 
 ### 4. Preámbulo antes de la idea
 
 **Señales:** vamos a ver, veamos, profundicemos, esto es lo que necesitas saber, sin más preámbulos, os vengo a contar, ¿Sinceramente?, Mira, La cosa es que, Seamos sinceros.
 **Problema:** se anuncia la idea o se escenifica sinceridad en vez de decirla. Quita el preámbulo entero.
-> Antes: Vamos a ver cómo funciona el índice. Esto es lo que necesitas saber.
-> Después: El índice combina alquiler, transporte y salario neto de cada municipio.
+> Antes: Vamos a ver cómo funciona el índice, que combina alquiler, transporte y salario. Esto es lo que necesitas saber.
+> Después: El índice combina alquiler, transporte y salario.
 
 ### 5. Discutir con nadie
 
@@ -47,7 +47,7 @@ Numerados de más a menos fuertes. Del 1 al 5 basta verlos una vez para actuar; 
 
 **Problema:** las ideas llegan de tres en tres para sonar completas, tenga o no la idea tres partes («innovación, transparencia y participación»; tres ejemplos paralelos; tres hechos y una moraleja). Comprueba que cada elemento aporta algo distinto; si no, une, desarrolla el mejor o cambia la estructura. Se quedan tres cuando la idea tiene tres partes.
 > Antes: Una herramienta accesible, transparente y útil para la ciudadanía.
-> Después: Una herramienta que cualquiera puede usar sin registrarse, con el código y los datos publicados.
+> Después: Una herramienta para la ciudadanía que `<qué la hace accesible y transparente, según el equipo>`. *(Si no hay ese dato, quita los adjetivos.)*
 
 ### 7. Frases que empiezan igual
 
@@ -78,7 +78,7 @@ Numerados de más a menos fuertes. Del 1 al 5 basta verlos una vez para actuar; 
 
 **Problema:** se esconde quién hace qué («fue realizado», «se ha procedido»). Usa la activa cuando aclara quién actúa. *Débil.*
 > Antes: Los datos fueron procesados y los resultados fueron validados.
-> Después: Procesamos los datos y comprobamos los resultados con los publicados por el INE.
+> Después: Procesamos los datos y validamos los resultados.
 
 ## C. Inflar y tomar prestada la autoridad
 
@@ -89,28 +89,28 @@ El hecho de debajo suele ser correcto: se conserva y se quita el adorno.
 **Señales:** además (en cada párrafo), clave (adjetivo), crucial, fundamental, robusto (en sentido figurado), potenciar, impulsar, optimizar, fomentar, empoderar, desbloquear, sinergia, holístico, integral, innovador, disruptivo, panorama, ecosistema (figurado), abordar, poner de relieve, subrayar, meticuloso, valioso, sin lugar a dudas, cabe destacar, es importante señalar.
 **Problema:** los modelos las usan mucho más que las personas, sobre todo juntas. Una palabra formal fuera de la lista no es una señal por sí sola.
 > Antes: Cabe destacar que esta herramienta innovadora potencia de forma clave la toma de decisiones.
-> Después: La herramienta compara municipios por coste de vida.
+> Después: La herramienta ayuda a tomar decisiones. *(Mejor: `<qué decisión y cómo>`, si el equipo lo da.)*
 
 ### 13. Trascendencia inflada
 
 **Señales:** marca un antes y un después, juega un papel clave, un hito, sienta las bases, refleja una tendencia más amplia, un legado duradero, en un mundo cada vez más…, el futuro se presenta prometedor, un paso en la buena dirección; secciones tipo «Retos y perspectivas»; un párrafo final de despedida.
 **Problema:** un detalle corriente se presenta como un cambio de época. Quédate con el hecho; termina en el último hecho concreto o en un plan real.
 > Antes: En un mundo cada vez más conectado, este proyecto marca un antes y un después en la transparencia de datos.
-> Después: El proyecto publica sus datos y su código con licencia abierta.
+> Después: El proyecto publica sus datos.
 
 ### 14. Relación vaga
 
 **Señales:** asociado a, vinculado con, relacionado con, en relación con, ligado a.
 **Problema:** dice que dos cosas se relacionan sin decir cómo. Nombra la relación que da la fuente; si no la da, deja la forma vaga en vez de inventarla.
 > Antes: El precio del alquiler está vinculado con la red de metro.
-> Después: El alquiler es más caro a menos de diez minutos andando de una estación de metro.
+> Después: El alquiler `<relación que da la fuente: sube, baja…>` cerca del metro. *(Si la fuente no dice cómo, se deja «está relacionado con».)*
 
 ### 15. Gerundios de adorno
 
 **Señales:** destacando, subrayando, reflejando, contribuyendo a, fomentando, poniendo de manifiesto, consolidándose como; el gerundio de posterioridad («Se publicó en 2020, convirtiéndose en referencia»), que además es incorrecto en español.
 **Problema:** un gerundio pegado a un hecho simple para que parezca más hondo. Quédate con el hecho; el gerundio, solo si la fuente respalda lo que afirma.
 > Antes: El índice se calcula por sección censal, reflejando la diversidad de la ciudad y contribuyendo a un análisis más justo.
-> Después: El índice se calcula por sección censal, la unidad más pequeña con datos de renta.
+> Después: El índice se calcula por sección censal.
 
 ### 16. Lenguaje de folleto
 
@@ -140,7 +140,7 @@ El hecho de debajo suele ser correcto: se conserva y se quita el adorno.
 > - **Accesibilidad:** la accesibilidad ha mejorado.
 > - **Rendimiento:** el rendimiento es mayor.
 >
-> Después: La nueva versión se lee mejor con lector de pantalla y carga en la mitad de tiempo.
+> Después: La nueva versión es más accesible y más rápida.
 
 ### 20. Títulos decorativos
 
