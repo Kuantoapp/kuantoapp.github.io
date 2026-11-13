@@ -1,16 +1,19 @@
 """Toda cifra que ve el público (guion del pitch y textos de la app) lleva su fuente en la misma línea.
 
 Uso: python cifras_con_fuente.py [ficheros…]   (sin argumentos revisa todo lo vigilado)
+     python cifras_con_fuente.py --hook          (PostToolUse: lee el evento de Claude Code por stdin)
 Marcas válidas en la línea: una nota al pie [^id] definida en el mismo fichero, o «fuente:».
 Una línea sin cifras reales se exime con <!-- sin-fuente: motivo -->.
 """
 
+import json
 import os
 import re
 import sys
 from pathlib import Path
 
 VIGILADO = ("docs/pitch/", "app/")
+# shortcut: solo textos; cuando se decida el stack de app/, añade aquí sus ficheros de texto visibles
 EXTENSIONES = {".md", ".html", ".txt"}
 
 CIFRA = re.compile(
@@ -52,7 +55,9 @@ def revisar(ruta: Path) -> list[str]:
             or re.fullmatch(r"[\s|:-]*", linea)
         ):
             continue
-        limpia = re.sub(r"<!--.*?-->|\[\^[\w-]+\]|\]\([^)]*\)|`[^`]*`", " ", linea)
+        limpia = re.sub(
+            r"<!--.*?-->|<[^>]*>|\[\^[\w-]+\]|\]\([^)]*\)|`[^`]*`", " ", linea
+        )
         limpia = re.sub(r"^\s*(?:#+|\d+[.)]|[-*+])\s+", "", limpia)
         for patron in NO_ES_CIFRA:
             limpia = patron.sub(" ", limpia)
@@ -80,6 +85,15 @@ def vigilado(ruta: Path, raiz: Path) -> bool:
     return rel.startswith(VIGILADO) and ruta.suffix in EXTENSIONES
 
 
+def desde_hook() -> int:
+    """PostToolUse: revisa el fichero editado. Si el evento no se entiende, no bloquea (la CI lo cubre)."""
+    try:
+        ruta = json.load(sys.stdin).get("tool_input", {}).get("file_path") or ""
+    except Exception:
+        return 0
+    return main([ruta]) if ruta else 0
+
+
 def main(argv: list[str]) -> int:
     raiz = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path.cwd())
     if argv:
@@ -103,4 +117,4 @@ def main(argv: list[str]) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(desde_hook() if sys.argv[1:] == ["--hook"] else main(sys.argv[1:]))

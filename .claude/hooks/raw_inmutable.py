@@ -1,8 +1,11 @@
 """Hook: data/raw/ admite descargas nuevas, pero nada de lo descargado se cambia ni se borra.
 
 pre  (PreToolUse, Edit|Write|MultiEdit|NotebookEdit|Bash): bloquea con exit 2 y explica por qué.
-post (PostToolUse, Bash): deja en solo lectura lo descargado, para que tampoco un script lo pise.
+post (PostToolUse, Bash|Write): deja en solo lectura lo descargado, para que tampoco un script lo pise.
+Falla cerrado: si el propio hook falla y la acción menciona data/raw, la bloquea.
 """
+
+from __future__ import annotations  # Python 3.9 (el de macOS) no entiende `Path | None`
 
 import json
 import os
@@ -31,6 +34,14 @@ DESTRUCTIVAS = {
 # Órdenes que escriben en su último argumento: solo se permiten si el fichero aún no existe
 COPIAS = {"cp", "rsync", "ln", "install"}
 SALIDA = {"-o", "--output", "-O", "--output-document"}
+# Código en línea: borrar algo cuando se menciona data/raw, o escribir en una ruta de data/raw
+BORRA = re.compile(
+    r"\b(?:os\.remove|os\.unlink|os\.rename|os\.replace|shutil\.rmtree|shutil\.move|\.unlink|\.rmdir|unlinkSync|rmSync|renameSync)\s*\("
+)
+ESCRIBE_EN_RAW = re.compile(
+    r"(?:to_csv|to_parquet|to_excel|to_json|write_text|write_bytes|writeFileSync)\s*\(\s*[rfb]?['\"][^'\"]*data/raw"
+    r"|open\(\s*[rfb]?['\"][^'\"]*data/raw[^'\"]*['\"]\s*,\s*[rfb]?['\"][^'\"]*[wax+]"
+)
 
 
 def raiz() -> Path:
@@ -44,6 +55,10 @@ def en_raw(ruta: str, base: Path) -> Path | None:
     return p if p == raw or raw in p.parents else None
 
 
+def toca_raw(args: list[str], base: Path) -> bool:
+    return any(en_raw(a, base) for a in args if not a.startswith("-"))
+
+
 def motivo_fichero(ruta: str, herramienta: str, base: Path) -> str | None:
     p = en_raw(ruta, base)
     if p is None:
@@ -54,7 +69,15 @@ def motivo_fichero(ruta: str, herramienta: str, base: Path) -> str | None:
 
 
 def motivo_bash(orden: str, base: Path) -> str | None:
-    # shortcut: no sigue `cd` ni rutas dentro de scripts; lo cubre el modo post (solo lectura en disco)
+    # shortcut: no sigue `cd` ni lo que hace un script por dentro; lo cubre el modo post (solo lectura)
+    # El código en línea se mira entero: contiene `;` y se partiría en tramos
+    interprete = re.search(
+        r"(?:^|[\s;&|(])(?:python3?|node|perl|ruby|Rscript)\s[^\n]*?-[ce]\s", orden
+    )
+    if interprete and (
+        (RAW in orden and BORRA.search(orden)) or ESCRIBE_EN_RAW.search(orden)
+    ):
+        return "código en línea que escribe o borra en data/raw"
     for tramo in re.split(r"&&|\|\||;|\||\n", orden):
         # Redirecciones: crear un fichero nuevo vale; sobrescribir o añadir a uno existente, no
         for destino in re.findall(r">>?\s*([^\s;&|<>]+)", tramo):
@@ -65,7 +88,9 @@ def motivo_bash(orden: str, base: Path) -> str | None:
             partes = shlex.split(tramo)
         except ValueError:
             partes = tramo.split()
-        while partes and (partes[0] in {"sudo", "env", "command"} or "=" in partes[0]):
+        while partes and (
+            partes[0] in {"sudo", "env", "command", "nohup"} or "=" in partes[0]
+        ):
             partes = partes[1:]
         if not partes:
             continue
@@ -77,11 +102,38 @@ def motivo_bash(orden: str, base: Path) -> str | None:
             and any("x" in a.lower() for a in args if a.startswith("-"))
         ):
             return "git clean con -x o -X borra data/ (está ignorado por git)"
-        if cmd == "sed" and any(a.startswith("-i") or a == "--in-place" for a in args):
-            if any(en_raw(r, base) for r in rutas):
-                return "sed -i sobre data/raw"
-        if cmd in DESTRUCTIVAS and any(en_raw(r, base) for r in rutas):
+        if (
+            cmd == "sed"
+            and any(a.startswith("-i") or a == "--in-place" for a in args)
+            and toca_raw(args, base)
+        ):
+            return "sed -i sobre data/raw"
+        if cmd in DESTRUCTIVAS and toca_raw(args, base):
             return f"{cmd} sobre data/raw"
+        if (
+            cmd == "find"
+            and toca_raw(args, base)
+            and {"-delete", "-exec", "-execdir", "-ok"} & set(args)
+        ):
+            return "find con -delete o -exec sobre data/raw"
+        if (
+            cmd == "xargs"
+            and DESTRUCTIVAS & {Path(a).name for a in args}
+            and RAW in orden
+        ):
+            return "xargs con una orden destructiva sobre data/raw"
+        if (
+            cmd == "tar"
+            and toca_raw(args, base)
+            and any(a.startswith("-") and "x" in a or a == "--extract" for a in args)
+        ):
+            conserva = {"--keep-old-files", "--skip-old-files"} & set(args) or any(
+                re.fullmatch(r"-[a-zA-Z]*k[a-zA-Z]*", a) for a in args
+            )
+            if not conserva:
+                return "tar -x en data/raw sin -k (sobrescribiría lo descargado)"
+        if cmd == "unzip" and toca_raw(args, base) and "-n" not in args:
+            return "unzip en data/raw sin -n (sobrescribiría lo descargado)"
         if cmd in COPIAS and rutas:
             p = en_raw(rutas[-1], base)
             if p is not None and p.exists() and not p.is_dir():
@@ -96,25 +148,44 @@ def motivo_bash(orden: str, base: Path) -> str | None:
     return None
 
 
+def solo_lectura(base: Path) -> None:
+    raw = base / RAW
+    if raw.is_dir():
+        for f in raw.rglob("*"):
+            if f.is_file() and os.access(f, os.W_OK):
+                f.chmod(f.stat().st_mode & ~0o222)
+
+
+def motivo(evento: dict, base: Path) -> str | None:
+    herramienta, entrada = (
+        evento.get("tool_name", ""),
+        evento.get("tool_input", {}) or {},
+    )
+    if herramienta == "Bash":
+        return motivo_bash(entrada.get("command", ""), base)
+    ruta = entrada.get("file_path") or entrada.get("notebook_path") or ""
+    return motivo_fichero(ruta, herramienta, base) if ruta else None
+
+
 def main() -> int:
     modo = sys.argv[1] if len(sys.argv) > 1 else "pre"
     base = raiz()
     if modo == "post":
-        raw = base / RAW
-        if raw.is_dir():
-            for f in raw.rglob("*"):
-                if f.is_file() and os.access(f, os.W_OK):
-                    f.chmod(f.stat().st_mode & ~0o222)
+        solo_lectura(base)
         return 0
-    evento = json.load(sys.stdin)
-    herramienta, entrada = evento.get("tool_name", ""), evento.get("tool_input", {})
-    if herramienta == "Bash":
-        motivo = motivo_bash(entrada.get("command", ""), base)
-    else:
-        ruta = entrada.get("file_path") or entrada.get("notebook_path") or ""
-        motivo = motivo_fichero(ruta, herramienta, base) if ruta else None
-    if motivo:
-        print(f"Bloqueado: {motivo}. {AYUDA}", file=sys.stderr)
+    texto = sys.stdin.read()
+    try:
+        m = motivo(json.loads(texto), base)
+    except Exception as e:  # falla cerrado solo si la acción podía tocar data/raw
+        if RAW in texto:
+            print(
+                f"Bloqueado: el hook de data/raw falló ({e!r}) y no puede garantizar nada. {AYUDA}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0
+    if m:
+        print(f"Bloqueado: {m}. {AYUDA}", file=sys.stderr)
         return 2
     return 0
 

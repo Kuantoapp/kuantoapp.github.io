@@ -26,12 +26,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path // empty'); [ -n \"$f\" ] || exit 0; python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" \"$f\""
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/cifras_con_fuente.py\" --hook"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/validar_claude.py\" --hook"
           }
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Write",
         "hooks": [
           {
             "type": "command",

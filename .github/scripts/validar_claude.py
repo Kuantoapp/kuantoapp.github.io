@@ -1,14 +1,25 @@
 """Valida subagentes, skills y CLAUDE.md según la doc de Claude Code y las reglas de .claude/README.md.
 
 Claude Code ignora en silencio los agentes mal formados y los campos desconocidos,
-así que estos errores solo se ven aquí. Uso: python .github/scripts/validar_claude.py [raíz]
+así que estos errores solo se ven aquí.
+Uso: python .github/scripts/validar_claude.py [raíz]
+     python .github/scripts/validar_claude.py --hook   (PostToolUse: valida si se tocó .claude/, AGENTS.md o CLAUDE.md)
 """
 
+from __future__ import annotations
+
+import json
+import os
 import re
 import sys
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except (
+    ImportError
+):  # el hook no debe romper la sesión de quien no tenga pyyaml; la CI sí lo exige
+    yaml = None
 
 # Campos de https://code.claude.com/docs/en/sub-agents
 CAMPOS_AGENTE = {
@@ -30,6 +41,14 @@ COLORES = {"red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan"}
 # Prefijo dm-: una skill personal con el mismo nombre taparía la del proyecto
 KEBAB = re.compile(r"^dm(-[a-z0-9]+)+$")
 FILA = re.compile(r"^\|\s*`?([^|`]+?)`?\s*\|\s*(agente|skill)\s*\|")
+# Guía de autoría de skills: la description va en tercera persona
+SEGUNDA_PERSONA = re.compile(
+    r"\b(úsala|úsame|usa esta|puedes|te ayud\w*|ayudarte)\b", re.I
+)
+# Quien revisa no corrige: sin herramientas de edición
+SOLO_LECTURA = re.compile(r"revisor|auditor|verificador|trazador")
+EDICION = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+ENLACE = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
 
 
 def frontmatter(ruta: Path) -> tuple[dict | None, str]:
@@ -89,6 +108,21 @@ def validar(raiz: Path) -> list[str]:
             errores.append(f"{rel}: permissionMode bypassPermissions prohibido")
         if fm.get("color") and fm["color"] not in COLORES:
             errores.append(f"{rel}: color '{fm['color']}' no válido")
+        herramientas = fm.get("tools") or []
+        if isinstance(herramientas, str):
+            herramientas = [h.strip() for h in herramientas.split(",")]
+        if SOLO_LECTURA.search(name) and EDICION & set(herramientas):
+            errores.append(
+                f"{rel}: un {SOLO_LECTURA.search(name).group(0)} solo lee: quita {sorted(EDICION & set(herramientas))} de tools"
+            )
+        for s in fm.get("skills") or []:
+            skill_md = claude / "skills" / str(s) / "SKILL.md"
+            if not skill_md.exists():
+                errores.append(f"{rel}: precarga la skill '{s}', que no existe")
+            elif (frontmatter(skill_md)[0] or {}).get("disable-model-invocation"):
+                errores.append(
+                    f"{rel}: '{s}' tiene disable-model-invocation y no se puede precargar"
+                )
         if name in vistos:
             errores.append(f"{rel}: name '{name}' repetido")
         vistos[name] = "agente"
@@ -124,6 +158,37 @@ def validar(raiz: Path) -> list[str]:
             errores.append(
                 f"{rel}/SKILL.md: description + when_to_use > {MAX_DESC_SKILL} caracteres"
             )
+        if not str(fm.get("when_to_use", "")).strip():
+            errores.append(
+                f"{rel}/SKILL.md: falta when_to_use (frases o preguntas que la disparan)"
+            )
+        if SEGUNDA_PERSONA.search(desc):
+            errores.append(
+                f"{rel}/SKILL.md: description en tercera persona («Prepara…», no «Úsala…» ni «puedes…»)"
+            )
+        cuerpo = skill.read_text(encoding="utf-8")
+        enlazados = set()
+        for destino in ENLACE.findall(cuerpo):
+            if "://" in destino:
+                continue
+            if not (carpeta / destino).exists():
+                errores.append(f"{rel}/SKILL.md: enlace roto a {destino}")
+            enlazados.add((carpeta / destino).resolve())
+        for apoyo in sorted(carpeta.rglob("*.md")):
+            if apoyo == skill:
+                continue
+            rel_apoyo = apoyo.relative_to(raiz)
+            if apoyo.resolve() not in enlazados:
+                errores.append(
+                    f"{rel_apoyo}: no se enlaza desde SKILL.md (Claude no lo encontraría)"
+                )
+            lineas = apoyo.read_text(encoding="utf-8").splitlines()
+            if len(lineas) > 100 and not any(
+                "contenido" in x.lower() for x in lineas[:15]
+            ):
+                errores.append(
+                    f"{rel_apoyo}: más de 100 líneas sin índice «Contenido» al principio"
+                )
         if len(skill.read_text(encoding="utf-8").splitlines()) > 500:
             errores.append(
                 f"{rel}/SKILL.md: más de 500 líneas; mueve detalle a ficheros de apoyo"
@@ -159,7 +224,46 @@ def validar(raiz: Path) -> list[str]:
     return errores
 
 
+VIGILADOS = (
+    ".claude/agents/",
+    ".claude/skills/",
+    ".claude/README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+)
+
+
+def desde_hook() -> int:
+    """PostToolUse: si se editó algo vigilado, valida todo y devuelve los errores al agente (exit 2)."""
+    raiz = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ".").resolve()
+    try:
+        ruta = Path(json.load(sys.stdin).get("tool_input", {}).get("file_path") or "")
+        rel = ruta.resolve().relative_to(raiz).as_posix()
+    except Exception:
+        return 0
+    if not rel.startswith(VIGILADOS):
+        return 0
+    if yaml is None:
+        print(
+            "validar_claude: falta pyyaml; no se valida aquí (la CI sí lo hará)",
+            file=sys.stderr,
+        )
+        return 0
+    errores = validar(raiz)
+    if errores:
+        print(
+            "Incumple las reglas de .claude/README.md:\n" + "\n".join(errores),
+            file=sys.stderr,
+        )
+        return 2
+    return 0
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--hook"]:
+        sys.exit(desde_hook())
+    if yaml is None:
+        sys.exit("validar_claude: instala pyyaml")
     errores = validar(Path(sys.argv[1] if len(sys.argv) > 1 else "."))
     print("\n".join(errores) or "Agentes, skills y CLAUDE.md correctos")
     sys.exit(1 if errores else 0)

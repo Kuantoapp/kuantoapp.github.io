@@ -52,6 +52,10 @@ def test_raw_permite_descargas_nuevas(tmp_path):
         "cp data/raw/ine.csv data/processed/ine.csv",
         "python -m src.descargas ine",
         "ls -l data/raw && head data/raw/ine.csv",
+        "tar -xkf datos.tar -C data/raw",
+        "unzip -n datos.zip -d data/raw",
+        "python -c \"import pandas as pd; pd.read_csv('data/raw/ine.csv').to_parquet('data/processed/ine.parquet')\"",
+        "find data/raw -name '*.csv'",
     ]:
         assert raw.motivo_bash(orden, base) is None, orden
 
@@ -70,8 +74,59 @@ def test_raw_bloquea_cambiar_o_borrar(tmp_path):
         "cp otro.csv data/raw/ine.csv",
         "git clean -fdx",
         "chmod u+w data/raw/ine.csv",
+        "find data/raw -name '*.csv' -delete",
+        "ls data/raw/*.csv | xargs rm",
+        "python3 -c \"import os; os.remove('data/raw/ine.csv')\"",
+        "python -c \"open('data/raw/ine.csv', 'w').write('x')\"",
+        "tar -xf datos.tar -C data/raw",
+        "unzip -o datos.zip -d data/raw",
     ]:
         assert raw.motivo_bash(orden, base), orden
+
+
+def test_raw_falla_cerrado(tmp_path):
+    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(proyecto(tmp_path))}
+    roto = '{"tool_name": "Bash", "tool_input": {"command": "rm data/raw/ine.csv"'
+    r = subprocess.run(
+        [sys.executable, HOOK_RAW, "pre"],
+        input=roto,
+        capture_output=True,
+        text=True,
+        env=entorno,
+    )
+    assert r.returncode == 2
+    r = subprocess.run(
+        [sys.executable, HOOK_RAW, "pre"],
+        input="{roto",
+        capture_output=True,
+        text=True,
+        env=entorno,
+    )
+    assert r.returncode == 0  # no menciona data/raw: no bloquea el resto del trabajo
+
+
+def test_hooks_funcionan_con_python_de_macos(tmp_path):
+    """macOS trae Python 3.9: si el hook no arranca, Claude Code lo trata como aviso y no bloquea."""
+    py39 = Path("/usr/bin/python3")
+    if not py39.exists():
+        return
+    base = proyecto(tmp_path)
+    evento = json.dumps(
+        {
+            "tool_name": "Edit",
+            "tool_input": {"file_path": str(base / "data/raw/ine.csv")},
+        }
+    )
+    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(base)}
+    for script, args in [(HOOK_RAW, ["pre"]), (CIFRAS, ["--hook"])]:
+        r = subprocess.run(
+            [str(py39), script, *args],
+            input=evento,
+            capture_output=True,
+            text=True,
+            env=entorno,
+        )
+        assert "Traceback" not in r.stderr, r.stderr
 
 
 def test_raw_post_deja_solo_lectura(tmp_path):
@@ -115,6 +170,32 @@ def test_cifras_que_no_son_cifras(tmp_path):
         "Página 123 del anexo <!-- sin-fuente: es una referencia, no un dato -->\n"
     )
     assert guion(tmp_path, texto) == []
+
+
+def test_cifras_ignora_etiquetas_html(tmp_path):
+    ruta = tmp_path / "app/inicio.html"
+    ruta.parent.mkdir(parents=True)
+    ruta.write_text(
+        '<div style="width: 300px" data-n="120">Hola</div>\n<p>Te sobran 340 €</p>\n'
+    )
+    errores = cifras.revisar(ruta)
+    assert len(errores) == 1 and ":2:" in errores[0]
+
+
+def test_cifras_desde_hook(tmp_path):
+    ruta = tmp_path / "docs/pitch/guion.md"
+    ruta.parent.mkdir(parents=True)
+    ruta.write_text("Un 22 %.\n")
+    entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(tmp_path)}
+    evento = json.dumps({"tool_input": {"file_path": str(ruta)}})
+    r = subprocess.run(
+        [sys.executable, CIFRAS, "--hook"],
+        input=evento,
+        capture_output=True,
+        text=True,
+        env=entorno,
+    )
+    assert r.returncode == 2 and "sin fuente" in r.stderr
 
 
 def test_cifras_solo_en_lo_vigilado(tmp_path):

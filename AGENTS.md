@@ -89,6 +89,7 @@ No edites carpetas personales de otra persona. Si un notebook ya funciona, su l√
 
 - `data/raw/` guarda las descargas tal cual: se puede **descargar un fichero nuevo**, pero no editarlo, sobrescribirlo, moverlo ni borrarlo. Un hook lo impide y deja lo descargado en solo lectura.
 - Para actualizar una fuente, desc√°rgala con otro nombre (por ejemplo con la fecha) y cambia `data/README.md`. Lo derivado va a `data/processed/`.
+- Para descomprimir dentro de `data/raw/`, sin sobrescribir: `tar -xkf` o `unzip -n`.
 
 ## Prohibido
 
