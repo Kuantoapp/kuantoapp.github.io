@@ -94,3 +94,18 @@ def test_sin_prefijo_dm(tmp_path):
         repo(tmp_path, agente=agente, nombre_agente="revisor")
     )
     assert any("debe empezar por dm-" in e for e in errores)
+
+
+def test_descripciones_largas(tmp_path):
+    agente = AGENTE.replace(
+        "Revisa diffs. Úsalo de forma proactiva.",
+        "x" * (validar_claude.MAX_DESC_AGENTE + 1),
+    )
+    skill = SKILL.replace(
+        "Abre un PR siguiendo AGENTS.md", "y" * (validar_claude.MAX_DESC_SKILL + 1)
+    )
+    errores = " ".join(
+        validar_claude.validar(repo(tmp_path, agente=agente, skill=skill))
+    )
+    assert "el detalle va en el cuerpo" in errores
+    assert f"> {validar_claude.MAX_DESC_SKILL} caracteres" in errores

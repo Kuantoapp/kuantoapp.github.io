@@ -60,7 +60,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 ## Reglas para subagentes (`.claude/agents/<nombre>.md`)
 
 1. El fichero se llama igual que `name`, con prefijo `dm-`, en minúsculas y con guiones: `dm-revisor-datos.md` → `name: dm-revisor-datos`.
-2. `name` y `description` son obligatorios. La `description` dice **cuándo** delegar en él, en una o dos frases (máx. 500 caracteres). Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
+2. `name` y `description` son obligatorios. La `description` dice **qué hace y cuándo** delegar en él, en dos o tres frases (máx. 400 caracteres, lo valida la CI): el detalle va en el cuerpo, que solo se carga al ejecutarse. Si debe usarse sin pedirlo, incluye "Úsalo de forma proactiva…".
 3. `tools` es obligatorio y mínimo: solo lo que necesita. Un revisor no lleva `Edit` ni `Write`.
 4. Una sola responsabilidad por agente. Si hace dos cosas, son dos agentes.
 5. `model` según la tarea: `opus` para razonar, diseñar, modelizar o revisar con criterio (los revisores, siempre); `sonnet` para implementar o ejecutar procedimientos ya definidos; `haiku` solo para búsquedas o resúmenes mecánicos. Nada de `permissionMode: bypassPermissions`.
@@ -70,7 +70,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 ## Reglas para skills (`.claude/skills/<nombre>/SKILL.md`)
 
 1. La carpeta se llama como la skill, con prefijo `dm-`, en minúsculas y con guiones (`dm-abrir-pr`). Si pones `name`, debe coincidir con la carpeta.
-2. `description` obligatoria: primero el caso de uso, con las palabras que diría alguien del equipo. `description` + `when_to_use` ≤ 1.536 caracteres.
+2. `description` obligatoria, en tercera persona («Prepara…», «Verifica…»): primero el caso de uso clave, después los términos concretos que diría alguien del equipo y al final para qué **no** es (y qué skill usar). `when_to_use` lleva frases o preguntas de ejemplo que la disparan. Juntas, máx. 800 caracteres (lo valida la CI): Claude Code corta cada entrada a 1.536 y, si el listado de todas las skills no cabe en su presupuesto, quita la descripción entera de las menos usadas. Por eso `.claude/settings.json` sube ese presupuesto al 2 % (`skillListingBudgetFraction`).
 3. `SKILL.md` de menos de 500 líneas. El detalle va en ficheros de apoyo dentro de la carpeta (`referencia.md`, `scripts/…`), enlazados desde `SKILL.md`.
 4. Skills con efectos (push, abrir PR, borrar datos, desplegar) llevan `disable-model-invocation: true`: solo se lanzan a mano con `/<nombre>`.
 5. `allowed-tools` solo con lo que la skill necesita.

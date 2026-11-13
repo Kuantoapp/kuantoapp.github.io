@@ -1,6 +1,6 @@
 ---
-description: Verificar contra la fuente primaria cualquier afirmación sobre datos, normas o licencias antes de usarla. Si un dato o una API existe, qué cobertura, año, nivel territorial y formato tiene, si se puede descargar, qué licencia o condiciones de uso aplica, si una norma está vigente, derogada o convalidada, y si una cifra citada coincide con la publicada. Úsala al documentar una fuente en data/README.md, al resolver marcas «(verificar)», al citar una cifra en el pitch o al elegir un dato nuevo. No es para auditar cálculos legales (dm-calculos-normativos).
-when_to_use: ¿Este dato existe?, ¿de qué año es el último?, ¿llega a nivel de sección o barrio?, ¿qué licencia tiene?, ¿podemos reutilizarlo en la demo o en un MCP público?, ¿se puede hacer scraping de esta web?, ¿esta norma sigue vigente?, ¿esta cifra es correcta?, ¿de dónde sale esta cifra?, resolver los «(verificar)», rellenar la tabla de fuentes de data/README.md.
+description: "Verifica contra el publicador original afirmaciones sobre datos, normas y licencias: si un dato o una API existe y qué cobertura, año, nivel territorial, formato y descarga tiene; si su licencia o condiciones de uso permiten el uso previsto; si una norma sigue vigente, derogada o convalidada; si una cifra citada coincide con la publicada. No audita cálculos legales (dm-calculos-normativos)."
+when_to_use: "Resolver marcas «(verificar)», añadir una fuente a data/README.md, citar una cifra en el pitch; ¿este dato existe?, ¿de qué año es el último?, ¿llega a sección o barrio?, ¿qué licencia tiene?, ¿se puede publicar en la demo o en un MCP?, ¿se puede hacer scraping de esta web?, ¿de dónde sale esta cifra?"
 ---
 
 # Verificación de fuentes

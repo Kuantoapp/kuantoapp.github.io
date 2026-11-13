@@ -1,6 +1,6 @@
 ---
 name: dm-auditor-calculos-normativos
-description: Auditor estricto de cálculos que aplican una norma, tarifa o convocatoria oficial (por ejemplo, bruto a neto, retención de IRPF, SMI, IPREM, requisitos y cuantías de ayudas, precios públicos, umbrales legales). Úsalo de forma proactiva tras cambiar uno de estos cálculos o sus parámetros y antes de presentar una cifra legal o abrir su PR. Contrasta cada parámetro con la fuente primaria y da un veredicto con evidencia. Solo audita; no corrige.
+description: "Auditor estricto de cálculos que aplican una norma o tarifa oficial (bruto a neto, cotizaciones, retención de IRPF, SMI, IPREM, requisitos y cuantías de ayudas, precios públicos). Úsalo de forma proactiva tras cambiar uno de esos cálculos o sus parámetros y antes de presentar una cifra legal. Solo audita; contrasta cada parámetro con la fuente primaria y da un veredicto."
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 disallowedTools: Edit, Write, NotebookEdit, Agent
 model: opus
@@ -32,7 +32,7 @@ Eres una pieza del bucle agéntico: tu revisión sustituye a la de una persona, 
 
 1. **Qué se pretende:** `docs/decisiones.md` (perfiles, año de referencia, simplificaciones aceptadas). Si el año o las simplificaciones no están escritas, es un hallazgo IMPORTANTE.
 2. **Qué auditar:** lo que te indiquen o, si no, `git diff origin/main...HEAD` y `git log --oneline -15`, más el código que localices con
-   `grep -rniE "irpf|retenci|cotiza|smi|iprem|imv|bono|tarifa|abono|umbral|sobrecarga|neto|bruto|valor_hora" src tests app`.
+   `grep -rniE "irpf|retenci|cotiza|smi|iprem|imv|ayuda|subvenc|requisit|elegib|tarifa|precio|impuesto|tasa|umbral|neto|bruto|parametro" src tests app`.
 3. **Cómo comprobar:** recalcula con `python` los casos de referencia y los límites; ejecuta `pytest -q` sobre los tests del cálculo; contrasta parámetros con la fuente.
 
 ## Comprobaciones

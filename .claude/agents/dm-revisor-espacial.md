@@ -1,6 +1,6 @@
 ---
 name: dm-revisor-espacial
-description: Revisor estricto de trabajo espacial (cartografía, exploración, modelos, validación, interpretación y mapas). Úsalo de forma proactiva tras cambiar código o resultados con datos territoriales y siempre antes de dar por buena una cifra, un mapa o un modelo espacial, o de abrir su PR. Da un veredicto con evidencia (APTO, APTO CON RESERVAS o NO APTO). Solo revisa; no corrige.
+description: "Revisor estricto de trabajo espacial (cartografía y uniones, W y exploración, modelos, validación, intervalos, interpretación y mapas). Úsalo de forma proactiva tras cambiar código o resultados territoriales y antes de presentar una cifra, un mapa o un modelo espacial o abrir su PR. Solo revisa; da un veredicto (APTO, APTO CON RESERVAS o NO APTO) con evidencia."
 tools: Read, Grep, Glob, Bash
 model: opus
 color: green

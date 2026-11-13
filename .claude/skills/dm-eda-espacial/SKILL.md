@@ -1,6 +1,6 @@
 ---
-description: Análisis exploratorio espacial (ESDA) e interpretación de sus resultados. Matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi* (hotspots), Moran y LISA bivariantes, correlograma, mapas de caja, tasas suavizadas con Bayes empírico y patrones de puntos (K y L de Ripley, densidad kernel). Úsala para saber si una variable tiene patrón territorial, localizar clústeres o atípicos, construir o elegir una W, analizar ubicaciones de servicios o leer qué significa un Moran o un LISA. No es para mapas finales (dm-cartografia) ni para entrenar modelos (dm-modelado-espacial).
-when_to_use: ¿Hay autocorrelación espacial?, ¿dónde están los clústeres alto-alto?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿qué modelo pide esta variable?, interpretar una salida de esda o pointpats, ¿este patrón es real o un artefacto?
+description: "Explora si una variable territorial tiene patrón espacial e interpreta el resultado con la teoría: matriz de pesos W, I de Moran global y local (LISA), hotspots Getis-Ord Gi*, Moran bivariante, correlograma, mapas de caja, tasas con Bayes empírico y patrones de puntos (K y L de Ripley, densidad kernel). No hace mapas finales (dm-cartografia) ni entrena modelos (dm-modelado-espacial)."
+when_to_use: "¿Hay autocorrelación espacial?, ¿dónde están los clústeres o los atípicos?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿es real o un artefacto?, ¿qué modelo pide esta variable?, qué significa este Moran."
 ---
 
 # Exploración espacial (ESDA)
