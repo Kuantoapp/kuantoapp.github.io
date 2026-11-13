@@ -78,6 +78,7 @@ Si un PR toca un área con revisor, su veredicto tiene que estar en el PR y ser 
 | Código con cálculos normativos (IRPF, cotizaciones, SMI, IPREM, ayudas, tarifas, bruto y neto) | `dm-auditor-calculos-normativos` |
 | Textos que ve el público (`app/`, `docs/pitch/`) | `dm-trazador-cifras` |
 | Fuentes de datos (`data/README.md`) | `dm-verificador-fuentes` |
+| Código Python de `src/` o `app/` (corrección, fallos silenciosos, código mínimo) | `dm-revisor-codigo` |
 
 1. **Haz commit antes de pedir la revisión:** el veredicto vale para ese commit. Si después cambia algo de su área, caduca y hay que repetirla.
 2. Lanza el revisor. Un hook registra su veredicto solo (en `.git/`, sin versionar).

@@ -63,11 +63,17 @@ def test_disparadores_por_area(tmp_path):
     assert set(exigidos) == set(rev.REVISORES)
     assert exigidos["dm-revisor-espacial"] == {"src/mapa.py"}
     assert exigidos["dm-auditor-calculos-normativos"] == {"src/nomina.py"}
+    # Todo .py de src/ o app/ pasa por el revisor de código; los tests y los .md, no
+    assert exigidos["dm-revisor-codigo"] == {
+        "src/mapa.py",
+        "src/nomina.py",
+        "src/util.py",
+    }
 
 
 def test_pr_sin_veredicto_falla_y_con_veredicto_vigente_pasa(tmp_path):
     base = repo(tmp_path)
-    sha = commit(base, "src/mapa.py", "import geopandas as gpd\n")
+    sha = commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
     exigidos = rev.exigidos(rev.cambiados("origin/main", base), base)
     assert (
         "Falta el veredicto de dm-revisor-espacial"
@@ -79,8 +85,8 @@ def test_pr_sin_veredicto_falla_y_con_veredicto_vigente_pasa(tmp_path):
 
 def test_veredicto_caducado_no_apto_y_no_aplica(tmp_path):
     base = repo(tmp_path)
-    sha = commit(base, "src/mapa.py", "import geopandas as gpd\n")
-    commit(base, "src/mapa.py", "import geopandas as gpd\nx = 1\n")
+    sha = commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
+    commit(base, "notebooks/mapa.py", "import geopandas as gpd\nx = 1\n")
     exigidos = rev.exigidos(rev.cambiados("origin/main", base), base)
     assert (
         "caducado"
@@ -104,7 +110,7 @@ def test_veredicto_caducado_no_apto_y_no_aplica(tmp_path):
 
 def test_cambio_fuera_del_area_no_caduca(tmp_path):
     base = repo(tmp_path)
-    sha = commit(base, "src/mapa.py", "import geopandas as gpd\n")
+    sha = commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
     commit(base, "docs/notas.md", "nota\n")
     exigidos = rev.exigidos(rev.cambiados("origin/main", base), base)
     assert (
@@ -131,7 +137,7 @@ def hook(base: Path, modo: str, evento: dict) -> subprocess.CompletedProcess:
 
 def test_registro_resumen_y_stop(tmp_path):
     base = repo(tmp_path)
-    commit(base, "src/mapa.py", "import geopandas as gpd\n")
+    commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
     # Sin veredicto: el Stop lo recuerda una vez y el resumen dice que falta
     salida = json.loads(hook(base, "--stop", {"cwd": str(base)}).stdout)
     assert salida["decision"] == "block" and "dm-revisor-espacial" in salida["reason"]
@@ -167,8 +173,8 @@ def test_registro_resumen_y_stop(tmp_path):
 
 def test_stop_no_interrumpe_mientras_se_trabaja(tmp_path):
     base = repo(tmp_path)
-    commit(base, "src/mapa.py", "import geopandas as gpd\n")
-    (base / "src/mapa.py").write_text("import geopandas as gpd\ny = 2\n")
+    commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
+    (base / "notebooks/mapa.py").write_text("import geopandas as gpd\ny = 2\n")
     assert hook(base, "--stop", {"cwd": str(base)}).stdout == ""
 
 

@@ -41,6 +41,7 @@ REVISORES = {
     "dm-auditor-calculos-normativos": "cálculos normativos",
     "dm-trazador-cifras": "cifras que ve el público",
     "dm-verificador-fuentes": "fuentes de datos",
+    "dm-revisor-codigo": "código Python del proyecto",
 }
 LINEA = re.compile(
     r"^\s*[-*]?\s*`?(dm-[a-z0-9-]+)`?\s*:\s*(APTO CON RESERVAS|NO APTO|NO APLICA|APTO)\b(.*)$",
@@ -74,6 +75,8 @@ def area(ruta: str, raiz: Path) -> set[str]:
     if ruta == "data/README.md":
         exigidos.add("dm-verificador-fuentes")
     f = raiz / ruta
+    if ruta.startswith(("src/", "app/")) and f.suffix.lower() == ".py" and f.is_file():
+        exigidos.add("dm-revisor-codigo")
     if ruta.startswith(CARPETAS_CODIGO) and f.suffix.lower() in CODIGO and f.is_file():
         texto = f.read_text(encoding="utf-8", errors="ignore")
         if ESPACIAL.search(texto):

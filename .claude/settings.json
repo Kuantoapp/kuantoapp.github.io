@@ -116,7 +116,7 @@
     ],
     "SubagentStop": [
       {
-        "matcher": "dm-revisor-espacial|dm-auditor-calculos-normativos|dm-verificador-fuentes|dm-trazador-cifras",
+        "matcher": "dm-revisor-espacial|dm-auditor-calculos-normativos|dm-verificador-fuentes|dm-trazador-cifras|dm-revisor-codigo",
         "hooks": [
           {
             "type": "command",
