@@ -1,6 +1,7 @@
 """Hook SessionStart de contexto: fechas clave, decisiones pendientes, «(verificar)» y descargas que faltan."""
 
 import importlib.util
+import json
 from datetime import date
 from pathlib import Path
 
@@ -85,3 +86,38 @@ def test_contexto_completo(tmp_path):
 
 def test_proyecto_vacio_no_dice_nada(tmp_path):
     assert ctx.contexto(tmp_path, date(2026, 11, 13)) == ""
+
+
+def transcript(ruta: Path, tokens: int) -> Path:
+    uso = {
+        "input_tokens": 2,
+        "cache_read_input_tokens": tokens - 2,
+        "cache_creation_input_tokens": 0,
+    }
+    lineas = [
+        {"type": "user", "message": {"content": "hola"}},
+        {"type": "assistant", "message": {"usage": uso}},
+        {"type": "system", "subtype": "stop_hook_summary"},
+    ]
+    ruta.write_text("\n".join(json.dumps(x) for x in lineas) + "\nlínea rota\n")
+    return ruta
+
+
+def test_aviso_de_contexto(tmp_path):
+    evento = {
+        "transcript_path": str(tmp_path / "t.jsonl"),
+        "session_id": f"prueba-{tmp_path.name}",
+    }
+    transcript(tmp_path / "t.jsonl", 90_000)
+    assert ctx.aviso_contexto(evento) == ""
+    transcript(tmp_path / "t.jsonl", 160_000)
+    aviso = json.loads(ctx.aviso_contexto(evento))["systemMessage"]
+    assert "160 mil tokens" in aviso and "/compact" in aviso and "/clear" in aviso
+    assert ctx.aviso_contexto(evento) == ""  # una vez por tramo
+    transcript(tmp_path / "t.jsonl", 260_000)
+    assert ctx.aviso_contexto(evento)  # tramo nuevo
+    transcript(tmp_path / "t.jsonl", 40_000)  # tras /compact
+    assert ctx.aviso_contexto(evento) == ""
+    transcript(tmp_path / "t.jsonl", 170_000)
+    assert ctx.aviso_contexto(evento)  # vuelve a crecer: se avisa otra vez
+    assert ctx.aviso_contexto({}) == ""  # sin transcript, nada

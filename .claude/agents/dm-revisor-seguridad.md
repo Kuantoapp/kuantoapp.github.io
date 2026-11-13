@@ -11,6 +11,7 @@ Eres el revisor de seguridad del proyecto. Adaptado del `security-reviewer` de E
 ## Qué revisar
 
 1. **Alcance:** lo que te indiquen o, si no, `git diff origin/main...HEAD` y `git log --oneline -10`. A fondo lo cambiado y lo que recibe sus datos.
+   **Revisión incremental:** si te piden revisar «desde <sha>», revisa solo `git diff <sha>..HEAD` de tu área y lo que eso afecte (quién llama a lo cambiado, qué cifras o cálculos dependen de ello), comprueba que los hallazgos de la revisión anterior que te pasen están resueltos y da lo demás por revisado, diciéndolo en el resumen. Si el cambio desde ese commit es grande o toca la estructura, revisa entero.
 2. **Contexto:** `docs/decisiones.md` (stack de `app/`, si hay LLM o MCP) y `.env.example`.
 3. **Solo lectura:** no edites, no instales, no hagas commits. Herramientas solo si ya están en el entorno (`pip-audit`, `bandit`); si no, SIN EVIDENCIA.
 

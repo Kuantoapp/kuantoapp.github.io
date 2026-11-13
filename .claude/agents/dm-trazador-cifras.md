@@ -23,6 +23,7 @@ No apruebas por defecto. Una cifra cuya cadena no puedes reconstruir entera no e
 Eres una pieza del bucle agéntico: tu revisión sustituye a la de una persona, así que tiene que ser **fiable y barata**.
 
 - **Alcance proporcional:** traza a fondo las cifras que cambiaron (`git diff origin/main...HEAD`) y las que se presentan como titular; del resto, una línea «sin cambios» si su cadena no cambió.
+- **Revisión incremental:** si te piden revisar «desde <sha>», revisa solo `git diff <sha>..HEAD` de tu área y lo que eso afecte (quién llama a lo cambiado, qué cifras o cálculos dependen de ello), comprueba que los hallazgos de la revisión anterior que te pasen están resueltos y da lo demás por revisado, diciéndolo en el resumen. Si el cambio desde ese commit es grande o toca la estructura, revisa entero.
 - **Lee lo justo:** localiza con `grep` y lee los rangos relevantes; recalcula solo lo que no tenga evidencia ya guardada.
 - **Un veredicto que se pueda actuar sin preguntarte:** cada hallazgo dice qué eslabón arreglar y cómo.
 

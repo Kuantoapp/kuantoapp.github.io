@@ -2,13 +2,19 @@
 
 Lee lo versionado y el disco: decisiones pendientes y próximas fechas clave (docs/decisiones.md), marcas
 «(verificar)» abiertas y descargas de data/README.md que faltan en este equipo. Nunca bloquea.
+
+--stop (hook Stop): avisa a la persona cuando el contexto de la sesión pasa de UMBRAL tokens, para que
+compacte o cambie de sesión (el agente no puede hacerlo solo). Una vez por cada tramo de 100.000.
 """
 
 from __future__ import annotations  # puede ejecutarse con el Python 3.9 de macOS
 
+import json
 import os
 import re
 import subprocess
+import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -175,7 +181,71 @@ def contexto(base: Path, hoy: date) -> str:
     )
 
 
+UMBRAL = 150_000
+
+
+def tokens_contexto(transcript: Path) -> int:
+    """Contexto enviado en la última respuesta del asistente, según su uso registrado en el transcript."""
+    with transcript.open("rb") as f:
+        f.seek(0, os.SEEK_END)
+        f.seek(max(0, f.tell() - 2_000_000))  # basta el final: la última respuesta
+        lineas = f.read().decode("utf-8", "replace").splitlines()
+    for linea in reversed(lineas):
+        try:
+            d = json.loads(linea)
+        except ValueError:
+            continue
+        uso = (
+            (d.get("message") or {}).get("usage")
+            if d.get("type") == "assistant"
+            else None
+        )
+        if uso:
+            return sum(
+                uso.get(k) or 0
+                for k in (
+                    "input_tokens",
+                    "cache_read_input_tokens",
+                    "cache_creation_input_tokens",
+                )
+            )
+    return 0
+
+
+def aviso_contexto(evento: dict) -> str:
+    ruta = evento.get("transcript_path")
+    if not ruta or not Path(ruta).is_file():
+        return ""
+    tokens = tokens_contexto(Path(ruta))
+    marca = (
+        Path(tempfile.gettempdir())
+        / f"dm-contexto-{evento.get('session_id') or 'sesion'}"
+    )
+    if tokens < UMBRAL:
+        marca.unlink(missing_ok=True)  # tras compactar, se vuelve a avisar si crece
+        return ""
+    tramo = tokens // 100_000
+    if marca.exists() and int(marca.read_text() or 0) >= tramo:
+        return ""
+    marca.write_text(str(tramo))
+    return json.dumps(
+        {
+            "systemMessage": f"Contexto de unos {tokens // 1000} mil tokens, y cada turno lo reenvía. "
+            "Si sigues con la misma tarea, /compact al cerrar esta etapa; si cambias de tarea, /clear o sesión nueva."
+        },
+        ensure_ascii=False,
+    )
+
+
 def main() -> int:
+    if sys.argv[1:] == ["--stop"]:
+        try:
+            texto = aviso_contexto(json.load(sys.stdin))
+        except Exception:  # noqa: BLE001 — un aviso que falla no debe molestar al terminar
+            texto = ""
+        if texto:
+            print(texto)
+        return 0
     base = Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
     try:
         texto = contexto(base, date.today())

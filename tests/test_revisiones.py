@@ -298,3 +298,21 @@ def test_stop_no_insiste_si_ya_esta_en_main(tmp_path):
     squash = git(base, "commit-tree", arbol, "-p", "origin/main", "-m", "squash")
     git(base, "update-ref", "refs/remotes/origin/main", squash)
     assert hook(base, "--stop", {"cwd": str(base)}).stdout == ""
+
+
+def test_pista_de_revision_incremental(tmp_path):
+    base = repo(tmp_path)
+    sha = commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
+    evento = {
+        "hook_event_name": "PreToolUse",
+        "agent_type": "dm-revisor-espacial",
+        "agent_id": "a1",
+        "tool_input": {"message": "## Veredicto: NO APTO\nFalta W."},
+        "cwd": str(base),
+    }
+    hook(base, "--registrar", evento)
+    commit(base, "notebooks/mapa.py", "import geopandas as gpd\nw = 1\n")
+    r = hook(base, "--resumen", {})
+    assert f"ya revisó {sha}" in r.stderr and f"«desde {sha}»" in r.stderr
+    salida = json.loads(hook(base, "--stop", {"cwd": str(base)}).stdout)
+    assert f"«desde {sha}»" in salida["reason"]

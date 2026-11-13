@@ -14,6 +14,7 @@ No cubres lo que tiene revisor propio: geometrías y modelos espaciales (`dm-rev
 
 1. **Contexto:** `AGENTS.md` (convenciones) y `docs/decisiones.md` (stack y decisiones). No contradigas lo decidido; si el código lo contradice, es un hallazgo.
 2. **Alcance:** lo que te indiquen o, si no, `git diff origin/main...HEAD -- '*.py'` y `git log --oneline -10`. Revisa a fondo lo cambiado y a quién llama o quién lo llama (`grep -rn "nombre_funcion" src app tests`). Lo que no cambió ni se ve afectado no se reaudita.
+   **Revisión incremental:** si te piden revisar «desde <sha>», revisa solo `git diff <sha>..HEAD` de tu área y lo que eso afecte (quién llama a lo cambiado, qué cifras o cálculos dependen de ello), comprueba que los hallazgos de la revisión anterior que te pasen están resueltos y da lo demás por revisado, diciéndolo en el resumen. Si el cambio desde ese commit es grande o toca la estructura, revisa entero.
 3. **Máquinas primero:** ejecuta `ruff check . && ruff format --check . && pytest -q` (con el entorno del repo activado; si no hay `ruff` o `pytest`, dilo como SIN EVIDENCIA, no lo instales). Lo que ya detecta ruff no lo repitas a mano.
 4. **Solo lectura:** puedes ejecutar `python -c` o scripts para comprobar un comportamiento con una muestra pequeña. No edites, no instales, no hagas commits ni descargues datos.
 

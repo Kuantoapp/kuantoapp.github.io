@@ -16,6 +16,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
 - **Reutiliza:** funciones de `src/` y decisiones ya tomadas. Para cambiar unas líneas, edita; no reescribas el fichero.
 - **Agrupa** comandos independientes en una sola llamada. Nada de sondeos en bucle: `gh pr checks --watch` espera por ti.
 - **Subagentes** solo si separan contexto o trabajan en paralelo de verdad, pidiendo un resumen corto.
+- **Una tarea, una sesión:** el estado está en el repo (issues, commits, `docs/decisiones.md`), no en la conversación. Al cambiar de tarea, sesión nueva o `/clear`. Si sigues con lo mismo, `/compact` al cerrar una etapa (un PR mergeado, una fase terminada). Un hook avisa a la persona cuando el contexto pasa de 150.000 tokens; el agente no puede compactar solo, así que en ese punto lo propone.
 - **Modelo según la tarea, no el más barato:** lo que cuesta es el total, y un modelo que acierta a la primera ahorra repeticiones y revisiones. `opus` para razonar, diseñar, modelizar y revisar; `sonnet` para implementar lo que ya está definido; `haiku` solo para búsquedas o resúmenes mecánicos.
 - **Datos:** desarrolla con una muestra pequeña; la ejecución completa, una vez y al final.
 - **Corta a tiempo:** si el mismo fallo resiste tres intentos, para y pregunta con el diagnóstico. No sigas probando a ciegas.
@@ -84,6 +85,7 @@ Si un PR toca un área con revisor, su veredicto tiene que estar en el PR y ser 
 2. Lanza el revisor. Un hook registra su veredicto solo (en `.git/`, sin versionar).
 3. Ejecuta `python .github/scripts/revisiones.py --resumen` y pega su salida en el PR (sección «Revisión por agentes»). Si falta un revisor, lo dice.
 4. **NO APTO** bloquea el merge: corrige y repite. **APTO CON RESERVAS** pasa, con las reservas a la vista.
+   - **Al repetir, revisión incremental:** `--resumen` dice desde qué commit revisó. Pide al revisor «revisa desde <sha>» con la lista de hallazgos que corregiste: revisa solo lo nuevo y lo que afecta, no todo otra vez.
 5. Si el área se detectó por error (por ejemplo, un comentario que nombra «neto»), escribe `- dm-…: NO APLICA — motivo`. Queda visible en el PR para quien lo revise.
 
 Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el trabajo ya confirmado. No insiste con lo que ya está en `main` (tras mergear, aunque no hayas hecho `git pull`).
