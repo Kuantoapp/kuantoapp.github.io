@@ -1,0 +1,5 @@
+#!/bin/sh
+# Versión Windows del hook que formatea y revisa cada .py al editarlo (el de macOS va en línea en
+# .claude/settings.json y necesita jq, que Git for Windows no trae). Lee el evento por stdin.
+dir=$(dirname "$0")
+exec sh "$dir/py" "$dir/ruff_windows.py"

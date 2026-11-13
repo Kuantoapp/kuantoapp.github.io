@@ -22,7 +22,7 @@ Todo el equipo usa el mismo Python (el de `.python-version`) y las mismas herram
 uv venv && uv pip install -r requirements-dev.txt
 ```
 
-Activa el entorno con `source .venv/bin/activate`. Después, abre `claude` en la raíz y acepta el diálogo de confianza (ver [.claude/README.md](.claude/README.md#uso-en-equipo)).
+Activa el entorno con `source .venv/bin/activate` (en Windows, desde Git Bash: `source .venv/Scripts/activate`; ver [Windows](.claude/README.md#windows)). Después, abre `claude` en la raíz y acepta el diálogo de confianza (ver [.claude/README.md](.claude/README.md#uso-en-equipo)).
 
 ## Cómo trabajamos (GitHub Flow)
 

@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 SCRIPT = Path(__file__).parents[1] / ".github/scripts/revisiones.py"
 HOOK_RAW = Path(__file__).parents[1] / ".claude/hooks/raw_inmutable.py"
 
@@ -170,6 +172,10 @@ def test_stop_no_interrumpe_mientras_se_trabaja(tmp_path):
     assert hook(base, "--stop", {"cwd": str(base)}).stdout == ""
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="enlace simbólico de macOS y Linux; la unión de Windows la prueba test_windows.py",
+)
 def test_worktree_comparte_data_raw(tmp_path):
     principal = repo(tmp_path / "principal")
     otro = tmp_path / "dm-tema"

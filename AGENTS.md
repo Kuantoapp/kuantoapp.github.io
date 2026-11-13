@@ -96,6 +96,7 @@ Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el tr
 ## Calidad mínima (lo que comprueba la CI)
 
 - Entorno: Python de `.python-version` y herramientas de `requirements-dev.txt`, en `.venv` (`uv venv && uv pip install -r requirements-dev.txt`). Así local y CI usan las mismas versiones. Los hooks también usan ese Python (lanzador `.claude/hooks/py`); si al abrir sesión avisa de que corren con otro, crea el `.venv`.
+- **Windows:** Claude Code ejecuta los hooks con Git Bash. El lanzador `py` lo detecta y delega en `py-windows`, que usa `.venv/Scripts/python.exe` y las versiones `*_windows.py` de los hooks (rutas con `\`, la herramienta PowerShell, uniones de directorio en lugar de enlaces simbólicos). No hace falta `jq`. Los hooks de macOS y Linux no cambian. Detalle en `.claude/README.md`.
 - Python: `ruff check . && ruff format --check . && pytest -q`. Ejecútalo antes de hacer push. En Claude Code, un hook (`.claude/settings.json`) ya formatea y revisa cada `.py` al editarlo.
 - Lógica nueva no trivial (cálculo de indicadores, joins, parsers) lleva al menos un test pequeño en `tests/`.
 - Sin dependencias nuevas sin justificarlas en el PR. Si añades una, va a `requirements.txt` con versión fijada.

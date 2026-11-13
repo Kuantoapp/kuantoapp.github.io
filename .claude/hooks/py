@@ -6,7 +6,9 @@
 # Uso: sh .claude/hooks/py [--critico] script.py [args…]
 # Con --critico, si no hay Python o el intérprete no arranca y la acción menciona data/raw, BLOQUEA (exit 2):
 # una protección que no se puede ejecutar no debe dejar pasar en silencio.
-# shortcut: sh de macOS y Linux; en Windows haría falta un lanzador .cmd o Git Bash.
+# shortcut: sh de macOS y Linux. En Windows (Git Bash, MSYS o Cygwin) delega en py-windows, que conoce
+# .venv/Scripts, el alias de la Microsoft Store y las versiones <script>_windows.py de los hooks.
+case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) exec sh "$(dirname "$0")/py-windows" "$@" ;; esac
 
 critico=0
 [ "$1" = "--critico" ] && { critico=1; shift; }
