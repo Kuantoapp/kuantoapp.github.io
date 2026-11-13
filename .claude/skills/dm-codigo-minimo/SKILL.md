@@ -36,9 +36,7 @@ Adaptado de la skill `ponytail` (licencia MIT) al contexto de este repo. Las reg
 - **Comentarios solo para el porqué** que el código no muestra, en una línea.
 - **Un atajo con límite conocido** lleva un comentario con esta forma: `# shortcut: <el límite>, <cuándo mejorarlo>`.
 
-**Nunca se recorta:** la validación de lo que entra de fuera (descargas, usuarios de la demo), el manejo de errores que evita perder datos, la seguridad, la accesibilidad de la demo y nada que pida la issue.
-
-## Contrastar el cambio con lo que debe cumplir
+## Contrastar cada cambio con lo que debe cumplir
 
 Antes de darlo por hecho:
 
@@ -53,3 +51,23 @@ Antes de darlo por hecho:
 ## Al terminar: dejar el trabajo conectado
 
 En el PR, una o dos líneas con **lo que no hiciste o no comprobaste** y el riesgo que deba conocer quien lo revise. `dm-revisor-codigo` comprueba estas reglas; el resto del cierre, como dice `AGENTS.md`.
+
+## Errores que invalidan un cambio
+
+Ahorrar código nunca justifica quitar esto:
+
+- La validación de lo que entra de fuera (descargas, APIs, usuarios de la demo).
+- El manejo de errores que evita perder datos o dar un resultado falso sin avisar.
+- La seguridad y la accesibilidad de la demo.
+- Cualquier parte que pida la issue: un cambio más corto que no la cumple entera no está hecho.
+
+## Python
+
+| En vez de… | Usa |
+|---|---|
+| Bucles por fila (`iterrows`, `apply(axis=1)`) | Operaciones vectorizadas de pandas o numpy |
+| Una clase con un solo método o sin estado | Una función |
+| Leer y convertir a mano un CSV | `pd.read_csv(..., dtype={"codigo": str}, encoding=...)` |
+| Rutas con `os.path` o cadenas | `pathlib.Path`, relativas a la raíz del repo |
+| Contadores, agrupaciones o cachés hechos a mano | `collections.Counter`, `groupby`, `functools.cache` |
+| Un parámetro o una opción «por si acaso» | Nada, hasta que alguien lo necesite |
