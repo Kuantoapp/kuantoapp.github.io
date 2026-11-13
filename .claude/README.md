@@ -27,6 +27,7 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 | `dm-auditor-calculos-normativos` | agente | proyecto | Auditoría estricta (sin corregir) de esos cálculos contra la fuente primaria vigente, con tabla de parámetros, casos de test propuestos y veredicto. Precarga `dm-calculos-normativos` |
 | `dm-verificacion-fuentes` | skill | proyecto | Cruzar con el publicador original cualquier afirmación sobre datos, normas o licencias: existencia, cobertura, año, nivel territorial, descarga, licencia frente al uso previsto y cifras publicadas, con estados y evidencia reproducible |
 | `dm-verificador-fuentes` | agente | proyecto | Verificación estricta de solo lectura (sin `Bash`, `Edit` ni `Write`) de marcas «(verificar)», fuentes nuevas y cifras citadas; propone el texto corregido. Precarga `dm-verificacion-fuentes` |
+| `dm-trazador-cifras` | agente | proyecto | Rastrea cada cifra que ve el público hasta el código, la consulta y el dato que la producen; comprueba fuente y marca de estimado. Precarga `dm-verificacion-fuentes` |
 | `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las tres skills espaciales |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
@@ -52,7 +53,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 | Una regla que solo aplica a parte del repo | regla con `paths` | `.claude/rules/<tema>.md` |
 | Un procedimiento de varios pasos (PR, descargar datos, preparar demo) | skill | `.claude/skills/<nombre>/SKILL.md` |
 | Una tarea delegable con su propio contexto y herramientas limitadas (revisar, auditar, explorar) | subagente | `.claude/agents/<nombre>.md` |
-| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json` |
+| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/` |
 | Preferencias personales | `CLAUDE.local.md` (no se versiona) | raíz |
 
 `.claude/commands/` está prohibido: las skills lo sustituyen y admiten ficheros de apoyo.
