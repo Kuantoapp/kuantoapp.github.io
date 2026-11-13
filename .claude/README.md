@@ -12,7 +12,7 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 2. **Comprueba** que ves los del índice: `/agents` lista los agentes y escribir `/dm-` lista las skills.
 3. **Usa los del proyecto, no tus copias.** Si una skill personal de `~/.claude/skills/` se llama igual que una del proyecto, gana la personal. Por eso todo lo del proyecto empieza por `dm-`. Si mejoras algo, hazlo en el repo con un PR, no en tu copia.
 4. **Lo personal no se comparte:** tu `~/.claude/CLAUDE.md` y `CLAUDE.local.md` se suman a `AGENTS.md`. No metas ahí reglas que contradigan las del proyecto.
-5. **Tras un pull que cambie `.claude/`:** los agentes y skills editados se recargan solos. Si aparece una carpeta nueva, ejecuta `/reload-skills` o reinicia `claude`.
+5. **Tras un pull que cambie `.claude/`:** los agentes y skills nuevos o editados se detectan solos en unos segundos. Si alguno no aparece, ejecuta `/reload-skills` o reinicia `claude`.
 
 ### Windows
 
@@ -48,6 +48,7 @@ Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powers
 | `dm-diccionario-datos` | skill | izan | Diccionario `<nombre>.DATA.md` de un CSV pesado en `docs/datos/` (tipos, nulos, rangos, muestras, avisos de latin-1 y de formato numérico español) para trabajar sin leer el fichero entero. Solo stdlib |
 | `dm-revisor-codigo` | agente | izan | Revisión estricta (sin corregir) de código Python: corrección, fallos silenciosos en pipelines de datos, convenciones del repo, tests y código mínimo. Adaptado de los revisores de ECC; comprueba las reglas de `dm-codigo-minimo`. Obligatorio en los PR que cambian `.py` de `src/` o `app/` |
 | `dm-revisor-seguridad` | agente | izan | Revisión de seguridad de solo lectura: secretos, entradas no confiables, SSRF, deserialización, HTML inseguro en la demo, prompt injection y dependencias. Adaptado de `security-reviewer` de ECC |
+| `dm-crear-skill-o-agente` | skill | proyecto | Crear o cambiar una skill o un agente con la estructura común: decidir si hace falta y qué pieza es, evitar solapes, descripción precisa, plantillas de skill y de agente (revisor o ejecutor), validación, prueba real e índice, según las buenas prácticas oficiales de Claude Code |
 | `dm-codigo-minimo` | skill | yeray | Escribir o cambiar código con el cambio más pequeño que resuelve la tarea entera: escalera de opciones, sin abstracciones ni opciones de más, test de la lógica no trivial y atajos marcados. Adaptada de `ponytail` (MIT); sus reglas núcleo están en `AGENTS.md` y `dm-revisor-codigo` las comprueba |
 | `dm-humanizar` | skill | yeray | Quitar el tono de IA a textos en español (pitch, app, nota metodológica, README, PR) sin cambiar lo que dicen ni tocar cifras, fuentes ni marcas de estimado. Adaptada de `humanizer` (MIT) |
 | `dm-abogado-del-diablo` | agente | yeray | Auditoría adversaria de lo que no es código (decisiones, idea, planes, análisis, pitch): supuestos, pruebas, alternativas, viabilidad, preguntas del jurado y efectos no buscados, con cómo reforzar cada punto. Solo lectura |
@@ -100,6 +101,8 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 5. `allowed-tools` solo con lo que la skill necesita.
 
 ## Cómo añadir uno
+
+El procedimiento completo, con plantillas, está en la skill `dm-crear-skill-o-agente` (escribe «crea una skill para…» o «necesito un agente que…»). En resumen:
 
 1. Rama `<usuario>/claude-<nombre>` y PR como cualquier otro cambio.
 2. Fichero nuevo + fila en el índice.

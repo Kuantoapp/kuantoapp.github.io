@@ -115,6 +115,10 @@ def validar(raiz: Path) -> list[str]:
             errores.append(
                 f"{rel}: un {SOLO_LECTURA.search(name).group(0)} solo lee: quita {sorted(EDICION & set(herramientas))} de tools"
             )
+        if SOLO_LECTURA.search(name) and fm.get("memory"):
+            errores.append(
+                f"{rel}: un {SOLO_LECTURA.search(name).group(0)} no lleva memory (reactiva la escritura y su juicio debe salir de la evidencia)"
+            )
         for s in fm.get("skills") or []:
             skill_md = claude / "skills" / str(s) / "SKILL.md"
             if not skill_md.exists():
