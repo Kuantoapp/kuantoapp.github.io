@@ -58,6 +58,9 @@ jobs:
       - name: Documentación al día (cambios con su documentación y sin referencias rotas)
         run: python .github/scripts/docs_al_dia.py
 
+      - name: Cifras que ve el público con su fuente (app/ y docs/pitch/)
+        run: python .github/scripts/cifras_con_fuente.py
+
       - name: Python (solo si hay)
         run: |
           if git ls-files | grep -qE '\.py$|^requirements.*\.txt$|^pyproject.toml$'; then
