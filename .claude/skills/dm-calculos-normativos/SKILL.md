@@ -1,6 +1,6 @@
 ---
-description: Implementar, comprobar, simular e interpretar cualquier cálculo que aplica una norma, una tarifa o una convocatoria oficial, y fijar sus parámetros con cita a la fuente primaria. Por ejemplo, bruto a neto (cotizaciones, retención y cuota de IRPF), indicadores legales (SMI, IPREM, IMV, umbral de pobreza, sobrecarga de vivienda, índices de alquiler), requisitos y cuantías de ayudas o subvenciones, tarifas y precios públicos, impuestos y tasas, valor del tiempo. Úsala al escribir o cambiar uno de estos cálculos, al simular un cambio de regla o al dudar de una cifra legal. No es para el análisis espacial (dm-eda-espacial, dm-modelado-espacial).
-when_to_use: Calcular el neto desde el bruto, ¿cuánto se retiene de IRPF?, ¿cuánto cotiza el trabajador?, 12 o 14 pagas, ¿cumple los requisitos de esta ayuda?, ¿cuántas veces el IPREM?, ¿cuánto cuesta este título de transporte?, ¿qué pasa si se acaba un descuento o cambia un umbral?, ¿está este hogar sobrecargado?, ¿qué umbral uso, 30 % o 40 %?, ¿cuánto vale una hora de viaje?, añadir un cálculo legal nuevo, actualizar los parámetros al año nuevo, ¿esta cifra legal está bien?
+description: "Implementa, comprueba y simula cálculos que aplican una norma, tarifa o convocatoria oficial, con cada parámetro citado a la fuente primaria y casos de referencia: bruto a neto (cotizaciones, IRPF), indicadores legales (SMI, IPREM, IMV, umbrales de pobreza o sobrecarga), requisitos y cuantías de ayudas, precios públicos, impuestos y tasas. No verifica fuentes de datos (dm-verificacion-fuentes) ni hace análisis espacial."
+when_to_use: "¿Cuánto es el neto de este bruto?, ¿cuánto se retiene o se cotiza?, 12 o 14 pagas, ¿cumple los requisitos de esta ayuda?, ¿cuántas veces el IPREM?, ¿cuánto cuesta este título de transporte?, ¿qué pasa si cambia un umbral o se acaba un descuento?, actualizar parámetros al año nuevo, ¿esta cifra legal está bien?"
 ---
 
 # Cálculos normativos
@@ -19,7 +19,7 @@ Esta skill es general. Qué cálculos hacen falta y para qué perfil sale del es
 
 1. **Qué se calcula y para quién:** lee `docs/decisiones.md` (idea elegida, perfiles de hogar, año de referencia, simplificaciones aceptadas) y, si hace falta, la ficha vigente en `ideas/`. Las marcas «(verificar)» de las fichas son cifras sin comprobar: no las copies al código.
 2. **Qué hay ya hecho:** busca y reutiliza antes de escribir:
-   `grep -rniE "irpf|retenci|cotiza|seguridad_social|smi|iprem|imv|bono|tarifa|abono|umbral|sobrecarga|neto|bruto|valor_hora" src tests app`.
+   `grep -rniE "irpf|retenci|cotiza|smi|iprem|imv|ayuda|subvenc|requisit|elegib|tarifa|precio|impuesto|tasa|umbral|neto|bruto|parametro" src tests app`.
    Si ya hay un fichero de parámetros, se amplía; no se crea otro.
 3. **Fecha del cálculo:** fija la fecha o el ejercicio al que se aplica la norma (devengo). Una regla vigente hoy puede no serlo en la fecha del dato, y al revés: SMI, IPREM, tarifas y escalas cambian cada año y a veces a mitad de año.
 4. **Qué falta por decidir:** si el perfil (edad, situación familiar, tipo de contrato, número de pagas) o la simplificación aceptada no está decidida, **pregunta**; si tienes que suponer, deja el supuesto en el código y en `docs/decisiones.md`.

@@ -22,6 +22,9 @@ CAMPOS_SKILL = {
     "user-invocable", "allowed-tools", "disallowed-tools", "model", "effort", "context", "agent",
     "background", "hooks", "paths", "shell", "metadata", "license", "compatibility",
 }  # fmt: skip
+# Claude Code quita descripciones del listado si no caben en su presupuesto: cortas y con el caso clave primero
+MAX_DESC_AGENTE = 400
+MAX_DESC_SKILL = 800
 MODELOS = {"sonnet", "opus", "haiku", "fable", "inherit"}
 COLORES = {"red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan"}
 # Prefijo dm-: una skill personal con el mismo nombre taparía la del proyecto
@@ -73,8 +76,10 @@ def validar(raiz: Path) -> list[str]:
         desc = str(fm.get("description", "")).strip()
         if not desc:
             errores.append(f"{rel}: falta description")
-        elif len(desc) > 500:
-            errores.append(f"{rel}: description de {len(desc)} caracteres (máx. 500)")
+        elif len(desc) > MAX_DESC_AGENTE:
+            errores.append(
+                f"{rel}: description de {len(desc)} caracteres (máx. {MAX_DESC_AGENTE}); el detalle va en el cuerpo"
+            )
         if not fm.get("tools"):
             errores.append(f"{rel}: falta tools (lista mínima de herramientas)")
         modelo = fm.get("model")
@@ -115,9 +120,9 @@ def validar(raiz: Path) -> list[str]:
         desc = str(fm.get("description", "")).strip()
         if not desc:
             errores.append(f"{rel}/SKILL.md: falta description")
-        elif len(desc) + len(str(fm.get("when_to_use", ""))) > 1536:
+        elif len(desc) + len(str(fm.get("when_to_use", ""))) > MAX_DESC_SKILL:
             errores.append(
-                f"{rel}/SKILL.md: description + when_to_use > 1536 caracteres"
+                f"{rel}/SKILL.md: description + when_to_use > {MAX_DESC_SKILL} caracteres"
             )
         if len(skill.read_text(encoding="utf-8").splitlines()) > 500:
             errores.append(
