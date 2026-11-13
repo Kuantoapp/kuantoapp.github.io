@@ -8,11 +8,26 @@ Claude Code no carga este fichero: es para las personas y para revisar los PR.
 
 Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tiene los mismos agentes, skills, permisos y hooks. Para que de verdad sea igual para los tres:
 
-1. **Primera vez:** `git pull`, prepara el entorno (`uv venv && uv pip install -r requirements-dev.txt`, ver el README del repo), abre `claude` en la raíz del repo y acepta el diálogo de confianza. Sin eso no se activan los hooks ni los permisos `allow` (los `deny` sí, desde el principio). Instala también `jq`. Al abrir sesión, un hook (`.claude/hooks/entorno.py`) avisa si falta algo y dice cómo arreglarlo.
+1. **Primera vez:** `git pull`, prepara el entorno (`uv venv && uv pip install -r requirements-dev.txt`, ver el README del repo), abre `claude` en la raíz del repo y acepta el diálogo de confianza. Sin eso no se activan los hooks ni los permisos `allow` (los `deny` sí, desde el principio). Instala también `jq`. Al abrir sesión, un hook (`.claude/hooks/entorno.py`) avisa si falta algo y dice cómo arreglarlo. En Windows, ver «Windows» más abajo.
 2. **Comprueba** que ves los del índice: `/agents` lista los agentes y escribir `/dm-` lista las skills.
 3. **Usa los del proyecto, no tus copias.** Si una skill personal de `~/.claude/skills/` se llama igual que una del proyecto, gana la personal. Por eso todo lo del proyecto empieza por `dm-`. Si mejoras algo, hazlo en el repo con un PR, no en tu copia.
 4. **Lo personal no se comparte:** tu `~/.claude/CLAUDE.md` y `CLAUDE.local.md` se suman a `AGENTS.md`. No metas ahí reglas que contradigan las del proyecto.
 5. **Tras un pull que cambie `.claude/`:** los agentes y skills editados se recargan solos. Si aparece una carpeta nueva, ejecuta `/reload-skills` o reinicia `claude`.
+
+### Windows
+
+Claude Code en Windows ejecuta los comandos de los hooks con **Git Bash** (lo instala Git for Windows, que Claude Code ya exige). Los hooks de macOS y Linux siguen igual; en Windows se usan estas versiones:
+
+| Pieza | macOS y Linux | Windows | Qué cambia |
+|---|---|---|---|
+| Lanzador | `.claude/hooks/py` | `.claude/hooks/py-windows` | `py` detecta Git Bash, MSYS o Cygwin (`uname`) y delega. Busca `.venv/Scripts/python.exe`, después `uv`, `py -3`, `python` y `python3`, y descarta el alias de la Microsoft Store. Fuerza UTF-8. Si existe `<script>_windows.py`, ejecuta ese |
+| Formatear `.py` | comando en línea con `jq` | `.claude/hooks/formatear-windows` → `.claude/hooks/ruff_windows.py` | Sin `jq`; ruff de `.venv/Scripts/ruff.exe` |
+| `data/raw` inmutable | `.claude/hooks/raw_inmutable.py` | `.claude/hooks/raw_inmutable_windows.py` | Reutiliza el original y añade rutas con `\` y `/c/…`, `python.exe` y `py`, la herramienta **PowerShell** (`Remove-Item`, `Set-Content`, `Copy-Item`, `Invoke-WebRequest -OutFile`, `Expand-Archive -Force`, `[IO.File]::…`, `cmd /c del`, `-EncodedCommand`) y comparte `data/raw` entre worktrees con una unión de directorio, sin permisos de administrador |
+| Entorno al abrir sesión | `.claude/hooks/entorno.py` | `.claude/hooks/entorno_windows.py` | Comprueba `.venv/Scripts/*.exe`, no pide `jq` y avisa del alias de la Store |
+
+La herramienta PowerShell de Claude Code no la cubren los matchers `Bash`: `settings.json` tiene además entradas `PowerShell` para `raw_inmutable` (pre y post). En macOS no hacen nada salvo que se active esa herramienta.
+
+Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`), ejecuta `uv venv && uv pip install -r requirements-dev.txt` y activa con `source .venv/Scripts/activate`. Si los hooks no se ejecutan (Claude Code no encuentra Git Bash), define `CLAUDE_CODE_GIT_BASH_PATH=C:\Program Files\Git\bin\bash.exe`. `pytest` en Windows omite `tests/test_lanzador.py` (es del lanzador de macOS; ver `tests/conftest.py`) y las pruebas de `tests/test_windows.py` que simulan Windows con scripts `sh` (esas corren en macOS, Linux y la CI). Define también la variable de usuario `PYTHONUTF8=1` (Python 3.14 aún lee los ficheros en cp1252 por defecto en Windows y varios tests fallan con tildes).
 
 ## Índice
 
@@ -53,7 +68,7 @@ Cada agente y skill existe para que los bucles agénticos sean **baratos, precis
 | Una regla que solo aplica a parte del repo | regla con `paths` | `.claude/rules/<tema>.md` |
 | Un procedimiento de varios pasos (PR, descargar datos, preparar demo) | skill | `.claude/skills/<nombre>/SKILL.md` |
 | Una tarea delegable con su propio contexto y herramientas limitadas (revisar, auditar, explorar) | subagente | `.claude/agents/<nombre>.md` |
-| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/`. En `settings.json` se lanza con `sh "$CLAUDE_PROJECT_DIR/.claude/hooks/py" [--critico] <script>`: usa el Python del proyecto (`.venv` o, si aún no existe, `uv`) y solo como último recurso el `python3` del sistema (el 3.9 de macOS); con `--critico`, si no puede ejecutar el hook y la acción toca `data/raw`, bloquea y explica cómo arreglarlo. Por ese último recurso el script sigue siendo compatible con 3.9: `ruff.toml` lo fija y `tests/test_hooks.py` ejecuta todos los hooks con él; `tests/test_settings.py` comprueba que cada uno está en su evento |
+| Algo que **nunca** debe pasar | regla `deny` o hook, no texto | `.claude/settings.json`; el script del hook, en `.claude/hooks/` con su test en `tests/`. En `settings.json` se lanza con `sh "$CLAUDE_PROJECT_DIR/.claude/hooks/py" [--critico] <script>`: usa el Python del proyecto (`.venv` o, si aún no existe, `uv`) y solo como último recurso el `python3` del sistema (el 3.9 de macOS); con `--critico`, si no puede ejecutar el hook y la acción toca `data/raw`, bloquea y explica cómo arreglarlo. Por ese último recurso el script sigue siendo compatible con 3.9: `ruff.toml` lo fija y `tests/test_hooks.py` ejecuta todos los hooks con él; `tests/test_settings.py` comprueba que cada uno está en su evento. Si el hook necesita otra lógica en Windows, va en `<script>_windows.py` junto al original y `tests/test_windows.py` lo prueba |
 | Preferencias personales | `CLAUDE.local.md` (no se versiona) | raíz |
 
 `.claude/commands/` está prohibido: las skills lo sustituyen y admiten ficheros de apoyo.

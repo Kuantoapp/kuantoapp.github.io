@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) r=\"$CLAUDE_PROJECT_DIR/.venv/bin/ruff\"; [ -x \"$r\" ] || r=$(command -v ruff) || exit 0; \"$r\" format -q \"$f\"; \"$r\" check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
+            "command": "case \"$(uname -s 2>/dev/null)\" in MINGW*|MSYS*|CYGWIN*) exec sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/formatear-windows\";; esac; f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.py) r=\"$CLAUDE_PROJECT_DIR/.venv/bin/ruff\"; [ -x \"$r\" ] || r=$(command -v ruff) || exit 0; \"$r\" format -q \"$f\"; \"$r\" check --fix -q \"$f\" >&2 || exit 2;; esac; exit 0"
           }
         ]
       },
@@ -42,11 +42,29 @@
             "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
           }
         ]
+      },
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/py\" --critico \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+          }
+        ]
+      },
+      {
+        "matcher": "PowerShell",
         "hooks": [
           {
             "type": "command",

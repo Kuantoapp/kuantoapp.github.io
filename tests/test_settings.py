@@ -11,6 +11,9 @@ HOOKS = json.loads((Path(__file__).parents[1] / ".claude/settings.json").read_te
 ESPERADO = {
     ('raw_inmutable.py" pre', "PreToolUse", "Edit|Write|MultiEdit|NotebookEdit|Bash"),
     ('raw_inmutable.py" post', "PostToolUse", "Bash|Write"),
+    # Herramienta PowerShell de Claude Code en Windows (Bash no la cubre)
+    ('raw_inmutable.py" pre', "PreToolUse", "PowerShell"),
+    ('raw_inmutable.py" post', "PostToolUse", "PowerShell"),
     ('raw_inmutable.py" enlazar', "SessionStart", None),
     ('entorno.py"', "SessionStart", None),
     ("ruff", "PostToolUse", "Edit|Write|MultiEdit"),
