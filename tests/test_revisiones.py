@@ -280,3 +280,15 @@ def test_cambios_sin_confirmar_solo_invalidan_su_area(tmp_path):
         hook(base, "--registrar", {**evento, "cwd": str(base)})
         salida = hook(base, "--resumen", {}).stdout
         assert ("dm-verificador-fuentes: APTO" in salida) is vale, sin_confirmar
+
+
+def test_stop_no_insiste_si_ya_esta_en_main(tmp_path):
+    """Caso real: tras un squash-merge sin `git pull`, el Stop seguía pidiendo revisores."""
+    base = repo(tmp_path)
+    commit(base, "src/mapa.py", "import geopandas as gpd\n")
+    assert "block" in hook(base, "--stop", {"cwd": str(base)}).stdout
+    # Simula el squash-merge: main avanza con un commit nuevo que tiene el mismo contenido
+    arbol = git(base, "rev-parse", "HEAD^{tree}")
+    squash = git(base, "commit-tree", arbol, "-p", "origin/main", "-m", "squash")
+    git(base, "update-ref", "refs/remotes/origin/main", squash)
+    assert hook(base, "--stop", {"cwd": str(base)}).stdout == ""

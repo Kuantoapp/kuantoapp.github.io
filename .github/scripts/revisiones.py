@@ -278,6 +278,27 @@ def stop(evento: dict, raiz: Path, base: str) -> int:
     }
     faltan = sorted(set(por_revisor) - set(validos(raiz, por_revisor)) - en_marcha)
     if faltan:
+        # ¿Ya está en main? Tras un squash-merge sin `git pull`, origin/main local está desfasado
+        # y el merge-base sigue siendo el antiguo: se actualiza y se quita lo que ya es igual que main
+        try:
+            subprocess.run(
+                ["git", "fetch", "--quiet", "origin", base.split("/", 1)[1]],
+                cwd=raiz,
+                capture_output=True,
+                check=False,
+                timeout=10,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            pass  # sin red: se avisa con lo que hay
+        distintos = set(git("diff", "--name-only", base, cwd=raiz).split())
+        distintos |= set(
+            git("ls-files", "--others", "--exclude-standard", cwd=raiz).split()
+        )
+        por_revisor = {
+            r: fs & distintos for r, fs in por_revisor.items() if fs & distintos
+        }
+        faltan = [r for r in faltan if r in por_revisor]
+    if faltan:
         lista = "\n- ".join(f"{r} ({REVISORES[r]})" for r in faltan)
         razon = (
             f"El trabajo confirmado toca áreas con revisor obligatorio y falta su veredicto:\n- {lista}\n"

@@ -84,7 +84,7 @@ Si un PR toca un área con revisor, su veredicto tiene que estar en el PR y ser 
 4. **NO APTO** bloquea el merge: corrige y repite. **APTO CON RESERVAS** pasa, con las reservas a la vista.
 5. Si el área se detectó por error (por ejemplo, un comentario que nombra «neto»), escribe `- dm-…: NO APLICA — motivo`. Queda visible en el PR para quien lo revise.
 
-Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el trabajo ya confirmado.
+Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el trabajo ya confirmado. No insiste con lo que ya está en `main` (tras mergear, aunque no hayas hecho `git pull`).
 
 ## Revisión y merge
 
