@@ -8,7 +8,7 @@ Claude Code no carga este fichero: es para las personas y para revisar los PR.
 
 Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tiene los mismos agentes, skills, permisos y hooks. Para que de verdad sea igual para los tres:
 
-1. **Primera vez:** `git pull`, prepara el entorno (`uv venv && uv pip install -r requirements-dev.txt`, ver el README del repo), abre `claude` en la raíz del repo y acepta el diálogo de confianza. Sin eso no se activan los hooks ni los permisos `allow` (los `deny` sí, desde el principio). Instala también `jq`. Al abrir sesión, un hook (`.claude/hooks/entorno.py`) avisa si falta algo y dice cómo arreglarlo. En Windows, ver «Windows» más abajo.
+1. **Primera vez:** `git pull`, prepara el entorno (`uv venv && uv pip install -r requirements-dev.txt`, ver el README del repo), abre `claude` en la raíz del repo y acepta el diálogo de confianza. Sin eso no se activan los hooks ni los permisos `allow` (los `deny` sí, desde el principio). Instala también `jq`. Al abrir sesión, un hook (`.claude/hooks/entorno.py`) avisa si falta algo y dice cómo arreglarlo, y otro (`.claude/hooks/contexto.py`) da a Claude el estado del proyecto: próximos hitos con los días que faltan, decisiones pendientes, marcas «(verificar)» abiertas y descargas de `data/README.md` que faltan en tu equipo. En Windows, ver «Windows» más abajo.
 2. **Comprueba** que ves los del índice: `/agents` lista los agentes y escribir `/dm-` lista las skills.
 3. **Usa los del proyecto, no tus copias.** Si una skill personal de `~/.claude/skills/` se llama igual que una del proyecto, gana la personal. Por eso todo lo del proyecto empieza por `dm-`. Si mejoras algo, hazlo en el repo con un PR, no en tu copia.
 4. **Lo personal no se comparte:** tu `~/.claude/CLAUDE.md` y `CLAUDE.local.md` se suman a `AGENTS.md`. No metas ahí reglas que contradigan las del proyecto.
@@ -35,7 +35,8 @@ Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powers
 
 | Nombre | Tipo | Origen | Para qué |
 |---|---|---|---|
-| `dm-cartografia` | skill | proyecto | CRS, uniones por código oficial, tablas de paso de código postal y mapas de la demo |
+| `dm-cartografia` | skill | proyecto | CRS, uniones por código oficial y mapas de la demo |
+| `dm-tablas-de-paso` | skill | proyecto | Pasar datos entre unidades que no coinciden (código postal, secciones de otro año, barrios, zonas de transporte): anidamiento, pesos por población, viviendas o portales, extensivas frente a intensivas, controles y pureza |
 | `dm-eda-espacial` | skill | proyecto | Exploración espacial: W, Moran y LISA (también bivariantes), mapas de caja y tasas con Bayes empírico |
 | `dm-modelado-espacial` | skill | proyecto | Imputar, predecir y explicar: validación A o B, `Wy` sin fuga, selección espacial de variables, intervalos por grupo, equidad del error, regresión espacial |
 | `dm-calculos-normativos` | skill | proyecto | Cualquier cálculo que aplica una norma, tarifa o convocatoria (bruto a neto, indicadores legales, ayudas, precios públicos, impuestos), con parámetros citados a la fuente primaria, casos de referencia y escenarios. Incluye una referencia de 2026 para España y Madrid |
@@ -43,10 +44,11 @@ Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powers
 | `dm-verificacion-fuentes` | skill | proyecto | Cruzar con el publicador original cualquier afirmación sobre datos, normas o licencias: existencia, cobertura, año, nivel territorial, descarga, licencia frente al uso previsto y cifras publicadas, con estados y evidencia reproducible |
 | `dm-verificador-fuentes` | agente | proyecto | Verificación estricta de solo lectura (sin `Bash`, `Edit` ni `Write`) de marcas «(verificar)», fuentes nuevas y cifras citadas; propone el texto corregido. Precarga `dm-verificacion-fuentes` |
 | `dm-trazador-cifras` | agente | proyecto | Rastrea cada cifra que ve el público hasta el código, la consulta y el dato que la producen; comprueba fuente y marca de estimado. Precarga `dm-verificacion-fuentes` |
+| `dm-nueva-fuente` | skill | proyecto | Incorporar o actualizar una fuente de datos de principio a fin: descarga reproducible a `data/raw` con fecha y SHA-256 (script solo stdlib), fila en `data/README.md`, verificación, perfil y carga en `src/` con test; comprueba que todo el equipo tiene los mismos ficheros |
 | `dm-diccionario-datos` | skill | izan | Diccionario `<nombre>.DATA.md` de un CSV pesado en `docs/datos/` (tipos, nulos, rangos, muestras, avisos de latin-1 y de formato numérico español) para trabajar sin leer el fichero entero. Solo stdlib |
 | `dm-revisor-codigo` | agente | izan | Revisión estricta (sin corregir) de código Python: corrección, fallos silenciosos en pipelines de datos, convenciones del repo, tests y simplicidad. Adaptado de los revisores de ECC |
 | `dm-revisor-seguridad` | agente | izan | Revisión de seguridad de solo lectura: secretos, entradas no confiables, SSRF, deserialización, HTML inseguro en la demo, prompt injection y dependencias. Adaptado de `security-reviewer` de ECC |
-| `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las tres skills espaciales |
+| `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las cuatro skills espaciales |
 
 Tipo: `agente` o `skill`. Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
 

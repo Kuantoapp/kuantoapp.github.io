@@ -1,6 +1,6 @@
 ---
-description: "Prepara y cruza datos geográficos con geopandas y diseña los mapas finales: CRS y reproyección (medir en EPSG:25830 u otro UTM, publicar en 4326 o 3857), uniones por código oficial (INE, sección censal, barrio, distrito), sjoin, tablas de paso entre unidades, distancias, áreas y coropletas de presentación. No busca patrones (dm-eda-espacial) ni modela (dm-modelado-espacial)."
-when_to_use: "Leer un shapefile, GeoJSON o GeoParquet; comprobar o cambiar el CRS; hacer un merge o sjoin por municipio, sección o código postal; averiguar por qué una unión pierde zonas; medir distancias a servicios; elegir clasificación, paleta y leyenda de un mapa o un cartograma."
+description: "Prepara y cruza datos geográficos con geopandas y diseña los mapas finales: CRS y reproyección (medir en EPSG:25830 u otro UTM, publicar en 4326 o 3857), uniones por código oficial (INE, sección censal, barrio, distrito), sjoin, distancias, áreas y coropletas de presentación. No hace tablas de paso entre unidades que no coinciden (dm-tablas-de-paso), ni busca patrones (dm-eda-espacial) ni modela (dm-modelado-espacial)."
+when_to_use: "Leer un shapefile, GeoJSON o GeoParquet; comprobar o cambiar el CRS; hacer un merge o sjoin por municipio o sección; averiguar por qué una unión pierde zonas; medir distancias a servicios; elegir clasificación, paleta y leyenda de un mapa o un cartograma."
 ---
 
 # Cartografía y mapas
@@ -33,12 +33,7 @@ Esta skill es general. Qué unidades, fuentes y mapas se usan sale del estado ac
 
 ## Tablas de paso
 
-Códigos postales, secciones, barrios, distritos y zonificaciones de transporte no coinciden.
-
-- Los **códigos postales** responden a la logística de Correos, no a un marco estadístico, y su cartografía no es oficial.
-- Paso entre unidades: superposición de polígonos con **pesos** (viviendas o población de cada trozo, no área).
-- Los pesos de cada origen suman 1 y el total se conserva tras el paso.
-- El supuesto se declara en la nota metodológica.
+Si las unidades no coinciden (código postal, secciones de otro año, barrios, zonas de transporte), el paso entre ellas lo hace `dm-tablas-de-paso`: anidamiento, pesos por población o viviendas, extensivas frente a intensivas y controles.
 
 ## Mapas de presentación
 
@@ -70,8 +65,8 @@ En un mapa: compara al menos dos clasificaciones. Si el mensaje cambia mucho con
 
 ## Al terminar: dejar el trabajo conectado
 
-- Cargas, reproyecciones y tablas de paso van a funciones de `src/` reutilizables, con un test de los controles de arriba (recuento de zonas, totales conservados).
-- Capas nuevas documentadas en `data/README.md`; supuestos de las tablas de paso y zonas excluidas, en `docs/decisiones.md`.
+- Cargas y reproyecciones van a funciones de `src/` reutilizables, con un test de los controles de arriba (recuento de zonas, totales conservados).
+- Capas nuevas documentadas en `data/README.md`; zonas excluidas, en `docs/decisiones.md`.
 - Antes de dar los datos por buenos o de abrir el PR, pide la revisión de `dm-revisor-espacial`.
 
 ## Python
@@ -80,7 +75,6 @@ En un mapa: compara al menos dos clasificaciones. Si el mensaje cambia mucho con
 |---|---|
 | Cargar y reproyectar | `geopandas.read_file`, `read_parquet`, `gdf.to_crs(25830)` |
 | Unión espacial y vecino más cercano | `geopandas.sjoin`, `sjoin_nearest(..., distance_col="d")` en metros |
-| Superposición para tablas de paso | `geopandas.overlay(a, b, how="intersection")` |
 | Clasificar | `mapclassify.Quantiles`, `NaturalBreaks`, `EqualInterval`, `HeadTailBreaks` |
 | Mapa rápido | `gdf.plot(column=..., scheme="quantiles", legend=True)` |
 

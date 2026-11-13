@@ -177,18 +177,18 @@ def profile(path: Path, max_rows: int, seed: int, encoding: str = "utf-8-sig") -
                 reservoir[j] = row
             for st, value in zip(stats, row):
                 st.add(value)
-    return dict(
-        sep=sep,
-        stride=stride,
-        rows_total=rows_total,
-        profiled=profiled,
-        ragged=ragged,
-        undecodable=undecodable,
-        encoding=encoding,
-        stats=stats,
-        head=head,
-        sample=reservoir,
-    )
+    return {
+        "sep": sep,
+        "stride": stride,
+        "rows_total": rows_total,
+        "profiled": profiled,
+        "ragged": ragged,
+        "undecodable": undecodable,
+        "encoding": encoding,
+        "stats": stats,
+        "head": head,
+        "sample": reservoir,
+    }
 
 
 def warnings_for(res: dict) -> list[str]:
@@ -258,8 +258,10 @@ def render(
     )
     lines = [
         f"# {path.name} — diccionario de datos",
-        f"<!-- datadict: size={st_.st_size} mtime={int(st_.st_mtime)} rows={res['rows_total']} "
-        f"stride={res['stride']} sep={SEPARATORS.get(res['sep'], res['sep'])!r} seed={seed} generated={now} -->",
+        (
+            f"<!-- datadict: size={st_.st_size} mtime={int(st_.st_mtime)} rows={res['rows_total']} "
+            f"stride={res['stride']} sep={SEPARATORS.get(res['sep'], res['sep'])!r} seed={seed} generated={now} -->"
+        ),
         "",
         f"- Filas: {res['rows_total']} · Columnas: {len(stats)} · Tamano: {st_.st_size / 1048576:.1f} MB",
         f"- Separador: {SEPARATORS.get(res['sep'], res['sep'])} · {note} · semilla {seed}",

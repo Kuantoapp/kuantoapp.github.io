@@ -3,3 +3,4 @@
 [per-file-target-version]
 ".claude/hooks/*.py" = "py39"
 ".github/scripts/*.py" = "py39"
+".claude/skills/*/scripts/*.py" = "py39"  # solo stdlib: cualquier python3

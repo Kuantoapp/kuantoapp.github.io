@@ -16,6 +16,7 @@ ESPERADO = {
     ('raw_inmutable.py" post', "PostToolUse", "PowerShell"),
     ('raw_inmutable.py" enlazar', "SessionStart", None),
     ('entorno.py"', "SessionStart", None),
+    ('contexto.py"', "SessionStart", None),
     ("ruff", "PostToolUse", "Edit|Write|MultiEdit"),
     ('cifras_con_fuente.py" --hook', "PostToolUse", "Edit|Write|MultiEdit"),
     ('validar_claude.py" --hook', "PostToolUse", "Edit|Write|MultiEdit"),
