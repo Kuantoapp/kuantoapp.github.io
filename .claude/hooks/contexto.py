@@ -1,6 +1,6 @@
 """Hook SessionStart: da a Claude el estado del proyecto en pocas líneas, para que no tenga que buscarlo.
 
-Lee lo versionado y el disco: decisiones pendientes y próximos hitos (docs/decisiones.md), marcas
+Lee lo versionado y el disco: decisiones pendientes y próximas fechas clave (docs/decisiones.md), marcas
 «(verificar)» abiertas y descargas de data/README.md que faltan en este equipo. Nunca bloquea.
 """
 
@@ -8,12 +8,16 @@ from __future__ import annotations  # puede ejecutarse con el Python 3.9 de macO
 
 import os
 import re
+import subprocess
 from datetime import date
 from pathlib import Path
 
-# Solo texto que escriben personas y agentes; nunca datos (pesados y a veces en latin-1)
-CARPETAS = ("docs", "ideas", "src", "app", "notebooks")
-EXTENSIONES = {".md", ".py", ".txt", ".html"}
+# Se recorre lo que git conoce, sea cual sea la estructura de carpetas, salvo reglas, CI,
+# datos (pesados y a veces en latin-1) y tests (sus marcas son de prueba)
+EXCLUIR = (".claude/", ".github/", "data/", "tests/")
+EXTENSIONES = {".md", ".py", ".txt", ".html", ".ipynb"}
+# «(verificar)» entre comillas es texto que habla de la marca, no una marca pendiente
+MARCA = re.compile(r"(?<!«)\(verificar", re.IGNORECASE)
 HITO = re.compile(r"^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.+?)\s*\|")
 
 
@@ -30,7 +34,11 @@ def pendientes(decisiones: str) -> list[str]:
 
 
 def hitos(decisiones: str, hoy: date) -> list[str]:
-    seccion = decisiones.split("## Hitos", 1)[1] if "## Hitos" in decisiones else ""
+    seccion = (
+        decisiones.split("## Fechas clave", 1)[1]
+        if "## Fechas clave" in decisiones
+        else ""
+    )
     futuros = []
     for linea in seccion.splitlines():
         m = HITO.match(linea)
@@ -44,15 +52,34 @@ def hitos(decisiones: str, hoy: date) -> list[str]:
     ]
 
 
+def ficheros(base: Path) -> list[str]:
+    """Rutas relativas de lo versionado y lo nuevo sin ignorar; sin git, todo el árbol."""
+    r = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+        cwd=base,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if r.returncode == 0:
+        return r.stdout.splitlines()
+    return [
+        p.relative_to(base).as_posix() for p in base.rglob("*") if ".git" not in p.parts
+    ]
+
+
 def verificar(base: Path) -> tuple[int, list[str]]:
-    rutas = [base / "data/README.md"]
-    for carpeta in CARPETAS:
-        rutas += [r for r in (base / carpeta).rglob("*") if r.suffix in EXTENSIONES]
+    rutas = ["data/README.md"] + [
+        f
+        for f in ficheros(base)
+        if Path(f).suffix in EXTENSIONES and not f.startswith(EXCLUIR)
+    ]
     por_fichero = {}
-    for ruta in rutas:
-        n = leer(ruta).lower().count("(verificar") if ruta.is_file() else 0
+    for rel in rutas:
+        ruta = base / rel
+        n = len(MARCA.findall(leer(ruta))) if ruta.is_file() else 0
         if n:
-            por_fichero[ruta.relative_to(base).as_posix()] = n
+            por_fichero[rel] = n
     top = sorted(por_fichero.items(), key=lambda x: -x[1])[:3]
     return sum(por_fichero.values()), [f"{f} ({n})" for f, n in top]
 
@@ -104,7 +131,11 @@ def contexto(base: Path, hoy: date) -> str:
 
     def _hitos():
         proximos = hitos(decisiones, hoy)
-        return "Próximos hitos: " + "; ".join(proximos) if proximos else ""
+        return (
+            "Próximas fechas clave (fechas fijas, no tareas): " + "; ".join(proximos)
+            if proximos
+            else ""
+        )
 
     def _pendientes():
         sin_decidir = pendientes(decisiones)
@@ -132,7 +163,7 @@ def contexto(base: Path, hoy: date) -> str:
             + ", ".join(faltan[:5])
         )
 
-    seccion("Hitos", _hitos)
+    seccion("Fechas clave", _hitos)
     seccion("Decisiones pendientes", _pendientes)
     seccion("Marcas «(verificar)»", _verificar)
     seccion("Descargas", _faltan)
