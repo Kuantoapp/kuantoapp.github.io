@@ -42,15 +42,6 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" post"
           }
         ]
-      },
-      {
-        "matcher": "SubagentHandback",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
-          }
-        ]
       }
     ],
     "PreToolUse": [
@@ -60,6 +51,15 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/raw_inmutable.py\" pre"
+          }
+        ]
+      },
+      {
+        "matcher": "SubagentHandback",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.github/scripts/revisiones.py\" --registrar"
           }
         ]
       }

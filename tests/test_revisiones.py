@@ -139,7 +139,7 @@ def test_registro_resumen_y_stop(tmp_path):
     # El agente entrega su informe por SubagentHandback: queda registrado
     informe = "## Veredicto: APTO CON RESERVAS\nFalta probar otra W.\n## Resumen…"
     evento = {
-        "hook_event_name": "PostToolUse",
+        "hook_event_name": "PreToolUse",
         "agent_type": "dm-revisor-espacial",
         "tool_input": {"message": informe},
         "cwd": str(base),
@@ -187,3 +187,63 @@ def test_worktree_con_datos_propios_no_se_toca(tmp_path):
     (otro / "data/raw/propio.csv").write_text("a\n")
     assert "ficheros propios" in raw.compartir_raw(otro)
     assert not (otro / "data/raw").is_symlink()
+
+
+def test_informe_sin_veredicto_valido_se_rechaza(tmp_path):
+    """Caso real: un revisor escribió «## Veredicto: PARCIAL» y su revisión se perdía sin avisar."""
+    base = repo(tmp_path)
+    commit(base, "data/README.md", "fuentes\n")
+    malo = {
+        "hook_event_name": "PreToolUse",
+        "agent_type": "dm-verificador-fuentes",
+        "agent_id": "a1",
+        "tool_input": {"message": "## Veredicto: PARCIAL. La nota describe bien…"},
+        "cwd": str(base),
+    }
+    salida = json.loads(hook(base, "--registrar", malo).stdout)["hookSpecificOutput"]
+    assert (
+        salida["permissionDecision"] == "deny"
+        and "APTO CON RESERVAS" in salida["permissionDecisionReason"]
+    )
+    assert not rev.registro(base).exists()
+    # Sin SubagentHandback: al terminar sin veredicto registrado, se le pide una vez
+    parada = {
+        "hook_event_name": "SubagentStop",
+        "agent_type": "dm-verificador-fuentes",
+        "agent_id": "a1",
+        "cwd": str(base),
+    }
+    assert (
+        json.loads(
+            hook(
+                base, "--registrar", {**parada, "last_assistant_message": "listo"}
+            ).stdout
+        )["decision"]
+        == "block"
+    )
+    assert (
+        hook(
+            base,
+            "--registrar",
+            {**parada, "last_assistant_message": "listo", "stop_hook_active": True},
+        ).stdout
+        == ""
+    )
+    # Corregido: se registra, y el SubagentStop posterior (texto de cierre) ya no insiste
+    bueno = {
+        **malo,
+        "tool_input": {"message": "## Veredicto: APTO CON RESERVAS\nMatizar la nota."},
+    }
+    assert hook(base, "--registrar", bueno).stdout == ""
+    assert (
+        hook(
+            base,
+            "--registrar",
+            {**parada, "last_assistant_message": "Informe entregado."},
+        ).stdout
+        == ""
+    )
+    assert (
+        "dm-verificador-fuentes: APTO CON RESERVAS"
+        in hook(base, "--resumen", {}).stdout
+    )

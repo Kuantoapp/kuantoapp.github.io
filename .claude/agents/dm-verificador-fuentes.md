@@ -50,7 +50,7 @@ Eres una pieza del bucle agéntico: tu verificación sustituye a la de una perso
 
 ```
 ## Veredicto: APTO | APTO CON RESERVAS | NO APTO
-Motivo en una frase. NO APTO si hay algún bloqueante; APTO CON RESERVAS si quedan afirmaciones PARCIALES, NO ENCONTRADAS o NO ACCESIBLES que no bloquean; APTO si todo está CONFIRMADO.
+Motivo en una frase. El veredicto global es **solo** uno de esos tres (los estados CONFIRMADO, PARCIAL… son de cada afirmación y van en la tabla); un hook rechaza el informe si no. NO APTO si hay algún bloqueante; APTO CON RESERVAS si quedan afirmaciones PARCIALES, NO ENCONTRADAS o NO ACCESIBLES que no bloquean; APTO si todo está CONFIRMADO.
 
 ## Resumen
 - Qué se verificó: N afirmaciones de <ficheros>; uso previsto considerado: <uso> (o «no declarado»).

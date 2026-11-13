@@ -18,7 +18,7 @@ ESPERADO = {
     ('validar_claude.py" --hook', "PostToolUse", "Edit|Write|MultiEdit"),
     ('docs_al_dia.py" --stop', "Stop", None),
     ('revisiones.py" --stop', "Stop", None),
-    ('revisiones.py" --registrar', "PostToolUse", "SubagentHandback"),
+    ('revisiones.py" --registrar', "PreToolUse", "SubagentHandback"),
     (
         'revisiones.py" --registrar',
         "SubagentStop",

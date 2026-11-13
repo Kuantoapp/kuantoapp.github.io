@@ -9,7 +9,8 @@ Qué área exige qué revisor (DISPARADORES):
 Modos:
   python revisiones.py              CI: el PR debe traer, por revisor exigido, «- dm-x: APTO (sha)» de un commit
                                     tras el que no cambió nada de su área. NO APTO falla; «NO APLICA — motivo» se acepta.
-  python revisiones.py --registrar  hook (SubagentStop y PostToolUse de SubagentHandback): guarda cada veredicto
+  python revisiones.py --registrar  hook (PreToolUse de SubagentHandback y SubagentStop): guarda cada veredicto y
+                                    rechaza el informe de un revisor que no traiga uno válido
   python revisiones.py --resumen    imprime el bloque para pegar en el PR con los veredictos válidos
   python revisiones.py --stop       hook Stop: si el trabajo está confirmado y falta una revisión, lo recuerda una vez
 """
@@ -156,21 +157,49 @@ def registro(raiz: Path) -> Path:
     )  # dentro de .git: compartido por los worktrees y nunca versionado
 
 
+FORMATO = (
+    "Tu informe debe empezar con «## Veredicto: APTO», «## Veredicto: APTO CON RESERVAS» o "
+    "«## Veredicto: NO APTO» (solo esos tres; los estados de cada comprobación van en sus tablas). Corrígelo y entrégalo de nuevo."
+)
+
+
 def registrar(evento: dict) -> int:
+    """Guarda el veredicto de un revisor y rechaza un informe sin veredicto válido, para que no se pierda.
+
+    PreToolUse de SubagentHandback: el informe es tool_input.message; si no es válido, se deniega la entrega
+    y Claude Code pide al agente que la repita. SubagentStop: el informe es last_assistant_message (si no hubo
+    SubagentHandback); si el agente acaba sin veredicto registrado, se le pide una vez.
+    """
     agente = evento.get("agent_type") or ""
     if agente not in REVISORES:
         return 0
-    if evento.get("hook_event_name") == "SubagentStop":
-        informe = evento.get("last_assistant_message") or ""
-    else:
-        informe = (evento.get("tool_input") or {}).get("message") or ""
+    raiz = Path(evento.get("cwd") or os.getcwd())
+    parada = evento.get("hook_event_name") == "SubagentStop"
+    informe = (
+        evento.get("last_assistant_message")
+        if parada
+        else (evento.get("tool_input") or {}).get("message")
+    ) or ""
     m = VEREDICTO.search(informe)
     if not m:
+        if not parada:
+            salida = {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": FORMATO,
+            }
+            print(json.dumps({"hookSpecificOutput": salida}, ensure_ascii=False))
+        elif not evento.get("stop_hook_active") and not ya_registrado(
+            raiz, evento.get("agent_id")
+        ):
+            print(
+                json.dumps({"decision": "block", "reason": FORMATO}, ensure_ascii=False)
+            )
         return 0
-    raiz = Path(evento.get("cwd") or os.getcwd())
     motivo = informe[m.end() :].strip().splitlines()
     fila = {
         "agente": agente,
+        "agent_id": evento.get("agent_id") or "",
         "veredicto": m.group(1),
         "sha": git("rev-parse", "HEAD", cwd=raiz),
         "sucio": bool(git("status", "--porcelain", "--untracked-files=no", cwd=raiz)),
@@ -183,20 +212,25 @@ def registrar(evento: dict) -> int:
     return 0
 
 
+def filas(raiz: Path) -> list[dict]:
+    ruta = registro(raiz)
+    if not ruta.exists():
+        return []
+    return [
+        json.loads(x)
+        for x in ruta.read_text(encoding="utf-8").splitlines()
+        if x.strip()
+    ]
+
+
+def ya_registrado(raiz: Path, agent_id: str | None) -> bool:
+    return bool(agent_id) and any(f.get("agent_id") == agent_id for f in filas(raiz))
+
+
 def validos(raiz: Path, por_revisor: dict[str, set[str]]) -> dict[str, dict]:
     """Último veredicto registrado de cada revisor que aún vale para HEAD."""
-    ruta = registro(raiz)
-    filas = (
-        [
-            json.loads(x)
-            for x in ruta.read_text(encoding="utf-8").splitlines()
-            if x.strip()
-        ]
-        if ruta.exists()
-        else []
-    )
     vistos: dict[str, dict] = {}
-    for fila in reversed(filas):
+    for fila in reversed(filas(raiz)):
         r = fila.get("agente")
         if (
             r in por_revisor

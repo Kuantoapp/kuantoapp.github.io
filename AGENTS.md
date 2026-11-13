@@ -41,7 +41,7 @@ Todo el repo está montado para que un agente cierre el ciclo solo, **barato y b
   ```bash
   git worktree add ../dm-<tema> -b <usuario>/<tema> origin/main
   ```
-- **Datos en worktrees:** `data/raw/` es una sola copia para todos. En un worktree, un hook enlaza su `data/raw` con la del checkout principal al abrir Claude Code, así nadie descarga dos veces. Antes de descargar, mira si ya está. `data/processed/` es propia de cada worktree, porque depende del código de su rama.
+- **Datos en worktrees:** `data/raw/` es una sola copia para todos. En un worktree, un hook enlaza su `data/raw` con la del checkout principal al abrir Claude Code, así nadie descarga dos veces (sin Claude Code: `python3 .claude/hooks/raw_inmutable.py enlazar` desde el worktree). Antes de descargar, mira si ya está. `data/processed/` es propia de cada worktree, porque depende del código de su rama.
 - Ramas cortas: vive horas, no días. Antes de abrir o actualizar el PR: `git fetch && git rebase origin/main`.
 
 ## Dónde va cada cosa
