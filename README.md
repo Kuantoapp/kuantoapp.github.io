@@ -26,7 +26,7 @@ Activa el entorno con `source .venv/bin/activate` (en Windows, desde Git Bash: `
 
 ## Dependencias
 
-Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. `r5py` arranca Java al importarse (necesita JDK 21): solo se comprueba en local, no en la CI. Licencia: MIT (`LICENSE`).
+Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. Para importar `mesobra` fuera de pytest: `uv pip install -e .`. `r5py` arranca Java al importarse (necesita JDK 21 y `JAVA_HOME` apuntando a él): solo se comprueba en local, no en la CI. Licencia: MIT (`LICENSE`).
 
 ## Cómo trabajamos (GitHub Flow)
 
