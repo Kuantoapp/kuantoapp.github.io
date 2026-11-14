@@ -2,14 +2,26 @@
 
 import importlib.util
 import json
+import subprocess
+import sys
+import time
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(
+    0, str(Path(__file__).parents[1] / ".claude/hooks")
+)  # sincronizar.py importa contexto
 _ruta = Path(__file__).parents[1] / ".claude/hooks/contexto.py"
 _spec = importlib.util.spec_from_file_location("contexto", _ruta)
 assert _spec and _spec.loader
 ctx = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ctx)
+_spec = importlib.util.spec_from_file_location(
+    "sincronizar", _ruta.with_name("sincronizar.py")
+)
+assert _spec and _spec.loader
+sinc = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(sinc)
 
 DECISIONES = """# Registro
 - 2026-11-12 · Flujo GitHub · porque · PR
@@ -121,3 +133,98 @@ def test_aviso_de_contexto(tmp_path):
     transcript(tmp_path / "t.jsonl", 170_000)
     assert ctx.aviso_contexto(evento)  # vuelve a crecer: se avisa otra vez
     assert ctx.aviso_contexto({}) == ""  # sin transcript, nada
+
+
+def test_avisa_solo_si_origin_main_te_afecta(tmp_path):
+    def g(cwd, *a):
+        subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+        )
+
+    def sube(fichero):
+        (otra / fichero).parent.mkdir(exist_ok=True)
+        (otra / fichero).write_text(
+            str(len(list(otra.rglob("*")))) + fichero + str(time.time_ns())
+        )
+        (
+            g(otra, "add", "."),
+            g(otra, "commit", "-q", "-m", fichero),
+            g(otra, "push", "-q", "origin", "HEAD:main"),
+        )
+
+    g(tmp_path, "init", "-q", "--bare", "-b", "main", "origen.git")
+    for nombre in ("yo", "otra"):
+        g(tmp_path, "clone", "-q", "origen.git", nombre)
+    yo, otra = tmp_path / "yo", tmp_path / "otra"
+    sube("src/a.py")
+    g(yo, "pull", "-q", "origin", "main")
+    (yo / "src/a.py").write_text("mio")  # yo toco a.py sin confirmar
+    assert ctx.remoto(yo) == ""  # al día
+    sube("src/ajeno.py")
+    assert ctx.remoto(yo) == ""  # main avanzó, pero en algo que no toco
+    sube("src/a.py")
+    aviso = ctx.remoto(yo)
+    assert (
+        "src/a.py" in aviso
+        and "git pull --rebase" in aviso
+        and "sin confirmar" in aviso
+    )
+    g(yo, "checkout", "-q", "--", "."), g(yo, "pull", "-q", "origin", "main")
+    (yo / "app").mkdir()
+    (yo / "app/mapa.py").write_text("from mesobra import renta\nfrom .otro import f\n")
+    sube("src/mesobra/renta.py")  # lo importa mapa.py, que toco
+    assert "src/mesobra/renta.py" in ctx.remoto(yo)
+    g(yo, "pull", "-q", "origin", "main")
+    sube("app/otro.py")  # import relativo
+    assert "app/otro.py" in ctx.remoto(yo)
+    g(yo, "pull", "-q", "origin", "main")
+    sube("AGENTS.md")
+    assert "AGENTS.md" in ctx.remoto(yo)  # regla común: avisa aunque no la toque
+    assert ctx.remoto(tmp_path / "no-existe") == ""  # sin repo, calla
+
+
+def test_sincroniza_tras_el_pr(tmp_path):
+    def g(cwd, *a):
+        subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+        )
+
+    def commit(repo, fichero, texto, rama):
+        (repo / fichero).write_text(texto)
+        (
+            g(repo, "add", "."),
+            g(repo, "commit", "-q", "-m", fichero),
+            g(repo, "push", "-q", "origin", f"HEAD:{rama}"),
+        )
+
+    g(tmp_path, "init", "-q", "--bare", "-b", "main", "origen.git")
+    for nombre in ("yo", "otra"):
+        g(tmp_path, "clone", "-q", "origen.git", nombre)
+    yo, otra = tmp_path / "yo", tmp_path / "otra"
+    commit(otra, "a.txt", "1", "main")
+    g(yo, "pull", "-q", "origin", "main")
+    g(yo, "checkout", "-q", "-b", "u/tema")
+    assert sinc.sincronizar(yo) == ""  # al día
+    commit(otra, "b.txt", "2", "main")
+    (yo / "sucio.txt").write_text("x")
+    assert sinc.sincronizar(yo) == ""  # árbol sucio: no toca nada
+    (yo / "sucio.txt").unlink()
+    assert (
+        "1 commits de origin/main" in sinc.sincronizar(yo) and (yo / "b.txt").exists()
+    )
+    commit(otra, "a.txt", "3", "main")
+    commit(yo, "a.txt", "mio", "u/tema")
+    assert "chocan" in sinc.sincronizar(yo)
+    assert git_estado(yo) == ""  # el merge fallido se deshizo
+    g(yo, "checkout", "-q", "main")
+    assert sinc.sincronizar(yo) == ""  # en main no hace nada
+
+
+def git_estado(repo):
+    return ctx.git(repo, "status", "--porcelain")

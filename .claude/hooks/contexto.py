@@ -1,7 +1,8 @@
 """Hook SessionStart: da a Claude el estado del proyecto en pocas líneas, para que no tenga que buscarlo.
 
 Lee lo versionado y el disco: decisiones pendientes y próximas fechas clave (docs/decisiones.md), marcas
-«(verificar)» abiertas y descargas de data/README.md que faltan en este equipo. Nunca bloquea.
+«(verificar)» abiertas, descargas de data/README.md que faltan en este equipo y commits nuevos de origin/main
+que aún no tiene tu rama (hace un `git fetch` corto; no hace pull). Nunca bloquea.
 
 --stop (hook Stop): avisa a la persona cuando el contexto de la sesión pasa de UMBRAL tokens, para que
 compacte o cambie de sesión (el agente no puede hacerlo solo). Una vez por cada tramo de 100.000.
@@ -9,6 +10,7 @@ compacte o cambie de sesión (el agente no puede hacerlo solo). Una vez por cada
 
 from __future__ import annotations  # puede ejecutarse con el Python 3.9 de macOS
 
+import ast
 import json
 import os
 import re
@@ -122,6 +124,102 @@ def descargas_que_faltan(base: Path) -> list[str]:
     return faltan
 
 
+def git(base: Path, *args: str, espera: int = 10) -> str | None:
+    """Salida de un comando git, o None si falla, no hay git o tarda más de `espera` segundos."""
+    try:
+        r = subprocess.run(
+            ["git", *args],
+            cwd=base,
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=espera,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return r.stdout.strip() if r.returncode == 0 else None
+
+
+# Lo que cambia las reglas del juego para todos, aunque tú no lo toques
+COMUN = (
+    ".claude/",
+    ".github/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "requirements",
+    ".python-version",
+    "docs/decisiones.md",
+)
+
+
+def lineas(base: Path, *args: str) -> set[str]:
+    return set((git(base, *args) or "").splitlines())
+
+
+def importados(base: Path, rel: str) -> set[str]:
+    """Rutas posibles de los módulos que importa un .py (un nivel; en la raíz o en src/)."""
+    try:
+        arbol = ast.parse((base / rel).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, ValueError):
+        return set()  # borrado, ilegible o no es Python: no hay imports que seguir
+    modulos = []  # (ruta relativa de un módulo, ¿relativa al fichero?)
+    for n in ast.walk(arbol):
+        if isinstance(n, ast.Import):
+            modulos += [(a.name.replace(".", "/"), False) for a in n.names]
+        elif isinstance(n, ast.ImportFrom):
+            ruta = (n.module or "").replace(".", "/")
+            if n.level:
+                ruta = "/".join([".."] * (n.level - 1) + [ruta]).rstrip("/")
+            modulos += [(ruta, n.level > 0)] + [
+                (f"{ruta}/{a.name}", n.level > 0) for a in n.names
+            ]
+    candidatos = set()
+    for ruta, relativa in modulos:
+        if relativa:
+            ruta = os.path.normpath(str(Path(rel).parent / ruta)).replace(os.sep, "/")
+        for raiz in ("",) if relativa else ("", "src/"):
+            candidatos |= {f"{raiz}{ruta}.py", f"{raiz}{ruta}/__init__.py"}
+    return candidatos
+
+
+def remoto(base: Path) -> str:
+    """Aviso si origin/main cambió algo que te afecta (ficheros que tocas o reglas comunes); si no, calla."""
+    if git(base, "fetch", "--quiet", "origin", "main", espera=5) is None:
+        return ""  # sin repo, sin remoto o sin red: se trabaja igual
+    nuevos = lineas(base, "diff", "--name-only", "HEAD...origin/main")
+    if not nuevos:
+        return ""
+    # shortcut: solo coincidencia por fichero; no ve dependencias entre ficheros distintos, cuándo mejorarlo: si falla en la práctica
+    sucios = lineas(base, "diff", "--name-only", "HEAD") | lineas(
+        base, "ls-files", "--others", "--exclude-standard"
+    )
+    suyos = lineas(base, "diff", "--name-only", "origin/main...HEAD") | sucios
+    comunes = {f for f in nuevos if f.startswith(COMUN)}
+    choque = sorted(nuevos & suyos)
+    # shortcut: un solo nivel de imports; los transitivos darían demasiados falsos avisos
+    deps = set().union(*(importados(base, f) for f in suyos if f.endswith(".py")))
+    usados = sorted(nuevos & deps - set(choque))
+    if not choque and not usados and not comunes:
+        return ""
+    rama = git(base, "branch", "--show-current") or "HEAD"
+    accion = "git pull --rebase" if rama == "main" else "git rebase origin/main"
+    motivo = []
+    if choque:
+        motivo.append("ficheros que tú también tocas: " + ", ".join(choque[:5]))
+    if usados:
+        motivo.append("ficheros que importas: " + ", ".join(usados[:5]))
+    if comunes:
+        motivo.append(
+            "reglas o dependencias comunes: " + ", ".join(sorted(comunes)[:5])
+        )
+    sucio = (
+        " Tienes cambios sin confirmar: haz commit o `git stash` antes."
+        if sucios
+        else ""
+    )
+    return f"origin/main ha cambiado ({'; '.join(motivo)}). Tu rama «{rama}» no lo tiene: ejecuta `{accion}`.{sucio}"
+
+
 def contexto(base: Path, hoy: date) -> str:
     decisiones = leer(base / "docs/decisiones.md")
     lineas = []
@@ -169,6 +267,7 @@ def contexto(base: Path, hoy: date) -> str:
             + ", ".join(faltan[:5])
         )
 
+    seccion("Repositorio", lambda: remoto(base))
     seccion("Fechas clave", _hitos)
     seccion("Decisiones pendientes", _pendientes)
     seccion("Marcas «(verificar)»", _verificar)
