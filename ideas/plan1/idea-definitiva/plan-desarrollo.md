@@ -65,7 +65,7 @@ Los identificadores `F1-04` son estables. Las duraciones, los tamaños y los umb
 | Simulación del criterio del Bono (7.4) y fin del descuento agregado (7.5) | N1 | F3-07, F3-08 | El 21 a las 20:00 sin mergear → fuera; queda el escenario individual |
 | Informe con las piezas N1 (7) | N1 | F3-09 | Se reduce a lo que haya llegado |
 | Metadatos DCAT-AP (11.2) | N1 | F5-04 | El 23 a las 14:00 sin F4-03 → el README describe los ficheros |
-| Piloto con usuarios (10.3) | N1 | T-01, T-02 | El 17 sin responsable, o el 20 sin web publicada usable → fuera; el impacto es el análisis del Bono |
+| Piloto con usuarios (10.3) | N1 | T-01, T-02 | El 17 sin responsable → fuera, y el impacto es el análisis del Bono; con responsable y sin web publicada el 20 → prueba de uso en local con cinco personas |
 | Nóminas reales (6.1, 10.2) | N1 | T-03 | El 18 sin nóminas → auditoría y casos de control |
 | Deslizador del valor del tiempo (6.5) · destino libre con rejilla (6.5) · zoom a barrios con el alquiler por código postal (4, 6.2) · polos obtenidos de la EDM2018 y del MITMA, y el indicio de la sección 8 (6.5, 8) · déficit de transporte (7.6) · rentabilidad implícita con el Notariado (7.7) · validación externa por distrito (10.1) · precio de oferta (6.2) · propuesta al catálogo y modelo nuevo de Smart Data Models (11.1, 11.2) · instancia remota del MCP (11.3) | N2 | Sin issue | Solo se abre issue si el 20 por la noche todo N0 está mergeado y la persona tiene un agente libre, en este orden: barrios con el alquiler por código postal del catálogo regional, deslizador, polos de datos. El resto no entra antes del 26 |
 
@@ -88,7 +88,7 @@ Los identificadores `F1-04` son estables. Las duraciones, los tamaños y los umb
 | `renta` · unidad × año · `unidad_id`, `nivel`, `anio` | `nivel` {zona, seccion}; `renta_hogar` decimal (€/año, media por hogar); `renta_uc` decimal (€/año por unidad de consumo); `gini` decimal (0–100); `p80p20` decimal; `poblacion` entero; `tam_hogar` decimal (personas) | F1-13 | F2-04, F3-05, F3-06 |
 | `netos` · bruto × configuración · `bruto_anual`, `hijos`, `monoparental` | `bruto_anual` entero (€, cada 250); `hijos` {0, 1, 2}; `monoparental` booleano; `cotizacion`, `cuota_irpf`, `neto_anual` decimal (€/año) | F1-11 | F1-15 |
 | `tarifas` · escenario × edad × corona × días · las cuatro | `escenario` {vigente_2026, sin_descuento}; `joven` booleano; `corona` texto; `dias` 1–5; `titulo` texto; `coste_mes` decimal (€/mes) | F1-12 | F1-15, F3-08 |
-| `hogares` · perfil · `perfil` | `perfil` {solo, comparte, pareja, monoparental}; `adultos`, `hijos`, `personas_comparten` entero; `m2` decimal; `alimentacion`, `suministros` decimal (€/mes); `anio` entero | F1-14 | F1-15, F3-06 |
+| `hogares` · perfil · `perfil` | `perfil` {solo, comparte, pareja, monoparental}; `adultos`, `hijos`, `personas_comparten` entero; `alimentacion`, `suministros` decimal (€/mes); `anio` entero | F1-14 | F1-15, F3-06 |
 | `esfuerzo` · zona × año · `zona_id`, `anio` | `alquiler_mes_p50`, `renta_hogar_mes` decimal (€/mes); `esfuerzo` decimal (proporción) | F2-04 | F2-05, F2-06 |
 | `bono` · municipio · `municipio_id` | `solicitudes`, `aceptadas`, `rechazadas`, `poblacion_joven` entero; `necesidad` decimal; `indicador_necesidad` {esfuerzo, sobrecarga}; `grupo` texto | F2-05 | F2-06 |
 | `sobrecarga` · zona × año · `zona_id`, `anio` | `pct_40_inf`, `pct_40_sup`, `pct_30_inf`, `pct_30_sup` decimal (% de hogares inquilinos); `dif_sigma` decimal | F3-06 | F3-08, F3-09 |
@@ -103,7 +103,7 @@ Los identificadores `F1-04` son estables. Las duraciones, los tamaños y los umb
 | `alquiler.json` · zona · `zona_id` | Por zona: `anio`, `p25`, `p50`, `p75` (€/m² al mes), `m2`, `factor_ipc`, `origen`, `ic` | F1-15, F4-03 (Yeray) | Web, MCP, F2-07 |
 | `netos.json` · bruto × configuración | `brutos` (€), `configuraciones`, matriz `neto_anual` (€/año) | F1-15, F4-03 (Yeray) | Web, MCP |
 | `tarifas.json` · escenario × edad × corona × días | `orden_coronas`, `edad_max_joven`, y por escenario el `coste_mes` (€/mes) y el `titulo` | F1-15, F4-03 (Yeray) | Web, MCP |
-| `hogares.json` · perfil | Valores por defecto del hogar y cesta (€/mes) | F1-15, F4-03 (Yeray) | Web, MCP |
+| `hogares.json` · perfil | Valores por defecto del hogar, m² por defecto (lo añade F1-15 desde `alquiler_zona`) y cesta (€/mes) | F1-15, F4-03 (Yeray) | Web, MCP |
 | `analisis.json` · zona o municipio | Bloques `esfuerzo` (zona × año), `bono` (municipio), `titulares`, y si existen `sobrecarga` y `simulacion` | F2-06, F2-09, F4-03 (Yeray) | Informe, MCP, F2-07, F5-05 |
 | `sdm/` · entidad | Los indicadores en el modelo de Smart Data Models elegido | F4-03, con el código de F2-07 (Yeray) | Reutilizadores |
 | `tests/fixtures/casos_referencia.json` · caso | Entradas y salidas esperadas del cálculo | F1-05 (Izan) | F1-07, F2-03 |
@@ -153,7 +153,7 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 #### F0-04 · docs(verificaciones): fuentes de renta, tenencia, sobrecarga y Bono
 
 - **Nivel:** N0 · **Dueño:** Yeray · **Día:** 15 nov · **Área:** datos
-- **Depende de:** nada · **Desbloquea:** F1-02, F1-13, F1-14, F1-16, F2-05, F2-10, F3-04
+- **Depende de:** nada · **Desbloquea:** F1-13, F1-14, F1-16, F2-05, F2-10, F3-04
 - **Ficheros que toca:** `docs/verificaciones/renta-vivienda.md`
 - **Entradas y salidas** (contratos en la sección 2 del plan): Salida: `docs/verificaciones/renta-vivienda.md`, una tabla afirmación · estado · evidencia (URL y fecha) · texto corregido · consecuencia para el plan.
 - **Skills:** dm-verificacion-fuentes · **Revisores obligatorios:** ninguno (no toca áreas con revisor)
@@ -194,15 +194,16 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 #### F1-02 · data(fuentes): SERPAVI, ADRH, Bono, EPF, IPC de alquiler y población por edad
 
 - **Nivel:** N0 · **Dueño:** Yeray · **Día:** 15 nov · **Área:** datos
-- **Depende de:** F0-01, F0-04, F1-01 · **Desbloquea:** F1-10, F1-13, F1-14, F2-05, F2-10, F3-04
+- **Depende de:** F0-01, F1-01 · **Desbloquea:** F1-10, F1-13, F1-14, F2-05, F2-10, F3-04
 - **Ficheros que toca:** `data/README.md`, `docs/datos/*.DATA.md`
 - **Entradas y salidas** (contratos en la sección 2 del plan): Salida: ficheros en `data/raw/` con fecha y SHA-256, y sus filas en `data/README.md`.
 - **Skills:** dm-nueva-fuente, dm-diccionario-datos, dm-verificacion-fuentes · **Revisores obligatorios:** dm-verificador-fuentes
 - **Agente:** sonnet · esfuerzo medio · **Tamaño estimado:** unas 80 líneas (estimación)
 - **Riesgo y plan B:** Descarga del SERPAVI bloqueada: descarga manual por una persona (acción humana A1). Si el Excel no trae 2024, se registra igual y F1-10 usa el último año.
 - **Marcas «(verificar)»:** Depende de F0-04 (ADRH y EPF).
+- **Va detrás de, solo si llega:** F0-04
 - **Hecho cuando:** (1) `descargar.py --comprobar` sale con 0 con las seis fuentes (o el PR dice cuál no se pudo registrar y qué issue se queda sin entrada) · (2) Cada fila de `data/README.md` tiene URL, licencia, cómo obtenerla, fichero y SHA-256 · (3) Veredicto de `dm-verificador-fuentes` en el PR, pedido después del rebase
-- **Qué hay que hacer:** Incorpora con la skill `dm-nueva-fuente` (hasta el perfil; las cargas van en F1-10, F1-13, F1-14, F2-05 y F2-10) las fuentes del carril de euros: (1) el Excel del SERPAVI 2011–2024 y sus capas, con las URL de la sección 12.4 de la ficha, en `data/raw/serpavi/`; (2) ADRH 2024 del INE por municipio, distrito y sección, con los indicadores que F0-04 haya confirmado; (3) `spacm_bono_alquiler_joven_2022` del catálogo regional; (4) la tabla de la EPF de gasto por tipo de hogar para la Comunidad de Madrid que F0-04 haya confirmado; (5) el IPC de alquiler del catálogo regional, con el identificador que F0-04 haya confirmado; (6) la población por edad y municipio de la fuente que F0-04 haya confirmado. El proxy bloquea el SERPAVI y la API CKAN (ficha 12.5): si da 403, deja en el PR la URL y el nombre de fichero esperado para la descarga manual y registra el SHA cuando esté. La dependencia con F1-01 es solo el turno de `data/README.md`: descarga en paralelo, pero pide la revisión y abre el PR cuando F1-01 esté mergeada, tras `git rebase origin/main`.
+- **Qué hay que hacer:** Incorpora con la skill `dm-nueva-fuente` (hasta el perfil; las cargas van en F1-10, F1-13, F1-14, F2-05 y F2-10) las fuentes del carril de euros: (1) el Excel del SERPAVI 2011–2024 y sus capas, con las URL de la sección 12.4 de la ficha, en `data/raw/serpavi/`; (2) ADRH 2024 del INE por municipio, distrito y sección, con los indicadores que F0-04 haya confirmado; (3) `spacm_bono_alquiler_joven_2022` del catálogo regional; (4) la tabla de la EPF de gasto por tipo de hogar para la Comunidad de Madrid que F0-04 haya confirmado; (5) el IPC de alquiler del catálogo regional, con el identificador que F0-04 haya confirmado; (6) la población por edad y municipio de la fuente que F0-04 haya confirmado. El proxy bloquea el SERPAVI y la API CKAN (ficha 12.5): si da 403, deja en el PR la URL y el nombre de fichero esperado para la descarga manual y registra el SHA cuando esté. La dependencia con F1-01 es solo el turno de `data/README.md`: descarga en paralelo, pero pide la revisión y abre el PR cuando F1-01 esté mergeada, tras `git rebase origin/main`. El SERPAVI y el Bono no esperan a F0-04: descárgalos y perfílalos ya. Para el ADRH, la EPF, el IPC y la población por edad usa lo que F0-04 haya confirmado; si a las 18:00 del 15 F0-04 no ha terminado, verifícalas tú con `dm-verificador-fuentes` (su veredicto es obligatorio de todos modos para `data/README.md`) y sigue.
 
 #### F1-03 · feat(src): zonas con centro de población y corona tarifaria
 
@@ -227,8 +228,8 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 - **Agente:** opus · esfuerzo alto · **Tamaño estimado:** unas 380 líneas (estimación)
 - **Riesgo y plan B:** Es la pieza con más riesgo del camino crítico (r5py, Java y el Python del repo). El plan B3 va dentro de la issue (paso 0): si r5py no pasa la puerta del 16, la herramienta sale con tiempos por distancia marcados «estimado». Plan B1 (decisión D6): OpenTripPlanner 2 en local, con el mismo riesgo de Java y dos días (17 y 18), solo si la persona lo decide. Plan B2: la duración por par de zonas de la EDM2018, si F0-05 confirma que existe.
 - **Marcas «(verificar)»:** Resuelve: «Probar r5py con 3–5 pares origen-destino».
-- **Hecho cuando:** (1) Control con los propios GTFS: para tres pares de paradas unidas por una línea directa (una de Cercanías, una de Metro y una de interurbano), el tiempo de r5py entre las coordenadas de las paradas está entre el tiempo en vehículo de `stop_times.txt` y ese tiempo más 20 minutos · (2) Matriz completa: 199 × 199 filas con `modo = tp`; el tiempo dentro de la zona es mayor que 0 en toda zona con más de una sección y menor de 30 minutos; menos del 5 % de pares nulos, con el listado de zonas sin ruta en el PR (el 5 % es un umbral supuesto: si se supera, se explica) · (3) `tests/test_tiempos.py` prueba, sin Java y con datos sintéticos, la línea base, la agregación a mediana, el tiempo dentro de la zona y el tratamiento de nulos · (4) Veredictos de `dm-revisor-codigo` y `dm-revisor-espacial`
-- **Qué hay que hacer:** Implementa `src/mesobra/tiempos.py` en tres pasos. Paso 0, hoy y sin Java: una línea base por distancia (línea recta entre centros de población × un factor de rodeo ÷ una velocidad comercial; los dos parámetros, declarados como supuesto en el código) que produce la tabla `tiempos` completa con `estimado = verdadero`. Con ella F1-08 nunca se bloquea. Paso A, también hoy y sin esperar a F1-03 (usa el fixture de zonas): instala lo que haga falta (JDK 21), construye la red con r5py, los GTFS del CRTM y OpenStreetMap, y calcula cinco pares de control. Publica el resultado como comentario en esta issue: es la entrada de la decisión D6 (16 nov, 20:00). Si r5py no instala o no enruta tras tres intentos distintos, para ahí e informa con el diagnóstico: el paso 0 ya está. Paso B, con F1-03 mergeada: tiempo puerta a puerta en transporte público entre el centro de población de cada zona y el de todas las zonas, mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable dentro de la vigencia de los GTFS, con un máximo de 120 minutos (por encima, nulo), con `estimado = falso`. El tiempo dentro de una misma zona no es cero: es la mediana del tiempo desde los centroides de sus secciones hasta su centro de población. Importa r5py dentro de la función, no al principio del módulo, para que los tests corran sin Java. Valida con `contratos.validar` y declara en el docstring que el destino es el centro de población de la zona de trabajo.
+- **Hecho cuando:** (1) Control con los propios GTFS: para tres pares de paradas unidas por una línea directa (una de Cercanías, una de Metro y una de interurbano), el tiempo de r5py entre las coordenadas de las paradas está entre el tiempo en vehículo de `stop_times.txt` y ese tiempo más 20 minutos · (2) Tanto en la línea base como en la matriz de r5py: 199 × 199 filas con `modo = tp`; el tiempo dentro de la zona es mayor que 0 en toda zona con más de una sección y menor de 30 minutos; menos del 5 % de pares nulos, con el listado de zonas sin ruta en el PR (el 5 % es un umbral supuesto: si se supera, se explica) · (3) `tests/test_tiempos.py` prueba, sin Java y con datos sintéticos, la línea base, la agregación a mediana, el tiempo dentro de la zona y el tratamiento de nulos · (4) Veredictos de `dm-revisor-codigo` y `dm-revisor-espacial`
+- **Qué hay que hacer:** Implementa `src/mesobra/tiempos.py` en tres pasos. Paso 0, hoy y sin Java: una línea base por distancia (línea recta entre centros de población × un factor de rodeo ÷ una velocidad comercial; los dos parámetros, declarados como supuesto en el código) que produce la tabla `tiempos` completa con `estimado = verdadero`; dentro de una misma zona usa la mediana de la distancia desde los centroides de sus secciones hasta su centro, nunca cero. Con ella F1-08 nunca se bloquea. Paso A, también hoy y sin esperar a F1-03 (usa el fixture de zonas): instala lo que haga falta (JDK 21), construye la red con r5py, los GTFS del CRTM y OpenStreetMap, y calcula cinco pares de control. Publica el resultado como comentario en esta issue: es la entrada de la decisión D6 (16 nov, 20:00). Si r5py no instala o no enruta tras tres intentos distintos, para ahí e informa con el diagnóstico: el paso 0 ya está. Paso B, con F1-03 mergeada: tiempo puerta a puerta en transporte público entre el centro de población de cada zona y el de todas las zonas, mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable dentro de la vigencia de los GTFS, con un máximo de 120 minutos (por encima, nulo), con `estimado = falso`. El tiempo dentro de una misma zona no es cero: es la mediana del tiempo desde los centroides de sus secciones hasta su centro de población. Importa r5py dentro de la función, no al principio del módulo, para que los tests corran sin Java. Valida con `contratos.validar` y declara en el docstring que el destino es el centro de población de la zona de trabajo.
 
 #### F1-05 · feat(src): cálculo de referencia del sobrante, las horas y el precio de la hora
 
@@ -347,12 +348,12 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 - **Nivel:** N0 · **Dueño:** Yeray · **Día:** 16 nov · **Área:** src
 - **Depende de:** F0-02, F0-04, F1-02 · **Desbloquea:** F1-15, F3-06
 - **Ficheros que toca:** `src/mesobra/hogares.py`, `tests/test_hogares.py`
-- **Entradas y salidas** (contratos en la sección 2 del plan): Entrada: EPF (F1-02) y superficies del SERPAVI. Salida: tabla `hogares` (contrato de la sección 2).
+- **Entradas y salidas** (contratos en la sección 2 del plan): Entrada: EPF (F1-02). Salida: tabla `hogares` (contrato de la sección 2). El m² por defecto no va aquí: lo añade F1-15.
 - **Skills:** dm-calculos-normativos, dm-codigo-minimo · **Revisores obligatorios:** dm-revisor-codigo
 - **Agente:** sonnet · esfuerzo medio · **Tamaño estimado:** unas 220 líneas (estimación)
 - **Riesgo y plan B:** La EPF no desagrega por tipo de hogar en la Comunidad (F0-04). Plan B: gasto medio por persona de la Comunidad escalado por unidades de consumo, marcado «estimado».
 - **Hecho cuando:** (1) `tests/test_hogares.py`: cuatro perfiles, ningún nulo, alimentación y suministros positivos · (2) Cada cifra de la cesta se rastrea a una celda de la tabla de la EPF citada en el docstring (tabla, año y categoría de gasto) · (3) El PR lista los supuestos de asignación perfil → tipo de hogar
-- **Qué hay que hacer:** Implementa `src/mesobra/hogares.py`: para los cuatro perfiles de la ficha §5 (vive solo, comparte piso, pareja con dos sueldos, monoparental) produce la tabla `hogares` con los valores por defecto del hogar (adultos, hijos, personas que comparten, m² de la vivienda) y la cesta básica mensual en dos columnas separadas, alimentación y suministros (luz, agua, gas), de la EPF del INE para la Comunidad de Madrid. No incluyas el alquiler en la cesta. Declara como supuesto en el código y en el PR cómo se asigna cada perfil a un tipo de hogar de la EPF y de dónde sale el m² por defecto (superficie mediana del SERPAVI). Los suministros van aparte porque la sobrecarga (F3-06) los suma al alquiler.
+- **Qué hay que hacer:** Implementa `src/mesobra/hogares.py`: para los cuatro perfiles de la ficha §5 (vive solo, comparte piso, pareja con dos sueldos, monoparental) produce la tabla `hogares` con los valores por defecto del hogar (adultos, hijos, personas que comparten) y la cesta básica mensual en dos columnas separadas, alimentación y suministros (luz, agua, gas), de la EPF del INE para la Comunidad de Madrid. No incluyas el alquiler en la cesta. Declara como supuesto en el código y en el PR cómo se asigna cada perfil a un tipo de hogar de la EPF. Los suministros van aparte porque la sobrecarga (F3-06) los suma al alquiler.
 
 #### F1-15 · data(app): primera API estática de alquiler, netos, tarifas y hogares
 
@@ -364,7 +365,7 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 - **Agente:** sonnet · esfuerzo medio · **Tamaño estimado:** unas 160 líneas (estimación)
 - **Riesgo y plan B:** Si el neto no tiene veredicto APTO el 18, `netos.json` no se publica y la herramienta arranca en modo «neto mensual» (plan B de F1-11).
 - **Hecho cuando:** (1) `pytest tests/test_api_estatica.py` valida los cuatro ficheros reales · (2) `alquiler.json` tiene las 199 zonas, con `origen` igual a `observado` o `sin_dato` · (3) Veredicto de `dm-trazador-cifras`: tres zonas, un neto y una tarifa rastreados hasta `data/raw/` o la norma
-- **Qué hay que hacer:** Crea `src/mesobra/pipeline_euros.py`, ejecutable con `python -m mesobra.pipeline_euros`: llama a `alquiler`, `neto.rejilla`, `transporte` y `hogares` y escribe con `api_estatica.escribir` los ficheros `app/datos/alquiler.json` (último año con dato por zona, con P25, mediana, P75, `origen` y año), `netos.json`, `tarifas.json` y `hogares.json`, cada uno con su bloque `meta` (fuentes y licencias de `data/README.md`). Ejecútalo con los datos reales y sube los cuatro ficheros en este PR (excepción decidida para datos derivados pequeños). Este PR no cambia cálculos: solo los encadena y exporta.
+- **Qué hay que hacer:** Crea `src/mesobra/pipeline_euros.py`, ejecutable con `python -m mesobra.pipeline_euros`: llama a `alquiler`, `neto.rejilla`, `transporte` y `hogares` y escribe con `api_estatica.escribir` los ficheros `app/datos/alquiler.json` (último año con dato por zona, con P25, mediana, P75, `origen` y año), `netos.json`, `tarifas.json` y `hogares.json`, cada uno con su bloque `meta` (fuentes y licencias de `data/README.md`). Ejecútalo con los datos reales y sube los cuatro ficheros en este PR (excepción decidida para datos derivados pequeños). Este PR no cambia cálculos: solo los encadena y exporta. Única excepción: el m² por defecto de cada perfil lo pone este paso en `hogares.json` a partir de la superficie mediana de `alquiler_zona`, con la regla declarada en el código y en el PR.
 
 #### F1-16 · docs(ideas): cierra las marcas «(verificar)» de la ficha
 
@@ -456,7 +457,7 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 #### F2-07 · feat(src): indicadores por zona en esquema de Smart Data Models
 
 - **Nivel:** N0 · **Dueño:** Yeray · **Día:** 18 nov · **Área:** src
-- **Depende de:** F0-03, F0-05 · **Desbloquea:** F4-03, F5-04
+- **Depende de:** F0-03, F0-05 · **Desbloquea:** F4-01, F4-03, F5-04
 - **Ficheros que toca:** `src/mesobra/sdm.py`, `tests/test_sdm.py`, `tests/fixtures/sdm_esquema.json`
 - **Entradas y salidas** (contratos en la sección 2 del plan): Entrada: `analisis.json` y `alquiler.json` (ejemplos de `tests/fixtures/api/`). Salida: `python -m mesobra.sdm`, que escribe los indicadores en el modelo de Smart Data Models elegido en `app/datos/sdm/`.
 - **Skills:** dm-codigo-minimo · **Revisores obligatorios:** dm-revisor-codigo
@@ -469,7 +470,7 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 #### F2-08 · chore(github): publica app/ en GitHub Pages
 
 - **Nivel:** N0 · **Dueño:** Yeray · **Día:** 19 nov · **Área:** infra
-- **Depende de:** F1-09 · **Desbloquea:** T-02
+- **Depende de:** F1-09 · **Desbloquea:** nada
 - **Ficheros que toca:** `.github/workflows/pages.yml`, `README.md`
 - **Entradas y salidas** (contratos en la sección 2 del plan): Entrada: carpeta `app/` en `main`. Salida: la web publicada con URL estable.
 - **Skills:** ninguna específica · **Revisores obligatorios:** dm-revisor-seguridad (recomendado, no lo exige la CI)
@@ -620,14 +621,14 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 #### F4-01 · chore(src): un comando regenera y comprueba toda la API estática
 
 - **Nivel:** N0 · **Dueño:** Izan · **Día:** 21 nov · **Área:** src
-- **Depende de:** F1-08, F1-15, F2-06 · **Desbloquea:** F4-02, F4-03, F5-02
+- **Depende de:** F1-08, F1-15, F2-06, F2-07 · **Desbloquea:** F4-02, F4-03, F5-02
 - **Ficheros que toca:** `src/mesobra/__main__.py`, `tests/test_main.py`, `README.md`
-- **Entradas y salidas** (contratos en la sección 2 del plan): Salida: `python -m mesobra` ejecuta los tres pipelines en orden y valida `app/datos/`.
+- **Entradas y salidas** (contratos en la sección 2 del plan): Salida: `python -m mesobra` ejecuta los tres pipelines y `sdm` en orden y valida `app/datos/`.
 - **Skills:** dm-codigo-minimo · **Revisores obligatorios:** dm-revisor-codigo
 - **Agente:** sonnet · esfuerzo bajo · **Tamaño estimado:** unas 90 líneas (estimación)
 - **Riesgo y plan B:** Ninguno de alcance.
 - **Hecho cuando:** (1) `python -m mesobra` termina con código 0 en el equipo de quien lo ejecuta y deja `app/datos/` sin diferencias inesperadas (`git status` pegado en el PR) · (2) Con un fichero de `data/raw/` ausente, sale con código distinto de 0 y nombra el fichero · (3) `README.md` documenta el comando
-- **Qué hay que hacer:** Crea `src/mesobra/__main__.py`: `python -m mesobra` comprueba primero que `data/raw/` tiene los ficheros de `data/README.md` con su SHA-256 (reutiliza la comprobación de `dm-nueva-fuente`), ejecuta `pipeline_territorio`, `pipeline_euros` y `pipeline_analisis` en ese orden y termina validando todo `app/datos/` con `api_estatica.validar`. Si falta una fuente, se detiene diciendo cuál y cómo obtenerla. Documenta en `README.md` el comando, el tiempo aproximado que tarda (medido) y los requisitos (JDK 21). No añadas opciones.
+- **Qué hay que hacer:** Crea `src/mesobra/__main__.py`: `python -m mesobra` comprueba primero que `data/raw/` tiene los ficheros de `data/README.md` con su SHA-256 (reutiliza la comprobación de `dm-nueva-fuente`), ejecuta `pipeline_territorio`, `pipeline_euros`, `pipeline_analisis` y `sdm` en ese orden y termina validando todo `app/datos/` con `api_estatica.validar`. Si falta una fuente, se detiene diciendo cuál y cómo obtenerla. Documenta en `README.md` el comando, el tiempo aproximado que tarda (medido) y los requisitos (JDK 21). No añadas opciones.
 
 #### F4-02 · data(app): API estática congelada de zonas y tiempos
 
@@ -726,7 +727,7 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 - **Agente:** opus · esfuerzo alto · **Tamaño estimado:** unas 180 líneas (estimación)
 - **Riesgo y plan B:** Carril sin asignar (decisión D7). Si nadie lo asume, lo hace Izan el 24.
 - **Hecho cuando:** (1) `cifras_con_fuente.py` en verde y veredicto de `dm-trazador-cifras` · (2) Al menos doce preguntas con respuesta, y cada respuesta con cifra tiene su fuente · (3) Cada diapositiva corresponde a un bloque del guion
-- **Qué hay que hacer:** Escribe `docs/pitch/diapositivas.md` (una sección por diapositiva: título, la única idea que transmite, la figura o captura que lleva y su fuente; pocas, las que pida el guion) y `docs/pitch/preguntas.md` con las preguntas difíciles que puede hacer el jurado y su respuesta en dos frases con la cifra y la fuente: por qué no precios de anuncio, qué pasa con las zonas sin dato, cómo se validó, qué aporta frente a un mapa de alquiler y frente al índice H+T, licencias, quién lo mantiene, cada cuánto se actualiza cada fuente y cuánto cuesta (con la evidencia del apartado de mantenimiento de la nota metodológica), encaje con Smart Data Models y MCP. Usa `dm-abogado-del-diablo` para generar las preguntas. La herramienta para maquetar las diapositivas la elige quien presenta; aquí va el contenido.
+- **Qué hay que hacer:** Escribe `docs/pitch/diapositivas.md` (una sección por diapositiva: título, la única idea que transmite, la figura o captura que lleva y su fuente; pocas, las que pida el guion) y `docs/pitch/preguntas.md` con las preguntas difíciles que puede hacer el jurado y su respuesta en dos frases con la cifra y la fuente: por qué no precios de anuncio, qué pasa con las zonas sin dato, cómo se validó, qué aporta frente a un mapa de alquiler y frente al índice H+T, licencias, cuánto pesa de verdad el catálogo regional en la cuenta (el IPC regional es un único factor igual para todas las zonas: se dice así), quién lo mantiene, cada cuánto se actualiza cada fuente y cuánto cuesta (con la evidencia del apartado de mantenimiento de la nota metodológica), encaje con Smart Data Models y MCP. Usa `dm-abogado-del-diablo` para generar las preguntas. La herramienta para maquetar las diapositivas la elige quien presenta; aquí va el contenido.
 
 ### T · Tercer carril
 
@@ -738,14 +739,14 @@ Borradores: al crear las issues en GitHub, cada bloque se sustituye por una fila
 - **Entradas y salidas** (contratos en la sección 2 del plan): Salida: `docs/pitch/piloto-protocolo.md`.
 - **Skills:** dm-humanizar · **Revisores obligatorios:** dm-trazador-cifras
 - **Agente:** opus · esfuerzo alto · **Tamaño estimado:** unas 120 líneas (estimación)
-- **Riesgo y plan B:** Señal de corte: si el 17 nadie asume este carril (decisión D7), o el 20 no hay web publicada usable (F2-08 y F2-01), el piloto queda fuera y la pieza de impacto es el análisis del Bono (plan B de la ficha). Si el 20 no hay web publicada, se hace una prueba de uso en local con al menos cinco personas (no necesita Pages) y se presenta como prueba de uso, no como piloto.
+- **Riesgo y plan B:** Señal de corte: si el 17 nadie asume este carril (decisión D7), no hay piloto ni prueba de uso, y la pieza de impacto es el análisis del Bono con los titulares. Con responsable pero sin web publicada el 20, se hace como prueba de uso en local con al menos cinco personas (no necesita Pages) y se presenta así, no como piloto.
 - **Hecho cuando:** (1) El protocolo fija las dos métricas y el tamaño mínimo antes de recoger ninguna respuesta (fecha del commit anterior a la primera sesión) · (2) El formulario de recogida no tiene ningún campo identificable · (3) `cifras_con_fuente.py` en verde
 - **Qué hay que hacer:** Escribe el protocolo del piloto de la ficha §10.3 antes de enseñar la herramienta a nadie: a quién se recluta (entre 15 y 30 jóvenes que estén buscando piso o lo hayan buscado hace poco) y por qué canales; el cuestionario de antes (dónde buscarían y cuánto creen que les sobraría) y el de después; las dos métricas fijadas por escrito (porcentaje que cambia de zona; diferencia entre lo que creían que les sobraría y lo calculado) y la secundaria (SUS); el texto de consentimiento informado; y qué se guarda: ningún dato personal identificable, ni nombre ni correo ni sueldo exacto (tramos). Di cómo se presentará: piloto sin grupo de control, no demuestra causalidad. Pasa `dm-revisor-seguridad` por la parte de datos personales.
 
 #### T-02 · docs(pitch): resultados del piloto con usuarios
 
 - **Nivel:** N1 · **Dueño:** Sin asignar · **Día:** 24 nov · **Área:** pitch
-- **Depende de:** T-01, F2-08, F2-01 · **Desbloquea:** nada
+- **Depende de:** T-01, F2-01 · **Desbloquea:** nada
 - **Ficheros que toca:** `docs/pitch/piloto-resultados.md`
 - **Entradas y salidas** (contratos en la sección 2 del plan): Entrada: respuestas anónimas del piloto (no se versionan). Salida: `docs/pitch/piloto-resultados.md`.
 - **Skills:** dm-humanizar · **Revisores obligatorios:** dm-trazador-cifras
@@ -828,7 +829,7 @@ flowchart LR
   F0_01 --> F0_02
   F0_01 --> F0_03
   F0_01 --> F1_01
-  F0_04 & F1_01 --> F1_02
+  F1_01 --> F1_02
   F0_02 & F1_01 --> F1_03
   F1_03 --> F1_04
   F0_02 & F0_03 --> F1_05
@@ -862,17 +863,18 @@ flowchart LR
   F2_09 --> F3_07
   F3_07 --> F3_08
   F3_06 & F3_08 --> F3_09
-  F1_15 & F2_06 --> F4_01
+  F1_15 & F2_06 & F2_07 --> F4_01
   F4_01 --> F4_02
-  F4_02 & F2_07 & F2_09 --> F4_03
+  F4_02 & F2_09 --> F4_03
   F2_02 & F4_03 --> F5_01
   F2_03 & F4_02 --> F5_02
   F4_03 --> F5_03
   F4_03 --> F5_04
   F4_03 --> F5_05
   F5_05 --> F5_06
-  T_01 & F2_08 & F2_01 --> T_02
+  T_01 & F2_01 --> T_02
   F1_11 --> T_03
+  F0_04 -.-> F1_02
   F3_09 -.-> F4_03
   classDef izan fill:#dbeafe,stroke:#1e3a8a,color:#111
   classDef yeray fill:#dcfce7,stroke:#14532d,color:#111
@@ -890,7 +892,7 @@ Azul: Izan. Verde: Yeray. Amarillo: tercer carril. Rojo: camino crítico (todo �
 
 | Día | Izan | Yeray | Tercer carril y sincronización |
 |---|---|---|---|
-| 15 dom | F0-01 solo (1: todo depende de él). Después F0-03 ‖ F0-05 ‖ F1-01 (3: ficheros distintos, nada depende entre sí) → F1-03 al mergear F1-01 | Tras F0-01: F0-02 ‖ F0-04 ‖ F1-11 (3: contratos, verificación y neto no comparten nada) → F1-02 cuando F0-04 y F1-01 estén mergeadas (turno de `data/README.md`) | **S1, por la mañana:** descargas manuales (A1) y turno de `data/README.md`. H0 al final del día |
+| 15 dom | F0-01 solo (1: todo depende de él). Después F0-03 ‖ F0-05 ‖ F1-01 (3: ficheros distintos, nada depende entre sí) → F1-03 al mergear F1-01 | Tras F0-01: F0-02 ‖ F0-04 ‖ F1-11 (3: contratos, verificación y neto no comparten nada) → F1-02 cuando F1-01 esté mergeada (turno de `data/README.md`; el SERPAVI y el Bono no esperan a F0-04) | **S1, por la mañana:** descargas manuales (A1) y turno de `data/README.md`. H0 al final del día |
 | 16 lun | F1-03 ‖ F1-05 ‖ F1-06 (3: `zonas.py`, `calculo.py` y `app/` son independientes y usan fixtures); F1-04, pasos 0 y A, en cuanto quede un agente libre | F1-10 ‖ F1-12 ‖ F1-14 (3: un módulo cada uno); F1-11 termina con el auditor | **S2, 20:00:** puerta de r5py (D6). D4, D7, D8 y D12 |
 | 17 mar | F1-04 paso B ‖ F1-07 → F1-09 con los ejemplos ‖ F1-16 (3: la matriz es tiempo de máquina; F1-16 es mecánica) → F1-08 | F1-15 por la mañana ‖ F1-13 → F2-04 (2) | T-01 ‖ T-03 si hay responsable |
 | 18 mié | F1-08 → F1-09 con los datos reales (1: es la integración, no se paraleliza) | F2-05 ‖ F2-07 ‖ F2-10 (3: `bono.py`, `sdm.py` y `alquiler.py`) | T-01 y T-03 terminan. **S3, 19:00:** H1 juntos, mapa con datos reales; se decide si arrancan F3-05 y F3-06. D5 |
@@ -1070,3 +1072,5 @@ Una pasada sobre el borrador (commit `73f7df0`). Veredicto: **NO APTO**, con un 
 - *Pasar a N0 el alquiler por código postal (`1934258`) como contraste por distrito.* Exige una tabla de paso de código postal a distrito y no se ha leído en el repo una geometría abierta de códigos postales; no es una figura barata. Queda como el primer N2.
 - *Usar Smart Data Models para normalizar los cruces, no solo para exportar.* Los cruces del plan son por código INE y r5py lee los GTFS tal cual; convertir las paradas a los modelos GTFS no alimentaría ningún cálculo antes del 26. Queda la exportación (F2-07) y la respuesta preparada en F5-06.
 - *Reducir la carga del primer día.* No se quita ninguna PR: las del 15 son cortas y de ellas depende todo lo demás. Se declara el pico y se pone la puerta del 18.
+
+**Segunda pasada, incremental** (commit `ec1c9b7`). Veredicto: **APTO CON RESERVAS**, sin nada crítico. Dio por buenos los tres descartes y señaló cinco puntos, todos aplicados: F1-14 ya no depende de las superficies del SERPAVI (el m² por defecto lo pone F1-15); la línea base por distancia tampoco da cero dentro de la zona; `python -m mesobra` incluye `sdm` (F4-01); el SERPAVI y el Bono no esperan a F0-04 (F1-02); y la señal de corte del piloto es una sola (T-01, T-02). Reserva que queda, y se dice en la hoja de preguntas (F5-06): el uso del catálogo regional en N0 es defendible pero justo.
