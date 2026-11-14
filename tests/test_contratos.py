@@ -33,7 +33,7 @@ def test_fixture_cumple_su_contrato(nombre):
     "nombre", [n for n, c in CONTRATOS.items() if "zona_id" in c["columnas"]]
 )
 def test_tablas_con_zona_incluyen_las_cinco_zonas(nombre):
-    assert ZONAS <= set(_leer(nombre)["zona_id"])
+    assert set(_leer(nombre)["zona_id"]) >= ZONAS
 
 
 def test_zona_sin_dato_de_alquiler():

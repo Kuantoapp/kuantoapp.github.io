@@ -5,16 +5,17 @@
 ".github/scripts/*.py" = "py39"
 ".claude/skills/*/scripts/*.py" = "py39"  # solo stdlib: cualquier python3
 
-# Código mínimo (skill dm-codigo-minimo): lo que una máquina puede comprobar siempre.
-# Argumentos sin usar, código comentado, funciones demasiado complejas, demasiados parámetros y print olvidados.
+# Código mínimo (.claude/rules/codigo-minimo.md): lo que una máquina puede comprobar siempre.
+# Argumentos sin usar, código comentado, funciones demasiado complejas, demasiados parámetros, print olvidados,
+# parámetros booleanos que bifurcan la función (FBT) y simplificaciones evidentes (SIM, PIE, RET).
 [lint]
-extend-select = ["ARG", "ERA001", "C901", "PLR0913", "T201"]
+extend-select = ["ARG", "ERA001", "C901", "PLR0913", "T201", "FBT", "SIM", "PIE", "RET"]
 
 [lint.per-file-ignores]
 # Herramientas del repo (hooks, validadores, scripts de skills): imprimir es su salida y son CLI ya probadas
-".claude/**" = ["T201", "C901", "PLR0913"]
-".github/**" = ["T201", "C901"]
+".claude/**" = ["T201", "C901", "PLR0913", "FBT", "SIM105"]
+".github/**" = ["T201", "C901", "FBT", "SIM105"]
 # Dobles de prueba con la firma de la función real
-"tests/**" = ["ARG"]
+"tests/**" = ["ARG", "FBT"]
 # Explorar en un notebook imprime
 "notebooks/**" = ["T201"]
