@@ -16,6 +16,7 @@ ESPERADO = {
     ('raw_inmutable.py" post', "PostToolUse", "PowerShell"),
     ('raw_inmutable.py" enlazar', "SessionStart", None),
     ('entorno.py"', "SessionStart", None),
+    ('sincronizar.py"', "PostToolUse", "Bash"),
     ('contexto.py"', "SessionStart", None),
     ('contexto.py" --stop', "Stop", None),
     ("ruff", "PostToolUse", "Edit|Write|MultiEdit"),
