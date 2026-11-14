@@ -6,7 +6,7 @@ Titular de la propuesta: «La media municipal oculta a las personas que más lej
 Propuesta B unificada para DataMad 2026 · versión de 14 de noviembre de 2026.
 Une el [plan de Izan](../izan/plan-propuesta-B.md) (*vulnerabilidad oculta y dónde intervenir*, 11/11/2026) y la [ficha de Yeray](../yeray/plan_propuesta_B_Yeray_Cerca.md) (*Cerca*, 12/11/2026). Las dos nacen de fusionar la idea 10 (*índice de vulnerabilidad territorial municipal*) y la idea 3 (*ciudad de 15 minutos con equidad por renta*).
 
-> **Estado: propuesta, no decisión.** Antes de anotarla en `docs/decisiones.md` hay que pasarla por `dm-abogado-del-diablo`. Las marcas **(verificar)** señalan datos o cifras que no se han comprobado en la fuente primaria; vienen de los planes de origen y esta ficha no ha comprobado ninguna.
+> **Estado: propuesta, no decisión.** La primera revisión de `dm-abogado-del-diablo` (14/11/2026) dio NO APTO; esta versión aplica sus correcciones (Anexo B.4) y falta repetir la revisión antes de anotarla en `docs/decisiones.md`. Las marcas **(verificar)** señalan datos o cifras que no se han comprobado en la fuente primaria; vienen de los planes de origen y esta ficha no ha comprobado ninguna.
 
 ## Cómo leer esta ficha
 
@@ -16,12 +16,12 @@ Esta ficha **describe y enmarca la idea** para saber cómo afrontarla. **No es u
 1. **Necesidad y cercanía, juntas pero separadas.** Interesa dónde coinciden la vulnerabilidad y la falta de acceso a pie, y para verlo se miden por separado: la necesidad no incluye el acceso.
 2. **La media esconde.** La misma necesidad, medida por sección censal y agregada a la zona, muestra cuánta vulnerabilidad queda oculta en zonas que, en la media, parecen sanas.
 3. **Personas concretas, no promedios.** El acceso se mide desde donde vive la gente y para perfiles con necesidades distintas.
-4. **Diagnosticar, proponer y medir el valor.** Ver dónde está el problema, proponer dónde actuar y demostrar cuánto mejor llega esa propuesta que el reparto real de la inversión regional.
+4. **Diagnosticar, proponer y medir el valor del detalle.** Ver dónde está el problema, proponer dónde actuar y medir cuántas personas vulnerables se dejan de alcanzar cuando se prioriza con la media de la zona en lugar de con la sección.
 5. **Una decisión real y actual:** el PIR 2027-2031 y la ubicación de servicios públicos.
 6. **Datos abiertos y públicos**, con el catálogo regional en el centro y el portal del Ayuntamiento como pieza obligatoria.
 7. **Honestidad con los límites del dato:** lo aproximado se marca, los supuestos se declaran y lo descartado se explica.
 
-**Lo que es enfoque de partida (puede cambiar con el desarrollo):** los indicadores concretos, los pesos, los umbrales y velocidades, el método de ubicación, la forma de comparar con el PIR, las herramientas y la arquitectura.
+**Lo que es enfoque de partida (puede cambiar con el desarrollo):** los indicadores concretos, los pesos, los umbrales y velocidades, el método de ubicación, las referencias con las que se mide el valor, las herramientas y la arquitectura.
 
 **Lo que está abierto:** todo lo marcado como **(verificar)** y la lista de la sección 15.
 
@@ -37,13 +37,13 @@ Un índice municipal puede decir que un municipio está bien mientras parte de s
 - **Necesidad:** un índice de vulnerabilidad por sección censal en toda la Comunidad de Madrid, que muestra qué parte de la vulnerabilidad queda escondida dentro de municipios y distritos que en la media parecen sanos.
 - **Cercanía:** desde cada edificio residencial, cuánto se tarda a pie, con pendiente y a la velocidad de cada perfil, en llegar al centro de salud, la farmacia, los servicios sociales, el colegio, una parada con frecuencia o un desfibrilador.
 
-Donde coinciden mucha necesidad y poca cercanía está la **prioridad de intervención**. Sobre esa base, la herramienta propone **dónde abrir o ampliar** el siguiente servicio y mide cuántas personas vulnerables más alcanzaría esa propuesta frente al reparto real del PIR 2022-2026. Justo cuando se prepara el PIR 2027-2031.
+Donde coinciden mucha necesidad y poca cercanía está la **prioridad de intervención**. Sobre esa base, la herramienta propone **dónde abrir o ampliar** el siguiente servicio y mide cuántas personas vulnerables más se alcanzan priorizando por sección que priorizando por la media de la zona. Justo cuando se prepara el PIR 2027-2031.
 
 ## 2. El problema
 
 - **Las medias esconden los huecos.** Un municipio puede tener buena renta media y buenos servicios en el centro y, a la vez, barrios, urbanizaciones o pedanías donde un mayor no llega a pie a nada. Es el riesgo que la idea 10 ya señalaba de su propio índice: priorizar con la media municipal no ve a esas personas.
 - **El acceso se mide sin mirar quién lo necesita.** Un centro de salud a 15 minutos no significa lo mismo para alguien de 30 años que para alguien de 80 en una calle con cuestas. Y una parada sin autobuses en hora punta no da acceso aunque esté en la puerta.
-- **La inversión regional se reparte con criterios agregados.** El PIR 2022-2026 (1.000 M€, todos los municipios salvo la capital) usa criterios municipales como la renta per cápita, el paro, la población o la dependencia territorial (Decreto 118/2020, art. 9; **verificar** los pesos). No mide el acceso real a los servicios ni lo que pasa dentro de cada municipio.
+- **La inversión regional se reparte con criterios agregados.** El PIR 2022-2026 es un fondo de cooperación de 1.000 M€. De ellos, unos 650 M€ se asignan por municipio en su Plan de Actuación (BOCM de 22/10/2021) a los 178 municipios salvo la capital, con un mínimo por municipio; el resto no se asigna por municipio (**verificar** las cifras). El reparto usa criterios municipales como la renta, el paro, la población o la dependencia territorial (Decreto 118/2020), con pesos que no se publican, y cada ayuntamiento propone sus obras. Nada de eso mide el acceso real a los servicios ni lo que pasa dentro de cada municipio.
 - **Lo que existe se queda corto.** El Ayuntamiento tiene su índice de vulnerabilidad por barrio (IGUALA), pero solo para la capital y sin acceso a pie. No hay nada parecido publicado para toda la Comunidad.
 - **Riesgo de repetir lo ya premiado.** *Desiertos de servicios* ganó la primera edición de DataMad. Un mapa de acceso a servicios sin más la repetiría; por eso la idea se apoya en lo que la media oculta, en los perfiles y en una decisión medible.
 
@@ -60,9 +60,24 @@ Hay una decisión pública abierta, con datos recién publicados para tomarla me
 | Usuario | Pregunta que responde | Decisión que cambia |
 |---|---|---|
 | **Ciudadanía y prensa** | «¿Qué tengo a 15 minutos y qué me falta?» · «¿Cómo está mi zona frente a mi municipio?» | Dónde reclamar un servicio; qué contar, y con qué datos, sobre el reparto |
-| **Personal técnico de la Comunidad** (Administración Local, por el PIR; Familia y Servicios Sociales; Sanidad) | «¿Dónde se juntan vulnerabilidad y falta de acceso?» · «Con N centros, ¿dónde llegan a más personas vulnerables?» · «¿Llegó el PIR anterior a donde hacía falta?» | Criterios del PIR 2027-2031; dónde abrir o ampliar centros de salud, sociales o de día; dónde mejorar la frecuencia del transporte |
+| **Personal técnico de la Comunidad** (Administración Local, por el PIR; Familia y Servicios Sociales; Sanidad) | «¿Dónde se juntan vulnerabilidad y falta de acceso?» · «Con N centros, ¿dónde llegan a más personas vulnerables?» · «¿Recibe cada municipio en proporción a su necesidad?» | Un criterio adicional para el Plan de Actuación del PIR 2027-2031; dónde abrir o ampliar centros de salud, sociales o de día; dónde mejorar la frecuencia del transporte |
+| **Personal técnico municipal** | «¿Qué secciones de mi municipio están peor y qué les falta?» | Qué obras proponer al PIR, con un informe por municipio |
 
 La vista ciudadana es el gancho de la demo. La vista técnica es donde está el impacto, porque es la que puede cambiar una decisión pública.
+
+### 4.1 Quién decide cada servicio
+
+Cada servicio lo decide una administración distinta, con su propio instrumento. La herramienta propone dónde actuar, pero cada propuesta va dirigida a quien la puede tomar:
+
+| Servicio | Quién decide | Instrumento |
+|---|---|---|
+| Servicios sociales, centros de mayores y de día, desfibriladores públicos, accesibilidad de calles, consultorios locales | Ayuntamientos, con financiación regional | **PIR** (obras que propone cada ayuntamiento) y presupuestos municipales |
+| Centros de salud | Comunidad (Sanidad) | Planificación de atención primaria por zonas básicas de salud |
+| Colegios públicos | Comunidad (Educación), con suelo municipal | Planificación educativa |
+| Farmacias | Comunidad, por concurso | Planificación farmacéutica (ratios y distancias legales); la herramienta solo diagnostica |
+| Frecuencia del transporte | Consorcio de Transportes | Planificación de la oferta |
+
+El PIR se relaciona solo con la primera fila. Para el resto, la herramienta es un diagnóstico para quien planifica.
 
 ## 5. Cómo funciona para el usuario
 
@@ -81,7 +96,7 @@ Esta pestaña **no muestra rankings de secciones**, para no señalar barrios.
 2. **Índice de zonas:** mapa de las 199 zonas con sliders para cambiar los pesos y ver qué zonas cambian de prioridad.
 3. **Auditoría:** necesidad frente a lo que recibió cada municipio del PIR 2022-2026 y, en la capital, frente a las obras de accesibilidad y las listas de espera.
 4. **Simulador:** elige un servicio, un perfil y un objetivo; coloca un centro a mano (pincha y ve cuántas personas vulnerables gana acceso) o pide «sugerir N ubicaciones». Compara abrir centros nuevos con ampliar los existentes.
-5. **Valor:** métricas en vivo y la curva de la propuesta frente al reparto real del PIR.
+5. **Valor:** métricas en vivo y la curva que compara priorizar por sección con priorizar por la media de la zona o solo por población.
 6. **Trabajo técnico:** rankings completos de secciones y zonas, dos escenarios guardados lado a lado y exportación a CSV o GeoJSON.
 
 Cada cifra lleva su fuente y, si es una aproximación, una marca y una explicación.
@@ -97,9 +112,9 @@ Necesidad por sección ──agrega──▶ Necesidad media de la zona ──�
         │
         ├──cruza con── Acceso a pie por perfil (6.5) ──▶ Doble penalización (6.6)
         │                                                        │
-        │                                       Dónde actuar (6.7) ──▶ Valor frente al PIR real (6.8)
+        │                                       Dónde actuar (6.7) ──▶ Valor del detalle por sección (6.8)
         │
-Índice de las 199 zonas (6.4) ── contexto · auditoría del PIR · validación
+Índice de las 199 zonas (6.4) ── contexto · auditoría del PIR (6.9) · validación
 ```
 
 - **Sección censal:** la unidad estadística mínima del INE, de unos 1.000 a 2.500 habitantes. Hay unas 4.500 en la Comunidad (**verificar** la cifra exacta). Es la escala del detalle.
@@ -134,15 +149,20 @@ Un índice de vulnerabilidad para cada sección, con datos que existen a esa esc
 
 Se usa **el mismo índice a dos escalas**, para que la comparación sea limpia:
 - El índice de cada sección se agrega a su zona con la media ponderada por población.
-- **Vulnerabilidad oculta** = secciones vulnerables robustas situadas en zonas cuya media no está en el quintil más vulnerable. Son las personas que una política basada en la media no ve.
+- Los quintiles se calculan **ponderados por población**, tanto el de secciones como el de zonas: el quintil más vulnerable es el 20 % de la población, no el 20 % de las unidades.
+- **Vulnerabilidad oculta** = secciones vulnerables robustas situadas en zonas cuya media, con su intervalo de Monte Carlo, no está en el quintil más vulnerable. Son las personas que una política basada en la media no ve.
 
 Para cuantificarlo:
-- **Descomposición de la desigualdad.** Con el **índice de Theil** de la renta, que se puede partir exactamente en desigualdad *entre* zonas y *dentro* de cada zona, se obtiene el titular: «el X % de la desigualdad está dentro de los municipios». Lo mismo con la varianza del índice.
+- **Descomposición de las diferencias.** La varianza del índice por sección se parte exactamente en una parte *entre* zonas y otra *dentro* de cada zona. Da el titular: «el X % de las diferencias de vulnerabilidad entre secciones está dentro de los municipios». Como contraste, el **índice de Theil** de la renta media por sección, que se descompone igual. Se dice «entre secciones» porque son medias de sección, no rentas de personas.
 - **Población vulnerable en zonas «sanas»** y ranking de zonas con más dispersión interna.
+
+**El tamaño de la zona.** Una zona con una sola sección no puede ocultar nada, y una con cientos casi seguro oculta algo. Para que lo oculto no sea solo un efecto del tamaño:
+- los resultados se dan también por tramos de tamaño de zona (número de secciones);
+- se compara con una **referencia nula**: se reparten las secciones al azar entre zonas del mismo tamaño muchas veces y se mira cuánta vulnerabilidad «oculta» saldría solo por azar. Lo que importa es cuánto supera el dato real a esa referencia.
 
 ### 6.4 El índice de las 199 zonas
 
-Es la vista con la que **se prioriza hoy**: datos municipales como los que usan los criterios del PIR. Sirve de contexto, de medida de necesidad para la auditoría (6.9) y de pieza que se valida con IGUALA.
+Es la **vista municipal**, la escala a la que hoy se reparte la inversión regional. No reproduce los criterios del PIR (renta, paro, población, medio ambiente, patrimonio, ingresos, inmigración, entidades singulares y dependencia territorial, con pesos no publicados): es un índice de necesidad social con datos abiertos. Sirve de contexto, de medida de necesidad para la auditoría (6.9) y de pieza que se valida con IGUALA y con el índice por sección (8.1).
 
 | Dimensión | Indicador de partida | Por qué |
 |---|---|---|
@@ -192,8 +212,10 @@ El tipo de territorio (urbano, intermedio, rural) sale de la clasificación DEGU
 - **Herramientas candidatas:** pandana u OSMnx para la red a pie, r5py para la parte multimodal.
 - **Sin modelos de capacidad** (como 2SFCA): no hay datos abiertos de cupos ni plazas por centro.
 
+**El centro que corresponde, no el más cercano.** A cada vecino le corresponde el centro de salud de su zona básica de salud, que puede no ser el más cercano. Si la zonificación sanitaria está publicada en abierto (**verificar**), el acceso al centro de salud se mide al centro asignado; si no, al más cercano, y se declara. Lo mismo con los colegios, donde la cercanía es solo uno de los criterios de admisión.
+
 **Qué produce:**
-- Para cada punto de origen, perfil y servicio, el tiempo al servicio más cercano y si cumple el umbral.
+- Para cada punto de origen, perfil y servicio, el tiempo al servicio que corresponde (o al más cercano) y si cumple el umbral.
 - Agregado a sección y a zona: el % de población de cada perfil sin acceso.
 - La **equidad del acceso**: el % sin acceso por quintil de renta y por edad, con un **índice de concentración** (mide si la falta de acceso se acumula en los más pobres) y su intervalo de confianza por *bootstrap*. Sirve de línea base para seguirla cada año.
 
@@ -207,6 +229,8 @@ El cruce central: secciones **vulnerables robustas y sin acceso** a uno o varios
 - **Abrir uno nuevo:** una rejilla de unos 250 m sobre suelo urbano, marcando si hay suelo público dotacional cerca (Portal del Suelo). Pinchar en el mapa se ajusta a la celda más cercana.
 - **Ampliar uno existente:** los equipamientos actuales, por ejemplo añadir atención social a un centro de mayores. Suele ser más barato y más rápido.
 
+Cada propuesta se etiqueta con quién la puede tomar (tabla de 4.1). Las de servicios municipales son candidatas a obras del PIR; las de centros de salud y colegios, un diagnóstico para la planificación de la Comunidad. Las farmacias no se ubican: su apertura sigue la planificación farmacéutica, así que para ellas la herramienta solo diagnostica.
+
 **Dos objetivos, a elegir:**
 1. **Ponderado:** cada persona sin acceso cuenta según la puntuación de vulnerabilidad de su sección.
 2. **Personas vulnerables:** solo cuenta la población del quintil más vulnerable. Da frases como «N personas vulnerables más con acceso».
@@ -215,21 +239,26 @@ El cruce central: secciones **vulnerables robustas y sin acceso** a uno o varios
 
 **Precálculo:** los tiempos reales por la red de cada candidato a cada punto de origen se calculan en Python y se guardan solo los pares dentro del umbral. Estimación de partida: unos 16.000 candidatos por unos 60.000 puntos de origen, en ficheros por servicio y perfil que la web carga bajo demanda (**verificar** el tamaño real en una prueba). Si no cabe en una web estática, la alternativa es la distancia en línea recta calculada en el navegador, declarándolo.
 
-### 6.8 El valor: frente al reparto real del PIR
+### 6.8 El valor: cuánto se pierde priorizando con la media
 
-Es la prueba de que la idea mejora una decisión, no solo un mapa.
+Es la prueba de que la idea mejora una decisión, no solo un mapa. No se compara con un rival inventado: se mide **el valor de la información**. El método de ubicación es siempre el mismo (el voraz de 6.7, con el mismo N y los mismos candidatos) y solo cambia lo que se sabe de la necesidad:
+- **(a) Solo población:** se ignora la necesidad y se cubre a quien más gente sin acceso tiene cerca.
+- **(b) Media de la zona:** cada persona recibe la puntuación media de su municipio o distrito. Es lo que se puede hacer hoy con datos municipales.
+- **(c) Sección:** cada persona recibe la puntuación de su sección. Es lo que propone Cerca.
 
-- **Base:** el reparto real del PIR 2022-2026 por municipio e importe, extraído de las altas publicadas en el BOCM.
-- **Comparación de partida:** con el mismo número N de servicios nuevos,
-  - **(i) como se repartió el PIR:** los servicios van a los municipios en proporción a lo que recibió cada uno y, dentro de cada municipio, al punto más poblado sin acceso;
-  - **(ii) como propone Cerca:** nuestra ubicación por sección (6.7).
-- **Resultado:** una curva de personas vulnerables con acceso frente a N para cada estrategia. La distancia entre las curvas es el valor demostrable: «con los mismos N centros, priorizar por sección llega a X personas vulnerables más».
-- **Segunda referencia:** una estrategia municipal teórica que ordena los municipios por su media (con los criterios del Decreto 118/2020) y coloca allí los servicios. Sirve para la capital, que no entra en el PIR.
-- **Límites que se declaran:** el PIR no incluye a Madrid capital y financia inversión en general, no solo centros de servicios; por eso se compara el **reparto** del PIR, no su contenido. Se dice «llegaría», no «ha llegado»: ninguna estimación se presenta como impacto medido.
+Las tres se evalúan con la misma medida: personas vulnerables (según la sección) que ganan acceso.
+- **Resultado:** una curva de personas vulnerables alcanzadas frente a N para cada nivel de información.
+- **Lectura honesta:** (c) gana por definición, porque usa la información con la que se evalúa. Lo que importa es **cuánto**: la distancia entre (b) y (c) es la tesis «la media esconde» convertida en cifra («con los mismos N centros, priorizar con la media deja fuera a X personas vulnerables»). Si la distancia es pequeña, también es un resultado y se dice.
+- **Ventaja:** funciona igual en la capital (con distritos) y en el resto de la región, y no depende de cómo se reparte el PIR.
+- Se dice «llegaría», no «ha llegado»: ninguna estimación se presenta como impacto medido.
 
-### 6.9 La auditoría: ¿llegaron los recursos a donde hacía falta?
+### 6.9 La auditoría: ¿recibe cada municipio en proporción a su necesidad?
 
-- **Escala regional.** Se compara la necesidad (índice de las 199 zonas) con lo que recibió cada municipio del PIR 2022-2026, por habitante. La **brecha** es la posición en el ranking de necesidad menos la posición en el ranking de recursos: una brecha grande y positiva señala mucha necesidad con pocos recursos. Se presenta con un diagrama de dispersión y un mapa. Las **transferencias de capital** y el **gasto municipal en protección social** de los presupuestos liquidados quedan como contraste, sabiendo que mezclan fuentes y que les faltan 2022 y 2023 (y 2022 al gasto social).
+- **Escala regional.** Se compara la necesidad con la asignación por municipio del PIR 2022-2026, por habitante, tomada de la tabla del Plan de Actuación (BOCM de 22/10/2021), que reparte unos 650 M€ entre los 178 municipios (**verificar**). Es contexto descriptivo, no una prueba de que el PIR esté mal hecho: el PIR tiene un mínimo por municipio, parte va a gasto corriente y cada ayuntamiento elige sus obras.
+  - La **brecha** es la posición en el ranking de necesidad menos la posición en el ranking de asignación: una brecha grande y positiva señala mucha necesidad con poca asignación. Se presenta con un diagrama de dispersión y un mapa.
+  - La necesidad se mide con el índice de las 199 zonas y, como contraste, con el índice por sección agregado a cada municipio.
+  - Las **altas** del PIR publicadas en el BOCM, si da tiempo a extraerlas, son una capa opcional sobre **en qué** se gastó, no sobre cuánto recibió cada municipio.
+  - Las **transferencias de capital** y el **gasto municipal en protección social** de los presupuestos liquidados quedan como contraste, sabiendo que mezclan fuentes y que les faltan 2022 y 2023 (y 2022 al gasto social).
 - **Escala de la capital.**
   - Las **obras de accesibilidad en aceras** (2020, 2021 y 2024) por distrito, frente a los mayores y las personas con movilidad reducida sin acceso.
   - Los equipamientos por habitante y las **listas de espera** de centros de día y residencias, que el Ayuntamiento publica a diario.
@@ -256,6 +285,7 @@ No hay capa predictiva.
 - **Esperanza de vida:** un índice de vulnerabilidad bien hecho debería ir en dirección contraria. Hay unos 31 puntos de comparación: los municipios de más de 100.000 habitantes y los 21 distritos.
 - **Concordancia con IGUALA:** el ranking de los 21 distritos se compara con el del Ayuntamiento mediante la **correlación de Spearman**, que mide si dos rankings ordenan igual. El índice por sección se compara además, por solapamiento espacial, con el índice por barrios del Ayuntamiento. Si no coinciden, se explica por qué.
 - **Prueba temporal:** ¿el índice con datos de 2019 anticipaba el empeoramiento del paro o del envejecimiento hasta 2024? Se hace sin la discapacidad, que solo existe desde 2023.
+- **Fuera de la capital:** casi toda la validación anterior está en Madrid (21 de los 31 puntos de esperanza de vida, e IGUALA entera), que no entra en el PIR. Para el resto de la región se compara el índice por sección agregado a cada municipio con el índice de las 199 zonas en los 178 municipios (Spearman). Los dos índices usan variables distintas, así que si ordenan parecido es una señal de que miden lo mismo (validez convergente), sin mezclarlos.
 
 Se informa de cada correlación y su signo, también cuando no sale la esperada.
 
@@ -281,7 +311,7 @@ Se informa de cada correlación y su signo, también cuando no sale la esperada.
   - `sugerir_ubicaciones(servicio, n, objetivo)`.
 
   Cualquier asistente puede preguntar «¿qué le falta a un mayor en tal sección?» y recibir cifras calculadas con su fuente. En la demo se usa desde Claude.
-- **Smart Data Models:** se reutilizan los modelos existentes de puntos de servicio y los de *UrbanMobility* para GTFS, y se **propone un esquema nuevo** para un indicador de acceso y vulnerabilidad por sección. Clave de cruce: código INE de sección y de municipio más el año.
+- **Smart Data Models:** se reutilizan los modelos existentes de puntos de servicio y los de *UrbanMobility* para GTFS, publicados en NGSI-LD. Para el indicador de acceso y vulnerabilidad por sección se parte del modelo existente más cercano y, si no basta, se **propone una extensión o un esquema nuevo**, explicando qué le falta al existente. Clave de cruce: código INE de sección y de municipio más el año.
 - **Datos abiertos:** los resultados por sección y zona se publican en CSV y GeoParquet con CC BY 4.0, para consultarlos por URL o proponerlos al catálogo regional.
 - **Entregables:** web publicada, repositorio con licencia libre que regenera todo desde las fuentes oficiales, conjunto de datos, informe de análisis y nota metodológica con supuestos, límites y validación.
 
@@ -289,10 +319,10 @@ Se informa de cada correlación y su signo, también cuando no sale la esperada.
 
 | Criterio | Cómo lo cumple |
 |---|---|
-| **Uso de la información pública regional** (oficial) | El núcleo usa el catálogo regional (paro, discapacidad, envejecimiento, dependencia, Censo 2021, centros sanitarios, farmacias, centros sociales y educativos, desfibriladores, GTFS del Consorcio, presupuestos) y el PIR del BOCM. Lo completan el portal del Ayuntamiento (distritos, IGUALA, servicios municipales, aceras, listas de espera) y fuentes nacionales abiertas (INE, Catastro, IGN, OSM) |
-| **Viabilidad** (oficial) | Fuentes comprobadas una a una, web sin servidor, pipeline reproducible y construcción por capas que siempre deja una demo funcionando (sección 14) |
+| **Uso de la información pública regional** (oficial) | El núcleo usa el catálogo regional (paro, discapacidad, envejecimiento, dependencia, Censo 2021, centros sanitarios, farmacias, centros sociales y educativos, desfibriladores, GTFS del Consorcio, presupuestos) y el Plan de Actuación del PIR. Lo completan el portal del Ayuntamiento (distritos, IGUALA, servicios municipales, aceras, listas de espera) y fuentes nacionales abiertas (INE, Catastro, IGN, OSM) |
+| **Viabilidad** (oficial) | Fuentes identificadas una a una, con su identificador y lo pendiente de comprobar marcado; web sin servidor, pipeline reproducible y construcción por capas que siempre deja una demo funcionando (sección 14) |
 | **Código abierto** (oficial) | Repositorio con licencia libre, librerías abiertas, datos CC BY 4.0, MCP y un esquema propuesto a Smart Data Models |
-| **Valor económico, social o medioambiental** (citado por la URJC y la prensa) | Responde a una decisión real y actual (el PIR 2027-2031), propone dónde actuar y mide cuánto mejor llega que el reparto real anterior |
+| **Valor económico, social o medioambiental** (citado por la URJC y la prensa) | Responde a una decisión real y actual (el PIR 2027-2031), propone dónde actuar, dirigido a quien puede decidirlo, y mide cuántas personas vulnerables se dejan fuera al priorizar con la media |
 
 **Jurado relevante:** Alberto Abella (Smart Data Models, APIs, MCP y espacios de datos) y Olga Quirós (ASEDIE: economía del dato y reutilización).
 
@@ -347,7 +377,9 @@ Se informa de cada correlación y su signo, también cuando no sale la esperada.
 | **Catastro INSPIRE, edificios** | Cada edificio con su número de viviendas y su uso; 179 ficheros | Madrid usa el código 28900 en el Catastro y 28079 en el INE; **verificar** la licencia |
 | **IGN/CNIG, modelo digital del terreno** | Elevación para la pendiente | Por descargar |
 | **OpenStreetMap** (Geofabrik) | Red peatonal | ODbL: citar «© OpenStreetMap contributors» |
-| **BOCM, altas del PIR 2022-2026** | Reparto real por municipio e importe | **Verificar** que se puede asignar por municipio |
+| **BOCM, Plan de Actuación del PIR 2022-2026** (22/10/2021) | Asignación por municipio en una sola tabla | **Verificar** las cifras (unos 650 M€ de 1.000 M€, 178 municipios) |
+| **BOCM, altas del PIR 2022-2026** | En qué se gastó cada municipio | Opcional; repartidas en muchas órdenes |
+| **Zonificación sanitaria** (zonas básicas de salud) | Centro de salud asignado a cada vecino | **Verificar** si está publicada en abierto |
 | **DEGURBA** | Tipo de territorio por municipio | Disponible |
 | **CartoCiudad o Catastro, callejero** | Buscador de calles sin conexión | **Verificar** la licencia y el tamaño |
 
@@ -361,7 +393,7 @@ Se informa de cada correlación y su signo, también cuando no sale la esperada.
 ## 13. Arquitectura (propuesta)
 
 Lo importante es que la demo no dependa de un servidor y que todo sea reproducible y abierto.
-- **Pipeline en Python**, sin conexión y reproducible (con DuckDB y su extensión espacial o geopandas): descarga las fuentes, construye las tablas de paso entre secciones, municipios y códigos del Catastro, y calcula los índices con sus intervalos, los tiempos de acceso, las matrices de ubicación, la auditoría, la curva frente al PIR, los polígonos simplificados y el índice de calles.
+- **Pipeline en Python**, sin conexión y reproducible (con DuckDB y su extensión espacial o geopandas): descarga las fuentes, construye las tablas de paso entre secciones, municipios y códigos del Catastro, y calcula los índices con sus intervalos, los tiempos de acceso, las matrices de ubicación, la auditoría, la curva de valor, los polígonos simplificados y el índice de calles.
 - **Web estática** con MapLibre y teselas PMTiles, por ejemplo en GitHub Pages, sin peticiones a terceros y con las librerías en el repositorio. El navegador solo consulta, suma, ejecuta el voraz sobre las matrices precalculadas, recalcula el índice de zonas con los sliders (son 199 filas) y pinta. Los ficheros pesados se cargan por municipio bajo demanda.
 - **Seguridad:** validación estricta de entradas; ninguna entrada se inserta como HTML.
 - **MCP:** un servicio aparte, en Python, que lee las mismas tablas; la web no depende de él.
@@ -375,19 +407,23 @@ Lo importante es que la demo no dependa de un servidor y que todo sea reproducib
 
 **Orden por capas**, para que siempre haya algo que enseñar:
 1. Necesidad por sección, índice de las 199 zonas y su mapa.
-2. Vulnerabilidad oculta: descomposición de Theil y titular.
+2. Vulnerabilidad oculta: descomposición, referencia nula por tamaño y titular.
 3. Acceso con un perfil y un servicio, en la capital y en un municipio rural.
 4. Los cuatro perfiles, todos los servicios, la pendiente y la frecuencia en toda la Comunidad; doble penalización y equidad por renta.
-5. Dónde actuar: abrir y ampliar, con los dos objetivos.
-6. Reparto del PIR desde el BOCM, curva de valor y auditoría.
-7. Validación, evolución 2015-2024 y capa de auditoría de la capital.
+5. Dónde actuar: abrir y ampliar, con los dos objetivos, y la curva de valor de la información.
+6. Auditoría con el Plan de Actuación del PIR.
+7. Validación (incluida la de fuera de la capital), evolución 2015-2024 y capa de auditoría de la capital.
 8. Acceso multimodal por hora.
 9. MCP, Smart Data Models, informe y nota metodológica.
 
+**Qué se congela el 22/11 sí o sí:** ADRH, Padrón y Censo por sección; cartografía y tabla de equivalencias de secciones; edificios del Catastro; red de OSM; los conjuntos de servicios del catálogo regional y del Ayuntamiento; GTFS; los indicadores municipales y de distrito; y el Plan de Actuación del PIR. El modelo del terreno del IGN, si se mantiene la pendiente.
+
+**Qué cae primero si el cálculo no llega a tiempo**, en este orden: el acceso multimodal, la pendiente (se usa velocidad fija por perfil y se declara), los perfiles de movilidad reducida y familias, y por último el cálculo en toda la región (se queda en la capital y una muestra de municipios). El índice por sección, la vulnerabilidad oculta y la curva de valor no caen.
+
 **Relato de la presentación** (orientativo, a cerrar cuando se conozca el formato):
-1. El titular: «la media municipal oculta el X % de la desigualdad».
+1. El titular: «el X % de las diferencias de vulnerabilidad entre secciones está dentro de los municipios».
 2. Un caso concreto: una sección de prioridad oculta vista desde la pestaña ciudadana, con un perfil de mayor y una calle con cuesta.
-3. El simulador: sugerir N ubicaciones y la curva frente al reparto real del PIR.
+3. El simulador: sugerir N ubicaciones y la curva «priorizar con la media deja fuera a X personas vulnerables».
 4. La parte técnica: datos regionales, Smart Data Models, código abierto y MCP.
 5. Los límites, dichos por iniciativa propia.
 
@@ -402,8 +438,11 @@ El producto puede ser grande; el relato tiene que ser estrecho. El resto se ense
 | Duración de la presentación | Relato estrecho (sección 14); capas extra solo si preguntan |
 | Muchas cifras que defender | Cada cifra visible pasa por `dm-trazador-cifras`; lo espacial, por `dm-revisor-espacial` |
 | Peso de la web estática | Carga por municipio bajo demanda; menos combinaciones en la vista ciudadana si hace falta; alternativa en línea recta |
-| Extraer el PIR del BOCM | Comprobar pronto si las altas se asignan por municipio e importe; si no, la estrategia municipal teórica pasa a ser la referencia principal |
-| Comparación con el PIR vista como injusta | Se compara el reparto, no el contenido; se declaran los límites (sección 6.8) |
+| La curva de valor gana por definición | Se dice abiertamente; lo que se presenta es la magnitud de la diferencia entre media y sección (6.8) |
+| Lo oculto como efecto del tamaño de la zona | Quintiles ponderados por población, resultados por tamaño y referencia nula (6.3) |
+| Auditoría del PIR leída como acusación | Es contexto descriptivo; se declaran el mínimo por municipio, el gasto corriente y que cada ayuntamiento elige sus obras (6.9) |
+| Propuestas dirigidas a quien no decide | Cada propuesta se etiqueta con su decisor e instrumento (4.1) |
+| Centro de salud asignado frente al más cercano | Zonificación sanitaria si está en abierto; si no, se declara (6.5) |
 | Indicadores de distrito no idénticos a los municipales | Tabla de equivalencias y marca en los datos aproximados |
 | Versiones distintas de las secciones | Tablas de paso; documentar las que no casan |
 | Datos de distinta antigüedad (Censo 2021, renta 2024) | Cada variable con su año; se declara como limitación |
@@ -413,10 +452,11 @@ El producto puede ser grande; el relato tiene que ser estrecho. El resto se ense
 | GTFS de metro de mayo de 2025 | Comprobar que su calendario siga vigente; si no, frecuencia estimada y marcada |
 
 ### Verificaciones pendientes
-- [ ] Pasar esta ficha por `dm-abogado-del-diablo`.
-- [ ] Altas del PIR 2022-2026 en el BOCM: si se pueden asignar por municipio e importe.
-- [ ] Pesos de los criterios del PIR (Decreto 118/2020).
-- [ ] Prueba de r5py en un municipio metropolitano, con pendiente y multimodal: tiempo de cálculo y tamaño de los ficheros.
+- [x] Pasar esta ficha por `dm-abogado-del-diablo` (14/11: NO APTO; correcciones aplicadas en esta versión, ver B.3). Repetir la revisión sobre esta versión.
+- [ ] Plan de Actuación del PIR 2022-2026 como fuente (`dm-verificador-fuentes`) y las cifras de 1.000 y 650 M€ (`dm-trazador-cifras`).
+- [ ] Zonificación sanitaria (zonas básicas de salud) en abierto.
+- [ ] Prueba de r5py en un municipio metropolitano, con pendiente y multimodal: tiempo de cálculo, tamaño de los ficheros y si r5py admite la pendiente (si no, pandana u OSMnx con los tiempos de Tobler).
+- [ ] Ninguna fuente está descargada todavía: empezar por la lista de lo que se congela sí o sí (sección 14).
 - [ ] Id de la tabla de renta del ADRH por sección (API del INE, operación 353) y último año del Padrón por sección.
 - [ ] Tabla de equivalencias de secciones del INE entre años y número exacto de secciones.
 - [ ] Licencias del Catastro INSPIRE y de CartoCiudad; tamaño del índice de calles.
@@ -451,7 +491,7 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 |---|---|---|---|---|
 | 0 | Requisitos | Solo datos abiertos; usar al menos el portal del Ayuntamiento; buscar fuentes más allá del documento de contexto | — | Se mantiene |
 | 1 | Fusión de las ideas 10 y 3 | Dos escalas conectadas | Solo escala urbana · el acceso como componente único | Se mantiene |
-| 1 | Decisión que mejorar | Ubicar servicios + auditoría, en secuencia | Solo el PIR · solo ubicar | Se mantiene, con la curva frente al PIR real |
+| 1 | Decisión que mejorar | Ubicar servicios + auditoría, en secuencia | Solo el PIR · solo ubicar | Se mantiene, con la curva de valor de la información y la auditoría con el Plan de Actuación del PIR |
 | 1 | Servicios | Salud, cuidados y social, educación, transporte y desfibriladores | — | Se mantiene |
 | 1 | Población | Varios perfiles | Un único perfil | Se mantiene |
 | 2 | Alcance urbano | Toda la Comunidad + capa del Ayuntamiento | Solo la capital · la capital y dos pilotos | Se mantiene |
@@ -462,10 +502,10 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 | 3 | Madrid capital en el índice | 21 distritos, validados con IGUALA | Un solo municipio · fuera | Se mantiene |
 | 3 | Energía | Buscar una fuente doméstica; si no hay, fuera | Incluir la energía total | Ver ronda 7 |
 | 3 | Entregable | Web estática + datos abiertos; IA si da tiempo | Streamlit · web + asistente desde el principio | Se mantiene |
-| 4 | Reparto actual | Presupuestos liquidados; PIR del BOCM si da tiempo | Solo presupuestos · solo el BOCM | **Cambia:** el PIR del BOCM pasa a ser la base; los presupuestos, contraste |
+| 4 | Reparto actual | Presupuestos liquidados; PIR del BOCM si da tiempo | Solo presupuestos · solo el BOCM | **Cambia:** la base es la tabla del Plan de Actuación del PIR; las altas del BOCM, opcionales; los presupuestos, contraste (B.3) |
 | 4 | Validación | Esperanza de vida, IGUALA, prueba temporal | — | Se mantiene, más sensibilidad y tiempos contrastados |
 | 4 | Acceso en el índice | Sí, como dimensión | Matriz 2×2 separada · ambas | **Cambia:** separado, por circularidad (B.3) |
-| 4 | Usuario | Ciudadanía y prensa + personal técnico de la Comunidad | Personal técnico municipal | Se mantiene |
+| 4 | Usuario | Ciudadanía y prensa + personal técnico de la Comunidad | Personal técnico municipal | **Cambia:** se añade el personal técnico municipal, que es quien propone las obras del PIR (B.3) |
 | 5 | Desde dónde medir | Edificios del Catastro | Centroide de la sección · rejilla | Se mantiene |
 | 5 | Transporte | Parada con frecuencia; multimodal si es viable | Solo la parada | Se mantiene, con el multimodal dentro |
 | 5 | Pendiente | Tobler; las aceras pasan a la auditoría | Velocidad fija | Se mantiene |
@@ -489,8 +529,8 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 | 3. Modelo | OCDE/JRC: winsorize, z-score, media con pesos iguales, Monte Carlo | Se mantiene en secciones |
 | 3. Modelo | Umbrales por servicio y territorio (DEGURBA); 4,8 y 3,5 km/h | Se mantiene, con los 4 perfiles de Yeray |
 | 3. Modelo | Voraz con dos objetivos, ganancia por punto de origen, rejilla de 250 m | Se mantiene, más «ampliar» |
-| 4. Análisis | Theil, índice de concentración, doble penalización | Se mantiene |
-| 4. Análisis | Contrafactual frente a la estrategia municipal | **Cambia:** frente al reparto real del PIR; la municipal, segunda referencia |
+| 4. Análisis | Theil, índice de concentración, doble penalización | Se mantiene; la descomposición principal pasa a ser la del índice, con Theil de contraste y referencia nula por tamaño (B.3) |
+| 4. Análisis | Contrafactual frente a la estrategia municipal | **Cambia:** valor de la información con el mismo voraz (población, media de la zona o sección) (B.3) |
 | 4. Análisis | Validación con el Atlas de Vulnerabilidad Urbana | **Cambia:** fuera, no existe con el Censo 2021 |
 | 4. Análisis | Evolución 2015-2023 | Se mantiene, hasta 2024 |
 | 5. Herramienta | Web estática, pruebas de referencia Python→JS, Quarto, MCP, Smart Data Models, comparar y exportar | Se mantiene |
@@ -506,7 +546,20 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 | Sin chat en la web; la IA se demuestra con el MCP | El chat exige un servidor con una clave, rompe la web estática y puede inventar una cifra en directo |
 | El tiempo de desarrollo no recorta el alcance | El desarrollo lo hacen agentes; solo recortan el método, el riesgo y los límites reales |
 | Vuelven al alcance los 4 perfiles, la pendiente, el multimodal, la auditoría de la capital, las dos series, el contraste de tiempos, comparar y exportar, el informe y el esquema de Smart Data Models | Se habían recortado solo por tiempo |
-| La curva de valor se compara con el reparto real del PIR 2022-2026 | Evita comparar con un rival hecho a medida y sustituye a las transferencias de capital como base de la auditoría |
+| ~~La curva de valor se compara con el reparto real del PIR 2022-2026~~ | Sustituida tras la revisión de `dm-abogado-del-diablo` (B.4) |
+
+### B.4 Correcciones tras `dm-abogado-del-diablo` (14/11/2026, veredicto NO APTO)
+
+| Decisión | Motivo |
+|---|---|
+| La curva de valor mide el **valor de la información**: mismo voraz y mismo N, priorizando por población, por la media de la zona o por sección (6.8) | Comparar con el reparto del PIR era tautológico: el voraz maximiza la métrica con la que se puntúa, la regla «repartir como el PIR» era inventada y el PIR es un fondo de cooperación en el que cada ayuntamiento elige sus obras |
+| El PIR pasa a la auditoría como contexto descriptivo, con la tabla del Plan de Actuación (BOCM de 22/10/2021) como fuente; las altas del BOCM, opcionales (6.9) | El reparto por municipio está en una sola tabla; las altas están dispersas y dicen en qué se gastó, no cuánto recibió cada municipio. Solo unos 650 M€ de los 1.000 M€ se asignan por municipio (**verificar**) |
+| Tabla de quién decide cada servicio y propuestas etiquetadas con su decisor; las farmacias solo se diagnostican (4.1, 6.7) | Centros de salud y colegios los decide la Comunidad; las farmacias, la planificación farmacéutica; el PIR financia obras municipales |
+| Centro de salud asignado por zona básica, si la zonificación está en abierto (6.5) | A cada vecino le corresponde su centro, no el más cercano |
+| Quintiles ponderados por población, resultados por tamaño de zona y referencia nula; el titular habla de «diferencias entre secciones» y la descomposición principal es la del índice (6.3) | Lo oculto podía ser un efecto del tamaño de la zona, y el Theil de medias por sección no mide «la desigualdad» en general |
+| Validación fuera de la capital con el índice de 199 zonas (8.1) | Casi toda la validación estaba en Madrid, que no entra en el PIR |
+| El índice de 199 zonas no se presenta como réplica de los criterios del PIR; se quita la referencia «con los criterios del Decreto» y «fuentes comprobadas» pasa a «identificadas» (6.4, 11) | Eran incoherencias internas |
+| Lista de lo que se congela sí o sí y orden de lo que cae primero (14) | La mitigación del riesgo de cálculo era genérica |
 
 ## Anexo C: glosario
 
@@ -527,10 +580,12 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 - **GTFS:** formato estándar abierto de horarios, paradas y rutas del transporte público.
 - **DEGURBA:** clasificación europea de municipios en urbanos, intermedios y rurales.
 - **Cobertura máxima (voraz):** método de ubicación que en cada paso elige el sitio que más demanda nueva cubre.
-- **Contrafactual:** lo que habría pasado con otra decisión; aquí, cuántas personas vulnerables se alcanzarían repartiendo como el PIR o como propone Cerca.
-- **Brecha:** posición en el ranking de necesidad menos posición en el ranking de recursos recibidos.
+- **Valor de la información:** cuánto mejora una decisión al saber más; aquí, cuántas personas vulnerables más se alcanzan al priorizar por sección en lugar de por la media de la zona, con el mismo método y el mismo número de centros.
+- **Referencia nula:** lo que saldría solo por azar; aquí, repartiendo las secciones al azar entre zonas del mismo tamaño.
+- **Zona básica de salud:** territorio que atiende cada centro de salud; a cada vecino le corresponde el de su zona.
+- **Brecha:** posición en el ranking de necesidad menos posición en el ranking de asignación recibida.
 - **Correlación de Spearman:** mide cuánto se parecen dos rankings, de −1 a 1.
-- **PIR:** Programa de Inversión Regional de la Comunidad de Madrid; inversiones en los municipios, salvo la capital, por periodos de cinco años.
+- **PIR:** Programa de Inversión Regional de la Comunidad de Madrid; fondo de cooperación con los municipios, salvo la capital, por periodos de cinco años. Su Plan de Actuación fija lo asignado a cada municipio; cada ayuntamiento propone sus obras.
 - **IGUALA/IVTA:** sistema del Ayuntamiento de Madrid que calcula el Índice de Vulnerabilidad Territorial Agregado por barrio y distrito.
 - **Pobreza energética escondida:** hogares que consumen menos energía de la que necesitan, normalmente por no poder pagarla.
 - **MCP (Model Context Protocol):** protocolo abierto para que los asistentes de IA usen herramientas y datos externos de forma controlada.
@@ -541,7 +596,7 @@ Recoge lo que se acordó como punto de partida en cada momento. No es un comprom
 
 - Plan de Izan: [plan-propuesta-B.md](../izan/plan-propuesta-B.md) · Ficha de Yeray: [plan_propuesta_B_Yeray_Cerca.md](../yeray/plan_propuesta_B_Yeray_Cerca.md).
 - API del catálogo regional: `https://datos.comunidad.madrid/api/3/action/` · API del Ayuntamiento: `https://datos.madrid.es/api/3/action/` · API del INE: `https://servicios.ine.es/wstempus/js/ES/`.
-- [PIR 2022-2026, Portal de Transparencia](https://www.comunidad.madrid/transparencia/node/25379) · [BOCM 14/08/2026 (PIR 2027-2031)](https://bocm.es/boletin/CM_Orden_BOCM/2026/08/14/BOCM-20260814-12.PDF) · [Anuncio del nuevo PIR](https://www.comunidad.madrid/node/118920)
+- [PIR 2022-2026, Portal de Transparencia](https://www.comunidad.madrid/transparencia/node/25379) · [Plan de Actuación del PIR 2022-2026, BOCM 22/10/2021](https://www.comunidad.madrid/transparencia/sites/default/files/plan/document/bocm211022_pir2022-2026.pdf) · [Decreto 118/2020](https://www.comunidad.madrid/transparencia/sites/default/files/plan/document/bocm-pir_2021_2025.pdf) · [BOCM 14/08/2026 (PIR 2027-2031)](https://bocm.es/boletin/CM_Orden_BOCM/2026/08/14/BOCM-20260814-12.PDF) · [Anuncio del nuevo PIR](https://www.comunidad.madrid/node/118920)
 - [IGUALA/IVTA en datos.gob.es](https://datos.gob.es/catalogo/l01280796-iguala-indice-de-vulnerabilidad-territorial-agregado-del-ayuntamiento-de-madrid)
 - [INE ADRH 2024](https://ine.es/dyngs/Prensa/ADRH2024.htm)
 - [Licencia de datos del CRTM](https://www.crtm.es/licencia-de-uso/) · [GTFS del CRTM en Mobility Database](https://mobilitydatabase.org/feeds/gtfs/mdb-2720)
