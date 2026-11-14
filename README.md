@@ -24,6 +24,10 @@ uv venv && uv pip install -r requirements-dev.txt
 
 Activa el entorno con `source .venv/bin/activate` (en Windows, desde Git Bash: `source .venv/Scripts/activate`; ver [Windows](.claude/README.md#windows)). Después, abre `claude` en la raíz y acepta el diálogo de confianza (ver [.claude/README.md](.claude/README.md#uso-en-equipo)).
 
+## Dependencias
+
+Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. Para importar `mesobra` fuera de pytest: `uv pip install -e .`. `r5py` arranca Java al importarse (necesita JDK 21 y `JAVA_HOME` apuntando a él): solo se comprueba en local, no en la CI. Licencia: MIT (`LICENSE`).
+
 ## Cómo trabajamos (GitHub Flow)
 
 El repo está pensado para **bucles agénticos**: los agentes cierran el ciclo solos, con el menor coste posible, y la calidad, la seguridad y la precisión las aseguran hooks, CI y agentes revisores. Las personas deciden y aprueban lo sensible. Detalle en [AGENTS.md](AGENTS.md#el-bucle-agéntico).
