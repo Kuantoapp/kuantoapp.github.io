@@ -1,14 +1,6 @@
----
-paths:
-  - "src/**/*.py"
-  - "app/**"
-  - "tests/**/*.py"
-  - "notebooks/**"
----
-
 # Código mínimo
 
-Claude Code carga esta regla sola al trabajar con código de `src/`, `app/`, `tests/` o `notebooks/`, y se aplica a cada línea que escribas, no solo al refactorizar. ruff (`ruff.toml`) rechaza al editar y en la CI lo que una máquina puede detectar, y `dm-revisor-codigo` comprueba el resto en cada PR.
+Claude Code carga esta regla en todas las sesiones, como `AGENTS.md`, y se aplica a cada línea de código que escribas, no solo al refactorizar. ruff (`ruff.toml`) rechaza al editar y en la CI lo que una máquina puede detectar, y `dm-revisor-codigo` comprueba el resto en cada PR.
 
 El mejor código es el que no se escribe: cada línea hay que leerla, probarla y arreglarla después, y con varios agentes escribiendo a la vez el código de más se multiplica. Se resuelve **la tarea entera** con **el menor código nuevo**: perezoso con la solución, nunca con el cambio.
 

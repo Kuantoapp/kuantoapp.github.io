@@ -53,7 +53,7 @@ Primera vez en Windows, desde Git Bash en la raíz del repo: instala uv (`powers
 | `dm-abogado-del-diablo` | agente | yeray | Auditoría adversaria de lo que no es código (decisiones, idea, planes, análisis, pitch): supuestos, pruebas, alternativas, viabilidad, preguntas del jurado y efectos no buscados, con cómo reforzar cada punto. Solo lectura |
 | `dm-revisor-espacial` | agente | proyecto | Revisión estricta (sin corregir) de cartografía, exploración, modelos e interpretación, con veredicto APTO, APTO CON RESERVAS o NO APTO. Precarga las cuatro skills espaciales |
 
-Tipo: `agente` o `skill`. Las reglas por rutas de `.claude/rules/` no van en el índice: `codigo-minimo.md` (código mínimo, se carga al tocar `src/`, `app/`, `tests/` o `notebooks/`; la comprueba `dm-revisor-codigo`). Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
+Tipo: `agente` o `skill`. Las reglas de `.claude/rules/` no van en el índice: `codigo-minimo.md` (código mínimo, sin `paths` para que se cargue en todas las sesiones; la comprueba `dm-revisor-codigo`, que también sirve para auditar cualquier ruta). Origen: `yeray`, `izan` o `proyecto` (hecho para este repo).
 
 ## Principios de diseño
 
