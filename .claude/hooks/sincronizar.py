@@ -21,6 +21,7 @@ from pathlib import Path
 from contexto import git
 
 PR = re.compile(r"\bgh\s+pr\s+create\b")
+# shortcut: ignora cd y git -C previos; si se usa ese patrón, resolver la ruta con git worktree list
 WORKTREE = re.compile(r"\bgit\s+worktree\s+add\b")
 CON_VALOR = {
     "-b",
@@ -44,7 +45,10 @@ def avisar_worktree(orden: str, cwd: Path) -> str:
     m = WORKTREE.search(orden)
     if not m:
         return ""
-    args = iter(shlex.split(re.split(r"&&|\|\||;|\|", orden[m.end() :])[0]))
+    try:
+        args = iter(shlex.split(re.split(r"&&|\|\||;|\|", orden[m.end() :])[0]))
+    except ValueError:  # comillas sin cerrar (el texto cortado cae dentro de un argumento): no es un aviso fiable
+        return ""
     for a in args:
         if a in CON_VALOR:
             next(args, None)

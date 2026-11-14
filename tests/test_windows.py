@@ -226,6 +226,7 @@ def test_hook_windows_sigue_protegido_con_cwd_en_otro_repo(tmp_path):
         "cwd": str(otro),
     }
     assert lanzar_hook(base, json.dumps(evento)).returncode == 2
+    assert not (otro / "data").exists()  # no toca el otro repo
 
 
 # --- entorno_windows.py ---

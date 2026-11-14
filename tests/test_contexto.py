@@ -237,6 +237,8 @@ def test_avisa_al_crear_un_worktree(tmp_path):
     assert "path: /abs/x)" in aviso(
         "cd r && git worktree add -b u/t /abs/x main && ls y", tmp_path
     )
+    orden = 'gh pr create --title t --body "Tras git worktree add, entra"'
+    assert aviso(orden, tmp_path) == ""  # comillas sin cerrar al cortar: no falla
     assert aviso("git worktree list", tmp_path) == ""
     assert aviso("git status", tmp_path) == ""
     assert aviso("git worktree add -q /abs/x", Path("/abs/x/src")) == ""  # ya dentro

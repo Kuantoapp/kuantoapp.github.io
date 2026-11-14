@@ -46,22 +46,34 @@ ESCRIBE_EN_RAW = re.compile(
 )
 
 
+def _git(carpeta: str | Path, *args: str) -> str:
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(carpeta), *args],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+    except OSError:
+        return ""
+    return r.stdout.strip()
+
+
+def _repo(carpeta: str | Path) -> Path | None:
+    """Directorio .git común (el de todos los worktrees de un repo), o None si no es un repo."""
+    d = _git(carpeta, "rev-parse", "--git-common-dir")
+    return (Path(carpeta) / d).resolve() if d else None
+
+
 def raiz(evento: dict | None = None) -> Path:
-    """Raíz git de la carpeta de la sesión (`cwd` del evento); en un worktree CLAUDE_PROJECT_DIR sigue siendo el checkout principal."""
+    """Raíz git del `cwd` de la sesión si es del mismo repo que CLAUDE_PROJECT_DIR (en un worktree esa variable sigue siendo
+    el checkout principal); si no, CLAUDE_PROJECT_DIR."""
+    proyecto = Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
     cwd = (evento or {}).get("cwd")
-    if isinstance(cwd, str) and cwd:
-        try:
-            r = subprocess.run(
-                ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
-                capture_output=True,
-                check=False,
-                text=True,
-            )
-        except OSError:
-            r = None
-        if r and r.stdout.strip():
-            return Path(r.stdout.strip())
-    return Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
+    arriba = _git(cwd, "rev-parse", "--show-toplevel") if isinstance(cwd, str) else ""
+    if arriba and _repo(arriba) == _repo(proyecto):
+        return Path(arriba)
+    return proyecto
 
 
 def leer_evento() -> tuple[str, dict]:

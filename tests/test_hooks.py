@@ -152,8 +152,9 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
         assert "Traceback" not in r.stderr, f"{comando}: {r.stderr[-300:]}"
 
 
-def test_raw_en_worktree_usa_el_cwd_del_evento(principal_y_worktree):
+def test_raw_en_worktree_usa_el_cwd_del_evento(principal_y_worktree, monkeypatch):
     principal, wt = principal_y_worktree
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(principal))
     (wt / "src").mkdir()
     evento = {
         "tool_name": "Edit",
@@ -193,6 +194,7 @@ def test_raw_sigue_protegido_con_cwd_en_otro_repo(tmp_path):
         env={**os.environ, "CLAUDE_PROJECT_DIR": str(base)},
     )
     assert r.returncode == 2
+    assert not (otro / "data").exists()  # no toca el otro repo
 
 
 def test_raw_post_deja_solo_lectura(tmp_path):
