@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mesobra"
+version = "0.1.0"
+description = "¿Me sobra? DataMad 2026"
+requires-python = "==3.14.*"
+license = "MIT"
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mesobra"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
