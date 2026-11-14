@@ -14,6 +14,7 @@ Fecha: 14 de noviembre de 2026. Fuentes:
   - Alberto Abella: Smart Data Models, APIs, MCP y espacios de datos.
   - Olga Quirós (ASEDIE): economía del dato y reutilización.
 - **Tiempo:** congelación de datos el 22 de noviembre y presentación el 26 de noviembre.
+- **Criterio de recorte (revisado el 14/11):** el desarrollo lo hacen agentes, así que **el tiempo de desarrollo no recorta el alcance**. Se recorta solo por método (circularidad, indicadores ambiguos), por riesgo ante el jurado (cifras inventadas, demo que se cae) o por límites reales: la fecha de congelación, el tiempo de cálculo, la duración de la presentación y la revisión de cifras.
 
 ## Diagnóstico
 
@@ -57,7 +58,7 @@ Cada una es débil justo donde la otra es fuerte.
 - Explica en qué se diferencia de proyectos ya premiados.
 
 ### En contra
-- **El alcance no cabe en el plazo:** 4 perfiles, unos 8 servicios, toda la región, pendiente, frecuencia, auditoría, ubicación, validación, MCP y chat, con 8 días hasta la congelación de datos.
+- **Alcance amplio:** 4 perfiles, unos 8 servicios, toda la región, pendiente, frecuencia, auditoría, ubicación, validación, MCP y chat. Con desarrollo por agentes no es un problema de construcción, pero sí de tiempo de cálculo y de foco en la presentación.
 - **Circularidad:** el acceso entra como una dimensión del índice y luego se usa ese índice para buscar zonas vulnerables sin acceso.
 - **No mide lo que la media esconde.** No hay vulnerabilidad por sección, solo acceso, así que «la media esconde el hueco» se queda sin cifra.
 - **La auditoría es frágil:**
@@ -80,45 +81,56 @@ Se queda con el **relato y los datos de Yeray** y con el **método y el impacto 
 | Índice municipal | Las **199 zonas** con variables del catálogo regional, validado con IGUALA (Spearman) y con la esperanza de vida | Yeray |
 | Vulnerabilidad oculta | Secciones del quintil más vulnerable en zonas (municipios o distritos) cuya media no lo está | Izan, con las zonas de Yeray |
 | Sensibilidad | Sliders en la web y Monte Carlo en la nota metodológica | Ambos |
-| Acceso | Servicios de Yeray (centro de salud, farmacia, servicios sociales, colegio, DEA), **paradas con frecuencia** y 2 velocidades (general y mayores) | Ambos |
-| Cruce | Mapa de doble penalización y población sin acceso por quintil de renta | Izan |
+| Acceso | Servicios de Yeray (centro de salud, farmacia, servicios sociales, centro de mayores o de día, colegio, zona verde, DEA) y **paradas con frecuencia** | Ambos |
+| Perfiles | Los **4 perfiles**: mayores, familias, población general y movilidad reducida, este último con las instalaciones accesibles de la capital | Yeray |
+| Pendiente | **Función de Tobler en el núcleo**, con el MDT del IGN y más penalización para la movilidad reducida | Yeray |
+| Transporte | Parada con frecuencia + **acceso multimodal por hora** (caminar y transporte) con r5py y el GTFS del CRTM | Ambos |
+| Cruce | Mapa de doble penalización y población sin acceso por quintil de renta y por perfil | Izan |
 | Ubicación | Algoritmo voraz con los 2 objetivos + «abrir frente a ampliar», marcando el suelo público | Ambos |
-| Impacto | **Curva contrafactual** de la estrategia municipal frente a la de sección, presentada como criterio para el PIR | Izan + Yeray |
-| Apertura | MCP, Smart Data Models y datos en CSV y GeoParquet con CC BY 4.0 | Ambos |
+| Impacto | **Curva contrafactual frente al reparto real del PIR 2022-2026**, extraído del BOCM: «con el mismo dinero, priorizar por sección habría llegado a X personas vulnerables más». La estrategia municipal teórica queda como segunda referencia | Izan + Yeray |
+| Auditoría regional | Necesidad frente al PIR real por municipio (brecha), con las transferencias de capital solo como contraste | Yeray, reforzada |
+| Auditoría de la capital | Obras de accesibilidad en aceras (2020, 2021 y 2024) frente a mayores y movilidad reducida sin acceso, y listas de espera de centros de día y residencias | Yeray |
+| Evolución | Subíndice de renta 2015-2024 por sección (secciones que mejoran o empeoran) | Izan |
+| Validación | Esperanza de vida, Spearman con IGUALA, **prueba temporal** (¿el índice de 2019 anticipaba el paro y el envejecimiento de 2024?) y **tiempos a pie contrastados** con un planificador de rutas en una muestra | Ambos |
+| Herramienta técnica | Comparar dos escenarios guardados y exportarlos a CSV o GeoJSON | Izan |
+| Informe | Informe de análisis completo y nota metodológica, enlazados desde la web | Izan |
+| Apertura | MCP, datos en CSV y GeoParquet con CC BY 4.0 y **propuesta de un esquema nuevo en Smart Data Models** (indicador de acceso y vulnerabilidad), además de reutilizar los existentes | Ambos |
 | Lenguaje | «Prioridad de intervención» y huecos de transporte como oportunidades de mejora | Ambos |
 | Construcción | Por capas, de modo que siempre haya una demo que funcione | Yeray |
 
-### Ampliaciones, solo si sobra tiempo
-- Pendiente con la función de Tobler.
-- Auditoría de transferencias de capital, como un gráfico con advertencias en la nota metodológica, nunca en la demo.
+### Qué vuelve al quitar el plazo de desarrollo
+Lo que se había recortado solo por tiempo: el reparto real del PIR desde el BOCM, la pendiente, los 4 perfiles, el multimodal, la capa de auditoría de la capital, las dos series temporales, el contraste de tiempos a pie, comparar y exportar escenarios, el informe completo y el esquema nuevo de Smart Data Models.
 
-### Se descarta
-- Chat dentro de la web.
-- Perfil de movilidad reducida.
-- Indicador de energía en el índice (como mucho, de contexto).
-- Obras de aceras y listas de espera.
-- Transporte multimodal.
-- Comparar y exportar escenarios.
-- Informe en Quarto (basta con la nota metodológica).
-- Atlas de Vulnerabilidad Urbana como validación.
+**La mayor ganancia es el PIR real.** El contrafactual deja de compararse con una estrategia que definimos nosotros y pasa a compararse con lo que de verdad se hizo. Desaparece el riesgo de rival hecho a medida y la auditoría deja de depender de las transferencias de capital, que mezclan fuentes y les faltan 2022 y 2023. Límite que se declara: el PIR no incluye a Madrid capital y financia inversión en general, no solo centros de servicios.
+
+### Se descarta (por método o por riesgo, no por tiempo)
+- **El acceso como dimensión del índice:** crea circularidad; se mantiene separado de la necesidad.
+- **El indicador de energía en el índice:** es ambiguo (hogares pequeños, eficientes, segundas residencias); se queda como contexto, con el ranking con y sin él.
+- **El chat dentro de la web:** exige un servidor con una clave y rompe la web estática, y puede inventar una cifra en directo. La IA se demuestra con el MCP desde Claude.
+- **El Atlas de Vulnerabilidad Urbana como validación:** no existe con el Censo 2021.
+- **El Portal del Suelo como lista de candidatos:** está sesgado; solo marca el suelo disponible.
 
 ### Qué gana ante el jurado
-- **Datos regionales:** el índice de las 199 zonas, los servicios y el GTFS salen del catálogo regional y el portal del Ayuntamiento, no solo del contexto.
-- **Viabilidad:** alcance recortado, construcción por capas y una demo estática que no se cae.
-- **Código abierto e interoperabilidad:** licencias libres, Smart Data Models y MCP.
-- **Valor social:** una decisión real y actual (el PIR) y un impacto simulado contra una línea base.
-- **Rigor defendible:** necesidad y acceso separados, sensibilidad y validación externa.
+- **Datos regionales:** el índice de las 199 zonas, los servicios, el GTFS, el PIR del BOCM y la capa del Ayuntamiento forman el núcleo, no solo el contexto.
+- **Viabilidad:** construcción por capas y una demo estática que no se cae.
+- **Código abierto e interoperabilidad:** licencias libres, MCP y un esquema propuesto a Smart Data Models.
+- **Valor social y económico:** una decisión real y actual (el PIR 2027-2031) y un impacto simulado contra el reparto real anterior.
+- **Rigor defendible:** necesidad y acceso separados, sensibilidad, validación externa, prueba temporal y tiempos contrastados.
 
-### Riesgos que siguen
-- **La estrategia municipal del contrafactual** hay que definirla de forma justa, imitando cómo se reparte hoy el PIR por municipio. Si no, se verá como un rival hecho a medida.
-- **El tamaño de la matriz de r5py** está sin probar.
+### Límites reales que quedan
+- **Fecha de congelación (22/11) y tiempo de cálculo.** Las matrices de r5py para toda la región, con 4 perfiles, pendiente y multimodal, y los 179 ficheros del Catastro son horas de máquina. Hay que medir con un municipio de prueba y lanzar el cálculo completo pronto.
+- **Duración de la presentación.** El producto es grande, pero el relato sigue estrecho: titular, un caso concreto, el simulador y la curva frente al PIR real. El resto se enseña solo si el jurado pregunta.
+- **Más cifras que defender.** Cada pieza nueva pasa por `dm-trazador-cifras` y, si es espacial, por `dm-revisor-espacial`. El cuello de botella es la revisión, no el desarrollo.
+- **Peso de la web estática.** Perfiles × servicios × pendiente multiplican los ficheros precalculados: carga por municipio bajo demanda y, si hace falta, menos combinaciones en la vista ciudadana.
+- **Extraer el PIR del BOCM:** las altas vienen en órdenes y anexos en PDF; hay que comprobar que se pueden asignar por municipio y año.
 - **Los indicadores de distrito del Ayuntamiento** no son idénticos a los municipales.
-- **El alcance** sigue siendo grande para 8 días.
 
 ## Pendientes antes de cerrar la decisión
 - [ ] Pasar esta propuesta por `dm-abogado-del-diablo`.
-- [ ] Definir la estrategia municipal del contrafactual a partir de los criterios del PIR (Decreto 118/2020).
-- [ ] Probar r5py en un municipio metropolitano: tiempo de cálculo y tamaño del fichero.
+- [ ] Localizar en el BOCM las altas del PIR 2022-2026 y comprobar que se pueden asignar por municipio e importe.
+- [ ] Definir la estrategia municipal teórica (segunda referencia) a partir de los criterios del PIR (Decreto 118/2020).
+- [ ] Probar r5py en un municipio metropolitano, con pendiente y multimodal: tiempo de cálculo y tamaño del fichero.
+- [ ] Revisar los esquemas existentes de Smart Data Models antes de proponer uno nuevo.
 - [ ] Resolver las marcas «(verificar)» que afectan a piezas que se quedan: número de secciones, identificador de la tabla de renta del ADRH, licencia del Catastro INSPIRE, vigencia del GTFS de metro y coordenadas de `atencion_social_registro_centros`.
 - [ ] Confirmar con la organización los pesos de los criterios y el formato de entrega.
 - [ ] Anotar la idea elegida en `docs/decisiones.md`.
