@@ -122,16 +122,31 @@ def cuerpo_pr() -> str:
         return ""
 
 
+def raiz_de(cwd: str | None) -> Path:
+    """Raíz git del `cwd` de la sesión; en un worktree CLAUDE_PROJECT_DIR sigue siendo el checkout principal."""
+    if cwd:
+        r = subprocess.run(
+            ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if r.stdout.strip():
+            return Path(r.stdout.strip())
+    return Path(os.environ.get("CLAUDE_PROJECT_DIR") or ".").resolve()
+
+
 def main(argv: list[str]) -> int:
-    raiz = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ".").resolve()
-    os.chdir(raiz)
     base = "origin/" + (os.environ.get("GITHUB_BASE_REF") or "main")
     if argv == ["--stop"]:
         try:
-            if json.load(sys.stdin).get("stop_hook_active"):
-                return 0  # ya se recordó una vez: no encadenar
+            evento = json.load(sys.stdin)
         except ValueError:
-            pass
+            evento = {}
+        if evento.get("stop_hook_active"):
+            return 0  # ya se recordó una vez: no encadenar
+        raiz = raiz_de(evento.get("cwd"))
+        os.chdir(raiz)
         errores = sin_documentar(*cambios(base, con_trabajo=True)) + referencias_rotas(
             raiz
         )
@@ -145,6 +160,8 @@ def main(argv: list[str]) -> int:
                 json.dumps({"decision": "block", "reason": razon}, ensure_ascii=False)
             )
         return 0
+    raiz = raiz_de(None)
+    os.chdir(raiz)
     errores = referencias_rotas(raiz)
     pendientes = sin_documentar(*cambios(base, con_trabajo=False))
     if pendientes and EXENCION.search(cuerpo_pr()):

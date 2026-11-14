@@ -152,6 +152,51 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
         assert "Traceback" not in r.stderr, f"{comando}: {r.stderr[-300:]}"
 
 
+def test_raw_en_worktree_usa_el_cwd_del_evento(principal_y_worktree, monkeypatch):
+    principal, wt = principal_y_worktree
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(principal))
+    (wt / "src").mkdir()
+    evento = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": str(wt / "data/raw/ine.csv")},
+        "cwd": str(wt / "src"),  # la sesión puede estar en un subdirectorio
+    }
+    r = subprocess.run(
+        [sys.executable, HOOK_RAW, "pre"],
+        input=json.dumps(evento),
+        capture_output=True,
+        check=False,
+        text=True,
+        env={**os.environ, "CLAUDE_PROJECT_DIR": str(principal)},
+    )
+    assert r.returncode == 2
+    assert (wt / "data/raw").resolve() == (principal / "data/raw").resolve()
+    assert raw.raiz({"cwd": str(wt / "src")}) == wt.resolve()
+    assert raw.raiz({}) == raw.raiz({"cwd": "/no/existe"})  # sin repo: como antes
+
+
+def test_raw_sigue_protegido_con_cwd_en_otro_repo(tmp_path):
+    base = proyecto(tmp_path / "principal")
+    otro = tmp_path / "otro"
+    otro.mkdir()
+    subprocess.run(["git", "-C", str(otro), "init", "-q"], check=True)
+    evento = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": str(base / "data/raw/ine.csv")},
+        "cwd": str(otro),
+    }
+    r = subprocess.run(
+        [sys.executable, HOOK_RAW, "pre"],
+        input=json.dumps(evento),
+        capture_output=True,
+        check=False,
+        text=True,
+        env={**os.environ, "CLAUDE_PROJECT_DIR": str(base)},
+    )
+    assert r.returncode == 2
+    assert not (otro / "data").exists()  # no toca el otro repo
+
+
 def test_raw_post_deja_solo_lectura(tmp_path):
     base = proyecto(tmp_path)
     entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(base)}

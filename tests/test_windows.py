@@ -204,6 +204,31 @@ def test_enlazar_en_worktree(tmp_path):
     assert win.compartir_raw(tmp_path / "wt") == ""  # idempotente
 
 
+def test_hook_windows_usa_el_cwd_del_evento(principal_y_worktree):
+    principal, wt = principal_y_worktree
+    evento = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": str(wt / "data/raw/ine.csv")},
+        "cwd": str(wt),
+    }
+    r = lanzar_hook(principal, json.dumps(evento))
+    assert r.returncode == 2 and "Bloqueado" in r.stderr
+
+
+def test_hook_windows_sigue_protegido_con_cwd_en_otro_repo(tmp_path):
+    base = proyecto(tmp_path / "principal")
+    otro = tmp_path / "otro"
+    otro.mkdir()
+    subprocess.run(["git", "-C", str(otro), "init", "-q"], check=True)
+    evento = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": str(base / "data/raw/ine.csv")},
+        "cwd": str(otro),
+    }
+    assert lanzar_hook(base, json.dumps(evento)).returncode == 2
+    assert not (otro / "data").exists()  # no toca el otro repo
+
+
 # --- entorno_windows.py ---
 
 
