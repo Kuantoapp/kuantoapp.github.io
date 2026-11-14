@@ -148,4 +148,5 @@ Cada cambio arrastra su documentación en el mismo PR. Qué tocar según lo que 
 ## Al terminar
 
 - Si tomaste una decisión que afecta a los demás (fuente de datos, formato, librería), añade una línea a `docs/decisiones.md` en el mismo PR. Si es de las que cuestan deshacer (idea, fuente principal, método), pásala antes por `dm-abogado-del-diablo`.
+- Si tu trabajo cambia algo que una issue abierta da por hecho (una fuente, un identificador, un contrato, una cifra de control, un supuesto, una fecha), añade al cuerpo de esa issue una sección `### Nota del AAAA-MM-DD: <qué cambia> (#<tu issue o PR>)`. La nota dice lo que cambia para esa issue y enlaza la evidencia. No basta con un documento o un comentario: quien implementa la issue lee su cuerpo. Si nace trabajo pendiente sin dueño, abre su issue en vez de dejarlo solo en un documento.
 - Borra el worktree al mergear: `git worktree remove ../dm-<tema>`.
