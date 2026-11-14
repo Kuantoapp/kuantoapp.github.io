@@ -30,14 +30,14 @@ Resuelve las marcas «(verificar)» de la [ficha](../../ideas/plan1/idea-definit
 Forma propuesta de la entidad (`id` = `urn:ngsi-ld:KeyPerformanceIndicator:<indicador>-<zona_id>-<anio>`; `@context` = el de NGSI-LD y el `context.jsonld` del modelo):
 
 ```json
-{"id": "urn:ngsi-ld:KeyPerformanceIndicator:horas_mes-2807906-2025", "type": "KeyPerformanceIndicator",
+{"id": "urn:ngsi-ld:KeyPerformanceIndicator:<indicador>-<zona_id>-<anio>", "type": "KeyPerformanceIndicator",
  "kpiValue": 18.4, "calculationPeriod": {"from": "2025-01-01", "to": "2025-12-31"},
  "calculationFrequency": "yearly", "area": "2807906", "process": "horas_mes",
  "description": "Horas de viaje al mes (h/mes), estimado",
  "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld", "<context.jsonld del modelo>"]}
 ```
 
-El valor 18,4 y el código `2807906` son de ejemplo, no un resultado.
+El valor 18,4 y el código `2807906` son de ejemplo, no un resultado (el `id` real se forma con los tres campos).
 
 ## 4. Polos de empleo: EDM2018 y afiliación
 
