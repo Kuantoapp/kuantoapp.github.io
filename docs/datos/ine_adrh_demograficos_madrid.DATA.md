@@ -41,4 +41,5 @@
 - El fichero viene en UTF-8 con BOM, aunque el servidor declara ISO-8859-15: leer con `encoding="utf-8-sig"`.
 - Mezcla filas de municipio, distrito y sección: filtrar por `Secciones` no vacía para el nivel de sección.
 - La tabla lista 4.586 secciones (todas las de 2015 a 2024); en 2024 tienen «Población» 4.518, las mismas que el seccionado del INE a 1-1-2025, y su suma (6.995.318) coincide con la de los municipios (comprobado el 2026-11-15 sobre el fichero completo).
+- `Periodo` sale con 5 años (2016 a 2024, pares) por el muestreo 1 de cada 2 sobre bloques ordenados; la tabla tiene de 2015 a 2024 (INE, Tabla.htm?t=31105).
 - Los códigos oficiales, como texto: el código va antes del primer espacio.
