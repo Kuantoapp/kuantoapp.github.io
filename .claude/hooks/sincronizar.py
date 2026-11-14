@@ -26,7 +26,6 @@ WORKTREE = re.compile(r"\bgit\s+worktree\s+add\b")
 CON_VALOR = {
     "-b",
     "-B",
-    "--orphan",
     "--reason",
 }  # opciones de `worktree add` que llevan un valor aparte
 
