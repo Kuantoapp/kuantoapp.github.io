@@ -1,0 +1,17 @@
+perfil,municipio_id,criterio,elegible,eur_mes,estimado
+solo,28079,bono_vigente,True,250.0,False
+solo,28079,esfuerzo_30,True,250.0,True
+solo,28065,bono_vigente,True,250.0,False
+solo,28065,esfuerzo_30,True,250.0,True
+solo,28092,bono_vigente,True,250.0,False
+solo,28092,esfuerzo_30,False,0.0,True
+solo,28001,bono_vigente,True,250.0,False
+solo,28001,esfuerzo_30,False,0.0,True
+pareja,28079,bono_vigente,False,0.0,False
+pareja,28079,esfuerzo_30,True,250.0,True
+pareja,28065,bono_vigente,False,0.0,False
+pareja,28065,esfuerzo_30,False,0.0,True
+pareja,28092,bono_vigente,False,0.0,False
+pareja,28092,esfuerzo_30,False,0.0,True
+pareja,28001,bono_vigente,False,0.0,False
+pareja,28001,esfuerzo_30,False,0.0,True
