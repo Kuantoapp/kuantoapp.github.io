@@ -6,6 +6,7 @@ Prompt para convertir [propuesta-B-unificada.md](propuesta-B-unificada.md) en un
 
 - **Sesión nueva** (o `/clear`) en la raíz del repo: el prompt cambia instrucciones y no debe mezclarse con una conversación previa.
 - **Modelo y esfuerzo:** Claude Fable 5.2 (u Opus 5.5) con esfuerzo `high`. Es diseño largo y sin supervisión; sube a `xhigh` solo si la primera pasada deja huecos que `high` no cubre.
+- **Rellena antes la sección «Equipo» del bloque** (perfil, horas disponibles y equipo de cada uno). Si la dejas vacía, el agente lo deduce del repo y declara el supuesto, pero el reparto sale peor.
 - **Pega todo el bloque de abajo** como primer mensaje.
 - **Al aprobar, sé específico.** En lugar de «adelante», responde por ejemplo «Sí, crea las issues de las fases 0 y 1» o «Sí, anota la idea y el stack en `docs/decisiones.md`».
 
@@ -17,6 +18,16 @@ Prompt para convertir [propuesta-B-unificada.md](propuesta-B-unificada.md) en un
 Convierte la ficha de la idea «Cerca» (ideas/plan2/idea-definitiva/propuesta-B-unificada.md) en un plan de desarrollo tan detallado que cada pieza la pueda ejecutar un agente sin contexto previo, de principio a fin, y que el equipo humano solo tenga que supervisar y decidir. El equipo ha elegido esta idea para DataMad 2026.
 
 El resultado no es código: es el plan, con sus fases, sus unidades de trabajo listas para convertirse en issues, los contratos de datos entre fases y el calendario hasta la presentación. Lo construyes sobre la estructura agéntica que ya tiene el repo (AGENTS.md, .claude/, .github/), sin inventar otra.
+
+El plan también reparte el trabajo entre las dos personas que lo van a llevar, Izan y Yeray, de la forma que antes lleve el producto al 26/11 con calidad. Además dice qué se hace en paralelo, pero solo donde paralelizar compensa de verdad.
+
+# Equipo
+
+<!-- Rellena lo que sepas. Lo que quede vacío, el agente lo deduce del repo y lo declara como supuesto. -->
+- Izan (GitHub: izan-diaz). Perfil y fuertes: … · Horas disponibles por día hasta el 26/11: … · Equipo y sistema operativo: …
+- Yeray (GitHub: yeraybc). Perfil y fuertes: … · Horas disponibles por día hasta el 26/11: … · Equipo y sistema operativo: …
+
+Cada persona dirige varios agentes a la vez, cada uno en su worktree. Lo que limita es la atención de la persona: supervisar, decidir y revisar PR. Su capacidad para escribir código no es el límite.
 
 Antes de empezar, di en una línea qué vas a hacer. Cada pocas llamadas a herramientas, da una actualización de una línea sobre dónde estás.
 
@@ -56,7 +67,7 @@ Antes de desglosar, analiza la ficha desde cada uno de estos roles. Cada preocup
 - **Datos abiertos e interoperabilidad** (pensando en el jurado: Smart Data Models, APIs, MCP, reutilización): servidor MCP, esquema de Smart Data Models, publicación del conjunto de datos.
 - **QA y verificación:** pruebas de referencia Python frente a web, valores de control, trazabilidad de cada cifra (dm-trazador-cifras), revisión espacial (dm-revisor-espacial), revisión de código (dm-revisor-codigo), seguridad (dm-revisor-seguridad).
 - **Comunicación y pitch:** relato estrecho de la sección 14, guion, demo en directo, cifras con fuente, dm-humanizar.
-- **Dirección del proyecto:** camino crítico, carriles en paralelo, qué cae primero si no llega (orden de la sección 14), calendario hasta el 26/11.
+- **Dirección del proyecto:** camino crítico, reparto entre Izan y Yeray, carriles en paralelo, qué cae primero si no llega (orden de la sección 14), calendario hasta el 26/11.
 
 # Verificaciones que cambian la forma del plan
 
@@ -72,7 +83,7 @@ Cada subagente cuesta tokens y arranca sin contexto. No lances otros salvo que s
 
 Escribe el plan en docs/plan-cerca/ (compartido, versionado):
 
-- README.md: resumen en una pantalla, tabla de roles, mapa de fases, grafo de dependencias (texto o Mermaid), carriles en paralelo, calendario día a día del 2026-11-14 al 2026-11-26, puntos de decisión humana, riesgos y orden de caída.
+- README.md: resumen en una pantalla, tabla de roles, mapa de fases, grafo de dependencias (texto o Mermaid), reparto entre Izan y Yeray, carriles en paralelo, calendario día a día del 2026-11-14 al 2026-11-26 con una columna por persona, puntos de decisión humana, riesgos y orden de caída.
 - contratos.md: los contratos de datos entre fases (ver abajo). Es lo primero que se mergea, porque es lo que permite trabajar en paralelo sin pisarse.
 - fases/NN-<nombre>.md: una por fase, con sus unidades de trabajo completas.
 
@@ -98,9 +109,10 @@ Cada unidad es una issue y un PR de menos de 400 líneas (la CI falla por encima
 
 ```
 ### U<fase>.<n> · <tipo(área): qué cambia>
-- Rama: <usuario>/<tema-corto>   (deja <usuario> como marcador)
-- Depende de: U…, U…   · Bloquea a: U…
-- Carril: <nombre del carril en paralelo>   · Ficheros que toca: <lista cerrada>
+- Responsable: Izan | Yeray   · Rama: <izan-diaz|yeraybc>/<tema-corto>
+- Depende de: U…, U…   · Bloquea a: U…   · ¿Camino crítico?: sí | no
+- Carril: <nombre>   · Ficheros que toca: <lista cerrada>
+- En paralelo con: U… (motivo) | Secuencial: <por qué no compensa paralelizar>
 - Modelo y esfuerzo: <opus|sonnet|haiku> · <low|medium|high>   · Motivo: …
 - Skill del área: dm-…   · Revisores obligatorios: dm-… (según AGENTS.md)
 
@@ -124,13 +136,37 @@ Los criterios de aceptación son lo que más autonomía da: tienen que permitir 
 
 Asigna modelo y esfuerzo por unidad según AGENTS.md: opus para diseñar, modelizar y revisar; sonnet para implementar lo que ya está definido; haiku solo para búsquedas o resúmenes mecánicos. En las unidades que se ejecuten con esfuerzo low o medium, indica que el agente lleve en su prompt un bloque de «terminar la tarea completa» (al final del plan, en el README, deja ese bloque redactado una vez, en español, listo para pegar).
 
-## Carriles en paralelo
+## Reparto entre Izan y Yeray
 
-Agrupa las unidades en carriles que pueden ir a la vez en worktrees distintos sin tocar los mismos ficheros. Para cada día del calendario, di qué carriles corren y qué unidades del camino crítico no pueden retrasarse. Ten en cuenta que son tres personas, cada una con varios agentes.
+Reparte para que el producto llegue antes al 26/11, no para que cada uno tenga el mismo número de unidades. Criterios, por orden:
+
+1. **Propiedad por carril.** Cada persona es dueña de carriles enteros (un conjunto de módulos de src/ o de app/ y sus contratos de salida), no de unidades sueltas mezcladas. Así cada uno decide y revisa lo suyo sin esperar al otro, y nadie toca los ficheros del otro.
+2. **El camino crítico manda.** Las unidades del camino crítico van a quien tenga hueco antes y encaje mejor con su perfil. La carga de cada persona en los días del camino crítico va equilibrada; fuera de él, importa menos.
+3. **Perfil y equipo.** Asigna según la sección «Equipo». Si está vacía, dedúcelo del repo: el historial de git, las skills y agentes que creó cada uno (columna «Origen» de .claude/README.md) y sus fichas en ideas/. Declara lo deducido como supuesto. Los cálculos pesados (r5py, matrices de tiempos, el pipeline completo) van a una sola máquina a la vez, la más adecuada, y su sistema operativo cuenta: r5py necesita Java y en Windows puede dar más problemas.
+4. **Revisión cruzada donde aporte.** Cuando una unidad toca un contrato que consume el otro, el otro revisa ese PR. En lo demás bastan los revisores `dm-*`, sin coste de atención humana.
+5. **Atención humana limitada.** Cuenta cuántos agentes y PR puede supervisar cada persona por día con sus horas disponibles, y no le asignes más.
+
+Incluye en el README una tabla por persona: sus carriles, sus unidades por día, sus decisiones y los PR del otro que revisa. Añade el punto exacto donde los dos trabajos se integran y qué hace cada uno si el otro se retrasa.
+
+## Paralelización
+
+Paraleliza solo donde compense. Dos unidades van en paralelo si se cumplen todas estas condiciones:
+- no tocan los mismos ficheros;
+- el contrato que comparten ya está mergeado;
+- ninguna necesita el resultado de la otra;
+- el tiempo que se gana supera el coste de coordinar e integrar, y el de supervisar un agente más.
+
+Si alguna no se cumple, van en secuencia, y el plan dice por qué en la unidad. Ten en cuenta también los límites reales: un solo cálculo pesado por máquina, data/raw compartido dentro de cada máquina pero descargado en cada una, y que cada revisor `dm-*` cuesta tokens. No paralelices para tener más carriles. Hazlo para acortar el camino crítico o para que nadie se quede parado.
+
+Hay dos niveles, y el plan los distingue:
+- **Entre personas:** qué carriles llevan Izan y Yeray a la vez.
+- **Dentro de cada persona:** cuántos agentes en worktrees distintos lleva cada uno a la vez, y en qué unidades.
+
+En el calendario, para cada día, di qué corre en paralelo y por qué compensa, qué va en secuencia y por qué, y qué unidades del camino crítico no pueden retrasarse.
 
 ## Puntos de decisión humana
 
-Lista cerrada y corta. Para cada uno: qué se decide, cuándo hace falta, qué unidades bloquea, la opción recomendada con su motivo y la frase exacta con la que el humano aprueba. Como mínimo: anotar la idea elegida y el stack en docs/decisiones.md, las bases del concurso (criterios, formato, duración), aprobar el plan y la creación de issues, el sí o no de la congelación del 22/11 con el orden de caída, y el guion final. Todo lo que no esté en esta lista lo hacen los agentes sin pedir aprobación: crear ramas y worktrees, descargar fuentes nuevas a data/raw/, escribir código y tests, hacer commits en su rama, lanzar revisores, abrir PR draft y activar el auto-merge.
+Lista cerrada y corta. Para cada uno: qué se decide, quién lo decide (Izan, Yeray o los dos), cuándo hace falta, qué unidades bloquea, la opción recomendada con su motivo y la frase exacta con la que el humano aprueba. Como mínimo: anotar la idea elegida y el stack en docs/decisiones.md, las bases del concurso (criterios, formato, duración), aprobar el plan y la creación de issues, el sí o no de la congelación del 22/11 con el orden de caída, y el guion final. Todo lo que no esté en esta lista lo hacen los agentes sin pedir aprobación: crear ramas y worktrees, descargar fuentes nuevas a data/raw/, escribir código y tests, hacer commits en su rama, lanzar revisores, abrir PR draft y activar el auto-merge.
 
 ## Riesgos y orden de caída
 
@@ -150,5 +186,5 @@ Lleva la tabla de riesgos de la sección 15 de la ficha a unidades concretas: pa
 1. Pasa el plan completo por dm-abogado-del-diablo y aplica lo que señale. Si da NO APTO, corrige y repite la revisión solo sobre lo cambiado.
 2. Ejecuta `ruff check . && pytest -q` y python .github/scripts/docs_al_dia.py si toca, para que la CI no falle por el plan.
 3. Abre los PR draft según AGENTS.md.
-4. Escribe un informe final pensado para alguien inteligente que no ha visto tus llamadas a herramientas ni los ficheros que abriste. Pon lo clave en las primeras frases: cuántas fases y unidades, cuál es el camino crítico, qué decisiones humanas hay y cuándo, qué marcas quedaron verificadas y cuáles siguen abiertas, y qué riesgo es el más serio para llegar al 22/11. Usa frases completas y palabras corrientes, sin términos que hayas inventado durante el trabajo. Prosa donde las ideas se conectan; listas solo para elementos separados. Termina con los enlaces a los PR y la frase exacta que el humano debe responder para crear las issues.
+4. Escribe un informe final pensado para alguien inteligente que no ha visto tus llamadas a herramientas ni los ficheros que abriste. Pon lo clave en las primeras frases: cuántas fases y unidades, cuál es el camino crítico, cómo queda el reparto entre Izan y Yeray y qué se hace en paralelo, qué decisiones humanas hay y cuándo, qué marcas quedaron verificadas y cuáles siguen abiertas, y qué riesgo es el más serio para llegar al 22/11. Usa frases completas y palabras corrientes, sin términos que hayas inventado durante el trabajo. Prosa donde las ideas se conectan; listas solo para elementos separados. Termina con los enlaces a los PR y la frase exacta que el humano debe responder para crear las issues.
 ````
