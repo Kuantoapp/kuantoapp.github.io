@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "generado": "2026-11-15",
+    "anio_dato": 2024,
+    "fuentes": [{"nombre":"Consorcio Regional de Transportes de Madrid","url":"https://datos.crtm.es/","licencia":"CC BY 4.0"},{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"}],
+    "nota": "Ejemplo inventado para tests; no son datos."
+  },
+  "origenes": ["2807901","2807913","28065","28092","28001"],
+  "destinos": [
+    {"destino_id":"2807901","nombre":"Centro","tipo":"zona"},
+    {"destino_id":"polo:ifema","nombre":"IFEMA","tipo":"polo"}
+  ],
+  "tp": [[9,38],[26,52],[41,63],[52,78],[95,null]],
+  "coche": [[7,24],[18,30],[28,35],[33,41],[62,58]],
+  "km_coche": [[1.2,12.5],[7.4,16.8],[15.2,24.1],[19.8,31.6],[73.5,70.2]],
+  "coste_coche": {"eur_km":0.26}
+}

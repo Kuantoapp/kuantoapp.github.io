@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "meta": {
+    "generado": "2026-11-15",
+    "anio_dato": 2024,
+    "fuentes": [{"nombre":"INE","url":"https://www.ine.es/","licencia":"Reutilización con cita de la fuente (INE)"},{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"}],
+    "nota": "Ejemplo inventado para tests; no son datos."
+  },
+  "features": [
+    {"type":"Feature","id":"2807901","geometry":{"type":"Polygon","coordinates":[[[-3.7138,40.4068],[-3.6938,40.4068],[-3.6938,40.4268],[-3.7138,40.4268],[-3.7138,40.4068]]]},"properties":{"zona_id":"2807901","nombre":"Centro","tipo":"distrito","municipio_id":"28079","corona":"A","poblacion":140000}},
+    {"type":"Feature","id":"2807913","geometry":{"type":"Polygon","coordinates":[[[-3.672,40.388],[-3.652,40.388],[-3.652,40.408],[-3.672,40.408],[-3.672,40.388]]]},"properties":{"zona_id":"2807913","nombre":"Puente de Vallecas","tipo":"distrito","municipio_id":"28079","corona":"A","poblacion":245000}},
+    {"type":"Feature","id":"28065","geometry":{"type":"Polygon","coordinates":[[[-3.7427,40.2957],[-3.7227,40.2957],[-3.7227,40.3157],[-3.7427,40.3157],[-3.7427,40.2957]]]},"properties":{"zona_id":"28065","nombre":"Getafe","tipo":"municipio","municipio_id":"28065","corona":"B1","poblacion":185000}},
+    {"type":"Feature","id":"28092","geometry":{"type":"Polygon","coordinates":[[[-3.875,40.3123],[-3.855,40.3123],[-3.855,40.3323],[-3.875,40.3323],[-3.875,40.3123]]]},"properties":{"zona_id":"28092","nombre":"Móstoles","tipo":"municipio","municipio_id":"28092","corona":"B2","poblacion":210000}},
+    {"type":"Feature","id":"28001","geometry":{"type":"Polygon","coordinates":[[[-3.65,41.01],[-3.63,41.01],[-3.63,41.03],[-3.65,41.03],[-3.65,41.01]]]},"properties":{"zona_id":"28001","nombre":"La Acebeda","tipo":"municipio","municipio_id":"28001","corona":"C2","poblacion":60}}
+  ]
+}
