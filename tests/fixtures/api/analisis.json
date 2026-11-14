@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "generado": "2026-11-15",
+    "anio_dato": 2024,
+    "fuentes": [{"nombre":"INE","url":"https://www.ine.es/","licencia":"Reutilización con cita de la fuente (INE)"},{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"}],
+    "nota": "Ejemplo inventado para tests; no son datos."
+  },
+  "esfuerzo": [
+    {"zona_id":"2807901","anio":2024,"alquiler_mes_p50":1215.2,"renta_hogar_mes":3208.33,"esfuerzo":0.379},
+    {"zona_id":"2807913","anio":2024,"alquiler_mes_p50":875.8,"renta_hogar_mes":2600.0,"esfuerzo":0.337},
+    {"zona_id":"28065","anio":2024,"alquiler_mes_p50":882.0,"renta_hogar_mes":3483.33,"esfuerzo":0.253},
+    {"zona_id":"28092","anio":2024,"alquiler_mes_p50":802.4,"renta_hogar_mes":3291.67,"esfuerzo":0.244},
+    {"zona_id":"28001","anio":2024,"alquiler_mes_p50":null,"renta_hogar_mes":2541.67,"esfuerzo":null},
+    {"zona_id":"28079","anio":2024,"alquiler_mes_p50":1113.6,"renta_hogar_mes":3683.33,"esfuerzo":0.302}
+  ],
+  "bono": [
+    {"municipio_id":"28079","solicitudes":5200,"aceptadas":3100,"rechazadas":1500,"poblacion_joven":540000,"necesidad":0.302,"indicador_necesidad":"esfuerzo","grupo":"capital"},
+    {"municipio_id":"28065","solicitudes":310,"aceptadas":180,"rechazadas":95,"poblacion_joven":38000,"necesidad":0.253,"indicador_necesidad":"esfuerzo","grupo":"gran_municipio"},
+    {"municipio_id":"28092","solicitudes":420,"aceptadas":240,"rechazadas":130,"poblacion_joven":42000,"necesidad":0.138,"indicador_necesidad":"sobrecarga","grupo":"gran_municipio"},
+    {"municipio_id":"28001","solicitudes":2,"aceptadas":1,"rechazadas":1,"poblacion_joven":12,"necesidad":null,"indicador_necesidad":"esfuerzo","grupo":"rural"}
+  ],
+  "titulares": [{"texto":"Titular de ejemplo para tests.","fuente":"Ejemplo inventado"}],
+  "sobrecarga": [
+    {"zona_id":"2807901","anio":2024,"pct_40_inf":14.0,"pct_40_sup":19.5,"pct_30_inf":28.0,"pct_30_sup":35.0,"dif_sigma":0.8},
+    {"zona_id":"2807913","anio":2024,"pct_40_inf":22.0,"pct_40_sup":28.5,"pct_30_inf":38.0,"pct_30_sup":45.0,"dif_sigma":1.1},
+    {"zona_id":"28065","anio":2024,"pct_40_inf":12.5,"pct_40_sup":18.0,"pct_30_inf":25.0,"pct_30_sup":32.0,"dif_sigma":0.6},
+    {"zona_id":"28092","anio":2024,"pct_40_inf":11.0,"pct_40_sup":16.5,"pct_30_inf":23.0,"pct_30_sup":30.0,"dif_sigma":0.7},
+    {"zona_id":"28001","anio":2024,"pct_40_inf":null,"pct_40_sup":null,"pct_30_inf":null,"pct_30_sup":null,"dif_sigma":null}
+  ],
+  "simulacion": [
+    {"perfil":"solo","municipio_id":"28079","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false},
+    {"perfil":"solo","municipio_id":"28079","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true},
+    {"perfil":"solo","municipio_id":"28065","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false},
+    {"perfil":"solo","municipio_id":"28065","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true},
+    {"perfil":"solo","municipio_id":"28092","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false},
+    {"perfil":"solo","municipio_id":"28092","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true},
+    {"perfil":"solo","municipio_id":"28001","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false},
+    {"perfil":"solo","municipio_id":"28001","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true},
+    {"perfil":"pareja","municipio_id":"28079","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false},
+    {"perfil":"pareja","municipio_id":"28079","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true},
+    {"perfil":"pareja","municipio_id":"28065","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false},
+    {"perfil":"pareja","municipio_id":"28065","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true},
+    {"perfil":"pareja","municipio_id":"28092","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false},
+    {"perfil":"pareja","municipio_id":"28092","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true},
+    {"perfil":"pareja","municipio_id":"28001","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false},
+    {"perfil":"pareja","municipio_id":"28001","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true}
+  ]
+}

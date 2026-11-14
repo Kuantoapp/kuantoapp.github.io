@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "generado": "2026-11-15",
+    "anio_dato": 2024,
+    "fuentes": [{"nombre":"Agencia Tributaria y BOE","url":"https://www.boe.es/","licencia":"Reutilización con cita de la fuente (BOE)"}],
+    "nota": "Ejemplo inventado para tests; no son datos."
+  },
+  "brutos": [15000,30000],
+  "configuraciones": [
+    {"hijos":0,"monoparental":false},
+    {"hijos":0,"monoparental":true},
+    {"hijos":1,"monoparental":false},
+    {"hijos":1,"monoparental":true},
+    {"hijos":2,"monoparental":false},
+    {"hijos":2,"monoparental":true}
+  ],
+  "neto_anual": [
+    [13447.5,13747.5,13667.5,13897.5,13857.5,14047.5],
+    [23795.0,24195.0,24295.0,24745.0,24845.0,25295.0]
+  ]
+}

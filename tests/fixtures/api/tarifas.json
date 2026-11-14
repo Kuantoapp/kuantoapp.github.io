@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "generado": "2026-11-15",
+    "anio_dato": 2024,
+    "fuentes": [
+      {
+        "nombre": "Consorcio Regional de Transportes de Madrid",
+        "url": "https://datos.crtm.es/",
+        "licencia": "CC BY 4.0"
+      },
+      {
+        "nombre": "Agencia Tributaria y BOE",
+        "url": "https://www.boe.es/",
+        "licencia": "Reutilización con cita de la fuente (BOE)"
+      }
+    ],
+    "nota": "Ejemplo inventado para tests; no son datos."
+  },
+  "orden_coronas": ["A","B1"],
+  "edad_max_joven": 25,
+  "escenarios": {
+    "vigente_2026": {
+      "joven": {
+        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0}],
+        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0}]
+      },
+      "general": {
+        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
+        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
+      }
+    },
+    "sin_descuento": {
+      "joven": {
+        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
+        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
+      },
+      "general": {
+        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
+        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
+      }
+    }
+  }
+}
