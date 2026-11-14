@@ -14,7 +14,12 @@ from pathlib import Path
 CORONAS = ["A", "B1", "B2", "B3", "C1", "C2"]
 MAX_PROBLEMAS = 20
 # Caja de la Comunidad de Madrid en EPSG:4326: un 25830 sin reproyectar o lon/lat al revés caen fuera.
-LON, LAT = (-4.6, -3.0), (39.8, 41.2)
+LON, LAT = (-4.7, -2.9), (39.8, 41.3)
+
+
+# Municipio INE o Madrid (28079) + distrito 01-21
+MUN = r"28\d{3}"
+ZONA = MUN + r"|28079(0[1-9]|1\d|2[01])"
 
 
 def _regex(patron):
@@ -35,9 +40,9 @@ _TIPOS = {
     "booleano": lambda v: type(v) is bool,
     "fecha": _es_fecha,
     "url": _regex(r"https?://\S+"),
-    "zona": _regex(r"\d{5}|28079\d{2}"),  # municipio INE o 28079 + distrito
-    "municipio": _regex(r"\d{5}"),
-    "destino": _regex(r"\d{5}|28079\d{2}|polo:[a-z0-9_-]+"),
+    "zona": _regex(ZONA),
+    "municipio": _regex(MUN),
+    "destino": _regex(ZONA + "|polo:[a-z0-9_-]+"),
 }
 
 
@@ -148,46 +153,72 @@ PROPIEDADES = {
 GEOMETRIA = {"type": ["Polygon", "MultiPolygon"], "coordinates": None}
 
 
-def _vertices(c):
-    if isinstance(c, list) and len(c) == 2 and all(type(x) in (int, float) for x in c):
-        yield c
-    elif isinstance(c, list):
-        for x in c:
-            yield from _vertices(x)
+def _posicion(x):
+    return isinstance(x, list) and len(x) == 2 and all(_TIPOS["decimal"](c) for c in x)
+
+
+def _anillo(ruta, a):
+    if not isinstance(a, list) or len(a) < 4 or not all(_posicion(x) for x in a):
+        return [f"{ruta}: se esperaba un anillo de al menos 4 posiciones [lon, lat]"]
+    p = (
+        []
+        if a[0] == a[-1]
+        else [f"{ruta}: anillo abierto (primera y última distintas)"]
+    )
+    if fuera := [
+        v for v in a if not (LON[0] <= v[0] <= LON[1] and LAT[0] <= v[1] <= LAT[1])
+    ]:
+        msg = f"{len(fuera)} vértices fuera de la Comunidad de Madrid en EPSG:4326"
+        p.append(f"{ruta}: {msg} (p. ej. {fuera[0]}); ¿EPSG:25830 o lat/lon al revés?")
+    return p
+
+
+def _poligono(ruta, anillos):
+    if not isinstance(anillos, list) or not anillos:
+        return [f"{ruta}: se esperaba una lista no vacía de anillos"]
+    return [m for i, a in enumerate(anillos) for m in _anillo(f"{ruta}[{i}]", a)]
 
 
 def _geometria(ruta, g):
-    # shortcut: no se comprueba el cierre de anillos ni la validez del polígono, cuando haya geometrías reales usar shapely
+    # shortcut: sin orden de anillos (RFC 7946) ni validez topológica; usar shapely cuando F1-08 tenga geometrías reales
     p = _registro(ruta, g, GEOMETRIA)
     if p:
         return p
-    vertices = list(_vertices(g["coordinates"]))
-    if not vertices:
-        return [f"{ruta}: sin vértices"]
-    fuera = [
-        v
-        for v in vertices
-        if not (LON[0] <= v[0] <= LON[1] and LAT[0] <= v[1] <= LAT[1])
-    ]
-    if fuera:
-        msg = f"{len(fuera)} vértices fuera de la Comunidad de Madrid en EPSG:4326"
-        return [f"{ruta}: {msg} (p. ej. {fuera[0]}); ¿EPSG:25830 o lat/lon al revés?"]
-    return []
+    ruta, c = f"{ruta}.coordinates", g["coordinates"]
+    if g["type"] == "Polygon":
+        return _poligono(ruta, c)
+    if not isinstance(c, list) or not c:
+        return [f"{ruta}: se esperaba una lista no vacía de polígonos"]
+    return [m for i, x in enumerate(c) for m in _poligono(f"{ruta}[{i}]", x)]
+
+
+def _coherencia_zonas(props):
+    p = []
+    for i, x in enumerate(props):
+        if x["tipo"] == "distrito":
+            bien = x["municipio_id"] == "28079" and len(x["zona_id"]) == 7
+        else:
+            bien = x["zona_id"] == x["municipio_id"]
+        if not bien:
+            p.append(
+                f"properties[{i}]: zona_id y municipio_id no casan con tipo {x['tipo']}"
+            )
+    return p
 
 
 def _zonas(o):
-    campos = {"type": ["FeatureCollection"], "features": None, "bbox": None}
-    p = _raiz(o, campos, ("bbox",))
+    p = _raiz(o, {"type": ["FeatureCollection"], "features": None})
     features = _items(o, "features")
     if not features:
         return p + ["features: se esperaba una lista no vacía"]
-    shell = {"type": ["Feature"], "id": "texto", "geometry": None, "properties": None}
+    shell = {"type": ["Feature"], "geometry": None, "properties": None}
     for i, f in enumerate(features):
-        p += _registro(f"features[{i}]", f, shell, ("id",))
+        p += _registro(f"features[{i}]", f, shell)
         if isinstance(f, dict):
             p += _geometria(f"features[{i}].geometry", f.get("geometry"))
     props = [f.get("properties") for f in features if isinstance(f, dict)]
-    return p + _tabla("properties", props, PROPIEDADES, ("zona_id",))
+    q = _tabla("properties", props, PROPIEDADES, ("zona_id",))
+    return p + (q or _coherencia_zonas(props))
 
 
 DESTINO = {"destino_id": "destino", "nombre": "texto", "tipo": ["zona", "polo"]}
@@ -220,7 +251,7 @@ def _tiempos(o):
 
 # fmt: off
 ALQUILER = {
-    "anio": "entero?", "p25": PCT, "p50": PCT, "p75": PCT, "m2": POS_N,
+    "anio": ("entero?", 2000, 2100), "p25": PCT, "p50": PCT, "p75": PCT, "m2": POS_N,
     "factor_ipc": ("decimal", 0.5, 2), "ic": None,
     "origen": ["observado", "estimado", "sin_dato"],
 }
@@ -303,6 +334,8 @@ def _tarifas(o):
     ordenadas = _lista("orden_coronas", o.get("orden_coronas"), CORONAS)
     if ordenadas:
         return p + ordenadas
+    if o["orden_coronas"] != [c for c in CORONAS if c in o["orden_coronas"]]:
+        return p + ["orden_coronas: debe seguir el orden de CORONAS"]
     edades = ["joven", "general"]
     return p + _mapa(
         "escenarios",
@@ -331,13 +364,13 @@ def _hogares(o):
 
 
 # fmt: off
-ESFUERZO = {"zona_id": "zona", "anio": "entero", "alquiler_mes_p50": POS_N, "renta_hogar_mes": POS, "esfuerzo": POS_N}
+ESFUERZO = {"zona_id": "zona", "anio": ANIO, "alquiler_mes_p50": POS_N, "renta_hogar_mes": POS, "esfuerzo": POS_N}
 BONO = {
     "municipio_id": "municipio", "solicitudes": ENT, "aceptadas": ENT, "rechazadas": ENT,
     "poblacion_joven": ENT, "necesidad": POS_N, "grupo": "texto",
     "indicador_necesidad": ["esfuerzo", "sobrecarga"],
 }
-SOBRECARGA = {"zona_id": "zona", "anio": "entero", "dif_sigma": "decimal?"}
+SOBRECARGA = {"zona_id": "zona", "anio": ANIO, "dif_sigma": "decimal?"}
 SOBRECARGA |= {f"pct_{n}_{lado}": PCT for n in (40, 30) for lado in ("inf", "sup")}
 SIMULACION = {
     "perfil": PERFILES, "municipio_id": "municipio", "criterio": "texto",
@@ -392,7 +425,7 @@ def _desconocidas(nombre, o, zonas):
     return []
 
 
-def validar(nombre, objeto, zonas=None):
+def validar(nombre: str, objeto: dict, zonas: dict | None = None) -> None:
     """Lanza un único `ValueError` con todos los problemas de `objeto` según el contrato de `nombre`.
 
     `zonas` es el `zonas.geojson` ya leído: con él se comprueba además que cada id exista.
@@ -420,7 +453,7 @@ def _sin_nan(x):
     return x
 
 
-def escribir(nombre, objeto, carpeta):
+def escribir(nombre: str, objeto: dict, carpeta: str | Path) -> Path:
     """Valida (NaN pasa a null; los ids, contra el `zonas.geojson` de la carpeta si está) y escribe JSON compacto en UTF-8."""
     objeto = _sin_nan(objeto)
     zonas_json = Path(carpeta) / "zonas.geojson"

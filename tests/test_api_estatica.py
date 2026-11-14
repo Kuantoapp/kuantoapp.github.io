@@ -2,6 +2,7 @@
 
 import copy
 import json
+import warnings
 from pathlib import Path
 
 import pandas as pd
@@ -78,7 +79,14 @@ def _modificar(nombre, ruta, valor=...):
     return raiz
 
 
-SQUARE = [[[440000, 4474000], [441000, 4474000], [440000, 4474000]]]
+def _anillo(*pos):
+    return [list(pos) + [pos[0]]]
+
+
+UTM = _anillo(
+    [440000, 4474000], [441000, 4474000], [441000, 4475000], [440000, 4475000]
+)
+BIEN = [[-3.7, 40.4], [-3.6, 40.4], [-3.6, 40.5], [-3.7, 40.4]]
 # fmt: off
 # nombre, fichero, ruta del cambio (sin valor: se quita la clave), valor, mensaje esperado
 FALLOS = [
@@ -86,7 +94,18 @@ FALLOS = [
     ("NaN", "tiempos.json", "km_coche.0.0", float("nan"), "km_coche.*NaN, usa null"),
     ("sin fuentes", "netos.json", "meta.fuentes", [], "meta.fuentes: se esperaba una lista no vacía"),
     ("texto vacío", "hogares.json", "meta.fuentes.0.nombre", "  ", "se esperaba texto"),
-    ("vértice en EPSG:25830", "zonas.geojson", "features.0.geometry.coordinates", SQUARE, "vértices fuera de la Comunidad"),
+    ("vértice en EPSG:25830", "zonas.geojson", "features.0.geometry.coordinates", UTM, "vértices fuera de la Comunidad"),
+    ("bbox", "zonas.geojson", "bbox", [1, 2, 3, 4], r"sobran claves \['bbox'\]"),
+    ("id de feature", "zonas.geojson", "features.0.id", "2807901", r"sobran claves \['id'\]"),
+    ("vértice 3D", "zonas.geojson", "features.0.geometry.coordinates", [[[-3.7, 40.4, 0], *BIEN[1:]]], "al menos 4 posiciones"),
+    ("coordenada en texto", "zonas.geojson", "features.0.geometry.coordinates", [[["-3.7", "40.4"], *BIEN[1:]]], "al menos 4 posiciones"),
+    ("anillo abierto", "zonas.geojson", "features.0.geometry.coordinates", [[*BIEN[:3], [-3.7, 40.5]]], "anillo abierto"),
+    ("Polygon con coordenadas de MultiPolygon", "zonas.geojson", "features.0.geometry.coordinates", [[BIEN]], "al menos 4 posiciones"),
+    ("MultiPolygon con coordenadas de Polygon", "zonas.geojson", "features.0.geometry.type", "MultiPolygon", "al menos 4 posiciones"),
+    ("municipio de otra comunidad", "zonas.geojson", "features.2.properties.municipio_id", "08019", "municipio_id: se esperaba municipio"),
+    ("distrito inexistente", "zonas.geojson", "features.0.properties.zona_id", "2807999", "zona_id: se esperaba zona"),
+    ("municipio_id que no casa con el distrito", "zonas.geojson", "features.0.properties.municipio_id", "28001", "no casan con tipo distrito"),
+    ("orden de coronas", "tarifas.json", "orden_coronas", ["B1", "A"], "debe seguir el orden de CORONAS"),
     ("feature que no es objeto", "zonas.geojson", "features.0", 5, r"features\[0\]: se esperaba un objeto"),
     ("matriz mal dimensionada", "tiempos.json", "tp.0", [9], r"tp\[0\]: se esperaban 2 columnas"),
     ("p25 > p50", "alquiler.json", "zonas.28065.p25", 13.0, "p25 <= p50 <= p75"),
@@ -148,10 +167,15 @@ def test_escribir_comprueba_ids_con_las_zonas_de_la_carpeta(tmp_path):
 def test_app_datos_cumple_el_contrato():
     if not APP_DATOS.exists():
         pytest.skip("app/datos/ todavía no existe")
+    ficheros = sorted([*APP_DATOS.glob("*.json"), *APP_DATOS.glob("*.geojson")])
     zonas = (
         _leer("zonas.geojson", APP_DATOS)
         if (APP_DATOS / "zonas.geojson").exists()
         else None
     )
-    for fichero in sorted([*APP_DATOS.glob("*.json"), *APP_DATOS.glob("*.geojson")]):
+    if ficheros and zonas is None:
+        warnings.warn(
+            "app/datos/ sin zonas.geojson: no se comprueban los zona_id", stacklevel=1
+        )
+    for fichero in ficheros:
         validar(fichero.name, _leer(fichero.name, APP_DATOS), zonas)
