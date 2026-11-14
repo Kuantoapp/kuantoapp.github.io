@@ -3,6 +3,10 @@
 Una línea por decisión, la más reciente arriba. Los agentes leen esto antes de trabajar.
 Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 
+- 2026-11-14 · Idea elegida: plan1 («¿Me sobra?», [ficha](../ideas/plan1/idea-definitiva/propuesta-A-unificada.md)) · elección del equipo; la ficha pasó por `dm-abogado-del-diablo` (#54) y pone los datos regionales de vivienda y transporte en el núcleo de la cuenta · [plan de desarrollo](../ideas/plan1/idea-definitiva/plan-desarrollo.md)
+- 2026-11-14 · Stack de `src/` y `app/`: paquete `mesobra` con pandas y geopandas (sin DuckDB), r5py para los tiempos de viaje, LightGBM para imputar, web estática con MapLibre dentro del repo y JS sin compilación, informe como página HTML con figuras PNG generadas en Python (sin Quarto) y MCP con el SDK de Python · son 199 zonas y unas miles de secciones: no hace falta más; menos herramientas que instalar y el informe pasa el control de cifras con fuente. Elegido por Izan; Yeray puede objetar hasta el 15/11 a las 10:00 · [plan de desarrollo](../ideas/plan1/idea-definitiva/plan-desarrollo.md)
+- 2026-11-14 · Los ficheros pequeños de la API estática (JSON y GeoJSON derivados, cada uno muy por debajo de 5 MB) sí se versionan, en `app/datos/`: es una excepción a «no versionar datos» · la web, el MCP y el análisis leen los mismos ficheros y cada carril consume lo del otro sin regenerarlo; cada PR que los cambie pasa `dm-trazador-cifras` · [plan de desarrollo](../ideas/plan1/idea-definitiva/plan-desarrollo.md)
+- 2026-11-14 · Reparto de plan1: Izan lleva territorio, tiempos de viaje, herramienta web y MCP; Yeray lleva euros (alquiler, renta, neto, tarifas, cesta), análisis, informe y Smart Data Models. El repositorio se hace público y se publica con GitHub Pages entre el 18 y el 19/11, tras el esqueleto · carpetas y ficheros distintos para que nadie espere a nadie; publicar pronto prueba el despliegue y da tiempo al piloto con usuarios · [plan de desarrollo](../ideas/plan1/idea-definitiva/plan-desarrollo.md)
 - 2026-11-13 · Toda skill o agente nuevo, o cambio de uno existente, se hace con la skill `dm-crear-skill-o-agente` (plantillas comunes, pieza de referencia `dm-trazador-cifras` y `dm-nueva-fuente`); un agente que revisa no lleva `memory` y lo dice en su nombre · que la documentación y las piezas sigan siendo homogéneas cuando las creen agentes · skill para crear skills y agentes
 - 2026-11-13 · `dm-revisor-codigo` pasa a revisor obligatorio para cualquier `.py` de `src/` o `app/` · ruff no ve duplicados, abstracciones de un solo uso ni fallos silenciosos; cuesta unos 35.000 tokens por PR de código · revisor de código obligatorio
 - 2026-11-13 · El código mínimo es el estándar de todo el código: reglas núcleo en `AGENTS.md`, procedimiento en `dm-codigo-minimo` y ruff con `ARG`, `ERA001`, `C901`, `PLR0913` y `T201` (exentas las herramientas de `.claude/` y `.github/`, los dobles de prueba de `tests/` y los `print` de `notebooks/`) · lo que una máquina puede comprobar no debe depender de que el agente se acuerde · código mínimo
@@ -16,8 +20,6 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 - 2026-11-13 · Python 3.14 (`.python-version`) instalado con uv; herramientas de desarrollo fijadas en `requirements-dev.txt` · la más reciente con ruedas para todo el stack en macOS, Linux y Windows (la 3.15 aún no tiene kriging); local y CI con las mismas versiones · entorno y documentación
 - 2026-11-12 · Sin aprobación obligatoria de GitHub; check `revision`: Yeray e Izan mergean con CI verde, el resto necesita su aprobación · quitar al humano como cuello de botella sin abrir la puerta a código no revisado · estructura del repo
 - 2026-11-12 · Flujo GitHub Flow: ramas `<usuario>/<tema>`, PR con squash a `main`, 1 revisión · tres personas con agentes, historial lineal y revisable · estructura del repo
-- _Pendiente_ · Idea elegida (plan1 / plan2 / plan3)
-- _Pendiente_ · Stack de `src/` y `app/`
 - _Pendiente_ · Bases del concurso: criterios y pesos del jurado, formato de entrega y duración de la presentación
 
 ## Fechas clave
@@ -26,5 +28,7 @@ Fechas fijas que el equipo tiene que tener presentes (no son tareas: las tareas 
 
 | Fecha | Qué pasa |
 |---|---|
+| 2026-11-18 | Esqueleto de punta a punta de «¿Me sobra?»: datos reales, cálculo y web que pinta el mapa (hito H1 del plan; colchón el 19) |
+| 2026-11-20 | Todo N0 en `main` y corte de N1 (hito H2 del plan) |
 | 2026-11-22 | Datos y cálculos congelados (propuesta de la ficha de plan1, por confirmar) |
 | 2026-11-26 | Presentación ante el jurado (fecha de la organización) |
