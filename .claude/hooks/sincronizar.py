@@ -1,4 +1,8 @@
-"""Hook PostToolUse (Bash): tras `gh pr create`, trae origin/main a la rama con un merge, si es seguro.
+"""Hook PostToolUse (Bash) del flujo de ramas: trabaja sobre la raíz git del `cwd` del evento (en un worktree,
+CLAUDE_PROJECT_DIR sigue siendo el checkout principal) y hace dos cosas.
+
+1. Tras `git worktree add <ruta>`, recuerda al agente entrar en el worktree: los hooks miran la carpeta de la sesión.
+2. Tras `gh pr create`, trae origin/main a la rama con un merge, si es seguro.
 
 Solo actúa con el árbol limpio y fuera de main; si el merge da conflicto lo deshace y avisa. Nunca hace push
 (la rama ya está subida: reescribirla exigiría force push) ni se dispara solo: un merge al día no hace nada.
@@ -10,12 +14,46 @@ from __future__ import annotations  # puede ejecutarse con el Python 3.9 de macO
 import json
 import os
 import re
+import shlex
 import sys
 from pathlib import Path
 
 from contexto import git
 
 PR = re.compile(r"\bgh\s+pr\s+create\b")
+WORKTREE = re.compile(r"\bgit\s+worktree\s+add\b")
+CON_VALOR = {
+    "-b",
+    "-B",
+    "--orphan",
+    "--reason",
+}  # opciones de `worktree add` que llevan un valor aparte
+
+
+def raiz(evento: dict) -> Path:
+    cwd = evento.get("cwd")
+    return Path(
+        (cwd and git(Path(cwd), "rev-parse", "--show-toplevel"))
+        or os.environ.get("CLAUDE_PROJECT_DIR")
+        or os.getcwd()
+    )
+
+
+def avisar_worktree(orden: str, cwd: Path) -> str:
+    """Aviso si `orden` crea un worktree en el que la sesión (cwd) aún no está; la ruta es el primer posicional."""
+    m = WORKTREE.search(orden)
+    if not m:
+        return ""
+    args = iter(shlex.split(re.split(r"&&|\|\||;|\|", orden[m.end() :])[0]))
+    for a in args:
+        if a in CON_VALOR:
+            next(args, None)
+        elif not a.startswith("-"):
+            ruta, cwd = (cwd / a).resolve(), cwd.resolve()
+            if ruta in (cwd, *cwd.parents):
+                return ""
+            return f"Entra en el worktree con la herramienta EnterWorktree (path: {ruta}) o abre Claude Code dentro de él: los hooks (data/raw, revisiones, documentación) miran la carpeta de la sesión."
+    return ""
 
 
 def sincronizar(base: Path) -> str:
@@ -36,19 +74,20 @@ def sincronizar(base: Path) -> str:
 def main() -> int:
     try:
         evento = json.load(sys.stdin)
-        if not PR.search((evento.get("tool_input") or {}).get("command", "")):
-            return 0
-        texto = sincronizar(Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()))
-    except Exception:  # noqa: BLE001 — sincronizar es una ayuda; si falla, el PR ya está creado
+        orden = (evento.get("tool_input") or {}).get("command", "")
+        texto = sincronizar(raiz(evento)) if PR.search(orden) else ""
+        aviso = avisar_worktree(orden, Path(evento.get("cwd") or os.getcwd()))
+    except Exception:  # noqa: BLE001 — son ayudas; si fallan, el comando ya se ejecutó
         return 0
-    if texto:
+    contexto = "\n".join(t for t in (texto, aviso) if t)
+    if contexto:
         print(
             json.dumps(
                 {
-                    "systemMessage": texto,
+                    **({"systemMessage": texto} if texto else {}),
                     "hookSpecificOutput": {
                         "hookEventName": "PostToolUse",
-                        "additionalContext": texto,
+                        "additionalContext": contexto,
                     },
                 },
                 ensure_ascii=False,

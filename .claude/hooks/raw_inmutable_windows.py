@@ -280,7 +280,8 @@ def compartir_raw(base: Path) -> str:
 
 def main() -> int:
     modo = sys.argv[1] if len(sys.argv) > 1 else "pre"
-    base = comun.raiz()
+    texto, evento = comun.leer_evento()
+    base = comun.raiz(evento)
     if modo == "enlazar":
         try:
             aviso = compartir_raw(base)
@@ -290,16 +291,18 @@ def main() -> int:
             print(aviso)
         return 0
     if modo == "post":
-        comun.solo_lectura(base)
+        for b in {base, comun.raiz()}:  # la sesión y la carpeta del proyecto
+            comun.solo_lectura(b)
         return 0
-    texto = sys.stdin.read()
     if not (base / RAW).exists():
         try:
             compartir_raw(base)
         except OSError:
             pass
     try:
-        m = motivo(json.loads(texto), base)
+        ev = json.loads(texto)
+        # Se mira también CLAUDE_PROJECT_DIR: el cwd de la sesión puede ser otro repo o un worktree sin enlazar
+        m = next((r for b in {base, comun.raiz()} if (r := motivo(ev, b))), None)
     except Exception as e:  # noqa: BLE001 — falla cerrado solo si la acción podía tocar data/raw
         if RAW_EN_TEXTO.search(texto):
             print(

@@ -76,3 +76,44 @@ def test_hook_stop_recuerda_una_vez(tmp_path):
     salida = json.loads(stop(activo=False))
     assert salida["decision"] == "block" and "hooks" in salida["reason"]
     assert stop(activo=True) == ""
+
+
+def test_hook_stop_usa_el_cwd_del_evento(tmp_path):
+    def git(repo: Path, *a: str) -> None:
+        subprocess.run(["git", *a], cwd=repo, check=True, capture_output=True)
+
+    otra, repo = tmp_path / "otra", tmp_path / "repo"
+    for carpeta in (otra, repo):
+        carpeta.mkdir()
+        git(carpeta, "init", "-q", "-b", "main")
+        git(
+            carpeta,
+            "-c",
+            "user.email=t@t",
+            "-c",
+            "user.name=t",
+            "commit",
+            "-q",
+            "--allow-empty",
+            "-m",
+            "base",
+        )
+        git(carpeta, "update-ref", "refs/remotes/origin/main", "HEAD")
+    (repo / "src").mkdir()
+    (repo / ".claude/hooks").mkdir(parents=True)
+    (repo / ".claude/hooks/nuevo.py").write_text("")  # sin documentar
+    entorno = {
+        **os.environ,
+        "CLAUDE_PROJECT_DIR": str(otra),
+    }  # el checkout principal, sin cambios
+    entorno.pop("GITHUB_BASE_REF", None)
+    salida = subprocess.run(
+        [sys.executable, SCRIPT, "--stop"],
+        input=json.dumps({"cwd": str(repo / "src")}),
+        capture_output=True,
+        check=False,
+        text=True,
+        env=entorno,
+    ).stdout
+    assert json.loads(salida)["decision"] == "block"
+    assert docs.raiz_de(str(repo / "src")) == repo.resolve()

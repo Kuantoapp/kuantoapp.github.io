@@ -46,8 +46,32 @@ ESCRIBE_EN_RAW = re.compile(
 )
 
 
-def raiz() -> Path:
+def raiz(evento: dict | None = None) -> Path:
+    """Raíz git de la carpeta de la sesión (`cwd` del evento); en un worktree CLAUDE_PROJECT_DIR sigue siendo el checkout principal."""
+    cwd = (evento or {}).get("cwd")
+    if isinstance(cwd, str) and cwd:
+        try:
+            r = subprocess.run(
+                ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
+                capture_output=True,
+                check=False,
+                text=True,
+            )
+        except OSError:
+            r = None
+        if r and r.stdout.strip():
+            return Path(r.stdout.strip())
     return Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
+
+
+def leer_evento() -> tuple[str, dict]:
+    """Texto de stdin y su JSON; en `post` y `enlazar` puede venir vacío o no serlo, y entonces el evento es {}."""
+    texto = "" if sys.stdin.isatty() else sys.stdin.read()
+    try:
+        evento = json.loads(texto)
+    except ValueError:
+        evento = {}
+    return texto, evento if isinstance(evento, dict) else {}
 
 
 def en_raw(ruta: str, base: Path) -> Path | None:
@@ -208,7 +232,8 @@ def compartir_raw(base: Path) -> str:
 
 def main() -> int:
     modo = sys.argv[1] if len(sys.argv) > 1 else "pre"
-    base = raiz()
+    texto, evento = leer_evento()
+    base = raiz(evento)
     if modo == "enlazar":
         try:
             aviso = compartir_raw(base)
@@ -218,9 +243,9 @@ def main() -> int:
             print(aviso)
         return 0
     if modo == "post":
-        solo_lectura(base)
+        for b in {base, raiz()}:  # la sesión y la carpeta del proyecto
+            solo_lectura(b)
         return 0
-    texto = sys.stdin.read()
     if not (
         base / RAW
     ).exists():  # sesión que no pasó por SessionStart (p. ej. un worktree nuevo)
@@ -229,7 +254,9 @@ def main() -> int:
         except OSError:
             pass
     try:
-        m = motivo(json.loads(texto), base)
+        ev = json.loads(texto)
+        # Se mira también CLAUDE_PROJECT_DIR: el cwd de la sesión puede ser otro repo o un worktree sin enlazar
+        m = next((r for b in {base, raiz()} if (r := motivo(ev, b))), None)
     except Exception as e:  # noqa: BLE001 — falla cerrado solo si la acción podía tocar data/raw
         if RAW in texto:
             print(

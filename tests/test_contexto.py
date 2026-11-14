@@ -1,6 +1,7 @@
 """Hook SessionStart de contexto: fechas clave, decisiones pendientes, «(verificar)» y descargas que faltan."""
 
 import importlib.util
+import io
 import json
 import subprocess
 import sys
@@ -224,6 +225,37 @@ def test_sincroniza_tras_el_pr(tmp_path):
     assert git_estado(yo) == ""  # el merge fallido se deshizo
     g(yo, "checkout", "-q", "main")
     assert sinc.sincronizar(yo) == ""  # en main no hace nada
+
+
+def test_avisa_al_crear_un_worktree(tmp_path):
+    aviso = sinc.avisar_worktree
+    esperada = f"EnterWorktree (path: {tmp_path.resolve() / 'x'})"
+    assert esperada in aviso(
+        "git worktree add ../x -b u/t origin/main", tmp_path / "repo"
+    )
+    assert "path: /abs/x)" in aviso("git worktree add -q /abs/x", tmp_path)
+    assert "path: /abs/x)" in aviso(
+        "cd r && git worktree add -b u/t /abs/x main && ls y", tmp_path
+    )
+    assert aviso("git worktree list", tmp_path) == ""
+    assert aviso("git status", tmp_path) == ""
+    assert aviso("git worktree add -q /abs/x", Path("/abs/x/src")) == ""  # ya dentro
+
+
+def test_main_de_sincronizar_usa_el_cwd_del_evento(
+    principal_y_worktree, monkeypatch, capsys
+):
+    principal, wt = principal_y_worktree
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(principal))
+    (wt / "src").mkdir()
+    assert sinc.raiz({"cwd": str(wt / "src")}) == wt.resolve()
+    assert sinc.raiz({}) == principal
+    evento = {"tool_input": {"command": "git worktree add ../x"}, "cwd": str(wt)}
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(evento)))
+    assert sinc.main() == 0
+    salida = json.loads(capsys.readouterr().out)
+    assert "systemMessage" not in salida
+    assert "EnterWorktree" in salida["hookSpecificOutput"]["additionalContext"]
 
 
 def git_estado(repo):
