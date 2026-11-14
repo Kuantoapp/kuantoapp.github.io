@@ -103,6 +103,8 @@ FALLOS = [
     ("Polygon con coordenadas de MultiPolygon", "zonas.geojson", "features.0.geometry.coordinates", [[BIEN]], "al menos 4 posiciones"),
     ("MultiPolygon con coordenadas de Polygon", "zonas.geojson", "features.0.geometry.type", "MultiPolygon", "al menos 4 posiciones"),
     ("municipio de otra comunidad", "zonas.geojson", "features.2.properties.municipio_id", "08019", "municipio_id: se esperaba municipio"),
+    ("anio fuera de rango", "analisis.json", "esfuerzo.0.anio", 1, "fuera del rango"),
+    ("municipio con zona_id distinto", "zonas.geojson", "features.2.properties.zona_id", "28066", "no casan con tipo municipio"),
     ("distrito inexistente", "zonas.geojson", "features.0.properties.zona_id", "2807999", "zona_id: se esperaba zona"),
     ("municipio_id que no casa con el distrito", "zonas.geojson", "features.0.properties.municipio_id", "28001", "no casan con tipo distrito"),
     ("orden de coronas", "tarifas.json", "orden_coronas", ["B1", "A"], "debe seguir el orden de CORONAS"),
