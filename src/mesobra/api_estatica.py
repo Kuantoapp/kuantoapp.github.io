@@ -198,7 +198,8 @@ def _coherencia_zonas(props):
         if x["tipo"] == "distrito":
             bien = x["municipio_id"] == "28079" and len(x["zona_id"]) == 7
         else:
-            bien = x["zona_id"] == x["municipio_id"]
+            # 28079 es Madrid entero: sus zonas son los 21 distritos
+            bien = x["zona_id"] == x["municipio_id"] != "28079"
         if not bien:
             p.append(
                 f"properties[{i}]: zona_id y municipio_id no casan con tipo {x['tipo']}"

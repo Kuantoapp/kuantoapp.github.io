@@ -87,6 +87,14 @@ UTM = _anillo(
     [440000, 4474000], [441000, 4474000], [441000, 4475000], [440000, 4475000]
 )
 BIEN = [[-3.7, 40.4], [-3.6, 40.4], [-3.6, 40.5], [-3.7, 40.4]]
+MADRID = {
+    "zona_id": "28079",
+    "nombre": "Madrid",
+    "tipo": "municipio",
+    "municipio_id": "28079",
+    "corona": "A",
+    "poblacion": 3400000,
+}
 # fmt: off
 # nombre, fichero, ruta del cambio (sin valor: se quita la clave), valor, mensaje esperado
 FALLOS = [
@@ -105,6 +113,7 @@ FALLOS = [
     ("municipio de otra comunidad", "zonas.geojson", "features.2.properties.municipio_id", "08019", "municipio_id: se esperaba municipio"),
     ("anio fuera de rango", "analisis.json", "esfuerzo.0.anio", 1, "fuera del rango"),
     ("municipio con zona_id distinto", "zonas.geojson", "features.2.properties.zona_id", "28066", "no casan con tipo municipio"),
+    ("Madrid entero como municipio", "zonas.geojson", "features.2.properties", MADRID, "no casan con tipo municipio"),
     ("distrito inexistente", "zonas.geojson", "features.0.properties.zona_id", "2807999", "zona_id: se esperaba zona"),
     ("municipio_id que no casa con el distrito", "zonas.geojson", "features.0.properties.municipio_id", "28001", "no casan con tipo distrito"),
     ("orden de coronas", "tarifas.json", "orden_coronas", ["B1", "A"], "debe seguir el orden de CORONAS"),
