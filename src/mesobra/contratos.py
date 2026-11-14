@@ -185,28 +185,39 @@ def dtypes(nombre: str) -> dict[str, str]:
     return {col: DTYPES[tipo] for col, tipo in CONTRATOS[nombre]["columnas"].items()}
 
 
+def _problemas_clave(df: pd.DataFrame, clave: tuple[str, ...]) -> list[str]:
+    if not set(clave) <= set(df.columns):
+        return []  # ya consta como columna que falta
+    columnas = list(clave)
+    problemas = []
+    if nulas := int(df[columnas].isna().any(axis=1).sum()):
+        problemas.append(f"clave {clave} con {nulas} filas nulas")
+    repetidas = df.loc[df.duplicated(columnas, keep=False), columnas]
+    if not repetidas.empty:
+        problemas.append(
+            f"clave {clave} repetida, p. ej. {repetidas.head(3).values.tolist()}"
+        )
+    return problemas
+
+
 def validar(df: pd.DataFrame, nombre: str) -> None:
     """Lanza un único `ValueError` con todos los incumplimientos del contrato de `nombre`."""
     clave, columnas = CONTRATOS[nombre]["clave"], CONTRATOS[nombre]["columnas"]
+    if repetidas := df.columns[df.columns.duplicated()].tolist():
+        raise ValueError(f"{nombre}: columnas repetidas: {repetidas}")
     problemas = []
     if faltan := [c for c in columnas if c not in df.columns]:
         problemas.append(f"faltan columnas: {faltan}")
     if sobran := [c for c in df.columns if c not in columnas]:
         problemas.append(f"sobran columnas: {sobran}")
     for col, tipo in columnas.items():
-        if col in df.columns and not COMPRUEBA[tipo](df[col]):
+        if col not in df.columns:
+            continue
+        if not COMPRUEBA[tipo](df[col]):
             problemas.append(f"{col}: se esperaba {tipo} y hay {df[col].dtype}")
         crs = getattr(df, "crs", None)
         if tipo == "geometria" and (crs is None or crs.to_epsg() != 25830):
             problemas.append(f"{col}: se esperaba EPSG:25830 y hay {crs}")
-    if (
-        all(c in df.columns for c in clave)
-        and (
-            repetidas := df.loc[df.duplicated(list(clave), keep=False), list(clave)]
-        ).size
-    ):
-        problemas.append(
-            f"clave {clave} repetida, p. ej. {repetidas.head(3).values.tolist()}"
-        )
+    problemas += _problemas_clave(df, clave)
     if problemas:
         raise ValueError(f"{nombre}: " + "; ".join(problemas))

@@ -12,7 +12,7 @@ FIXTURES = Path(__file__).parent / "fixtures" / "processed"
 ZONAS = {"2807901", "2807913", "28065", "28092", "28001"}
 
 
-def _leer(nombre):
+def _leer(nombre: str) -> pd.DataFrame:
     df = pd.read_csv(FIXTURES / f"{nombre}.csv", dtype=dtypes(nombre))
     if "geometry" in df:
         df = gpd.GeoDataFrame(
@@ -63,6 +63,21 @@ def test_clave_repetida():
     df = pd.concat([_leer("hogares"), _leer("hogares").head(1)], ignore_index=True)
     with pytest.raises(ValueError, match="clave .* repetida"):
         validar(df, "hogares")
+
+
+def test_clave_con_nulos():
+    df = _leer("hogares")
+    df.loc[0, "perfil"] = pd.NA
+    with pytest.raises(ValueError, match="clave .* con 1 filas nulas"):
+        validar(df, "hogares")
+
+
+def test_columnas_repetidas():
+    df = _leer("hogares")
+    with pytest.raises(
+        ValueError, match=r"^hogares: columnas repetidas: \['adultos'\]"
+    ):
+        validar(pd.concat([df, df[["adultos"]]], axis=1), "hogares")
 
 
 def test_zonas_con_otro_crs():
