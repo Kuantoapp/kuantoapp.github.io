@@ -1,130 +1,576 @@
-# Propuesta A unificada: «¿Me sobra?» (visión del jurado)
+# ¿Me sobra?
 
-Análisis comparado de las dos versiones de la Propuesta A y propuesta de unificación.
-Fecha: 14 de noviembre de 2026. Fuentes:
-- [Plan de Izan](../izan/plan_propuesta_A_Izan.md) (11/11/2026)
-- [Ficha de Yeray](../yeray/ficha-salario-que-sobra.md) (11/11/2026)
+**Lo que te queda de tu sueldo, zona a zona, después del alquiler, el transporte y lo básico, y cuántas horas te cuesta ir a trabajar.**
+Lemas alternativos: «Tu sueldo, después de Madrid» · «Cuánto te cuesta de verdad vivir donde vives».
 
-> **Estado: propuesta, no decisión.** Antes de anotarla en `docs/decisiones.md` hay que pasarla por `dm-abogado-del-diablo`. No se ha verificado ninguna marca «(verificar)» de los planes de origen ni los identificadores del catálogo citados.
+Ficha unificada de la Propuesta A (plan1) para DataMad 2026 · 14 de noviembre de 2026.
+Reúne en una sola idea las dos versiones previas:
+- el [plan de Izan](../izan/plan_propuesta_A_Izan.md) (entrevista por fases, cerrada el 11/11/2026);
+- la [ficha de Yeray](../yeray/ficha-salario-que-sobra.md) (10 rondas de entrevista, 11/11/2026).
 
-## Marco de evaluación
+Las dos versiones nacen de fusionar la idea 1 (*Salario que sobra*) con la idea 9 (*alquiler frente a renta*), reformulada como **esfuerzo** y no como legalidad.
 
-- **Criterios:** uso de la información pública regional, viabilidad y código abierto (oficiales, según la ficha de Yeray), más el valor económico, social o medioambiental (citado por la URJC y la prensa). Los pesos no están publicados.
-- **Jurado relevante:**
-  - Alberto Abella: autor de Smart Data Models e impartió la formación de APIs, MCP y espacios de datos.
-  - Olga Quirós (ASEDIE): economía del dato y reutilización.
-- **Tiempo:** congelación de datos el 22 de noviembre y presentación el 26 de noviembre.
+> Las marcas **(verificar)** señalan datos o cifras que todavía no se han comprobado en la fuente primaria. Esta ficha es una **propuesta de idea**, no una decisión: antes de anotarla en `docs/decisiones.md` se pasa por `dm-abogado-del-diablo`.
 
-## Diagnóstico
+## Cómo leer esta ficha
 
-Las dos versiones son **la misma idea**: lo que sobra del sueldo es neto − alquiler − transporte, junto con el esfuerzo alquiler/renta (#9) y el Bono Alquiler Joven. No compiten, se complementan:
-- Izan aporta **la ingeniería y el rigor**.
-- Yeray aporta **el relato y el impacto**.
+Esta ficha **describe y enmarca la idea** para saber cómo afrontarla. **No es una especificación de desarrollo.** Los métodos, fuentes y herramientas que aparecen son el **punto de partida**: lo que hoy parece mejor con lo que sabemos. Si al desarrollar aparece algo mejor, un dato que no existe o un resultado que obliga a cambiar de rumbo, se cambia y se anota el motivo.
 
-Cada una es débil justo donde la otra es fuerte.
+El alcance se describe **completo**, sin recortes por plazo. Qué se hace primero y qué se deja si no da tiempo se decide al planificar (sección 15), no aquí.
 
-## Propuesta de Izan
+**Lo que define la idea (si cambia esto, es otra idea):**
+1. **La cuenta completa.** Lo que sobra del sueldo después de vivienda, transporte y gastos básicos, con el tiempo de viaje al lado. No solo el precio del alquiler.
+2. **Dos miradas sobre la misma cuenta.** La del particular que busca dónde vivir y la de la Administración que decide las ayudas.
+3. **Esfuerzo, no legalidad.** Se mide qué parte de la renta se va en vivienda; no se juzga si un alquiler es legal.
+4. **Datos abiertos y públicos**, con el catálogo regional en el centro, el portal del Ayuntamiento como complemento y fuentes nacionales para completar.
+5. **Honestidad con los límites del dato.** Lo estimado se marca, la incertidumbre se muestra y los supuestos se declaran.
+6. **Una decisión que cambia**, no solo un mapa bonito: el impacto se intenta medir.
+7. **Abierto e interoperable.** Código, datos derivados, Smart Data Models y MCP, para que otros reutilicen el resultado.
 
-### A favor
-- **Viable en el plazo.** Son unas 199 zonas, la matriz de tiempos se precalcula y el alcance está acotado de forma explícita: sin capa predictiva y sin modo compra.
-- **Rigor creíble:**
-  - euros y horas separados, sin monetizar el tiempo;
-  - alquiler como rango P25–P75;
-  - SERPAVI declarado como cota inferior;
-  - limitación declarada de la renta media, que incluye a los propietarios y por eso subestima el esfuerzo;
-  - sin imputación.
-- **Resuelve el mayor riesgo de la ficha de Yeray.** Tiene localizada la URL del Excel completo del SERPAVI; la descarga es manual.
-- **Smart Data Models y servidor MCP** de forma explícita, que es lo que más valora la organización.
-- **App estática y privada:**
-  - el sueldo no sale del navegador;
-  - la demo no depende de un servidor;
-  - la lógica fiscal está en Python y el JS solo interpola sobre una rejilla, con casos de referencia.
-- **Dimensión temporal desde 2015.** Da evolución, no una foto fija.
+**Lo que es enfoque de partida (puede cambiar):** modelos de imputación y de sobrecarga, cálculo de tiempos, umbrales y parámetros, perfiles de hogar, escenarios, herramientas, arquitectura, reparto, calendario y guion.
 
-### En contra
-- **Narrativa débil.** No hay personajes, guion ni una decisión pública concreta que cambie: buen mapa, poco impacto.
-- **Sin cesta básica.** El «sobrante» puede engañar, porque alguien con sobrante positivo puede no llegar a fin de mes. Es una pregunta probable del jurado.
-- **Huecos «sin dato»** en los municipios pequeños y baratos, justo donde buscan los jóvenes.
-- **Poco peso regional en el núcleo.** SERPAVI e INE son fuentes nacionales. Lo regional queda en las tarifas, el IPC de alquiler, el Bono y el contexto.
-- **Modo coche sin tráfico.** Es trabajo extra con un resultado subestimado que hay que justificar.
-- **Impacto sin medir.** Analiza el Bono, pero no simula ninguna alternativa.
+**Lo que está abierto:** las marcas **(verificar)**, la lista de la sección 16 y los titulares, que dependen de lo que digan los datos.
 
-## Propuesta de Yeray
+---
 
-### A favor
-- **Gancho y relato.** Abre con el dato del Bono Alquiler Joven 2022 (solicitudes frente a aceptadas, del catálogo regional), tiene cuatro personajes reconocibles y un guion de 5 minutos.
-- **Decisiones públicas concretas:**
-  - focalizar el Bono;
-  - un criterio de elegibilidad que incluya el transporte;
-  - el escenario «se acaba el descuento del abono».
+## 1. La idea en 30 segundos
 
-  Es lo que convierte el estudio en un servicio con impacto.
-- **Cuenta completa.** La cesta básica (EPF del INE) evita el sobrante engañoso.
-- **Más datos regionales y municipales:**
-  - alquiler por código postal del catálogo regional (`1934258`);
-  - panel de indicadores de distritos del Ayuntamiento;
-  - desahucios por la LAU;
-  - polos de empleo obtenidos de datos.
-- **Validación externa e impacto medido:** correlación con desahucios e IGUALA, y test con usuarios antes y después.
-- **Entregables reutilizables.** Conjunto de datos con metadatos DCAT-AP, API y MCP. Encaja con la economía del dato.
+Quien busca piso en la Comunidad de Madrid compara alquileres, pero casi nunca hace la cuenta completa: alquiler, transporte, gastos básicos y horas perdidas en ir a trabajar. Un piso 200 € más barato a 70 minutos puede salir más caro que uno más cerca.
 
-### En contra
-- **Inviable en el plazo.** Reúne demasiadas piezas para 8 días:
-  - LightGBM con predicción conformal;
-  - predicción a 12 meses;
-  - scraping;
-  - asistente conversacional;
-  - backend FastAPI;
-  - destino libre;
-  - log-normal por sección con corrección por inquilinos;
-  - test con 15–30 personas.
+**¿Me sobra?** hace esa cuenta. El usuario mete su sueldo, dónde trabaja y cuántos días va a la oficina. Ve en un mapa cuánto dinero le queda a final de mes en cada zona (municipio y, en Madrid capital, distrito o barrio) y cuántas horas al mes pasa en el transporte.
 
-  La ficha rechaza recortar porque «el código no es el cuello de botella». Pero el cuello de botella real es **verificar datos y cifras**, y cada número estimado más es un frente de ataque.
-- **Scraping contra las condiciones de uso** de Idealista y Fotocasa. En un evento oficial, con ASEDIE en el jurado, resta puntos aunque solo se publique el factor agregado.
-- **Monetizar el tiempo mezcla unidades.** La convención del 50 % del salario está sin verificar.
-- **Predicción con pocos años de datos.** Los intervalos serán tan anchos que no aportan.
-- **No menciona Smart Data Models.**
-- **Muchas marcas «(verificar)»** en cifras que irían al pitch: tarifas 2026, reglas del Bono, licencia del CRTM y valor del tiempo.
-- **El backend es un punto único de fallo** en la demo, aunque tiene respaldo estático.
+La misma cuenta, agregada por hogares, sirve a la **Administración** para tres cosas:
+- ver dónde se concentran los hogares que dedican demasiado a vivienda y cómo ha evolucionado desde 2015;
+- comprobar si el Bono Alquiler Joven llega a donde más se necesita;
+- simular cómo cambiarían las ayudas si contaran el coste del transporte, y qué pasa si se acaba el descuento del abono.
 
-## Propuesta unificada
+**Pregunta central:** ¿cuánto dinero y cuánto tiempo te cuesta de verdad vivir en cada sitio, según dónde trabajas?
 
-La regla es **la arquitectura y el rigor de Izan, más el relato y la capa de decisión de Yeray, sin lo que no cabe antes del 22 de noviembre.**
+## 2. El problema
 
-| Pieza | Qué se queda | Origen |
+- **El alquiler se compara sin su coste asociado.** El precio de un piso no incluye el abono, el tiempo de viaje ni la diferencia de gastos según el tipo de hogar.
+- **Las ayudas miden solo la renta.** El Bono Alquiler Joven fija requisitos de renta y de alquiler máximo, pero no mira cuánto cuesta desplazarse desde ese piso hasta el trabajo.
+- **La demanda de ayuda supera mucho a la que se concede.** En la convocatoria de 2022 del Bono Alquiler Joven en la Comunidad hubo 51.735 solicitudes y 11.477 aceptadas, un 22 % (catálogo regional, `spacm_bono_alquiler_joven_2022`). El dato es de 2022 y cuenta solicitudes, no personas.
+- **El precio del transporte depende de una ayuda temporal.** En 2026 los abonos tienen un descuento del 50 % que depende de que sigan las ayudas estatales; sin ellas, el precio se duplica (prensa, **verificar** en el BOCM de 31 de diciembre de 2025).
+- **Madrid no limita el alquiler por ley.** Ningún municipio de la Comunidad figura como zona tensionada en el BOE (septiembre de 2026), y la Comunidad no aplica el mecanismo aunque el Tribunal Constitucional avaló la ley en febrero de 2026. Por eso se habla de **esfuerzo**, no de alquileres «ilegales» ni de «precio de referencia».
+
+## 3. Para quién y qué decisión cambia
+
+La idea tiene **dos partes** que comparten datos y cálculo:
+- la **herramienta**, para particulares;
+- el **análisis**, para la Administración.
+
+| Usuario | Pregunta que responde | Decisión que cambia |
 |---|---|---|
-| Unidad territorial | 179 municipios + 21 distritos de Madrid capital; barrios solo si sobra tiempo | Izan |
-| Fórmula | sobra = neto − alquiler − transporte − **cesta básica**. Horas de viaje aparte. Deslizador de valor del tiempo opcional y **apagado por defecto** | Izan + Yeray |
-| Alquiler | SERPAVI (Excel, descarga manual), P25–P75 + `1934258` regional para Madrid capital + IPC de alquiler regional. Se presenta como suelo | Izan + Yeray |
-| Huecos de alquiler | «Sin dato» por defecto. Si hay tiempo, un modelo simple marcado como «estimado», con intervalo conformal y comparado con un modelo de referencia | Izan; Yeray como opcional |
-| Habitación o piso compartido | Alquiler × m² ÷ personas, declarado como supuesto | Izan |
-| Transporte | Tarifas BOCM 2026 por zona + matriz GTFS precalculada (r5py). Polos de empleo a partir de datos (EDM2018 regional o MITMA) | ambos |
-| Neto | Rejilla precalculada en Python, contrastada con nóminas reales y auditada con `dm-auditor-calculos-normativos` | Izan + Yeray |
-| App | Estática en GitHub Pages, sin backend y sin peticiones a terceros | Izan |
-| Vista de la Administración | Esfuerzo #9 desde 2015 + Bono frente a sobrecarga + **escenario fin del descuento del abono** (es cambiar un parámetro) + simulación del criterio con transporte, solo si se verifican las reglas del Bono | Izan + Yeray |
-| Interoperabilidad | Smart Data Models + servidor MCP (stdio) sobre las mismas tablas + conjunto de datos CC BY 4.0 con DCAT-AP | Izan + Yeray |
-| Validación | 1–2 correlaciones externas (desahucios por la LAU, IGUALA), declarando que en Madrid capital solo hay 21 distritos | Yeray |
-| Relato | Personajes + guion + apertura con el dato del Bono | Yeray |
-| Impacto | Test con usuarios reducido (8–10 personas), solo si alguien queda libre desde el 20 de noviembre | Yeray, recortado |
+| **Particular**, sobre todo joven de 18 a 35 años que busca piso o habitación | «Con mi sueldo y mi trabajo, ¿dónde me sobra más dinero y cuánto tiempo me cuesta?» | Dónde buscar piso; si compensa compartir; cuántos días pedir de teletrabajo; transporte público o coche |
+| **Administración** (Consejería de Vivienda, Consorcio Regional de Transportes, ayuntamientos) | «¿Dónde están los hogares sobrecargados, cómo ha evolucionado y a quién no llega la ayuda?» | A qué municipios dirigir el Bono; si incluir el transporte en el criterio; qué pasa si se acaba el descuento del abono; dónde falta transporte público |
 
-### Se descarta
-- Scraping de portales inmobiliarios.
-- Predicción del alquiler a 12 meses, del sobrante futuro y de la sobrecarga futura.
-- Asistente conversacional dentro de la web.
-- Backend FastAPI y destino libre en vivo.
-- Modo coche.
-- Calibración de habitaciones con precios de oferta.
+La herramienta es el **gancho** de la demo. El análisis es donde está el **impacto**, porque puede cambiar una decisión pública.
 
-### Qué gana ante el jurado
-- **Datos regionales:** forman parte del núcleo (alquiler por código postal, tarifas, IPC de alquiler, Bono), no solo del contexto.
-- **Viabilidad:** alcance que cabe en 8 días y una demo estática que no se cae.
-- **Código abierto e interoperabilidad:** MIT, CC BY 4.0, Smart Data Models y MCP.
-- **Valor social:** una decisión pública simulada (Bono y fin del descuento) y una validación externa.
-- **Superficie de ataque mínima:** pocas cifras estimadas, todas marcadas y con intervalo.
+**Eje regional:** el transporte (coste y tiempo) es un componente principal de la cuenta, no contexto. Así los datos de la Comunidad y del Consorcio están en el núcleo.
 
-## Pendientes antes de cerrar la decisión
-- [ ] Aclarar el identificador del IPC de alquiler regional: `1927681` en el plan de Izan, `1934665` en la ficha de Yeray.
-- [ ] Pasar esta propuesta por `dm-abogado-del-diablo`.
-- [ ] Resolver las marcas «(verificar)» que afectan a piezas que se quedan: tarifas 2026, reglas del Bono, licencia del CRTM y tabla de la EPF.
-- [ ] Confirmar con la organización los pesos de los criterios y el formato de entrega.
-- [ ] Anotar la idea elegida en `docs/decisiones.md`.
+### Personajes de la demo
+1. **Enfermera de 26 años** en un gran hospital (La Paz o el 12 de Octubre), con turnos. Salario público conocido.
+2. **Teleoperador de 23 años** con un sueldo cercano al SMI, en un polígono del sur. Es el caso «no llega».
+3. **Madre sola de 34 años** con un sueldo administrativo. Es el perfil de mayor sobrecarga.
+4. **Pareja de 29 años** con dos sueldos medianos y dos lugares de trabajo; uno teletrabaja tres días. Enseña el efecto del teletrabajo.
+
+## 4. Unidad territorial
+
+- **Base:** los 179 municipios de la Comunidad + los 21 distritos de Madrid capital, unas 199 zonas.
+  - Supuesto a verificar: que los distritos censales de Madrid capital coinciden con los 21 distritos municipales.
+- **Zoom en Madrid capital:** barrios, con el alquiler por código postal del catálogo regional llevado a barrio con una tabla de paso (sección 12).
+- **Análisis de sobrecarga:** sección censal, porque es el nivel al que publican el ADRH y el SERPAVI. Se agrega a municipio y distrito para mostrarlo.
+- **Clave de cruce común:** código INE de municipio + código de distrito (y de sección cuando aplique) + año.
+- **Geometrías que no coinciden:** barrios municipales, distritos del MITMA, secciones del INE y códigos postales. Se construyen tablas de paso antes de cruzar nada (skill `dm-tablas-de-paso`).
+
+## 5. Cómo funciona para el usuario
+
+1. **Sueldo.** Escribe su sueldo bruto anual (como en una oferta de empleo) y el número de pagas, o directamente su neto mensual, con un selector. Si da el bruto, la herramienta calcula el neto (6.1), y el usuario lo puede corregir a mano.
+2. **Hogar.** Elige uno de cuatro perfiles: vive solo en un piso entero, comparte piso, pareja con dos sueldos o familia monoparental. Cada perfil rellena por defecto los detalles del hogar, que se pueden ajustar:
+   - adultos e hijos;
+   - edad, que decide el Abono Joven y el Bono Alquiler Joven;
+   - tamaño de la vivienda en m²;
+   - número de personas con las que se comparte.
+3. **Trabajo.** Hasta **dos sueldos y dos lugares de trabajo**. Cada lugar se elige de una lista de polos de empleo o marcando un punto en el mapa.
+4. **Desplazamiento.** Modo (transporte público o coche) y días presenciales a la semana, de 1 a 5.
+5. **Resultado:**
+   - **mapa coloreado por lo que sobra al mes**, con un selector para cambiar a horas de viaje al mes;
+   - lista de las 10 mejores zonas;
+   - al pinchar una zona, ficha con el desglose: neto, alquiler (rango), transporte, cesta básica, horas de viaje, esfuerzo y m² asequibles.
+6. **¿Y si…?** Activa escenarios (sección 9) y ve cómo cambia el mapa.
+
+**Avisos visibles en la herramienta:**
+- el alquiler es de contratos declarados y se presenta como **suelo**;
+- año del dato;
+- zonas **estimadas**, con su intervalo;
+- zonas **sin dato**, cuando ni la estimación es fiable.
+
+Desde la herramienta hay un **enlace al informe de análisis**, que va aparte para no meter ruido.
+
+## 6. El cálculo, paso a paso
+
+Lo estable es **qué** se cuenta. **Cómo** se calcula cada término es el enfoque de partida y se puede sustituir por algo mejor. Todos los parámetros y supuestos están visibles en la herramienta y en la nota metodológica. El cálculo es mensual.
+
+Para cada zona de residencia *z*:
+
+```
+sobra(z)   = neto − alquiler(z) − transporte(z) − cesta_básica
+horas(z)   = horas de viaje al mes, mostradas aparte
+esfuerzo(z) = alquiler(z) ÷ neto
+```
+
+- Se lee sin explicación («te sobran 180 € al mes») y cada término se ve por separado. No se fusiona en un índice opaco de 0 a 100.
+- **Euros y horas van separados** para no inflar las cifras. Quien quiera poner precio a su tiempo tiene un deslizador opcional, apagado por defecto (6.5).
+- **Incertidumbre propagada:** el sobrante se muestra como **una sola banda** que combina el rango del alquiler (P25–P75), el intervalo de la imputación si la zona es estimada y el margen del cálculo del neto.
+
+### 6.1 Neto
+- **Fórmula:** bruto − cotizaciones del trabajador a la Seguridad Social (hasta la base máxima) − cuota anual de IRPF, todo ÷ 12.
+  - La cuota de IRPF tiene un tramo estatal y uno autonómico de Madrid, y descuenta la reducción por rendimientos del trabajo y los mínimos personales y familiares.
+  - Tributación individual.
+- **Se usa la cuota anual y no la retención de la nómina.** La retención mensual puede diferir (luego hay devolución o pago en la declaración); la cuota es lo que de verdad se paga. Se explica en la nota metodológica. El número de pagas (12 o 14) cambia el neto de cada mes, no el anual.
+- Parámetros de 2026, cada uno citado a su norma (skill `dm-calculos-normativos`).
+- **Control de calidad:**
+  - se contrasta con nóminas reales;
+  - lo audita `dm-auditor-calculos-normativos` antes de presentar ninguna cifra.
+
+  Un error fiscal destruye la credibilidad de todo lo demás.
+
+### 6.2 Alquiler
+**Fuente base: alquiler de contratos declarados**, no precios de anuncios.
+- **Municipios, distritos y secciones:** SERPAVI del Ministerio de Vivienda. Da €/m², cuantía y superficie, con mediana, P25 y P75, separando vivienda colectiva y unifamiliar.
+- **Madrid capital por barrio:** alquiler medio mensual por código postal del catálogo regional (`1934258`, 2023 y 2024, solo códigos con más de 200 viviendas alquiladas), llevado a barrio con una tabla de paso.
+- **Actualización a hoy:** variación del IPC de alquiler del catálogo regional. El identificador está por aclarar: `1927681` en el plan de Izan, `1934665` en la ficha de Yeray.
+- **Cálculo:** alquiler(z) = €/m²(z, colectiva, último año) × factor del IPC de alquiler × m² ÷ personas. Se calcula con la mediana, el P25 y el P75.
+- **Por hogar:**
+  - **compartido:** el alquiler del piso se divide entre las personas, como supuesto declarado. No hay dato oficial abierto del precio de una habitación. Si aparece una fuente legal de oferta de habitaciones, se calibra un recargo por habitación.
+  - **pareja y monoparental:** se usa un piso de tamaño adecuado al hogar (superficie media del SERPAVI y del panel municipal).
+- **Lectura:** el dato sale de contratos ya firmados, muchos antiguos, así que **va por debajo del precio que se encuentra hoy**. Se presenta como **suelo**: lo que sobra será, como mucho, lo que dice la herramienta.
+- **Precio de oferta:**
+  - No se hace scraping de portales inmobiliarios (sección 14).
+  - Si se encuentra una fuente municipal legal con precio de oferta, se calcula un **factor de brecha** por zona (oferta ÷ contrato actualizado) y la banda pasa a ser «te sobran entre X con precio de contrato e Y con precio de anuncio».
+  - La serie de Idealista por barrio que se creía publicada por el Ayuntamiento **no se ha encontrado** en datos.madrid.es.
+
+### 6.3 Transporte
+**Transporte público:**
+- **Tarifas 2026 por zona** (A, B1, B2, B3, C1, C2), del BOCM de 31 de diciembre de 2025. El conjunto de tarifas del catálogo regional (`1919188`, 2007–2024) **no sirve**: solo trae la Corona Mínima y la Máxima y no llega a 2025–26.
+- **Zona necesaria:** la más exterior entre la del origen y la del destino.
+- **Título más barato** según los días presenciales: abono mensual, billetes de 10 viajes o sencillos.
+- **Abono Joven:** tarifa plana para jóvenes, hasta los 26 años (**verificar** el límite exacto: el plan de Izan dice «menores de 26» y la ficha de Yeray, «pierde el abono al cumplir 27»).
+- **Precios de prensa a confirmar:** joven 10 € con descuento y 20 € sin él; B1 38,20 €; B2 43,20 €; B3, C1 y C2 49,20 €.
+
+**Coche:**
+- coste(z) = 2 × distancia × días × coste por km (parámetro justificado) + aparcamiento en destino.
+- **Limitación:** el enrutado no tiene en cuenta el tráfico, así que el tiempo en coche sale subestimado. Se aplica un factor de congestión justificado o se declara la limitación.
+
+### 6.4 Cesta básica
+- Gasto en alimentación y suministros (luz, agua, gas) por tipo de hogar, de la Encuesta de Presupuestos Familiares del INE para la Comunidad de Madrid. No incluye el alquiler, para no contarlo dos veces.
+- Sin este término, «no llega» engañaría: a alguien a quien le sobran 300 € después del alquiler puede no llegarle para el mes.
+
+### 6.5 Tiempo de viaje
+- **Cálculo:**
+  - con los GTFS del CRTM (Metro, Metro Ligero, Cercanías, interurbanos, EMT y urbanos) y la red de OpenStreetMap, con r5py (u OpenTripPlanner);
+  - tiempo puerta a puerta: mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable;
+  - el coche se enruta sobre la red viaria de OpenStreetMap.
+- **Origen:** centro de población de cada zona, ponderado por secciones censales.
+- **Destinos:**
+  - **Polos de empleo, obtenidos de datos:** las zonas que más viajes de casa al trabajo reciben. Se usan dos fuentes que se comparan entre sí: la Encuesta Domiciliaria de Movilidad 2018 del CRTM (regional, flujos reales) y la movilidad con telefonía del MITMA (más reciente). Si coinciden, se refuerzan; si no, es un hallazgo. Alternativa: afiliación por municipio del centro de cotización.
+  - **Destino libre:** la matriz de tiempos se precalcula desde cada zona hacia una rejilla fina (o hacia todas las secciones censales). El punto que marca el usuario se resuelve con la celda más cercana, sin servidor y sin depender de un servicio en vivo.
+- **Horas al mes** = tiempo de ida y vuelta × días presenciales × 4,33.
+- **Valor del tiempo (opcional):** deslizador apagado por defecto. Al activarlo, resta horas × valor de la hora, con un 50 % del salario por hora como propuesta inicial, según la convención de las guías de evaluación de proyectos de transporte, que valoran el tiempo no laboral entre el 40 % y el 50 % del salario (**verificar** la cita exacta). Lleva un aviso visible de que poner precio al tiempo es una convención discutible.
+
+### 6.6 Asequibilidad
+- **Alquiler máximo asumible** y **m² que puedes pagar** en cada zona.
+- **Umbrales:**
+  - **30 %:** recomendación de la herramienta y umbral de **sobrecarga** en el análisis;
+  - **40 %:** **sobrecarga grave** (umbral de Eurostat).
+
+### 6.7 Zonas sin dato de alquiler
+El SERPAVI solo publica celdas con al menos 10 testigos. A nivel nacional, solo el 31,6 % de los municipios tiene dato de vivienda colectiva, así que habrá huecos en municipios pequeños, sobre todo en la corona C, justo donde los jóvenes buscan barato.
+
+- **Imputación:** se estima el alquiler con un modelo que usa:
+  - renta (ADRH del INE);
+  - valor catastral;
+  - precio de compraventa (Notariado, si la licencia lo permite);
+  - tiempo a los polos de empleo;
+  - población.
+- **Modelo de partida:** gradient boosting (LightGBM) con **validación cruzada espacial**: las particiones son zonas, no filas al azar, para que no se cuele información de los vecinos.
+  - Los intervalos se calculan con **predicción conformal**, que garantiza la cobertura declarada.
+  - Se compara siempre con un modelo de referencia simple; si no lo mejora, se usa el simple.
+  - Skill: `dm-modelado-espacial`.
+- **Alternativa por zona:** si se justifica, el dato de vivienda unifamiliar, señalado como tal.
+- Las zonas estimadas aparecen como **«estimado»**, con su intervalo. Si el intervalo es tan ancho que no informa, la zona queda como **«sin dato»**.
+
+## 7. El análisis para la Administración
+
+Va en un **informe aparte**: un notebook o un Quarto publicado como página estática en el mismo repositorio, con la metodología. Hay **dimensión temporal** en todos los bloques en los que las series lo permiten. El SERPAVI empieza en 2011 y la renta del INE en 2015, así que la ventana común arranca en 2015.
+
+### 7.1 Esfuerzo alquiler/renta por zona (idea #9)
+- **Fórmula:** alquiler mediano del SERPAVI ÷ (renta neta media del hogar del ADRH ÷ 12).
+- Mapa por año y evolución: dónde ha crecido más el esfuerzo desde 2015.
+- **Limitación declarada:** la renta media incluye a los propietarios, que suelen ganar más que los inquilinos. Por eso el indicador **subestima** el esfuerzo de quien alquila. El bloque 7.2 lo corrige.
+
+### 7.2 Hogares en sobrecarga
+- **Definición:** un hogar está sobrecargado si el alquiler supera el 30 % de su renta, y en sobrecarga grave si supera el 40 %.
+- **Renta:** ADRH 2024 del INE, publicado el 19 de octubre de 2026, por municipio, distrito y sección censal.
+- **Método:**
+  - El INE publica la media, pero no la distribución completa. Por cada sección se ajusta una **distribución log-normal** de la renta con la media, el Gini y el cociente P80/P20.
+  - Con esa distribución se calcula qué porcentaje de hogares quedaría por encima del 30 % y del 40 %.
+  - Se valida comprobando que el ajuste reproduce el porcentaje de población por debajo del 60 % de la mediana, que el INE también publica.
+- **Corrección por inquilinos:**
+  - Proporción de hogares en alquiler por zona: preferentemente el Censo de edificios y viviendas de la Comunidad (serie `19155xx`, régimen de tenencia), porque es dato regional. Alternativa: Censo 2021 del INE (**verificar** el nivel territorial).
+  - Diferencia de renta entre inquilinos y propietarios: Encuesta de Condiciones de Vida del INE.
+
+  Sin esa corrección, la sobrecarga saldría infravalorada.
+- El resultado se presenta **como rango**, con la metodología explícita.
+- **Relación con la herramienta:** la herramienta trabaja con el sueldo de una persona; el análisis, con la renta de los hogares. Son dos lecturas de la misma cuenta, una individual y otra agregada.
+
+### 7.3 ¿Llega el Bono Alquiler Joven a donde más se necesita?
+- Se cruzan las solicitudes, aceptaciones y rechazos del Bono por municipio (convocatoria de 2022) con la sobrecarga de los jóvenes y con la población joven.
+- Se marcan los municipios con mucha sobrecarga y poca ayuda.
+- Es una evaluación de política pública hecha con datos regionales.
+- **Limitación:** solo hay datos de un año, no de todos los municipios (160 según el plan de Izan; hay 3.352 solicitudes sin municipio).
+
+### 7.4 Simulación: un criterio del Bono que cuente el transporte
+- Se simula un criterio de elegibilidad que cuente alquiler + transporte, no solo la renta.
+- **Resultado:** cuántos jóvenes entrarían o saldrían de la ayuda en cada municipio y cuánto costaría.
+- **Reglas de referencia** (Real Decreto 42/2022): de 18 a 35 años, ingresos de hasta 3 veces el IPREM, alquiler máximo de 600 € o 300 € por habitación (ampliable por la comunidad) y ayuda de 250 € al mes. Se **verifican** contra la convocatoria vigente en la Comunidad antes de usarlas.
+
+### 7.5 Fin del descuento del abono
+Para cada municipio: euros al mes que se pierden y hogares que pasan a estar sobrecargados si el descuento del 50 % desaparece.
+
+### 7.6 Euros frente a tiempo hacia los polos de empleo
+- Coste y tiempo desde cada zona hacia los polos de la 6.5.
+- **Hallazgos buscados:**
+  - **déficit de transporte:** zonas donde el coche gana con mucha diferencia al transporte público, declarando que el tiempo en coche no tiene en cuenta el tráfico;
+  - **efecto del Abono Joven de tarifa plana:** con él, vivir lejos se paga en tiempo y no en dinero (**verificar**).
+
+### 7.7 Rentabilidad implícita
+- **Fórmula:** alquiler anual (SERPAVI) ÷ precio de compraventa (Notariado), por zona.
+- Muestra dónde comprar compensa frente a alquilar.
+- Depende de la licencia del Notariado (sección 12.3).
+
+## 8. Qué esperamos encontrar
+
+Hay dos tesis complementarias. Las confirma o las descarta el dato, no al revés:
+1. **«Vivir lejos no compensa».** El ahorro en alquiler se lo comen el transporte y el tiempo.
+2. **«Ningún sueldo típico llega».** Con sueldos de referencia, en muchos municipios no sobra nada después de los gastos básicos.
+
+**Plan B del titular.** Si la primera tesis no se cumple en todas partes (por ejemplo, en ejes del sur con Cercanías puede compensar), el titular pasa a ser **«Dónde sí compensa vivir lejos y dónde no»**, explicado por la red de transporte. Un resultado matizado da más credibilidad ante un jurado técnico.
+
+**Primer indicio** (MITMA, un solo día, el 15 de octubre de 2025, sin validar). Entre los residentes de la Comunidad que van de casa al trabajo o al estudio:
+- **Menores de 25 años:** 9,4 km de media en zonas de renta de 10.000 a 15.000 €, frente a 8,6 km en zonas de más de 15.000 €.
+- **De 25 a 45 años:** 8,1 km frente a 7,0 km.
+- **Más de 10 km:** los hace el 29 % de las zonas de renta menor, frente al 24 %.
+
+Apunta a la primera tesis, pero no es un resultado: falta repetirlo con un mes completo, por distrito y teniendo en cuenta dónde está el empleo.
+
+**Sueldos de referencia:**
+- **Deciles de salario del INE por edad** (Encuesta de Estructura Salarial y EPA): permiten decir «el joven mediano de 25 a 34 años».
+- **IRPF por municipio** de la Agencia Tributaria: el sueldo de quien ya vive en cada sitio, para el análisis (**verificar** el último año).
+- **Salarios por ocupación del INE:** dan cifras reconocibles para los personajes.
+
+## 9. Escenarios «¿y si…?»
+
+Son la parte prospectiva de la idea, porque responden a decisiones concretas:
+- Se acaba el descuento del 50 % del abono.
+- El alquiler sube un X % (deslizador).
+- El usuario cumple la edad límite y pierde el Abono Joven.
+- Cambia el número de días presenciales.
+- Cambia el lugar de trabajo o el modo de transporte.
+
+Los escenarios aparecen en la herramienta (efecto individual) y en el análisis (efecto agregado, 7.4 y 7.5).
+
+## 10. Validación e impacto
+
+### 10.1 ¿El índice mide lo que dice? (validación externa)
+Si el mapa de sobrecarga es correcto, debería ir en la misma dirección que señales independientes:
+- **desahucios por la Ley de Arrendamientos Urbanos** por distrito (panel municipal): más sobrecarga, más desahucios;
+- **vivienda como problema principal** por distrito (Encuesta de Calidad de Vida del Ayuntamiento);
+- **vulnerabilidad territorial** (índice IGUALA del Ayuntamiento);
+- **rechazos del Bono Alquiler Joven** por municipio, frente a la sobrecarga estimada.
+
+Se informa de la correlación y de su signo también cuando no sale la esperada. En Madrid capital solo hay 21 distritos, así que se declara el tamaño de la muestra.
+
+### 10.2 ¿El dato es fiable? (validación del dato)
+- Error del modelo de imputación en validación cruzada espacial, frente al modelo de referencia.
+- Cobertura real de los intervalos conformales.
+- Ajuste de la log-normal frente al porcentaje bajo el 60 % de la mediana.
+- Neto frente a nóminas reales y casos de referencia.
+- Tamaño de la brecha entre oferta y contrato, si se encuentra una fuente legal de oferta.
+
+### 10.3 ¿Cambia decisiones? (impacto medido)
+En los concursos revisados, casi ningún ganador mide su impacto. Esta idea lo intenta con dos piezas:
+- **Simulación del Bono** (7.4): cuántos jóvenes y cuánto dinero cambiarían de grupo con un criterio que incluya el transporte.
+- **Test con usuarios antes y después**, con 15 a 30 jóvenes reclutados en aulas de la URJC y la UCM, en la red del equipo y en organismos de juventud. Primero dicen dónde buscarían piso y cuánto creen que les sobraría; después usan la herramienta y responden de nuevo.
+  - **Métricas fijadas antes del test:** porcentaje que cambia la zona donde buscaría piso · diferencia entre lo que creían que les sobraría y lo que calcula la herramienta · usabilidad con el cuestionario estándar SUS.
+  - **Ética:** consentimiento informado y sin datos personales identificables (RGPD).
+
+## 11. Apertura, interoperabilidad e IA
+
+### 11.1 Smart Data Models
+- Los impulsa el autor del repositorio de la organización, que forma parte del jurado.
+- **Uso:**
+  - normalizar paradas y horarios del CRTM con los modelos GTFS de *UrbanMobility* (`GtfsStop`, `GtfsStopTime`, `GtfsAgency`…);
+  - revisar qué modelos encajan para zonas administrativas, vivienda e indicadores (carpeta `pysmartdatamodels/` del repositorio de la organización).
+- **Salida:** los indicadores por zona y año se publican en un esquema de Smart Data Models.
+- **Contribución:** si no existe un modelo adecuado, se propone uno nuevo, por ejemplo un indicador de asequibilidad de la vivienda, mediante su proceso de creación de modelos (un PR a su repositorio).
+
+### 11.2 Datos abiertos derivados
+- El índice y sus componentes como conjunto de datos por municipio, distrito y barrio.
+  - Formatos: CSV y GeoParquet.
+  - Metadatos DCAT-AP y licencia CC BY 4.0, citando las fuentes.
+- Se **propone formalmente** al catálogo regional o a datos.gob.es. Cierra el ciclo que repite la organización: «Abrir → Conectar → Analizar → Reutilizar → Crear».
+- **API estática:** los mismos ficheros, publicados con URL estable junto a la web, sin servidor.
+
+### 11.3 Servidor MCP
+- Servidor MCP en Python que lee las mismas tablas precalculadas.
+- **Formas de uso:**
+  - local por stdio;
+  - una instancia pública de solo lectura, para que cualquier asistente pueda preguntar «¿dónde me sobra más con 24.000 € trabajando en Getafe?» y recibir cifras calculadas con su fuente.
+- **Herramientas propuestas:** `calcular_sobrante(bruto, hogar, trabajo, …)`, `ranking_zonas(…)` e `indicadores_zona(zona, año)`.
+- Validación estricta de los argumentos y sin credenciales.
+- **Demo:** preguntas en lenguaje natural desde Claude. El 100 % de las cifras sale de las herramientas, nunca del modelo.
+- Encaja con la formación oficial de DataMad (APIs, MCP y espacios de datos; IA aplicada a datos abiertos).
+
+### 11.4 Código
+Repositorio con licencia MIT que:
+- regenera todo con un comando desde las fuentes oficiales;
+- incluye pruebas del neto, del índice y de los cruces;
+- incluye una nota metodológica de 2 o 3 páginas con supuestos, límites y validación.
+
+## 12. Datos
+
+Hay que leer los metadatos de cada fuente antes de usarla: estado del dato, unidad y año. Cada fuente se incorpora con la skill `dm-nueva-fuente`: descarga con fecha en `data/raw/`, SHA-256 y fila en `data/README.md`.
+
+### 12.1 Catálogo regional (datos.comunidad.madrid, CKAN, CC BY 4.0) · obligatorio
+| Conjunto | Qué aporta | Límite |
+|---|---|---|
+| `spacm_bono_alquiler_joven_2022` | Solicitudes, aceptadas y rechazadas por municipio (51.735 / 11.477 / 22 %) | Solo 2022; 3.352 solicitudes sin municipio |
+| `1934258`, `1934261` | Alquiler medio mensual y días alquilados por código postal | Solo Madrid capital, 2023–2024, códigos con más de 200 viviendas |
+| `1934246` | Alquiler, m², rentabilidad y valor de referencia | Solo el total de la Comunidad |
+| `valor_referencia_viviendas_arrendadas_…_mas_20000` | Valor catastral de referencia (no es alquiler) | 38 municipios con valor en 2024 |
+| `1927681` / `1934665` y anteriores | IPC de alquiler | Índice, no nivel de precio; identificador por aclarar |
+| `1919188` | Tarifas 2007–2024 | Solo Corona Mínima y Máxima: no sirve para las zonas |
+| `1916304` | Renta neta media (Base 2013) | Nivel territorial por confirmar |
+| `19155xx` | Censo de edificios y viviendas: régimen de tenencia por municipio | Comprobar la serie exacta |
+| `afiliados_por_residencia_*` | Afiliados por municipio de residencia (edad, contrato, jornada) | Por residencia, no por lugar de trabajo |
+| Paro registrado por municipio | Contexto e indicadores | — |
+| `zt84`, `resultados-edm2018` | Zonificación de transporte y Encuesta Domiciliaria de Movilidad 2018 | Datos de 2018 |
+
+### 12.2 Portal del Ayuntamiento (datos.madrid.es, CKAN, CC BY 4.0) · zoom a barrio y validación
+| Conjunto | Qué aporta |
+|---|---|
+| `300087-0-indicadores-distritos` | Renta neta media por hogar por barrio 2016–2023 (en 2023, Puente de Vallecas 32.666 € frente a Chamartín 79.274 €) · renta por persona por barrio · valor catastral residencial · superficie media en compraventa · desahucios por la LAU · hogares monoparentales · paro |
+| `300438-0-hogares-tamano` | Hogares por tamaño y composición por sección censal |
+| `300431-0-personas-viven-solas` | Personas que viven solas por edad y barrio |
+| `300588-0-estudio-panel-hogares` | Panel de Hogares (revisar si pregunta por el gasto en vivienda) |
+| `319934-0-encuesta-calidad-de-vida-resultados` | La vivienda como problema percibido |
+| `300577-0-iguala-vulnerabilidad`, `300301-0-ranking-vulnerabilidad` | Vulnerabilidad territorial |
+| `300526-0-promociones-viviendas-emvs` | Vivienda pública municipal por distrito y año |
+| `900030-0-emt-autobus-gtfs`, `900031-0-emt-autobus-api` | Red de EMT |
+| `300496-0-barrios-madrid` | Geometría de los barrios |
+
+### 12.3 Fuentes nacionales y otras
+| Fuente | Qué aporta | Estado |
+|---|---|---|
+| **SERPAVI (Ministerio de Vivienda)** | Alquiler de contratos por municipio, distrito y sección: €/m², cuantía, superficie, mediana, P25 y P75, colectiva y unifamiliar | Excel completo localizado; descarga manual pendiente (ver abajo) |
+| **INE ADRH 2024** | Renta por hogar y persona, Gini, P80/P20, % por debajo del 60 % de la mediana, % de renta salarial; por municipio, distrito y sección | Publicado el 19 de octubre de 2026 |
+| **INE IPVA** | Índice de alquiler por municipio y por distrito de las capitales | Último año 2024 |
+| **INE EPF** | Gasto en alimentación y suministros por tipo de hogar | Por descargar |
+| **INE ECV y Censo 2021** | Renta de inquilinos frente a propietarios; tenencia de la vivienda | Verificar el nivel territorial del Censo |
+| **INE, salarios** | Deciles por edad y salarios por ocupación | Por descargar |
+| **MITMA, movilidad con telefonía** | Viajes diarios de casa al trabajo por municipio y distrito, con distancia, tramo de renta del origen (<10, 10–15, >15 mil €), edad y sexo | CC BY 4.0. Ficheros diarios hasta octubre de 2025 como mínimo |
+| **CRTM** | GTFS de las seis redes | **Licencia sin confirmar** (su página de licencia devolvió error 500); revisar la cláusula sobre redistribuir con la misma licencia |
+| **BOCM 31/12/2025** | Tarifas 2026 por zona | Pendiente de leer la tabla |
+| **Agencia Tributaria** | IRPF por municipio | Verificar el último año |
+| **Notariado** | Precio de compraventa por municipio y código postal | El equipo tiene acceso a la API; **licencia, enlace y cobertura municipal pendientes** |
+| **OpenStreetMap** | Red peatonal y viaria para el enrutado | ODbL: citar «© OpenStreetMap contributors» |
+
+### 12.4 SERPAVI: lo que sabemos
+- **Excel de 67,8 MB** titulado «2011–2024»: `https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx`. Se guarda en `data/raw/serpavi/`.
+- **Capas shape** (sección censal, distrito, municipio) en el mismo dominio: `cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/`.
+- **Metodología** (18/03/2026): `https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03-18_Metodologia_SERPAVI.pdf`.
+- **Origen de los datos:** IRPF (modelo 100) cruzado con el Catastro. Madrid está incluida, con 474.935 testigos de vivienda colectiva en 2024.
+- **Riesgos:**
+  1. La metodología dice que las descargas llegan hasta 2023; el nombre del fichero dice 2024. Se comprueba al abrirlo.
+  2. Solo se publican celdas con al menos 10 testigos, lo que deja huecos (6.7).
+  3. Son contratos declarados, no precios de oferta, así que el dato es un **suelo** (6.2).
+
+### 12.5 Gotchas de acceso
+- El proxy del equipo bloquea con un 403 la descarga automática del SERPAVI y también la API CKAN de la Comunidad. Las descargas se hacen a mano o desde otra red, y quedan documentadas.
+- La API CKAN devuelve pocos registros por llamada: hay que paginar o descargar el fichero completo.
+- Normalizar el formato numérico español y forzar UTF-8.
+
+## 13. Arquitectura
+
+Lo importante es que la demo no dependa de un servidor, que el sueldo del usuario no salga de su navegador y que todo sea reproducible y abierto. Las herramientas concretas son la opción de partida.
+
+### 13.1 Pipeline
+Pipeline en **Python con DuckDB**, offline y reproducible. Descarga las fuentes, las cruza, calcula los indicadores, entrena la imputación y precalcula todo lo pesado:
+- matrices de tiempo y distancia en transporte público y en coche, salida entre 7:30 y 8:30, entre zonas y hacia la rejilla del destino libre;
+- alquiler por zona y año (mediana, P25, P75 y estimados con su intervalo);
+- tarifas de transporte;
+- rejilla de netos;
+- polígonos simplificados de las zonas.
+
+Lo exporta a JSON, CSV o GeoParquet.
+
+### 13.2 Herramienta web
+**App 100 % estática** publicada en GitHub Pages: sin servidor, gratis y **privada**.
+
+- **Sin lógica fiscal en JS.** El neto se precalcula en Python sobre una rejilla de brutos (por ejemplo, cada 250 €) × configuraciones de hogar, y el JS solo interpola linealmente. La cuota de IRPF es lineal por tramos, así que el error es despreciable.
+- **Lo que hace el JS:** interpolar el neto, consultar las tablas, sumar, pintar el mapa y validar las entradas.
+- **Pruebas de referencia:** Python genera casos con resultado conocido y el JS tiene que reproducirlos.
+- **Sin peticiones a terceros:**
+  - las librerías van dentro del repositorio, no en un CDN;
+  - mapa de coropletas con MapLibre, sin teselas externas o con un mapa base propio en PMTiles servido desde el mismo sitio.
+- **Seguridad:** validación estricta de todas las entradas (rangos y tipos); ninguna entrada se inserta como HTML.
+- **Desarrollo:** el JS se escribe con ayuda de IA; nadie del equipo lo domina, y por eso la lógica pesada vive en Python.
+
+### 13.3 Resto de piezas
+- **Informe de análisis:** notebook o Quarto estático en el mismo sitio (sección 7).
+- **Servidor MCP:** Python, leyendo las mismas tablas (11.3). Es independiente de la web: si cae, la web sigue funcionando.
+- **Licencias:** MIT para el código y CC BY 4.0 para los datos derivados, citando las fuentes.
+
+## 14. Lo que queda fuera y por qué
+
+No es una cuestión de plazo: son piezas que restarían credibilidad o que no aportan. Si cambian las condiciones que se indican, se puede reconsiderar.
+
+| Pieza | Por qué queda fuera | Qué tendría que cambiar |
+|---|---|---|
+| Scraping de Idealista y Fotocasa | Lo prohíben sus condiciones de uso y ha habido pleitos; en un evento oficial resta aunque solo se publique un agregado | Una fuente legal de precio de oferta |
+| Predicción del alquiler a 12 meses, del sobrante futuro y de la sobrecarga futura | Con tan pocos años de serie, los intervalos salen tan anchos que no informan; los escenarios cubren la parte prospectiva | Una serie más larga o un indicador adelantado que demuestre poder predictivo en validación temporal |
+| Asistente conversacional dentro de la web | Exige clave de API, coste, servidor, defensa contra prompt injection y las obligaciones del artículo 50 del Reglamento de IA, para aportar poco más que el MCP | Que el MCP no baste para la demo. En ese caso, la puerta de calidad de la ficha de Yeray: 50 preguntas, incluidas trampas, 100 % de cifras exactas y con fuente, y un solo fallo numérico lo deja fuera |
+| Backend (FastAPI) | Con el destino libre precalculado no hace falta, y la app estática es más segura en la demo y mejor para la privacidad | Que aparezca una función que no se pueda precalcular |
+| Monetizar el tiempo por defecto | Mezcla unidades e infla las cifras; queda como deslizador opcional | — |
+| Modo «comprar» (hipoteca) | Otra pregunta y otro usuario; el Notariado solo se usa para la rentabilidad implícita y como variable de la imputación | — |
+| Vistas para pymes o para la Administración dentro de la app | La Administración tiene su informe aparte | — |
+
+## 15. Equipo, bloques y calendario
+
+**Equipo:** 3 científicos de datos. Nadie tiene perfil de frontend ni de presentación. El frontend se apoya en desarrollo asistido por IA, y una persona se reserva para el test con usuarios y el relato. El reparto lo decide el equipo.
+
+**Bloques de trabajo:**
+1. **Alquiler y renta:** SERPAVI, alquiler regional por código postal, IPC, ADRH, imputación, sobrecarga, Bono y rentabilidad implícita.
+2. **Movilidad y coste:** GTFS, OpenStreetMap, polos de empleo (EDM2018 y MITMA), matrices de tiempo, tarifas, neto y cesta básica.
+3. **Producto y relato:** herramienta web, informe, Smart Data Models, conjunto de datos, MCP, test con usuarios, validación y presentación.
+
+**Fechas:**
+
+| Fecha | Hito |
+|---|---|
+| 22 nov | **Datos y cálculos congelados** (propuesta, por confirmar en `docs/decisiones.md`) |
+| 26 nov | **Presentación ante el jurado** en la URJC (fecha de la organización) |
+
+La ficha describe el alcance completo. La prioridad entre piezas se fija al planificar contra estas fechas, empezando por lo que define la idea (sobrante, esfuerzo, Bono) y siguiendo por lo que la refuerza.
+
+## 16. Riesgos y verificaciones
+
+### Riesgos
+| Riesgo | Mitigación |
+|---|---|
+| Descarga del SERPAVI bloqueada por el proxy | Descarga manual del Excel localizado y documentada; comprobar el último año que trae |
+| Dato de contratos por debajo del precio actual | Presentarlo como suelo y, si aparece una fuente legal, la banda con el precio de oferta |
+| Huecos en municipios pequeños | Imputación validada y marcada como estimada; «sin dato» si el intervalo no informa |
+| Error en el cálculo de bruto a neto | Cuota anual con parámetros citados, nóminas reales y auditoría normativa |
+| Sobrecarga infravalorada por incluir a todos los hogares | Corrección por inquilinos (7.2), declarada como supuesto |
+| Licencias del Notariado y del CRTM | Confirmarlas por escrito antes de publicar derivados |
+| Tiempo en coche sin tráfico | Factor de congestión justificado o limitación declarada |
+| Fallo en la demo | App estática sin servidor ni peticiones a terceros; el MCP es independiente |
+| Equipo sin frontend ni relato | Lógica en Python, JS mínimo asistido por IA y una persona dedicada al relato |
+| Datos personales en el test | Consentimiento informado y anonimato |
+
+### Verificaciones pendientes
+- [ ] Abrir el Excel del SERPAVI: años, cobertura en Madrid y huecos.
+- [ ] Probar r5py (transporte público y coche) con 3–5 pares origen-destino.
+- [ ] Tarifas 2026 por zona en el BOCM y condiciones del Abono Joven (límite de edad).
+- [ ] Reglas vigentes del Bono Alquiler Joven en la Comunidad.
+- [ ] Coincidencia entre distritos censales y municipales en Madrid capital.
+- [ ] Identificador correcto del IPC de alquiler regional (`1927681` o `1934665`).
+- [ ] Régimen de tenencia en el Censo de edificios y viviendas de la Comunidad (`19155xx`) y nivel territorial del Censo 2021.
+- [ ] Nivel territorial de la renta del catálogo regional (`1916304`).
+- [ ] Licencia de los GTFS del CRTM.
+- [ ] Enlace, licencia y cobertura de la API del Notariado, por escrito.
+- [ ] Dataset de afiliación por lugar de trabajo a nivel municipal, o la matriz origen-destino de la EDM2018.
+- [ ] Mes completo del MITMA por distrito, para confirmar o descartar el indicio de la sección 8.
+- [ ] Cita del valor del tiempo en las guías de evaluación de transporte.
+- [ ] Descuento del 50 % del abono y su dependencia de las ayudas estatales.
+- [ ] Modelos aplicables en `pysmartdatamodels/` del repositorio de la organización.
+- [ ] Confirmar con la organización los pesos de los criterios, el formato de entrega, la duración de la presentación y la criba de 100 palabras.
+
+## 17. Encaje con los criterios de DataMad
+
+| Criterio | Cómo lo cumple |
+|---|---|
+| **Uso de la información pública regional** (oficial) | El núcleo usa el catálogo regional: Bono Alquiler Joven, alquiler por código postal, IPC de alquiler, valor catastral de referencia, tenencia de la vivienda, afiliados, EDM2018 y zonificación de transporte. El transporte regional es un componente principal de la cuenta. Lo completan el portal del Ayuntamiento y fuentes nacionales abiertas (INE, MITMA, CRTM, SERPAVI) |
+| **Viabilidad** (oficial) | Pipeline reproducible con un comando; web estática que funciona sin servidor; lógica pesada precalculada en Python con pruebas de referencia; piezas de riesgo independientes de la demo |
+| **Código abierto** (oficial) | Repositorio MIT, librerías abiertas (DuckDB, r5py, LightGBM, MapLibre), conjunto de datos CC BY 4.0 con DCAT-AP, Smart Data Models y MCP público |
+| **Valor económico, social o medioambiental** (citado por la URJC y la prensa) | Decisión pública concreta (focalizar el Bono, criterio con transporte, fin del descuento del abono), impacto medido con un test antes y después, y validación externa |
+
+## 18. Guion de 5 minutos (borrador)
+
+Combina abrir con un dato y contar el resto con un personaje. Las cifras y los titulares se sustituirán por los que salgan del análisis:
+- **0:00** De 51.735 solicitudes del Bono Alquiler Joven en 2022, solo se aceptó el 22 %. Y a quien vive de alquiler, ¿cuánto le queda a fin de mes?
+- **0:20** La enfermera de 26 años mete su sueldo en directo y aparece el mapa: euros y horas.
+- **1:10** Cambia los días de teletrabajo; después se acaba el descuento del abono. El mapa se mueve.
+- **2:00** Titulares: dónde compensa vivir lejos y dónde no, y en cuántos municipios no llega un sueldo típico.
+- **2:40** Análisis para la Administración: evolución del esfuerzo desde 2015, el Bono frente a la sobrecarga y la simulación del criterio con transporte.
+- **3:40** Validación, resultados del test con usuarios y limitaciones contadas por iniciativa propia: el alquiler es un suelo, el coche no tiene en cuenta el tráfico, zonas estimadas.
+- **4:20** Parte técnica: datos de la Comunidad, Smart Data Models, conjunto de datos abierto, MCP (pregunta en directo desde Claude).
+- **4:45** Cierre y URL.
+
+**Entregables previstos:** web publicada, informe de análisis, repositorio reproducible, conjunto de datos, servidor MCP, nota metodológica y presentación. El formato exacto se ajusta cuando la organización lo publique.
+
+---
+
+## Anexo A · Cómo se unificaron las dos versiones
+
+### Qué aportaba cada una
+- **Plan de Izan:**
+  - viabilidad, con zonas acotadas y matrices precalculadas;
+  - rigor: euros y horas separados, alquiler como rango, SERPAVI como suelo y limitaciones declaradas;
+  - el Excel del SERPAVI localizado;
+  - Smart Data Models y MCP;
+  - app estática y privada, sin lógica fiscal en JS;
+  - dimensión temporal desde 2015;
+  - modo coche, dos sueldos y m² asequibles.
+- **Ficha de Yeray:**
+  - relato: dato de apertura, personajes y guion;
+  - decisiones públicas concretas: focalizar el Bono, criterio con transporte y fin del descuento;
+  - cesta básica;
+  - más datos regionales y municipales: alquiler por código postal, panel del Ayuntamiento y polos obtenidos de datos;
+  - imputación validada y sobrecarga por sección;
+  - validación externa y test con usuarios;
+  - conjunto de datos con DCAT-AP.
+
+### Qué se resolvió al unir
+| Punto | Plan de Izan | Ficha de Yeray | Versión unificada |
+|---|---|---|---|
+| Término de gastos básicos | No | Cesta básica | Sí (6.4) |
+| Valor del tiempo | No se monetiza | 50 % del salario por hora, con deslizador | Horas aparte y deslizador opcional, apagado por defecto (6.5) |
+| Zonas sin dato | «Sin dato», sin imputar | Imputación con LightGBM y predicción conformal | Imputación validada; «sin dato» si el intervalo no informa (6.7) |
+| Precio de oferta | No | Scraping con agregado | Solo con una fuente legal (6.2, 14) |
+| Habitación | m² ÷ personas | Piso ÷ dormitorios + recargo calibrado con oferta | Piso ÷ personas; recargo solo con fuente legal (6.2) |
+| Perfiles de hogar | Adultos, hijos, edad, m² y personas | Cuatro perfiles | Los perfiles rellenan los detalles, que se pueden ajustar (5) |
+| Entrada del sueldo | Bruto y pagas | Bruto o neto con selector | Las dos opciones (5) |
+| IRPF | Cuota anual | Retención 2026 | Cuota anual, explicando la diferencia (6.1) |
+| Lugares de trabajo | Hasta dos | Uno, o punto libre en vivo | Hasta dos; punto libre precalculado (5, 6.5) |
+| Modo coche | Sí | No | Sí, con la limitación declarada (6.3) |
+| Polos de empleo | Afiliación o EDM2018 | MITMA | EDM2018 y MITMA comparados (6.5) |
+| Hora de salida | Mediana 7:30–8:30 | Martes a las 8:00 | Mediana de 7:30 a 8:30 de un martes laborable (6.5) |
+| Sobrecarga | Rango por municipio | Log-normal por sección con corrección por inquilinos | Log-normal por sección, corrección con el Censo regional y presentada como rango (7.2) |
+| Umbrales | 30 % en la app, 40 % en el análisis | 30 % sobrecarga, 40 % grave | 30 % sobrecarga y recomendación; 40 % grave (6.6) |
+| Notariado | Solo rentabilidad implícita | Imputación y predicción | Rentabilidad implícita y variable de la imputación; sin predicción (6.7, 7.7) |
+| Predicción | Fuera | Alquiler, sobrante y sobrecarga a futuro | Fuera; la parte prospectiva son los escenarios (9, 14) |
+| Arquitectura | Estática | Backend FastAPI con respaldo estático | Estática; MCP independiente (13) |
+| Asistente | No | Con puerta de calidad | Fuera; IA mediante el MCP (11.3, 14) |
+| Smart Data Models | Sí | No | Sí, con propuesta de modelo nuevo (11.1) |
+
+### Registro de decisiones de origen
+- **Plan de Izan:** seis fases (enfoque, datos, modelo de cálculo, análisis, herramienta y presentación), las cinco primeras cerradas el 11/11/2026. Todas sus decisiones están en las secciones 3 a 13, salvo las que cambian según la tabla anterior.
+- **Ficha de Yeray:** diez rondas de entrevista. Su registro completo está en el anexo de la [ficha](../yeray/ficha-salario-que-sobra.md). Todas las respuestas están incorporadas aquí, salvo las que cambian según la tabla anterior:
+  - el recorte de alcance que se rechazó en la ronda 5 se respeta: el alcance es completo;
+  - el scraping aceptado en la ronda 1 queda fuera por motivos legales;
+  - la capa predictiva de las rondas 1 y 4 queda fuera por los datos, no por el plazo;
+  - el backend que atraía en la ronda 5 se sustituye por precálculo.
