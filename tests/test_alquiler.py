@@ -112,6 +112,21 @@ def test_comprobar_percentiles():
         alquiler._comprobar(df)
 
 
+def test_falta_variable_o_anio(xlsx, tmp_path):
+    hojas = alquiler.leer_serpavi(xlsx, tmp_path / "p")
+    hojas["municipios"] = hojas["municipios"].drop(columns="ALQM2_LV_M_VC_24")
+    with pytest.raises(ValueError, match="Faltan variables o años"):
+        alquiler.alquiler_zona(hojas)
+
+
+def test_cuartil_sin_mediana():
+    df = pd.DataFrame(
+        {"eur_m2_p25": [10.0], "eur_m2_p50": [float("nan")], "eur_m2_p75": [15.0]}
+    )
+    with pytest.raises(ValueError, match="incoherentes"):
+        alquiler._comprobar(df)
+
+
 def test_cache(xlsx, tmp_path):
     carpeta = tmp_path / "p"
     primera = alquiler.leer_serpavi(xlsx, carpeta)

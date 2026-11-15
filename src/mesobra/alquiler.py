@@ -76,6 +76,10 @@ def leer_serpavi(
 def _largo(df: pd.DataFrame, id_col: str, renombre: dict[str, str]) -> pd.DataFrame:
     """De una columna por variable y año (`VAR_24`) a una fila por unidad y año."""
     columnas = [c for c in df if c.rsplit("_", 1)[0] in renombre]
+    # wide_to_long rellena con NaN una variable o un año que falte: que falle aquí
+    anios = pd.Series([c.rsplit("_", 1)[0] for c in columnas]).value_counts()
+    if set(renombre) - set(anios.index) or anios.nunique() != 1:
+        raise ValueError(f"Faltan variables o años del SERPAVI:\n{anios}")
     largo = pd.wide_to_long(
         df[[id_col, *columnas]],
         stubnames=list(renombre),
@@ -89,9 +93,14 @@ def _largo(df: pd.DataFrame, id_col: str, renombre: dict[str, str]) -> pd.DataFr
 
 
 def _comprobar(df: pd.DataFrame) -> None:
-    """P25 <= mediana <= P75 en las filas con dato, y la mediana nunca sin sus cuartiles."""
+    """P25 <= mediana <= P75 en las filas con dato, y los tres percentiles nulos a la vez o ninguno."""
     p25, p50, p75 = (df[f"eur_m2_p{p}"] for p in (25, 50, 75))
-    mal = (p25 > p50) | (p50 > p75) | (p50.notna() & (p25.isna() | p75.isna()))
+    mal = (
+        (p25 > p50)
+        | (p50 > p75)
+        | (p25.isna() != p50.isna())
+        | (p75.isna() != p50.isna())
+    )
     if mal.any():
         raise ValueError(
             f"{int(mal.sum())} filas con percentiles incoherentes:\n{df[mal].head()}"
@@ -100,7 +109,7 @@ def _comprobar(df: pd.DataFrame) -> None:
 
 def _tipado(df: pd.DataFrame, nombre: str) -> pd.DataFrame:
     contrato = contratos.CONTRATOS[nombre]
-    df = df.reindex(columns=list(contrato["columnas"])).astype(contratos.dtypes(nombre))
+    df = df[list(contrato["columnas"])].astype(contratos.dtypes(nombre))
     _comprobar(df)
     contratos.validar(df, nombre)
     return df.sort_values(list(contrato["clave"])).reset_index(drop=True)
