@@ -45,12 +45,10 @@ FUENTES_NETOS = [
         "RDL 5/2026 (BOE-A-2026-3810)",
         "https://www.boe.es/buscar/doc.php?id=BOE-A-2026-3810",
     ),
-    {
-        # shortcut: URL genérica del BOCM, sin verificar el enlace directo de BOCM-m-2010-90068; fijarlo al verificar fuentes
-        "nombre": "Decreto Legislativo 1/2010 de la Comunidad de Madrid, tributos cedidos (BOCM-m-2010-90068)",
-        "url": "https://www.bocm.es/",
-        "licencia": LICENCIA_BOCM,
-    },
+    _boe(
+        "Decreto Legislativo 1/2010 de la Comunidad de Madrid, tributos cedidos (BOCM-m-2010-90068)",
+        "https://www.boe.es/buscar/act.php?id=BOCM-m-2010-90068",
+    ),
 ]
 FUENTES_TARIFAS = [
     {
