@@ -172,6 +172,32 @@ def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
     assert caplog.text.count("caducado") == 1
 
 
+def test_marcar_estimados_solo_donde_cambian_las_lineas_reconstruidas():
+    pares = [("A", "A"), ("A", "B"), ("B", "A"), ("B", "B"), ("A", "C")]
+
+    def tabla(minutos: list[float], estimado: list[bool]) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "zona_id": [o for o, _ in pares],
+                "destino_id": [d for _, d in pares],
+                "modo": "tp",
+                "minutos": minutos,
+                "km": np.nan,
+                "estimado": estimado,
+            }
+        )
+
+    sin = tabla([5.0, 60.0, np.nan, 4.0, np.nan], [False] * 5)
+    con = tabla([5.4, 40.0, 90.0, 4.0, np.nan], [False] * 4 + [True])
+    marcado = tiempos.marcar_estimados(
+        con, sin.iloc[::-1]
+    )  # el orden de `sin` da igual
+    # 0,4 min es ruido del sorteo de r5py; 20 min menos o pasar a tener ruta, no; nulo en los dos no cambia,
+    # pero lo que ya era estimado sigue siéndolo
+    assert marcado["estimado"].tolist() == [False, True, True, False, True]
+    assert marcado["minutos"].tolist()[:4] == [5.4, 40.0, 90.0, 4.0]
+
+
 def test_el_modulo_se_importa_sin_r5py(monkeypatch, zonas, secciones):
     monkeypatch.setitem(sys.modules, "r5py", None)  # simula que r5py (o Java) no está
     recargado = importlib.reload(tiempos)

@@ -35,7 +35,7 @@ CONTRATOS: dict[str, dict] = {
             "modo": "texto",  # {tp, coche}
             "minutos": "decimal",  # mediana puerta a puerta, 7:30-8:30 de un martes; nulo sin ruta en 120 min
             "km": "decimal",  # km, solo coche
-            "estimado": "booleano",  # verdadero si sale de la línea base por distancia
+            "estimado": "booleano",  # verdadero si sale de la línea base o lo cambian las líneas reconstruidas (#173)
         },
     },
     "alquiler_zona": {
