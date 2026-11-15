@@ -12,8 +12,8 @@ Dos fuentes, mismo contrato:
   7:30 y las 8:30 de `FECHA_SALIDA`, con `estimado = falso`. r5py se importa dentro de la función para que el
   módulo y sus tests funcionen sin Java.
 - `matriz_con_estimadas`: `matriz_r5py` dos veces, sin y con las líneas que el CRTM publica sin viajes o solo con
-  cabecera y final, reconstruidas por `lineas_estimadas` (#173). Los pares cuyo tiempo cambia en más de
-  `TOLERANCIA_MIN` salen con `estimado = verdadero`.
+  cabecera y final, reconstruidas por `lineas_estimadas` (#173). Los pares que mejoran en más de
+  `TOLERANCIA_MIN` toman el tiempo con ellas y salen con `estimado = verdadero`; los demás, el tiempo sin ellas.
 
 Por encima de `MAX_MINUTOS` el tiempo es nulo (sin ruta).
 """
@@ -57,10 +57,10 @@ MIN_INTERNO = 1.0
 FECHA_SALIDA = dt.date(2026, 11, 17)
 HORA_SALIDA = dt.time(7, 30)
 VENTANA = dt.timedelta(hours=1)
-# supuesto: un par cambia por las líneas reconstruidas si su tiempo se mueve más de 1 min, para no marcar
-# diferencias de redondeo; con los datos del 15-11, pares sin relación con ellas (Aranjuez → Alcalá, Móstoles →
-# Fuenlabrada, Parla → Getafe) no salen marcados
-TOLERANCIA_MIN = 1.0
+# supuesto: las líneas reconstruidas mejoran un par si lo bajan más de 5 min. Es el ruido de r5py medido el 16-11
+# con dos pasadas idénticas sin ellas: diferencia mediana 0 min, p99 2, p99,9 4 y máximo 7 (de 10.780 pares), y
+# 83 pares que pasan de tener a no tener ruta cerca del límite de MAX_MINUTOS
+TOLERANCIA_MIN = 5.0
 FIN_CALENDARIO = "20271231"
 
 OSM = RAW / "osm_madrid_2026-11-15.pbf"
@@ -280,26 +280,37 @@ def matriz_r5py(
 
 
 def marcar_estimados(con: pd.DataFrame, sin: pd.DataFrame) -> pd.DataFrame:
-    """`con` con `estimado = verdadero` donde su tiempo difiere de `sin` en más de `TOLERANCIA_MIN` o solo uno es nulo."""
+    """`con` donde las líneas reconstruidas mejoran el par, con `estimado = verdadero`; `sin` en los demás.
+
+    Mejora es bajar más de `TOLERANCIA_MIN` o pasar a tener ruta con margen de `TOLERANCIA_MIN` hasta
+    `MAX_MINUTOS`. Por debajo es ruido de r5py, y añadir servicio no puede alargar un viaje: si `con` sale peor (o
+    pierde la ruta), vale `sin`. No se toma el mínimo de los dos para no sesgar el tiempo a la baja.
+    """
     clave = list(contratos.CONTRATOS["tiempos"]["clave"])
-    antes = con[clave].merge(sin, on=clave, how="left", validate="one_to_one")[
-        "minutos"
-    ]
-    cambia = ~np.isclose(
-        con["minutos"].to_numpy(),
-        antes.to_numpy(),
-        rtol=0,
-        atol=TOLERANCIA_MIN,
-        equal_nan=True,
+    antes = (
+        con[clave]
+        .merge(sin, on=clave, how="left", validate="one_to_one")["minutos"]
+        .to_numpy()
     )
-    return _validada(con.assign(estimado=con["estimado"].to_numpy() | cambia))
+    despues = con["minutos"].to_numpy()
+    mejora = (despues < antes - TOLERANCIA_MIN) | (
+        np.isnan(antes) & (despues <= MAX_MINUTOS - TOLERANCIA_MIN)
+    )
+    minutos = np.where(mejora, despues, antes)
+    return _validada(
+        con.assign(minutos=minutos, estimado=con["estimado"].to_numpy() | mejora)
+    )
 
 
 def matriz_con_estimadas(
     zonas: pd.DataFrame, secciones: gpd.GeoDataFrame
 ) -> pd.DataFrame:
-    """`matriz_r5py` con las líneas reconstruidas de #173, con `estimado` en los pares que cambian por ellas."""
+    """`matriz_r5py` con las líneas reconstruidas de #173, con `estimado` en los pares que mejoran por ellas.
+
+    La matriz sin ellas queda en `data/processed/tiempos_sin_estimadas.parquet` como evidencia del marcado.
+    """
     sin = matriz_r5py(zonas, secciones, OSM, preparar_gtfs(GTFS))
+    sin.to_parquet(PROCESSED / "tiempos_sin_estimadas.parquet")
     secuencias, propio = lineas_estimadas.construir(OSM, GTFS_PREPARADOS, FECHA_SALIDA)
     gtfs = [*preparar_gtfs(GTFS, completar=secuencias), propio]
     con = marcar_estimados(matriz_r5py(zonas, secciones, OSM, gtfs), sin)

@@ -1,5 +1,8 @@
 """Tests de `mesobra.lineas_estimadas` con trazados y GTFS de juguete (sin OSM ni r5py)."""
 
+import datetime as dt
+import zipfile
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -143,6 +146,74 @@ def test_completar_viajes_mete_las_intermedias_en_el_sentido_del_viaje():
     assert hora["vuelta"] == ["09:00:00", "09:10:00", "09:30:00", "09:40:00"]
 
 
+def test_completar_viajes_un_viaje_parcial_solo_recibe_su_tramo():
+    xy = pd.DataFrame(
+        {"x": [X0, X0 + 1000, X0 + 2000, X0 + 3000, X0 + 4000], "y": Y0},
+        index=["A", "m1", "m2", "m3", "B"],
+    )
+    trips = pd.DataFrame({"trip_id": ["corto"], "route_id": ["R"]})
+    st = pd.DataFrame(
+        {
+            "trip_id": ["corto", "corto"],
+            "arrival_time": ["08:00:00", "08:20:00"],
+            "departure_time": ["08:00:00", "08:20:00"],
+            "stop_id": ["m3", "m1"],  # a mitad de línea y en sentido contrario
+            "stop_sequence": ["0", "1"],
+        }
+    )
+    salida = le.completar_viajes(trips, st, xy, {"R": ["A", "m1", "m2", "m3", "B"]})
+    salida = salida.sort_values("stop_sequence")
+    assert salida["stop_id"].tolist() == ["m3", "m2", "m1"]  # sin A ni B
+    assert salida["arrival_time"].tolist() == ["08:00:00", "08:10:00", "08:20:00"]
+
+
 def test_completar_tablas_sin_esas_rutas_no_toca_nada():
     tablas = {"trips.txt": b"route_id,trip_id\r\nS,t1\r\n"}
     assert le.completar_tablas(tablas, {"R": ["A", "B"]}) is tablas
+
+
+def test_activos_cuenta_dia_de_la_semana_vigencia_altas_y_bajas(tmp_path):
+    ruta = tmp_path / "gtfs.zip"
+    dias = ",".join(le.SEMANA)
+    with zipfile.ZipFile(ruta, "w") as z:
+        z.writestr(
+            "carpeta/calendar.txt",
+            f"service_id,{dias},start_date,end_date\r\n"
+            "LAB,1,1,1,1,1,0,0,20260101,20261231\r\n"
+            "BAJA,1,1,1,1,1,0,0,20260101,20261231\r\n"
+            "SAB,0,0,0,0,0,1,0,20260101,20261231\r\n"
+            "VIEJO,1,1,1,1,1,0,0,20250101,20251231\r\n",
+        )
+        z.writestr(
+            "carpeta/calendar_dates.txt",
+            "service_id,date,exception_type\r\n"
+            "BAJA,20261117,2\r\nSAB,20261117,1\r\nLAB,20261118,2\r\n",
+        )
+    assert le._activos(ruta, dt.date(2026, 11, 17)) == {"LAB", "SAB"}  # un martes
+    with pytest.raises(FileNotFoundError, match="trips.txt"):
+        le._leer(ruta, "trips.txt")
+
+
+def test_feed_frecuencias_circular_en_un_sentido_y_lineal_en_dos():
+    xy = pd.DataFrame(
+        {"x": [X0, X0 + 3000, X0 + 3000, X0 + 100], "y": [Y0, Y0, Y0 + 3000, Y0]},
+        index=["a", "b", "c", "a2"],
+    )
+    ref = pd.DataFrame(
+        {"km": [6.0], "kmh": [30.0], "salidas": [4.0]}, index=["8__712___"]
+    )
+    circular = le._feed_frecuencias("8__721___", ["a", "b", "c", "a2"], xy, ref)
+    assert len(circular["trips.txt"]) == 1
+    assert circular["frequencies.txt"]["headway_secs"].tolist() == ["900"]
+    lineal = le._feed_frecuencias("8__721___", ["a", "b", "c"], xy, ref)
+    assert lineal["stop_times.txt"].groupby("trip_id")["stop_id"].apply(
+        list
+    ).tolist() == [
+        ["a", "b", "c"],
+        ["c", "b", "a"],
+    ]
+    # 3 km a 30 km/h: 6 min hasta «b»
+    assert lineal["stop_times.txt"]["arrival_time"].tolist()[:2] == [
+        "00:00:00",
+        "00:06:00",
+    ]

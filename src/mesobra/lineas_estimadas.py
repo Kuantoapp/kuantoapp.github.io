@@ -72,11 +72,16 @@ FRANJA = ("06:30:00", "09:30:00")
 # supuesto: «longitud parecida» es entre 1/1,33 y 1,33 veces la de la línea reconstruida
 RAZON_KM = 1.33
 SERVICIO = "estimado"
+# aviso si empalmar las partes sueltas de la relación alarga el trazado más de un 10 %
+ALARGAMIENTO = 1.1
+SEMANA = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
 
 def _leer(zip_path: Path, nombre: str) -> pd.DataFrame:
     with zipfile.ZipFile(zip_path) as z:
-        ruta = next(n for n in z.namelist() if Path(n).name == nombre)
+        ruta = next((n for n in z.namelist() if Path(n).name == nombre), None)
+        if ruta is None:
+            raise FileNotFoundError(f"{nombre} no está en {zip_path}")
         return pd.read_csv(io.BytesIO(z.read(ruta)), dtype=str, encoding="utf-8-sig")
 
 
@@ -146,6 +151,8 @@ def secuencia(
     )
     cerca = paradas["huerfana"] & (paradas.distance(trazado) <= buffer_m)
     elegidas = pos[cerca].sort_values()
+    # shortcut: compara con la candidata anterior, no con la última conservada; con los datos del 15-11 el hueco
+    # mínimo es de 64 m y no cambia nada; hacerlo con un bucle si se baja SEPARACION_M o cambian las paradas
     elegidas = elegidas[elegidas.diff().fillna(np.inf) >= SEPARACION_M]
     for donde, punto in (
         (0.0, Point(trazado.coords[0])),
@@ -165,17 +172,8 @@ def _activos(zip_path: Path, fecha: dt.date) -> set[str]:
     cal = _leer(zip_path, "calendar.txt")
     cd = _leer(zip_path, "calendar_dates.txt")
     cd = cd[cd["date"] == dia]
-    semana = (
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
-    )
     activos = cal.loc[
-        (cal[semana[fecha.weekday()]] == "1")
+        (cal[SEMANA[fecha.weekday()]] == "1")
         & (cal["start_date"] <= dia)
         & (cal["end_date"] >= dia),
         "service_id",
@@ -231,7 +229,8 @@ def parecidas(
     veces; si no hay ninguna, de la misma red y longitud parecida (una línea rural larga no se parece a las
     suburbanas cortas de su corredor); luego cualquiera del corredor y, por último, de la red. Mediana de cada una.
     """
-    ref = ref[(ref["salidas"] > 0) & (ref.index != route_id) & ref["kmh"].notna()]
+    # las de RUTAS no sirven de referencia: no tienen viajes o su velocidad sale de la recta entre cabeceras
+    ref = ref[(ref["salidas"] > 0) & ~ref.index.isin(list(RUTAS)) & ref["kmh"].notna()]
     red = ref[ref.index.str[0] == route_id[0]]
     mismo = red.index.map(_corredor) == _corredor(route_id)
     largo = red["km"].between(km / RAZON_KM, km * RAZON_KM).to_numpy()
@@ -252,6 +251,17 @@ def _hhmmss(segundos: np.ndarray) -> list[str]:
     h, resto = np.divmod(segundos.astype(int), 3600)
     m, s = np.divmod(resto, 60)
     return [f"{a:02d}:{b:02d}:{c:02d}" for a, b, c in zip(h, m, s, strict=True)]
+
+
+def _tramo(seq: list[str], s0: str, s1: str, xy: pd.DataFrame) -> list[str]:
+    """Paradas de `seq` entre la más cercana a `s0` y la más cercana a `s1`, en ese sentido y sin `s0` ni `s1`.
+
+    Un viaje parcial (que empieza o acaba a mitad de línea) solo recibe las paradas de su tramo.
+    """
+    p = xy.loc[seq].to_numpy()
+    i, j = (int(np.hypot(*(p - xy.loc[s].to_numpy()).T).argmin()) for s in (s0, s1))
+    tramo = seq[min(i, j) : max(i, j) + 1]
+    return [s for s in (tramo[::-1] if i > j else tramo) if s not in (s0, s1)]
 
 
 def completar_viajes(
@@ -282,10 +292,7 @@ def completar_viajes(
     )
     nuevas = []
     for (route_id, s0, s1), grupo in extremos.groupby(["route_id", "s0", "s1"]):
-        medio = [s for s in secuencias[route_id] if s not in (s0, s1)]
-        if medio and _km([s0, medio[0]], xy)[-1] > _km([s0, medio[-1]], xy)[-1]:
-            medio.reverse()
-        ids = [s0, *medio, s1]
+        ids = [s0, *_tramo(secuencias[route_id], s0, s1, xy), s1]
         km = _km(ids, xy)
         frac = km / km[-1] if km[-1] > 0 else np.linspace(0, 1, len(ids))
         t0 = pd.to_timedelta(grupo["t0"]).dt.total_seconds().to_numpy()
@@ -313,7 +320,7 @@ def completar_viajes(
 def completar_tablas(
     tablas: dict[str, bytes], secuencias: dict[str, list[str]]
 ) -> dict[str, bytes]:
-    """`completar_viajes` sobre las tablas en bruto de un GTFS (`tiempos.preparar_gtfs`); sin esas rutas, igual."""
+    """`completar_viajes` sobre las tablas sin procesar de un GTFS (`tiempos.preparar_gtfs`); sin esas rutas, igual."""
 
     def leer(nombre: str) -> pd.DataFrame:
         return pd.read_csv(io.BytesIO(tablas[nombre]), dtype=str, encoding="utf-8-sig")
@@ -423,10 +430,25 @@ def _red(
         casan = osm[osm["name"].str.contains(patron, regex=True)]
         if casan.empty:
             raise ValueError(f"{route_id}: ninguna relación de OSM casa con {patron!r}")
-        trazado = encadenar(casan.loc[casan["largo"].idxmax(), "geometry"])
+        relacion = casan.loc[casan["largo"].idxmax()]
+        trazado = encadenar(relacion["geometry"])
+        if trazado.length > ALARGAMIENTO * relacion["largo"]:
+            LOG.warning(
+                "%s: el trazado encadenado mide %.1f km y la relación de OSM %.1f (saltos entre partes)",
+                route_id,
+                trazado.length / 1000,
+                relacion["largo"] / 1000,
+            )
         ids = secuencia(trazado, paradas, BUFFER_M[red])
         if len(ids) < 2:
             raise ValueError(f"{route_id}: {len(ids)} paradas junto al trazado de OSM")
+        if len(ids) == 2:
+            # sin intermedias no aporta nada a un viaje de dos paradas, y sin viajes sería una lanzadera inventada
+            LOG.warning(
+                "%s: solo 2 paradas junto al trazado de OSM; no se reconstruye",
+                route_id,
+            )
+            continue
         secuencias[route_id] = ids
         if route_id not in set(trips["route_id"]):
             t = _feed_frecuencias(route_id, ids, xy, ref)
@@ -474,19 +496,10 @@ def construir(
             "agency_timezone": ["Europe/Madrid"],
         }
     )
-    semana = (
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
-    )
     tablas["calendar.txt"] = pd.DataFrame(
         {
             "service_id": [SERVICIO],
-            **{d: ["1"] for d in semana},
+            **{d: ["1"] for d in SEMANA},
             "start_date": [dia],
             "end_date": [dia],
         }
