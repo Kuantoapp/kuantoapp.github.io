@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from mesobra import neto, transporte
 from mesobra.api_estatica import validar
@@ -55,6 +56,7 @@ def test_m2_por_defecto_es_la_mediana_ponderada():
             ("28001", 2024, 10.0, 40.0, 1),
             ("28002", 2024, 10.0, 60.0, 1),
             ("28003", 2024, 10.0, 80.0, 10),
+            ("28001", 2023, 10.0, 300.0, 50),  # año anterior de 28001: no cuenta
             ("28079", 2024, 10.0, 10.0, 999),
         ]
     )
@@ -63,7 +65,11 @@ def test_m2_por_defecto_es_la_mediana_ponderada():
 
 def test_alquiler_del_fixture_cumple_el_contrato():
     zona = pd.read_csv(PROCESSED / "alquiler_zona.csv", dtype={"zona_id": str})
-    validar("alquiler.json", alquiler_json(zona))
+    validar("alquiler.json", alquiler_json(zona.query("origen != 'estimado'")))
+    with pytest.raises(
+        ValueError, match="ic"
+    ):  # alquiler_zona aún no produce estimados
+        validar("alquiler.json", alquiler_json(zona))
 
 
 def test_netos_tarifas_y_hogares_cumplen_el_contrato():

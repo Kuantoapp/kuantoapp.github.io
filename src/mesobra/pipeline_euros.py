@@ -18,17 +18,23 @@ SERPAVI = {
     "url": "https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx",
     "licencia": "Condiciones generales para la reutilización de información del MIVAU (RD 1495/2011)",
 }
-LICENCIA_BOE = "Reutilización con cita de la fuente (aviso legal del BOE)"
-LICENCIA_BOCM = "Reutilización con cita de la fuente (aviso legal del BOCM)"
+LICENCIA_BOE = (
+    "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
+    "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
+)
+LICENCIA_BOCM = "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI, BOE-A-1996-8930)"
+ORIGEN_SERPAVI = (
+    "Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09; "
+    "el Ministerio no participa ni patrocina este proyecto."
+)
 CATALOGO = "https://datos.comunidad.madrid/dataset/"
 EPF = (
     CATALOGO
     + "{}/download/gasto-medio-de-los-hogares-por-subgrupo-de-gasto-{}-digitos-coicopepf-base-2006.csv"
 )
-BOCM = "https://www.bocm.es/boletin/CM_Orden_BOCM/2025/12/31/BOCM-20251231-{}.PDF"
 
 
-def _boe(nombre, url):
+def _boe(nombre: str, url: str) -> dict[str, str]:
     return {"nombre": nombre, "url": url, "licencia": LICENCIA_BOE}
 
 
@@ -51,12 +57,17 @@ FUENTES_NETOS = [
     ),
 ]
 FUENTES_TARIFAS = [
-    {
-        "nombre": f"BOCM de 31-12-2025 (BOCM-20251231-{n})",
-        "url": BOCM.format(n),
-        "licencia": LICENCIA_BOCM,
-    }
-    for n in (2, 3)
+    {"nombre": nombre, "url": url, "licencia": LICENCIA_BOCM}
+    for nombre, url in (
+        (
+            "BOCM nº 311 de 31-12-2025, BOCM-20251231-2: precios del transporte público en 2026 (copia del CRTM)",
+            "https://www.crtm.es/media/s1qi0nmo/bocm-20251231-precios_transporte.pdf",
+        ),
+        (
+            "BOCM nº 311 de 31-12-2025, BOCM-20251231-3: tarifas oficiales del transporte público (copia del CRTM)",
+            "https://www.crtm.es/media/sjqj4ggj/bocm-20251231-tarifas_transporte.pdf",
+        ),
+    )
 ] + [
     {
         "nombre": "Ficha del Abono Joven, Consorcio Regional de Transportes de Madrid",
@@ -78,7 +89,7 @@ FUENTES_HOGARES = [
 ] + [SERPAVI]
 
 
-def _meta(anio_dato, fuentes, nota):
+def _meta(anio_dato: int, fuentes: list[dict[str, str]], nota: str) -> dict:
     return {
         "generado": date.today().isoformat(),
         "anio_dato": anio_dato,
@@ -110,19 +121,16 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "m2": float(f["m2_p50"]),
             "factor_ipc": float(f["factor_ipc"]),
             "origen": f["origen"],
-            "ic": [float(f["ic_inf"]), float(f["ic_sup"])]
-            if f["origen"] == "estimado"
-            else None,
+            "ic": None,  # alquiler_zona no produce estimados; si llegan, el validador falla
         }
     anio = int(zona["anio"].max())
     nota = (
         "€/m² al mes de vivienda colectiva (sin unifamiliar), de contratos declarados a la Agencia "
         "Tributaria (Modelo 100 cruzado con el Catastro), no de anuncios: es un suelo del precio actual. "
         "Cada zona lleva el último año con dato en euros de ese año, sin actualizar con el IPC "
-        "(factor_ipc 1,0) hasta #94; las zonas cuyo último dato es anterior a "
+        "(factor_ipc 1,0) hasta que se aplique el IPC de alquiler; las zonas cuyo último dato es anterior a "
         f"{anio} llevan su año en anio. Las zonas sin dato publicado van como sin_dato. "
-        "Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09; "
-        "el Ministerio no participa ni patrocina este proyecto."
+        + ORIGEN_SERPAVI
     )
     return {"meta": _meta(anio, [SERPAVI], nota), "zonas": zonas}
 
@@ -178,7 +186,8 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
         "oficiales. 4,33 semanas al mes; el viaje pasa por la zona A; sin abono anual (venta a "
         "particulares suspendida desde 2023); el 10 viajes se compra en paquetes enteros. viajes_dia 2: "
         "ida y vuelta directa; 4: cambio de operador en cada sentido (interurbano↔Metro, Metro↔EMT), "
-        "con los 2 viajes extra a precio de la zona A. Abono Joven de 15 a 25 años."
+        "con los 2 viajes extra a precio de la zona A. "
+        f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
     )
     return {
         "meta": _meta(2026, FUENTES_TARIFAS, nota),
@@ -199,7 +208,9 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
         f"{tabla.attrs['nota']}. m² por defecto: {m2} para todos los perfiles, la mediana de la "
         "superficie mediana (m2_p50) de cada zona en su último año con dato del SERPAVI, ponderada por "
         "testigos; el formulario permite cambiarlo. Un mismo m² para todos sobreestima el alquiler de "
-        "quien vive solo."
+        "quien vive solo. EPF del catálogo de la Comunidad de Madrid actualizada el 2026-11-05 "
+        "(fuente de los datos: Comunidad de Madrid); alimentación = 01.1 + 01.2 y suministros = "
+        "04.5 + 04.4.1, gasto anual por unidad de consumo entre 12. " + ORIGEN_SERPAVI
     )
     return {
         "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota),
