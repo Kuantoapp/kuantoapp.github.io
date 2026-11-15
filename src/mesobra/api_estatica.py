@@ -12,6 +12,7 @@ from datetime import date
 from pathlib import Path
 
 CORONAS = ["A", "B1", "B2", "B3", "C1", "C2"]
+VIAJES_DIA = [2, 4]
 MAX_PROBLEMAS = 20
 # Caja de la Comunidad de Madrid en EPSG:4326: un 25830 sin reproyectar o lon/lat al revés caen fuera.
 LON, LAT = (-4.7, -2.9), (39.8, 41.3)
@@ -331,20 +332,24 @@ def _dias(ruta, filas):
 
 def _tarifas(o):
     campos = {"orden_coronas": None, "edad_max_joven": ("entero", 0, 100)}
-    p = _raiz(o, {**campos, "escenarios": None})
+    p = _raiz(o, {**campos, "viajes_dia": None, "escenarios": None})
+    p += _campo("viajes_dia", o.get("viajes_dia"), [VIAJES_DIA])
     ordenadas = _lista("orden_coronas", o.get("orden_coronas"), CORONAS)
     if ordenadas:
         return p + ordenadas
     if o["orden_coronas"] != [c for c in CORONAS if c in o["orden_coronas"]]:
         return p + ["orden_coronas: debe seguir el orden de CORONAS"]
     edades = ["joven", "general"]
+    viajes = [str(v) for v in VIAJES_DIA]
+
+    def coronas(ruta, t):
+        return _mapa(ruta, t, o["orden_coronas"], _dias)
+
     return p + _mapa(
         "escenarios",
         o.get("escenarios"),
         ["vigente_2026", "sin_descuento"],
-        lambda r, e: _mapa(
-            r, e, edades, lambda r2, t: _mapa(r2, t, o["orden_coronas"], _dias)
-        ),
+        lambda r, e: _mapa(r, e, edades, lambda r2, t: _mapa(r2, t, viajes, coronas)),
     )
 
 
