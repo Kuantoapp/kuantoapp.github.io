@@ -76,10 +76,10 @@ def leer_serpavi(
 def _largo(df: pd.DataFrame, id_col: str, renombre: dict[str, str]) -> pd.DataFrame:
     """De una columna por variable y año (`VAR_24`) a una fila por unidad y año."""
     columnas = [c for c in df if c.rsplit("_", 1)[0] in renombre]
-    # wide_to_long rellena con NaN una variable o un año que falte: que falle aquí
-    anios = pd.Series([c.rsplit("_", 1)[0] for c in columnas]).value_counts()
-    if set(renombre) - set(anios.index) or anios.nunique() != 1:
-        raise ValueError(f"Faltan variables o años del SERPAVI:\n{anios}")
+    # wide_to_long rellena con NaN una variable o un año que falte: exige variable × año completo
+    anios = {c.rsplit("_", 1)[1] for c in columnas}
+    if not columnas or len(columnas) != len(renombre) * len(anios):
+        raise ValueError(f"Faltan variables o años del SERPAVI: {sorted(columnas)}")
     largo = pd.wide_to_long(
         df[[id_col, *columnas]],
         stubnames=list(renombre),

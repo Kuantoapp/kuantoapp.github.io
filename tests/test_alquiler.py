@@ -119,6 +119,14 @@ def test_falta_variable_o_anio(xlsx, tmp_path):
         alquiler.alquiler_zona(hojas)
 
 
+def test_mismos_recuentos_otros_anios():
+    df = pd.DataFrame(
+        {"id": ["1"], "A_23": [1.0], "A_24": [1.0], "B_22": [1.0], "B_24": [1.0]}
+    )
+    with pytest.raises(ValueError, match="Faltan variables o años"):
+        alquiler._largo(df, "id", {"A": "a", "B": "b"})
+
+
 def test_cuartil_sin_mediana():
     df = pd.DataFrame(
         {"eur_m2_p25": [10.0], "eur_m2_p50": [float("nan")], "eur_m2_p75": [15.0]}
