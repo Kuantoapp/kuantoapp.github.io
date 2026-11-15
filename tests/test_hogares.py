@@ -53,6 +53,13 @@ def test_perfiles(tmp_path):
     assert df.loc["comparte", "suministros"] == pytest.approx(973.01 * 2 / 3 / 12)
 
 
+def test_cesta_uc(tmp_path):
+    _escribir(tmp_path)
+    cesta = hogares.cesta_uc(tmp_path)
+    assert cesta["alimentacion"] == pytest.approx(3304.46 / 12)
+    assert cesta["suministros"] == pytest.approx(973.01 / 12)
+
+
 def test_falta_un_concepto(tmp_path):
     _escribir(tmp_path, cuatro=CUATRO[1:])
     with pytest.raises(ValueError, match="suministro de agua"):

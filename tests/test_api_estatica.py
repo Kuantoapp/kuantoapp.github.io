@@ -116,6 +116,8 @@ FALLOS = [
     ("Madrid entero como municipio", "zonas.geojson", "features.2.properties", MADRID, "no casan con tipo municipio"),
     ("distrito inexistente", "zonas.geojson", "features.0.properties.zona_id", "2807999", "zona_id: se esperaba zona"),
     ("municipio_id que no casa con el distrito", "zonas.geojson", "features.0.properties.municipio_id", "28001", "no casan con tipo distrito"),
+    ("cesta_uc ausente", "hogares.json", "cesta_uc", ..., r"faltan claves \['cesta_uc'\]"),
+    ("cesta_uc negativa", "hogares.json", "cesta_uc.suministros", -1, "fuera del rango"),
     ("orden de coronas", "tarifas.json", "orden_coronas", ["B1", "A"], "debe seguir el orden de CORONAS"),
     ("feature que no es objeto", "zonas.geojson", "features.0", 5, r"features\[0\]: se esperaba un objeto"),
     ("matriz mal dimensionada", "tiempos.json", "tp.0", [9], r"tp\[0\]: se esperaban 2 columnas"),
