@@ -219,23 +219,39 @@ def zonas(
 def coronas_dudosas(
     secciones: gpd.GeoDataFrame, zona: gpd.GeoDataFrame, coronas: gpd.GeoDataFrame
 ) -> pd.DataFrame:
-    """Zonas cuya corona conviene revisar a mano: poca población en ella o centro cerca del borde.
+    """Zonas cuya corona conviene revisar a mano.
 
-    `secciones` es la salida de `secciones_por_zona`. La capa del CRTM son bandas que no siguen los
-    términos municipales, así que se mide la cuota de población de la corona asignada, no la de área.
+    Dudosa si vive en la corona asignada menos de `CUOTA_MINIMA` de la población por cualquiera de dos
+    vías (cada sección entera en su punto representativo, o repartida por área entre las coronas que la
+    cortan; ninguna es la verdad y así la lista no depende del método) o si el centro está a menos de
+    `DISTANCIA_MINIMA_M` del borde de su corona (el límite exterior de la capa cuenta como borde).
+    `secciones` es la salida de `secciones_por_zona`. Los distritos de Madrid pueden salir aunque la
+    norma los ponga a todos en A: la capa del CRTM son bandas que no siguen los términos municipales.
     """
+    z = zona.set_index("zona_id")
     punto = gpd.GeoDataFrame(
         secciones[["zona_id", "poblacion"]], geometry=secciones.representative_point()
     )
     # shortcut: un punto en un solape de borde entre coronas (1 km² en total) cuenta en la primera
-    en_corona = gpd.sjoin(punto, coronas, how="left", predicate="intersects")
-    en_corona = en_corona[~en_corona.index.duplicated()]
-    z = zona.set_index("zona_id")
-    misma = en_corona["corona"].eq(en_corona["zona_id"].map(z["corona"]))
-    cuota = (
-        en_corona["poblacion"].where(misma, 0).groupby(en_corona["zona_id"]).sum()
-        / z["poblacion"]
+    en_punto = gpd.sjoin(punto, coronas, how="left", predicate="intersects")
+    en_punto = en_punto[~en_punto.index.duplicated()]
+    trozos = gpd.overlay(
+        secciones[["CUSEC", "zona_id", "poblacion", "geometry"]],
+        coronas,
+        how="intersection",
     )
+    area = secciones.set_index("CUSEC").area
+    trozos["poblacion"] = (
+        trozos["poblacion"] * trozos.area / trozos["CUSEC"].map(area).to_numpy()
+    )
+    cuotas = {
+        nombre: df["poblacion"]
+        .where(df["corona"].eq(df["zona_id"].map(z["corona"])), 0)
+        .groupby(df["zona_id"])
+        .sum()
+        / z["poblacion"]
+        for nombre, df in {"cuota_punto": en_punto, "cuota_area": trozos}.items()
+    }
     centros = gpd.GeoSeries.from_xy(
         z["lon_centro"], z["lat_centro"], crs=4326, index=z.index
     ).to_crs(coronas.crs)
@@ -247,14 +263,15 @@ def coronas_dudosas(
         {
             "nombre": z["nombre"],
             "corona": z["corona"],
-            "cuota_poblacion": cuota.round(3),
+            "cuota_punto": cuotas["cuota_punto"].round(3),
+            "cuota_area": cuotas["cuota_area"].round(3),
             "distancia_borde_m": distancia.round(0),
         }
     )
-    dudosa = (tabla["cuota_poblacion"] < CUOTA_MINIMA) | (
+    dudosa = (tabla[list(cuotas)].min(axis=1) < CUOTA_MINIMA) | (
         tabla["distancia_borde_m"] < DISTANCIA_MINIMA_M
     )
-    return tabla[dudosa].sort_values("cuota_poblacion")
+    return tabla[dudosa].sort_values("cuota_punto")
 
 
 def main() -> None:

@@ -147,31 +147,66 @@ def test_centro_fuera_de_su_zona_falla(secciones, poblacion, coronas):
         zonas.zonas(secciones, poblacion, coronas)
 
 
-def test_coronas_dudosas(secciones, poblacion, coronas):
-    por_zona = zonas.secciones_por_zona(secciones, poblacion)
-    z = zonas.zonas(secciones, poblacion, coronas)
-    assert zonas.coronas_dudosas(por_zona, z, coronas).empty
-    # La frontera A/B1 parte Getafe: 10 de 40 personas en A y centro a 250 m del borde
-    partidas = gpd.GeoDataFrame(
+def _coronas(frontera_x: float, suelo_b1: float = Y0 - 1000) -> gpd.GeoDataFrame:
+    """A hasta `frontera_x` y B1 desde ahí, con B1 empezando en `suelo_b1` por abajo."""
+    return gpd.GeoDataFrame(
         {
             "corona": ["A", "B1"],
             "geometry": [
-                box(X0 - 1000, Y0 - 1000, X0 + 31000, Y0 + 3000),
-                box(X0 + 31000, Y0 - 1000, X0 + 40000, Y0 + 3000),
+                box(X0 - 1000, Y0 - 1000, frontera_x, Y0 + 3000),
+                box(frontera_x, suelo_b1, X0 + 40000, Y0 + 3000),
             ],
         },
         crs=25830,
     )
-    z = zonas.zonas(secciones, poblacion, partidas)
-    dudosas = zonas.coronas_dudosas(por_zona, z, partidas)
+
+
+def test_sin_coronas_dudosas(secciones, poblacion, coronas):
+    z = zonas.zonas(secciones, poblacion, coronas)
+    por_zona = zonas.secciones_por_zona(secciones, poblacion)
+    assert zonas.coronas_dudosas(por_zona, z, coronas).empty
+
+
+# Getafe: 10 personas en [+30, +31] km y 30 en la segunda sección; cada caso cumple una sola condición
+ANCHA = box(
+    X0 + 31000, Y0, X0 + 35000, Y0 + 1000
+)  # centro en +32,375 km, a 1.375 m de +31 km
+CASOS_DUDOSOS = {
+    # la primera sección entera en A: cuota 0,75 por las dos vías
+    "cuota": (ANCHA, _coronas(X0 + 31000), (0.75, 0.75, 1375)),
+    # B1 empieza 400 m por debajo de Getafe: centro a 900 m del borde
+    "distancia": (None, _coronas(X0 + 30000, Y0 - 400), (1.0, 1.0, 900)),
+    # la frontera deja el 45 % de la primera sección en A y su punto en B1: solo baja la cuota por área
+    "area": (ANCHA, _coronas(X0 + 30450), (1.0, (5.5 + 30) / 40, 1500)),
+}
+
+
+@pytest.mark.parametrize("caso", CASOS_DUDOSOS)
+def test_coronas_dudosas_por_cada_condicion(secciones, poblacion, caso):
+    segunda, coronas, esperado = CASOS_DUDOSOS[caso]
+    if segunda is not None:
+        secciones.loc[secciones["CUSEC"] == "2806501002", "geometry"] = segunda
+    z = zonas.zonas(secciones, poblacion, coronas)
+    dudosas = zonas.coronas_dudosas(
+        zonas.secciones_por_zona(secciones, poblacion), z, coronas
+    )
     assert dudosas.index.tolist() == ["28065"]
-    assert dudosas.loc[
-        "28065", ["corona", "cuota_poblacion", "distancia_borde_m"]
-    ].tolist() == [
-        "B1",
-        0.75,
-        250,
-    ]
+    fila = dudosas.loc["28065", ["cuota_punto", "cuota_area", "distancia_borde_m"]]
+    assert fila.tolist() == pytest.approx(esperado, abs=1e-3)
+
+
+def test_seccion_sin_corona_cuenta_cero(secciones, poblacion):
+    # sin A: la primera sección de Getafe no cae en ninguna corona y su población no cuenta
+    solo_b1 = _coronas(X0 + 31000).iloc[[1]]
+    madrid = gpd.GeoDataFrame(
+        {"corona": ["A"], "geometry": [box(X0, Y0, X0 + 21000, Y0 + 2000)]}, crs=25830
+    )
+    coronas = pd.concat([solo_b1, madrid])
+    z = zonas.zonas(secciones, poblacion, coronas)
+    dudosas = zonas.coronas_dudosas(
+        zonas.secciones_por_zona(secciones, poblacion), z, coronas
+    )
+    assert dudosas.loc["28065", "cuota_punto"] == 0.75
 
 
 CABECERA = "Municipios;Distritos;Secciones;Indicadores demográficos;Periodo;Total"
