@@ -94,12 +94,13 @@ CONTRATOS: dict[str, dict] = {
         },
     },
     "tarifas": {
-        "clave": ("escenario", "joven", "corona", "dias"),
+        "clave": ("escenario", "joven", "corona", "dias", "viajes_dia"),
         "columnas": {
             "escenario": "texto",  # {vigente_2026, sin_descuento}
             "joven": "booleano",
             "corona": "texto",
             "dias": "entero",  # 1–5 días de trabajo por semana
+            "viajes_dia": "entero",  # viajes al día {2, 4}
             "titulo": "texto",
             "coste_mes": "decimal",  # €/mes
         },
