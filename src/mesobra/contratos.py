@@ -85,7 +85,7 @@ CONTRATOS: dict[str, dict] = {
     "netos": {
         "clave": ("bruto_anual", "hijos", "monoparental"),
         "columnas": {
-            "bruto_anual": "entero",  # €, cada 250
+            "bruto_anual": "entero",  # €, cada 250 y cada 50 entre 16.500 y 21.500
             "hijos": "entero",  # {0, 1, 2}
             "monoparental": "booleano",
             "cotizacion": "decimal",  # €/año
