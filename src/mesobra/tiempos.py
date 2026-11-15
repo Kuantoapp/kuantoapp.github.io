@@ -11,6 +11,9 @@ Dos fuentes, mismo contrato:
 - `matriz_r5py`: tiempo puerta a puerta con r5py (a pie + transporte público), mediana de las salidas entre las
   7:30 y las 8:30 de `FECHA_SALIDA`, con `estimado = falso`. r5py se importa dentro de la función para que el
   módulo y sus tests funcionen sin Java.
+- `matriz_con_estimadas`: `matriz_r5py` dos veces, sin y con las líneas que el CRTM publica sin viajes o solo con
+  cabecera y final, reconstruidas por `lineas_estimadas` (#173). Los pares que mejoran en más de
+  `TOLERANCIA_MIN` toman el tiempo con ellas y salen con `estimado = verdadero`; los demás, el tiempo sin ellas.
 
 Por encima de `MAX_MINUTOS` el tiempo es nulo (sin ruta).
 """
@@ -27,7 +30,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from mesobra import contratos
+from mesobra import contratos, lineas_estimadas
 from mesobra.zonas import (
     PROCESSED,
     RAW,
@@ -54,6 +57,10 @@ MIN_INTERNO = 1.0
 FECHA_SALIDA = dt.date(2026, 11, 17)
 HORA_SALIDA = dt.time(7, 30)
 VENTANA = dt.timedelta(hours=1)
+# supuesto: las líneas reconstruidas mejoran un par si lo bajan más de 5 min. Es el ruido de r5py medido el 16-11
+# con dos pasadas idénticas sin ellas: diferencia mediana 0 min, p99 2, p99,9 4 y máximo 7 (de 10.780 pares), y
+# 83 pares que pasan de tener a no tener ruta cerca del límite de MAX_MINUTOS
+TOLERANCIA_MIN = 5.0
 FIN_CALENDARIO = "20271231"
 
 OSM = RAW / "osm_madrid_2026-11-15.pbf"
@@ -170,8 +177,15 @@ def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame
     return _validada(_tabla(matriz, interno).assign(estimado=True))
 
 
-def preparar_gtfs(origenes: list[Path], destino: Path = GTFS_PREPARADOS) -> list[Path]:
+def preparar_gtfs(
+    origenes: list[Path],
+    destino: Path = GTFS_PREPARADOS,
+    completar: dict[str, list[str]] | None = None,
+) -> list[Path]:
     """Reempaqueta los GTFS del CRTM para que r5py los acepte y devuelve las rutas de los nuevos.
+
+    Con `completar` (`route_id` → paradas en orden, de `lineas_estimadas.construir`), los viajes de esas rutas llevan
+    además las paradas intermedias (`lineas_estimadas.completar_tablas`).
 
     Quita las tablas vacías y `feed_info.txt` (r5py los rechaza), saca los ficheros de subcarpetas y, si el
     calendario ya ha caducado en `FECHA_SALIDA` (Metro, hasta 2026-05-27), lo prolonga hasta `FIN_CALENDARIO`:
@@ -190,6 +204,8 @@ def preparar_gtfs(origenes: list[Path], destino: Path = GTFS_PREPARADOS) -> list
             for n, d in tablas.items()
             if n != "feed_info.txt" and d.strip().count(b"\n") > 0
         }
+        if completar:
+            tablas = lineas_estimadas.completar_tablas(tablas, completar)
         cal = pd.read_csv(
             io.BytesIO(tablas["calendar.txt"]), dtype=str, encoding="utf-8-sig"
         )
@@ -263,6 +279,50 @@ def matriz_r5py(
     return _validada(_tabla(m[~a_seccion], interno).assign(estimado=False))
 
 
+def marcar_estimados(con: pd.DataFrame, sin: pd.DataFrame) -> pd.DataFrame:
+    """`con` donde las líneas reconstruidas mejoran el par, con `estimado = verdadero`; `sin` en los demás.
+
+    Mejora es bajar más de `TOLERANCIA_MIN` o pasar a tener ruta con margen de `TOLERANCIA_MIN` hasta
+    `MAX_MINUTOS`. Por debajo es ruido de r5py, y añadir servicio no puede alargar un viaje: si `con` sale peor (o
+    pierde la ruta), vale `sin`. No se toma el mínimo de los dos para no sesgar el tiempo a la baja.
+    """
+    clave = list(contratos.CONTRATOS["tiempos"]["clave"])
+    antes = (
+        con[clave]
+        .merge(sin, on=clave, how="left", validate="one_to_one")["minutos"]
+        .to_numpy()
+    )
+    despues = con["minutos"].to_numpy()
+    mejora = (despues < antes - TOLERANCIA_MIN) | (
+        np.isnan(antes) & (despues <= MAX_MINUTOS - TOLERANCIA_MIN)
+    )
+    minutos = np.where(mejora, despues, antes)
+    return _validada(
+        con.assign(minutos=minutos, estimado=con["estimado"].to_numpy() | mejora)
+    )
+
+
+def matriz_con_estimadas(
+    zonas: pd.DataFrame, secciones: gpd.GeoDataFrame
+) -> pd.DataFrame:
+    """`matriz_r5py` con las líneas reconstruidas de #173, con `estimado` en los pares que mejoran por ellas.
+
+    La matriz sin ellas queda en `data/processed/tiempos_sin_estimadas.parquet` como evidencia del marcado.
+    """
+    sin = matriz_r5py(zonas, secciones, OSM, preparar_gtfs(GTFS))
+    sin.to_parquet(PROCESSED / "tiempos_sin_estimadas.parquet")
+    secuencias, propio = lineas_estimadas.construir(OSM, GTFS_PREPARADOS, FECHA_SALIDA)
+    gtfs = [*preparar_gtfs(GTFS, completar=secuencias), propio]
+    con = marcar_estimados(matriz_r5py(zonas, secciones, OSM, gtfs), sin)
+    LOG.info(
+        "Líneas reconstruidas: %d pares cambian; pares con ruta %d → %d",
+        con["estimado"].sum(),
+        sin["minutos"].notna().sum(),
+        con["minutos"].notna().sum(),
+    )
+    return con
+
+
 def main(modo: str = "r5py") -> None:
     """Escribe `data/processed/tiempos.parquet`; `modo` es `r5py` o `base` (línea base por distancia)."""
     zonas = gpd.read_parquet(PROCESSED / "zonas.parquet")
@@ -272,7 +332,7 @@ def main(modo: str = "r5py") -> None:
     if modo == "base":
         tabla = linea_base(zonas, secciones)
     elif modo == "r5py":
-        tabla = matriz_r5py(zonas, secciones, OSM, preparar_gtfs(GTFS))
+        tabla = matriz_con_estimadas(zonas, secciones)
     else:
         raise ValueError(f"modo desconocido: {modo!r} (r5py o base)")
     sin_ruta = (

@@ -172,6 +172,45 @@ def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
     assert caplog.text.count("caducado") == 1
 
 
+def test_marcar_estimados_solo_mejoras_por_encima_del_ruido():
+    # (origen, destino, sin, con, ya estimado) → (minutos, estimado)
+    casos = [
+        ("A", "A", 5.0, 5.4, False, 5.0, False),  # peor: sorteo de r5py, vale `sin`
+        ("A", "B", 60.0, 40.0, False, 40.0, True),  # 20 min menos: mejora
+        ("A", "C", 60.0, 57.0, False, 60.0, False),  # 3 min menos: dentro del ruido
+        ("B", "A", np.nan, 90.0, False, 90.0, True),  # pasa a tener ruta
+        ("B", "B", np.nan, 118.0, False, np.nan, False),  # ruta junto al límite: ruido
+        (
+            "B",
+            "C",
+            np.nan,
+            np.nan,
+            True,
+            np.nan,
+            True,
+        ),  # lo que ya era estimado lo sigue siendo
+        ("C", "A", 50.0, np.nan, False, 50.0, False),  # pierde la ruta: vale `sin`
+    ]
+    o, d, antes, despues, ya, minutos, estimado = map(list, zip(*casos, strict=True))
+
+    def tabla(m: list[float], e: list[bool]) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "zona_id": o,
+                "destino_id": d,
+                "modo": "tp",
+                "minutos": m,
+                "km": np.nan,
+                "estimado": e,
+            }
+        )
+
+    sin = tabla(antes, [False] * len(casos)).iloc[::-1]  # el orden de `sin` da igual
+    marcado = tiempos.marcar_estimados(tabla(despues, ya), sin)
+    assert marcado["estimado"].tolist() == estimado
+    np.testing.assert_array_equal(marcado["minutos"].to_numpy(), minutos)
+
+
 def test_el_modulo_se_importa_sin_r5py(monkeypatch, zonas, secciones):
     monkeypatch.setitem(sys.modules, "r5py", None)  # simula que r5py (o Java) no está
     recargado = importlib.reload(tiempos)
