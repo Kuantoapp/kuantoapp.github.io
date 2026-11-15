@@ -37,4 +37,9 @@
 - 1 columnas con tipos mezclados: `Total`.
 
 ## Notas
-(Escribe aqui lo que no sale del script; se conserva al regenerar.)
+- El fichero viene en UTF-8 con BOM: leer con `encoding="utf-8-sig"`, `dtype=str` y `keep_default_na=False`.
+- `Total` está en formato español (punto de miles, coma decimal): «79.274» son 79.274 €. Normalizar en `src/` (`mesobra.renta._numero`) antes de convertir; el perfil lo marca como «mixto» por los «.».
+- Dos huecos distintos: «.» es secreto estadístico (valor no publicado, la unidad existe) y «» (vacío) es una sección que no existía ese año (seccionado de otro año). En 2024 hay 4.518 secciones con dato, las del seccionado del INE a 1-1-2025.
+- Mezcla filas de municipio, distrito y sección (como la tabla demográfica); el código va antes del primer espacio y se lee como texto.
+- Valores de grupo: desde los datos de 2020, los municipios de menos de 100 residentes reciben como renta media por persona y por hogar el valor de su comarca agraria, tratada como una sola unidad (en 2020 y 2021, el de su provincia); solo afecta a esas dos rentas, y en 2024 son 6 municipios con 31.953 € (INE, Metodología ADRH, oct. 2026, §3.3, https://www.ine.es/metodologia/metodologia_adrh.pdf). Las secciones y los distritos de menos de 100 residentes de una unidad mayor reciben el valor de esta (misma §3.3).
+- La «Renta bruta media por persona» municipal es igual al «Per cápita» de `cm_irpf_indicador_renta` en los 1.740 municipio-año comparables (control de `mesobra.renta`).

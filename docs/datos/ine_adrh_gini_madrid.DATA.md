@@ -37,4 +37,7 @@
 - 1 columnas con numeros en formato espanol (coma decimal o punto de miles): `Total`.
 
 ## Notas
-(Escribe aqui lo que no sale del script; se conserva al regenerar.)
+- El fichero viene en UTF-8 con BOM: leer con `encoding="utf-8-sig"`; `Total` lleva coma decimal («37,5»).
+- «.» es secreto estadístico (valor no publicado) y «» (vacío) una sección que no existía ese año.
+- Gini y P80/P20 se calculan sobre la renta por unidad de consumo de las personas (Gini con colas recortadas 1,5 % por lado) y solo se publican en unidades de 100 residentes o más: no tienen valor de grupo, los municipios de menos de 100 residentes salen con «.» (6 en 2024).
+- El Gini viene en escala 0-100.
