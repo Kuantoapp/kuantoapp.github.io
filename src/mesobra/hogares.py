@@ -2,10 +2,10 @@
 
 Fuente: EPF del INE, gasto medio de los hogares de Madrid, año 2025, medida «Gasto medio unidad
 consumo» (€ por unidad de consumo y año), en dos tablas del catálogo de la Comunidad de Madrid:
-- 3 dígitos COICOP, `gasto-medio-de-los-hogares-por-subgrupo-de-gasto-3-digitos-coicopepf-base-2006`
+- 3 dígitos COICOP, `gasto_por_subgrupo_gasto_3_digitos_coicop_epf_base_2006`
   (`cm_epf_gasto_subgrupo`, igual a INE t=73992): 01.1 alimentos 3.115,68; 01.2 bebidas no
   alcohólicas 188,78; 04.5 electricidad, gas y otros combustibles 806,38.
-- 4 dígitos, `gasto-medio-de-los-hogares-por-subgrupo-de-gasto-4-digitos-coicopepf-base-2006`
+- 4 dígitos, `gasto_por_subgrupo_gasto_4_digitos_coicop_epf_base_2006`
   (`cm_epf_gasto_subgrupo4`): 04.4.1 suministro de agua 166,63. El 04.4 de 3 dígitos (776,78) lo
   mezcla con gastos comunitarios (600,38), basura (7,06) y saneamiento (2,71).
 Fuente de los datos: Comunidad de Madrid (INE, Encuesta de Presupuestos Familiares)
