@@ -65,7 +65,7 @@ def _gasto_uc(carpeta: Path) -> pd.Series:
     for fichero, conceptos in CONCEPTOS.items():
         df = pd.read_csv(
             carpeta / fichero, sep=";", encoding="utf-8-sig", dtype=str
-        ).query("Año == @str(ANIO) and Medida == 'Gasto medio unidad consumo'")
+        ).query(f"Año == '{ANIO}' and Medida == 'Gasto medio unidad consumo'")
         for concepto, columna in conceptos.items():
             valor = pd.to_numeric(
                 df.loc[df["Concepto"] == concepto, "Valor"], errors="coerce"
