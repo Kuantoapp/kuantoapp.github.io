@@ -52,6 +52,18 @@ def test_cero_hijos_monoparental_igual():
     )
 
 
+@pytest.mark.parametrize("hijos", [-1, 3])
+def test_hijos_fuera_de_rango(hijos):
+    with pytest.raises(ValueError, match="hijos"):
+        neto.cuota_irpf(D(30000), D(1950), hijos=hijos, monoparental=False)
+
+
+def test_bruto_float_sin_imprecision():
+    assert neto.neto_anual(30000.1, hijos=0, monoparental=False) == neto.neto_anual(
+        "30000.10", hijos=0, monoparental=False
+    )
+
+
 def test_pagas_invalidas():
     with pytest.raises(ValueError, match="pagas"):
         neto.neto_mensual(30000, 13, hijos=0, monoparental=False)
@@ -105,8 +117,8 @@ def test_casos_del_auditor(caso, esperado):
     ("bruto", "esperada"),
     [
         ("17094", "590.89"),
-        ("17094.01", "590.888"),
-        ("20048.44", "0.002"),
+        ("17094.01", "590.89"),
+        ("20048.44", "0.00"),
         ("20048.45", "0"),
     ],
 )

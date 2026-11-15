@@ -1,7 +1,8 @@
 """Parámetros legales de 2026 para el neto de un trabajador por cuenta ajena en la Comunidad de Madrid.
 
 Cada cifra cita su norma; la referencia es `.claude/skills/dm-calculos-normativos/referencia/nomina-bruto-a-neto.md`.
-Si cambia el año, se rehace entera.
+Vigentes desde el 01/01/2026; contrastados con el texto consolidado del BOE el 15/11/2026
+(dm-auditor-calculos-normativos, #79). Si cambia el año, se rehace entera.
 """
 
 from decimal import Decimal as D
@@ -55,7 +56,7 @@ DESCENDIENTES_ESTATAL = (D(2400), D(2700))
 # Mínimo por 1.º y 2.º descendiente en Madrid (DL 1/2010, art. 2 bis; BOCM-m-2010-90068)
 DESCENDIENTES_MADRID = (D("2575.85"), D("2897.83"))
 
-# SMI anual: 1.221 € × 14 (RD 126/2026, art. 1; BOE-A-2026-3815)
+# Umbral de la DA 61.ª.1.a) LIRPF, fijado en literal; coincide con el SMI anual de 2026 (RD 126/2026, art. 1)
 SMI_ANUAL = D(17094)
 # Deducción por percepción del SMI (LIRPF, DA 61.ª, redacción del RDL 5/2026, art. 28; BOE-A-2026-3810)
 DEDUCCION_SMI = D("590.89")

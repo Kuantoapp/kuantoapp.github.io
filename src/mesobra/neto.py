@@ -62,12 +62,12 @@ def _reduccion_art20(rnt: D) -> D:
     return red.quantize(CENTIMO, rounding=ROUND_HALF_UP)
 
 
-def _escala(base: D, tramos) -> D:
+def _escala(base: D, tramos: tuple[tuple[D, D, D], ...]) -> D:
     desde, acumulada, tipo = max(t for t in tramos if t[0] <= base)
     return acumulada + (base - desde) * tipo
 
 
-def _cuota(base: D, minimo: D, tramos) -> D:
+def _cuota(base: D, minimo: D, tramos: tuple[tuple[D, D, D], ...]) -> D:
     # cuota íntegra estatal y autonómica al céntimo, cada una en su casilla del Modelo 100
     return _redondea(
         max(_escala(base, tramos) - _escala(min(minimo, base), tramos), D(0))
@@ -80,6 +80,8 @@ def _minimo(contribuyente: D, descendientes: tuple[D, ...], hijos: int, factor: 
 
 def cuota_irpf(bruto: D, cotiza: D, *, hijos: int, monoparental: bool) -> D:
     """Cuota anual de IRPF (estatal + Madrid) tras la deducción por SMI, redondeada al céntimo."""
+    if hijos not in HIJOS:
+        raise ValueError(f"hijos debe estar en {HIJOS}, no {hijos}")
     # el art. 20 se calcula sobre bruto − cotizaciones, sin los 2.000 € del art. 19.2.f (art. 20, último párrafo)
     rnt = max(bruto - cotiza, D(0))
     base = max(rnt - min(p.GASTOS_OTROS, rnt) - _reduccion_art20(rnt), D(0))
@@ -102,14 +104,14 @@ def deduccion_smi(bruto: D) -> D:
     """Deducción de la DA 61.ª LIRPF antes de limitarla a la cuota íntegra."""
     if bruto >= p.DEDUCCION_SMI_LIMITE:  # «inferiores a» 20.048,45 €
         return D(0)
-    return p.DEDUCCION_SMI - p.DEDUCCION_SMI_PENDIENTE * max(bruto - p.SMI_ANUAL, D(0))
+    return _redondea(
+        p.DEDUCCION_SMI - p.DEDUCCION_SMI_PENDIENTE * max(bruto - p.SMI_ANUAL, D(0))
+    )
 
 
-def neto_anual(bruto, *, hijos: int, monoparental: bool) -> D:
+def neto_anual(bruto: int | str | D, *, hijos: int, monoparental: bool) -> D:
     """Neto anual en € (Decimal) de un bruto anual, tributación individual."""
-    if hijos not in HIJOS:
-        raise ValueError(f"hijos debe estar en {HIJOS}, no {hijos}")
-    bruto = D(bruto)
+    bruto = D(str(bruto))  # str: un float no arrastra su imprecisión binaria
     if bruto <= 0:
         raise ValueError(f"el bruto debe ser positivo, no {bruto}")
     cotiza = cotizacion(bruto)
@@ -120,7 +122,9 @@ def neto_anual(bruto, *, hijos: int, monoparental: bool) -> D:
     )
 
 
-def neto_mensual(bruto, pagas: int, *, hijos: int, monoparental: bool) -> D:
+def neto_mensual(
+    bruto: int | str | D, pagas: int, *, hijos: int, monoparental: bool
+) -> D:
     """Neto mensual en € con 12 o 14 pagas (el prorrateo no cambia el neto anual)."""
     if pagas not in PAGAS:
         raise ValueError(f"pagas debe estar en {PAGAS}, no {pagas}")
