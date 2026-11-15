@@ -8,6 +8,9 @@ Sin abono anual: el BOCM le pone precio (10 × 30 días) pero su venta a particu
 desde 2023 (crtm.es/billetes-y-tarifas).
 Viajes al día: 2 (ida y vuelta directa) o 4 (un transbordo en cada sentido); 2 viajes se cobran a
 precio de la corona y los demás a precio de la zona A (el transbordo es a Metro o EMT de la zona A).
+Se compra un único tipo de título al mes: no se combina el sencillo en un tramo con el 10 viajes en
+el otro (sin descuento, en C1 y C2 con 1 o 2 días y 4 viajes, la combinación sería menos de 1 €/mes
+más barata).
 """
 
 from decimal import ROUND_CEILING, ROUND_HALF_UP
