@@ -95,13 +95,14 @@ def test_numero():
 
 
 @pytest.mark.parametrize(
-    "catalogo",
+    "catalogo, error",
     [
-        "2024;Municipios;0016;A;Per cápita;999;Euros;",
-        "2023;Municipios;0016;A;Per cápita;999;Euros;",
+        ("2024;Municipios;0016;A;Per cápita;999;Euros;", "distintas"),
+        ("2023;Municipios;0016;A;Per cápita;1000;Euros;", "emparejados"),
+        ("2024;Municipios;0016;A;Per cápita;1000;Euros;", None),
     ],
 )
-def test_catalogo_distinto_o_sin_emparejar_falla(tmp_path, catalogo):
+def test_comparar_catalogo(tmp_path, catalogo, error):
     cab = "Municipios;Distritos;Secciones;Indicadores de renta media y mediana;Periodo;Total"
     fila = "28001 Acebeda, La;;;Renta bruta media por persona;2024;1.000"
     (tmp_path / renta.RENTA).write_text(f"{cab}\n{fila}", encoding="utf-8-sig")
@@ -110,5 +111,8 @@ def test_catalogo_distinto_o_sin_emparejar_falla(tmp_path, catalogo):
         + catalogo,
         encoding="utf-8-sig",
     )
-    with pytest.raises(ValueError, match="Catálogo|distintas"):
+    if error is None:
         renta._comparar_catalogo(tmp_path)
+    else:
+        with pytest.raises(ValueError, match=error):
+            renta._comparar_catalogo(tmp_path)

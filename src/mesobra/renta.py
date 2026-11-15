@@ -11,9 +11,14 @@ Gini y P80/P20 solo se publican con 100 residentes o más y admiten nulos. En el
 estadístico (nulo, la fila se conserva) y "" es una sección que no existía ese año (sin fila).
 Una fila sección-año puede venir de un solo fichero: hay 6 en 2015-2017 que solo trae el de renta
 y salen con todo nulo.
-Desde 2020 varios municipios pequeños comparten exactamente el mismo valor (p. ej. 6 con renta_hogar
-31.953 € en 2024): el INE parece publicar un valor de grupo; no usarlo como dato propio del
-municipio sin comprobarlo.
+Desde los datos de 2020, en los municipios de menos de 100 residentes (y en sus secciones) el INE
+publica como renta media por persona y por hogar un valor común: el del conjunto de municipios de
+menos de 100 residentes de su comarca agraria, tratado como uno solo (en las ediciones 2020 y 2021,
+el de su provincia); si ese conjunto no llega a 200 habitantes no se publica nada, y renta_uc, gini
+y p80p20 quedan nulos por debajo de 100 residentes. No es un dato propio del municipio: en 2024, los
+6 municipios de menos de 100 residentes (28001, 28069, 28078, 28118, 28126 y 28143) tienen
+renta_hogar 31.953 €. Fuente: INE, Metodología ADRH (oct. 2026), §3.3,
+https://www.ine.es/metodologia/metodologia_adrh.pdf
 Fuente: Elaboración propia con datos extraídos del sitio web del INE: www.ine.es
 """
 
