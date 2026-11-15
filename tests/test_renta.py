@@ -91,3 +91,24 @@ def test_valor_ilegible_falla(tmp_path):
 def test_numero():
     serie = pd.Series(["3.414.246", "37,5", "."])
     assert renta._numero(serie).tolist()[:2] == [3414246, 37.5]
+    assert renta._numero(serie).isna().tolist() == [False, False, True]
+
+
+@pytest.mark.parametrize(
+    "catalogo",
+    [
+        "2024;Municipios;0016;A;Per cápita;999;Euros;",
+        "2023;Municipios;0016;A;Per cápita;999;Euros;",
+    ],
+)
+def test_catalogo_distinto_o_sin_emparejar_falla(tmp_path, catalogo):
+    cab = "Municipios;Distritos;Secciones;Indicadores de renta media y mediana;Periodo;Total"
+    fila = "28001 Acebeda, La;;;Renta bruta media por persona;2024;1.000"
+    (tmp_path / renta.RENTA).write_text(f"{cab}\n{fila}", encoding="utf-8-sig")
+    (tmp_path / "cm_irpf_indicador_renta_2026-11-15.csv").write_text(
+        "Año;Tipo territorio;Código territorio;Territorio;Medida;Valor;Unidad;Estado dato\n"
+        + catalogo,
+        encoding="utf-8-sig",
+    )
+    with pytest.raises(ValueError, match="Catálogo|distintas"):
+        renta._comparar_catalogo(tmp_path)

@@ -9,6 +9,11 @@ Unidades (verificadas en F0-04, `docs/verificaciones/renta-vivienda.md`):
 - poblacion y tam_hogar: personas, y personas por hogar (t=31105).
 Gini y P80/P20 solo se publican con 100 residentes o más y admiten nulos. En el CSV, "." es secreto
 estadístico (nulo, la fila se conserva) y "" es una sección que no existía ese año (sin fila).
+Una fila sección-año puede venir de un solo fichero: hay 6 en 2015-2017 que solo trae el de renta
+y salen con todo nulo.
+Desde 2020 varios municipios pequeños comparten exactamente el mismo valor (p. ej. 6 con renta_hogar
+31.953 € en 2024): el INE parece publicar un valor de grupo; no usarlo como dato propio del
+municipio sin comprobarlo.
 Fuente: Elaboración propia con datos extraídos del sitio web del INE: www.ine.es
 """
 
@@ -23,8 +28,9 @@ RAW = RAIZ / "data/raw"
 PROCESSED = RAIZ / "data/processed"
 CLAVE = ["unidad_id", "nivel", "anio"]
 
+RENTA = "ine_adrh_renta_madrid_2026-11-15.csv"
 FICHEROS = {
-    "ine_adrh_renta_madrid_2026-11-15.csv": {
+    RENTA: {
         "Renta neta media por hogar": "renta_hogar",
         "Media de la renta por unidad de consumo": "renta_uc",
     },
@@ -83,16 +89,16 @@ def renta(carpeta: Path = RAW) -> pd.DataFrame:
         .merge(tablas[1], on=CLAVE, how="outer")
         .merge(tablas[2], on=CLAVE, how="outer")
     )
-    df = df.astype(contratos.dtypes("renta"))
+    df = df[list(contratos.CONTRATOS["renta"]["columnas"])].astype(
+        contratos.dtypes("renta")
+    )
     contratos.validar(df, "renta")
     return df.sort_values(CLAVE).reset_index(drop=True)
 
 
 def _comparar_catalogo(carpeta: Path) -> None:
     """La renta bruta por persona del INE debe coincidir con «Per cápita» del catálogo regional."""
-    ine = _leer(
-        carpeta / next(iter(FICHEROS)), {"Renta bruta media por persona": "bruta"}
-    )
+    ine = _leer(carpeta / RENTA, {"Renta bruta media por persona": "bruta"})
     ine = ine[(ine["nivel"] == "zona") & (ine["unidad_id"].str.len() == 5)]
     cm = pd.read_csv(
         carpeta / "cm_irpf_indicador_renta_2026-11-15.csv",
@@ -110,8 +116,10 @@ def _comparar_catalogo(carpeta: Path) -> None:
         }
     )
     junto = ine.dropna(subset=["bruta"]).merge(cm, on=["unidad_id", "anio"])
-    if junto.empty:
-        raise ValueError("Catálogo regional: no hay municipio-año que comparar")
+    if len(junto) != len(cm):
+        raise ValueError(
+            f"Catálogo regional: {len(junto)} de {len(cm)} municipio-año emparejados"
+        )
     distintos = junto[junto["bruta"] != junto["cm"]]
     if not distintos.empty:
         raise ValueError(
