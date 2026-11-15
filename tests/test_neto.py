@@ -167,5 +167,6 @@ def test_aeat_escala_madrid():
 def test_aeat_reduccion_art20():
     """Fuente: AEAT, manuales-practicos/irpf-2025/c03-rendimientos-trabajo/caso-practico."""
     # rendimiento neto previo 13.640 → 7.302
-    # La nota (*) de la fase 3 del capítulo 3 define el RNT sin los gastos del art. 19.2.f, como `cuota_irpf`.
+    # Aquí da 7.302 con los 2.000 € antes o después: el orden (sin los 2.000 €, art. 20 último párrafo)
+    # lo comprueba el caso del auditor de 17.094 €, que con el orden cambiado daría 7.302 y no 5.322,94.
     assert neto._reduccion_art20(D(13640)) == D(7302)
