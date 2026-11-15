@@ -34,6 +34,7 @@ RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw"
 PROCESSED = RAIZ / "data/processed"
 
+ANIO = 2025
 PREFIJO = "Gasto medio por unidad de consumo de los hogares en "
 CONCEPTOS = {
     "cm_epf_gasto_subgrupo_2026-11-15.csv": {
@@ -64,7 +65,7 @@ def _gasto_uc(carpeta: Path) -> pd.Series:
     for fichero, conceptos in CONCEPTOS.items():
         df = pd.read_csv(
             carpeta / fichero, sep=";", encoding="utf-8-sig", dtype=str
-        ).query("Año == '2025' and Medida == 'Gasto medio unidad consumo'")
+        ).query("Año == @str(ANIO) and Medida == 'Gasto medio unidad consumo'")
         for concepto, columna in conceptos.items():
             valor = pd.to_numeric(
                 df.loc[df["Concepto"] == concepto, "Valor"], errors="coerce"
@@ -89,7 +90,7 @@ def hogares(carpeta: Path = RAW) -> pd.DataFrame:
     uc_piso = uc + 0.5 * (df["personas_comparten"] - 1)
     df["alimentacion"] = gasto["alimentacion"] * uc / 12
     df["suministros"] = gasto["suministros"] * uc_piso / df["personas_comparten"] / 12
-    df["anio"] = 2025
+    df["anio"] = ANIO
     df = df.astype(contratos.dtypes("hogares"))
     contratos.validar(df, "hogares")
     df.attrs["nota"] = NOTA

@@ -38,7 +38,9 @@ def _escribir(carpeta, cuatro=CUATRO):
 
 def test_perfiles(tmp_path):
     _escribir(tmp_path)
-    df = hogares.hogares(tmp_path).set_index("perfil")
+    df = hogares.hogares(tmp_path)
+    assert "Estimado" in df.attrs["nota"]
+    df = df.set_index("perfil")
     assert len(df) == 4
     assert not df.isna().any().any()
     assert (df[["alimentacion", "suministros"]] > 0).all().all()
