@@ -184,7 +184,7 @@ def puntos_poblacion(
     puntos.loc[centro.index] = centro
     if (sin := secciones.index.difference(centro.index)).size:
         # un PBF incompleto degradaría el punto sin fallar: que se vea cuántas secciones caen al respaldo
-        LOG.info(
+        LOG.warning(
             "%d secciones sin edificios usan su punto representativo: %s",
             sin.size,
             secciones.loc[sin, "CUSEC"].tolist(),

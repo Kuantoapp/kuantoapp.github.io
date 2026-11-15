@@ -238,7 +238,7 @@ def test_zona_sin_poblacion_falla(secciones, poblacion, coronas):
 def test_centro_fuera_de_su_zona_pasa_al_nucleo_mas_central(
     secciones, poblacion, coronas, caplog
 ):
-    # Getafe partido en dos trozos: la media (+33.500) cae en el hueco; la sección más cercana es la de +34.500
+    # Getafe partido en dos trozos: la media (+33.500) cae en el hueco; el núcleo más central es el de +34.500
     lejos = secciones["CUSEC"] == "2806501002"
     secciones.loc[lejos, "geometry"] = box(X0 + 34000, Y0, X0 + 35000, Y0 + 1000)
     z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS).set_index("zona_id")
