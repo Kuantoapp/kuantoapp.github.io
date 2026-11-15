@@ -1,8 +1,11 @@
 """Tabla `tiempos` en transporte público (`modo = tp`) entre las 199 zonas.
 
 El destino de cada par es el centro de población de la zona de trabajo (`lon_centro`, `lat_centro` de `zonas`).
-Dentro de una misma zona el tiempo no es cero: es la mediana, sobre las secciones de la zona, del tiempo desde el
-centroide de la sección hasta el centro de población, con un suelo de `MIN_INTERNO` minutos.
+Dentro de una misma zona el tiempo no es cero: es la mediana, sin ponderar, sobre las secciones de la zona, del
+tiempo desde el centroide de la sección hasta el centro de población, con un suelo de `MIN_INTERNO` minutos. En
+municipios dispersos supera los 30 min porque se hace a pie: con r5py, en las 53 zonas con 30 min o más, la mediana
+es de 2,2 km en línea recta a 23 min/km. Solo 56 de 4.518 centroides caen fuera de su sección, y con
+`representative_point` esa mediana pasa de 2,18 a 2,17 km.
 
 Dos fuentes, mismo contrato:
 
@@ -79,6 +82,12 @@ def _centros(zonas: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({"x": centros.x, "y": centros.y})
 
 
+def _en_metros(secciones: gpd.GeoDataFrame) -> None:
+    """Los centroides y las distancias solo valen en EPSG:25830."""
+    if secciones.crs is None or secciones.crs.to_epsg() != 25830:
+        raise ValueError(f"Se esperaban secciones en EPSG:25830 y hay {secciones.crs}")
+
+
 def _minutos(km: np.ndarray | pd.Series) -> np.ndarray | pd.Series:
     return km * FACTOR_RODEO / VELOCIDAD_KMH * 60
 
@@ -89,6 +98,10 @@ def _tabla(matriz: pd.DataFrame, interno: pd.Series) -> pd.DataFrame:
     `matriz` trae `from_id`, `to_id` y `minutos`; los pares que falten quedan nulos.
     """
     ids = interno.index
+    if interno.isna().any():
+        raise ValueError(
+            f"Zonas sin tiempo interno (sin secciones o sin ruta): {ids[interno.isna()].tolist()}"
+        )
     pares = pd.MultiIndex.from_product([ids, ids], names=["zona_id", "destino_id"])
     tabla = (
         matriz.set_index(["from_id", "to_id"])["minutos"]
@@ -115,6 +128,11 @@ def _interno_mediana(
         validate="many_to_one",
     )
     propios = m[m["to_id"] == m["zona_id"]]
+    if (sin_ruta := propios.loc[propios["minutos"].isna(), "zona_id"]).size:
+        LOG.warning(
+            "Secciones sin ruta a su centro, fuera de la mediana: %s",
+            sin_ruta.value_counts().to_dict(),
+        )
     return propios.groupby("zona_id")["minutos"].median().reindex(ids)
 
 
@@ -123,6 +141,7 @@ def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame
 
     `secciones` trae `zona_id` y la geometría en EPSG:25830 (salida de `zonas.secciones_por_zona`).
     """
+    _en_metros(secciones)
     centros = _centros(zonas)
     xy = centros.to_numpy()
     km = (
@@ -148,8 +167,6 @@ def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame
         index=secciones["zona_id"].to_numpy(),
     )
     interno = _minutos(km_sec.groupby(level=0).median()).reindex(ids)
-    if interno.isna().any():
-        raise ValueError(f"Zonas sin secciones: {ids[interno.isna()].tolist()}")
     return _validada(_tabla(matriz, interno).assign(estimado=True))
 
 
@@ -183,6 +200,8 @@ def preparar_gtfs(origenes: list[Path], destino: Path = GTFS_PREPARADOS) -> list
                 cal["end_date"].max(),
                 FIN_CALENDARIO,
             )
+            # shortcut: prolonga todos los servicios a la vez (Metro: 4 con el mismo periodo); con servicios de
+            # temporada quedarían activos juntos, revisarlo si se prolonga otra red
             cal["end_date"] = FIN_CALENDARIO
             cal["start_date"] = cal["start_date"].where(
                 cal["start_date"] < fecha, fecha
@@ -215,6 +234,7 @@ def matriz_r5py(
     """
     from r5py import TransportMode, TransportNetwork, TravelTimeMatrix
 
+    _en_metros(secciones)
     centros = _puntos(zonas["zona_id"], zonas["lon_centro"], zonas["lat_centro"])
     puntos_seccion = secciones.centroid.to_crs(4326)
     sec = _puntos(secciones["CUSEC"], puntos_seccion.x, puntos_seccion.y)
@@ -253,6 +273,14 @@ def main(modo: str = "r5py") -> None:
         tabla = matriz_r5py(zonas, secciones, OSM, preparar_gtfs(GTFS))
     else:
         raise ValueError(f"modo desconocido: {modo!r} (r5py o base)")
+    sin_ruta = (
+        tabla.groupby("zona_id")["minutos"].count().le(1)
+    )  # solo su propia diagonal
+    LOG.info(
+        "%.1f %% de pares nulos; zonas sin ruta a ninguna otra: %s",
+        100 * tabla["minutos"].isna().mean(),
+        sin_ruta.index[sin_ruta].tolist(),
+    )
     tabla.to_parquet(PROCESSED / "tiempos.parquet")
 
 

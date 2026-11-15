@@ -83,8 +83,19 @@ def test_por_encima_del_maximo_es_nulo(zonas, secciones):
 
 
 def test_zona_sin_secciones_falla(zonas, secciones):
-    with pytest.raises(ValueError, match="sin secciones"):
+    with pytest.raises(ValueError, match="sin tiempo interno"):
         tiempos.linea_base(zonas, secciones[secciones["zona_id"] != "C"])
+
+
+def test_secciones_en_otro_crs_fallan(zonas, secciones):
+    with pytest.raises(ValueError, match="EPSG:25830"):
+        tiempos.linea_base(zonas, secciones.to_crs(4326))
+
+
+def test_zona_sin_ruta_interna_falla():
+    matriz = pd.DataFrame({"from_id": ["A"], "to_id": ["B"], "minutos": [10.0]})
+    with pytest.raises(ValueError, match=r"sin tiempo interno.*'B'"):
+        tiempos._tabla(matriz, pd.Series({"A": 5.0, "B": np.nan}))
 
 
 def test_interno_mediana_por_zona():
