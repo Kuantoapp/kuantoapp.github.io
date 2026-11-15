@@ -2,10 +2,8 @@
 
 El destino de cada par es el centro de población de la zona de trabajo (`lon_centro`, `lat_centro` de `zonas`).
 Dentro de una misma zona el tiempo no es cero: es la mediana, sin ponderar, sobre las secciones de la zona, del
-tiempo desde el centroide de la sección hasta el centro de población, con un suelo de `MIN_INTERNO` minutos. En
-municipios dispersos supera los 30 min porque se hace a pie: con r5py, en las 53 zonas con 30 min o más, la mediana
-es de 2,2 km en línea recta a 23 min/km. Solo 56 de 4.518 centroides caen fuera de su sección, y con
-`representative_point` esa mediana pasa de 2,18 a 2,17 km.
+tiempo desde el punto de población de la sección (`zonas.puntos_poblacion`, la geometría de `secciones`) hasta el
+centro de población, con un suelo de `MIN_INTERNO` minutos.
 
 Dos fuentes, mismo contrato:
 
@@ -33,8 +31,10 @@ from mesobra import contratos
 from mesobra.zonas import (
     PROCESSED,
     RAW,
+    leer_edificios,
     leer_secciones,
     poblacion_secciones,
+    puntos_poblacion,
     secciones_por_zona,
 )
 
@@ -139,7 +139,7 @@ def _interno_mediana(
 def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame:
     """Tabla `tiempos` por distancia (plan B3): sin Java y siempre completa, con `estimado = verdadero`.
 
-    `secciones` trae `zona_id` y la geometría en EPSG:25830 (salida de `zonas.secciones_por_zona`).
+    `secciones` trae `zona_id` y como geometría su punto de población en EPSG:25830 (ver `main`).
     """
     _en_metros(secciones)
     centros = _centros(zonas)
@@ -267,6 +267,8 @@ def main(modo: str = "r5py") -> None:
     """Escribe `data/processed/tiempos.parquet`; `modo` es `r5py` o `base` (línea base por distancia)."""
     zonas = gpd.read_parquet(PROCESSED / "zonas.parquet")
     secciones = secciones_por_zona(leer_secciones(), poblacion_secciones())
+    # el tiempo interno se mide desde donde vive la gente, no desde el centroide del polígono (#175)
+    secciones = secciones.assign(geometry=puntos_poblacion(secciones, leer_edificios()))
     if modo == "base":
         tabla = linea_base(zonas, secciones)
     elif modo == "r5py":
