@@ -8,6 +8,8 @@ from shapely.geometry import box
 from mesobra import zonas
 
 X0, Y0 = 440000, 4474000  # cerca de la Puerta del Sol, en metros
+# sin edificios cada sección usa su punto representativo, que en un rectángulo es su centro
+SIN_EDIFICIOS = gpd.GeoSeries([], crs=25830)
 
 
 def _seccion(cusec: str, x: float, y: float) -> dict:
@@ -58,7 +60,7 @@ def coronas() -> gpd.GeoDataFrame:
 
 
 def test_disuelve_en_municipios_y_distritos(secciones, poblacion, coronas):
-    z = zonas.zonas(secciones, poblacion, coronas).set_index("zona_id")
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS).set_index("zona_id")
     assert len(z) == 22 and (z["tipo"] == "distrito").sum() == 21
     assert z.loc["2807901", ["nombre", "municipio_id", "tipo"]].tolist() == [
         "Centro",
@@ -76,7 +78,7 @@ def test_disuelve_en_municipios_y_distritos(secciones, poblacion, coronas):
 
 
 def test_centro_ponderado_por_poblacion(secciones, poblacion, coronas):
-    z = zonas.zonas(secciones, poblacion, coronas).set_index("zona_id")
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS).set_index("zona_id")
     centros = gpd.GeoSeries.from_xy(
         z["lon_centro"], z["lat_centro"], crs=4326, index=z.index
     ).to_crs(25830)
@@ -87,8 +89,102 @@ def test_centro_ponderado_por_poblacion(secciones, poblacion, coronas):
     assert centros["28065"].y == pytest.approx(Y0 + 500, abs=1e-3)
 
 
+def test_punto_de_poblacion_es_la_media_de_sus_edificios(secciones):
+    # dos edificios en la esquina de la primera sección de Getafe; la segunda no tiene ninguno
+    edificios = gpd.GeoSeries.from_xy(
+        [X0 + 30100, X0 + 30300], [Y0 + 100, Y0 + 100], crs=25830
+    )
+    puntos = zonas.puntos_poblacion(secciones, edificios)
+    getafe = secciones["CUSEC"].to_numpy()
+    p1, p2 = (
+        puntos[getafe == "2806501001"].iloc[0],
+        puntos[getafe == "2806501002"].iloc[0],
+    )
+    assert (p1.x, p1.y) == pytest.approx((X0 + 30200, Y0 + 100))
+    assert (p2.x, p2.y) == pytest.approx((X0 + 31500, Y0 + 500))  # punto representativo
+
+
+def test_punto_de_poblacion_no_sale_de_su_seccion():
+    # sección en L con un núcleo en cada brazo: la media (+1.500, +1.500) cae en el hueco de la L
+    ele = box(X0, Y0, X0 + 3000, Y0 + 1000).union(box(X0, Y0, X0 + 1000, Y0 + 3000))
+    seccion = gpd.GeoDataFrame({"CUSEC": ["2800101001"]}, geometry=[ele], crs=25830)
+    edificios = gpd.GeoSeries.from_xy(
+        [X0 + 2900, X0 + 2800, X0 + 100], [Y0 + 500, Y0 + 500, Y0 + 2900], crs=25830
+    )
+    punto = zonas.puntos_poblacion(seccion, edificios).iloc[0]
+    assert punto.within(ele)
+    assert (punto.x, punto.y) == pytest.approx(
+        (X0 + 2800, Y0 + 500)
+    )  # el edificio más cercano a la media
+
+
+def test_el_centro_sigue_a_los_edificios(secciones, poblacion, coronas):
+    # Getafe: con todos sus edificios al oeste de su primera sección, el centro deja de estar en el medio
+    edificios = gpd.GeoSeries.from_xy(
+        [X0 + 30100, X0 + 31100], [Y0 + 500, Y0 + 500], crs=25830
+    )
+    z = zonas.zonas(secciones, poblacion, coronas, edificios).set_index("zona_id")
+    centro = gpd.GeoSeries.from_xy(
+        [z.loc["28065", "lon_centro"]], [z.loc["28065", "lat_centro"]], crs=4326
+    ).to_crs(25830)[0]
+    # pesos 10 y 30 en x = +30100 y +31100
+    assert centro.x == pytest.approx(X0 + 30850, abs=1e-3)
+
+
+def test_leer_edificios_quita_los_que_no_son_vivienda(tmp_path):
+    ruta = tmp_path / "osm.gpkg"
+    gpd.GeoDataFrame(
+        {
+            "building": ["house", "industrial", "yes", None],
+            "geometry": [
+                box(X0 + i * 100, Y0, X0 + i * 100 + 10, Y0 + 10) for i in range(4)
+            ],
+        },
+        crs=25830,
+    ).to_crs(4326).to_file(ruta, layer="multipolygons")
+    edificios = zonas.leer_edificios(ruta)
+    assert edificios.crs.to_epsg() == 25830
+    assert sorted(round(p.x) for p in edificios) == [X0 + 5, X0 + 205]
+
+
+def test_el_nucleo_mas_central_no_es_el_mas_cercano_a_la_media():
+    # tres núcleos: A (0 km, 100 hab.), B (5 km, 1 hab.) y C (9 km, 300 hab.); la media (+6.745) cae a 1.745 m de B,
+    # que es el más cercano, pero el más central por población es C
+    x = [X0, X0 + 5000, X0 + 9000]
+    secciones = gpd.GeoDataFrame(
+        {"zona_id": ["Z"] * 3, "poblacion": [100, 1, 300]},
+        geometry=gpd.points_from_xy(x, [Y0] * 3),
+        crs=25830,
+    )
+    puntos = secciones.geometry
+    centros = gpd.GeoSeries.from_xy([X0 + 6745], [Y0], crs=25830, index=["Z"])
+    zona = gpd.GeoDataFrame(
+        geometry=[box(X0 - 100, Y0 - 100, X0 + 9100, Y0 + 100)], index=["Z"], crs=25830
+    )
+    centro = zonas._en_un_nucleo(secciones, puntos, centros, zona)["Z"]
+    assert centro.x == pytest.approx(X0 + 9000)
+
+
+def test_centro_en_un_hueco_entre_nucleos_pasa_al_nucleo_mas_central(
+    secciones, poblacion, coronas, caplog
+):
+    # Getafe continuo, pero la segunda sección mide 7 km y su núcleo está al fondo (+37.900):
+    # la media (+36.050) queda dentro de la zona y a 1.850 m de todo núcleo
+    ancha = secciones["CUSEC"] == "2806501002"
+    secciones.loc[ancha, "geometry"] = box(X0 + 31000, Y0, X0 + 38000, Y0 + 1000)
+    edificios = gpd.GeoSeries.from_xy(
+        [X0 + 30500, X0 + 37900], [Y0 + 500] * 2, crs=25830
+    )
+    z = zonas.zonas(secciones, poblacion, coronas, edificios).set_index("zona_id")
+    centro = gpd.GeoSeries.from_xy(
+        [z.loc["28065", "lon_centro"]], [z.loc["28065", "lat_centro"]], crs=4326
+    ).to_crs(25830)[0]
+    assert centro.x == pytest.approx(X0 + 37900, abs=1e-3)
+    assert "28065" in caplog.text
+
+
 def test_corona_del_centro(secciones, poblacion, coronas):
-    z = zonas.zonas(secciones, poblacion, coronas).set_index("zona_id")
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS).set_index("zona_id")
     assert (z.loc[z["tipo"] == "distrito", "corona"] == "A").all()
     assert z.loc["28065", "corona"] == "B1"
 
@@ -107,12 +203,12 @@ def test_centro_sin_corona_de_la_comunidad_falla(
     )
     coronas = pd.concat([coronas, madrid])
     with pytest.raises(ValueError, match="sin corona"):
-        zonas.zonas(secciones, poblacion, coronas)
+        zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
 
 
 def test_secciones_sin_poblacion_fallan(secciones, poblacion, coronas):
     with pytest.raises(ValueError, match="no casan"):
-        zonas.zonas(secciones, poblacion.drop("2806501002"), coronas)
+        zonas.zonas(secciones, poblacion.drop("2806501002"), coronas, SIN_EDIFICIOS)
 
 
 @pytest.mark.parametrize("cambio", ["prefijo", "falta_distrito"])
@@ -130,21 +226,27 @@ def test_centro_en_dos_coronas_falla(secciones, poblacion, coronas):
         corona="B2", geometry=box(X0 + 30000, Y0, X0 + 32000, Y0 + 1000)
     )
     with pytest.raises(ValueError, match="dos coronas"):
-        zonas.zonas(secciones, poblacion, pd.concat([coronas, solape]))
+        zonas.zonas(secciones, poblacion, pd.concat([coronas, solape]), SIN_EDIFICIOS)
 
 
 def test_zona_sin_poblacion_falla(secciones, poblacion, coronas):
     poblacion[["2806501001", "2806501002"]] = 0
     with pytest.raises(ValueError, match="sin población"):
-        zonas.zonas(secciones, poblacion, coronas)
+        zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
 
 
-def test_centro_fuera_de_su_zona_falla(secciones, poblacion, coronas):
-    # Getafe partido en dos trozos: el centro ponderado cae en el hueco
+def test_centro_fuera_de_su_zona_pasa_al_nucleo_mas_central(
+    secciones, poblacion, coronas, caplog
+):
+    # Getafe partido en dos trozos: la media (+33.500) cae en el hueco; el núcleo más central es el de +34.500
     lejos = secciones["CUSEC"] == "2806501002"
     secciones.loc[lejos, "geometry"] = box(X0 + 34000, Y0, X0 + 35000, Y0 + 1000)
-    with pytest.raises(ValueError, match="fuera de su zona"):
-        zonas.zonas(secciones, poblacion, coronas)
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS).set_index("zona_id")
+    centro = gpd.GeoSeries.from_xy(
+        [z.loc["28065", "lon_centro"]], [z.loc["28065", "lat_centro"]], crs=4326
+    ).to_crs(25830)[0]
+    assert centro.x == pytest.approx(X0 + 34500, abs=1e-3)
+    assert "28065" in caplog.text
 
 
 def _coronas(frontera_x: float, suelo_b1: float = Y0 - 1000) -> gpd.GeoDataFrame:
@@ -162,7 +264,7 @@ def _coronas(frontera_x: float, suelo_b1: float = Y0 - 1000) -> gpd.GeoDataFrame
 
 
 def test_sin_coronas_dudosas(secciones, poblacion, coronas):
-    z = zonas.zonas(secciones, poblacion, coronas)
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
     por_zona = zonas.secciones_por_zona(secciones, poblacion)
     assert zonas.coronas_dudosas(por_zona, z, coronas).empty
 
@@ -186,7 +288,7 @@ def test_coronas_dudosas_por_cada_condicion(secciones, poblacion, caso):
     segunda, coronas, esperado = CASOS_DUDOSOS[caso]
     if segunda is not None:
         secciones.loc[secciones["CUSEC"] == "2806501002", "geometry"] = segunda
-    z = zonas.zonas(secciones, poblacion, coronas)
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
     dudosas = zonas.coronas_dudosas(
         zonas.secciones_por_zona(secciones, poblacion), z, coronas
     )
@@ -202,7 +304,7 @@ def test_seccion_sin_corona_cuenta_cero(secciones, poblacion):
         {"corona": ["A"], "geometry": [box(X0, Y0, X0 + 21000, Y0 + 2000)]}, crs=25830
     )
     coronas = pd.concat([solo_b1, madrid])
-    z = zonas.zonas(secciones, poblacion, coronas)
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
     dudosas = zonas.coronas_dudosas(
         zonas.secciones_por_zona(secciones, poblacion), z, coronas
     )
@@ -214,7 +316,7 @@ def test_coronas_dudosas_compara_sin_redondear(secciones, poblacion):
     secciones.loc[secciones["CUSEC"] == "2806501002", "geometry"] = ANCHA
     poblacion[["2806501001", "2806501002"]] = [1004, 8996]
     coronas = _coronas(X0 + 31000)
-    z = zonas.zonas(secciones, poblacion, coronas)
+    z = zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
     dudosas = zonas.coronas_dudosas(
         zonas.secciones_por_zona(secciones, poblacion), z, coronas
     )

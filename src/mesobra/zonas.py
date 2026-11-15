@@ -1,23 +1,38 @@
 """Las 199 zonas del plan: 178 municipios y los 21 distritos de Madrid capital.
 
 Disuelve las secciones del seccionado INE a 1-1-2025 (el del ADRH 2024), pesa cada zona con la población
-de la tabla 31105 del ADRH (2024), calcula el centro de población (media de los centroides de sus secciones
-ponderada por población, medida en EPSG:25830) y le asigna la corona tarifaria del CRTM en la que cae
+de la tabla 31105 del ADRH (2024), calcula el centro de población (media de los puntos de población de sus
+secciones ponderada por población, medida en EPSG:25830) y le asigna la corona tarifaria del CRTM en la que cae
 ese centro. Produce la tabla `zonas` (contrato en `contratos.py`).
+
+El punto de población de una sección es la media de los centroides de sus edificios de OpenStreetMap (© los
+colaboradores de OpenStreetMap, ODbL), sin los que no son vivienda; una sección sin edificios usa su punto
+representativo. El centroide geométrico no sirve: en una sección rural grande cae en el campo (#175).
 """
 
+import logging
 from pathlib import Path
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 
 from mesobra import contratos
 
+LOG = logging.getLogger(__name__)
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw"
 SECCIONADO = RAW / "ine_seccionado_2025_2026-11-15/SECC_CE_20250101.shp"
 POBLACION = RAW / "ine_adrh_demograficos_madrid_2026-11-15.csv"
 CORONAS = RAW / "crtm_coronas_2026-11-15.geojson"
+OSM = RAW / "osm_madrid_2026-11-15.pbf"
+# supuesto: estos valores de `building` no son vivienda; `yes` (sin tipo) sí cuenta, porque es el más frecuente
+NO_VIVIENDA = (
+    "industrial", "warehouse", "commercial", "retail", "office", "farm_auxiliary", "barn",
+    "shed", "garage", "garages", "roof", "greenhouse", "hangar", "construction", "ruins",
+    "service", "transformer_tower", "parking", "church", "chapel", "school", "hospital",
+    "university", "sports_hall", "stadium", "kiosk", "no",
+)  # fmt: skip
 PROCESSED = RAIZ / "data/processed"
 
 MADRID = "28079"
@@ -26,6 +41,8 @@ CORONAS_CM = ("A", "B1", "B2", "B3", "C1", "C2")  # E1 y E2 están fuera de la C
 # supuesto: corona dudosa si vive en ella menos del 90 % de la zona o el centro está a menos de 1 km del borde
 CUOTA_MINIMA = 0.9
 DISTANCIA_MINIMA_M = 1000
+# supuesto: un centro a más de 1 km de todo punto de población de su zona está en un hueco entre núcleos
+HUECO_MAX_M = 1000
 # Nombres oficiales de los distritos (Ayuntamiento de Madrid, Distritos.csv del geoportal); el INE solo da el código
 DISTRITOS = {
     "01": "Centro",
@@ -120,15 +137,69 @@ def comprobar_distritos(secciones: gpd.GeoDataFrame) -> None:
         )
 
 
-def _centros(secciones: gpd.GeoDataFrame) -> gpd.GeoSeries:
-    """Media de los centroides de las secciones de cada zona, ponderada por población (EPSG:25830)."""
-    centroide = secciones.centroid
+def leer_edificios(ruta: Path = OSM) -> gpd.GeoSeries:
+    """Centroides (EPSG:25830) de los edificios de OpenStreetMap que pueden ser vivienda (sin `NO_VIVIENDA`)."""
+    edificios = gpd.read_file(
+        ruta, layer="multipolygons", columns=["building"], where="building IS NOT NULL"
+    )
+    edificios = edificios[~edificios["building"].isin(NO_VIVIENDA)]
+    if edificios.empty:
+        raise ValueError(
+            f"{ruta.name} no tiene edificios de vivienda en la capa multipolygons"
+        )
+    return edificios.to_crs(25830).centroid.reset_index(drop=True)
+
+
+def puntos_poblacion(
+    secciones: gpd.GeoDataFrame, edificios: gpd.GeoSeries
+) -> gpd.GeoSeries:
+    """Punto de población de cada sección, siempre dentro de ella.
+
+    Es la media de sus edificios; si cae fuera de la sección, el edificio más cercano a esa media; y si la sección
+    no tiene edificios, su punto representativo.
+    """
+    dentro = gpd.sjoin(
+        gpd.GeoDataFrame(geometry=edificios.to_crs(secciones.crs)),
+        secciones[["geometry"]],
+        predicate="within",
+    )
+    media = (
+        dentro.assign(x=dentro.geometry.x, y=dentro.geometry.y)
+        .groupby("index_right")[["x", "y"]]
+        .mean()
+    )
+    centro = gpd.GeoSeries.from_xy(
+        media["x"], media["y"], crs=secciones.crs, index=media.index
+    )
+    # sección con varios núcleos (Puentes Viejas): la media cae entre ellos; se usa el edificio más cercano
+    fuera = centro.index[~centro.within(secciones.geometry.loc[centro.index])]
+    if fuera.size:
+        cand = dentro[dentro["index_right"].isin(fuera)]
+        distancia = cand.distance(centro.loc[cand["index_right"]].set_axis(cand.index))
+        cercano = distancia.groupby(cand["index_right"]).idxmin()
+        centro.loc[cercano.index] = cand.geometry.loc[cercano.to_numpy()].set_axis(
+            cercano.index
+        )
+    puntos = secciones.representative_point()
+    puntos.loc[centro.index] = centro
+    if (sin := secciones.index.difference(centro.index)).size:
+        # un PBF incompleto degradaría el punto sin fallar: que se vea cuántas secciones caen al respaldo
+        LOG.warning(
+            "%d secciones sin edificios usan su punto representativo: %s",
+            sin.size,
+            secciones.loc[sin, "CUSEC"].tolist(),
+        )
+    return puntos
+
+
+def _centros(secciones: gpd.GeoDataFrame, puntos: gpd.GeoSeries) -> gpd.GeoSeries:
+    """Media de los puntos de población de las secciones de cada zona, ponderada por población (EPSG:25830)."""
     pesos = (
         pd.DataFrame(
             {
                 "zona_id": secciones["zona_id"],
-                "px": centroide.x * secciones["poblacion"],
-                "py": centroide.y * secciones["poblacion"],
+                "px": puntos.x * secciones["poblacion"],
+                "py": puntos.y * secciones["poblacion"],
                 "p": secciones["poblacion"],
             }
         )
@@ -143,6 +214,36 @@ def _centros(secciones: gpd.GeoDataFrame) -> gpd.GeoSeries:
         crs=secciones.crs,
         index=pesos.index,
     )
+
+
+def _en_un_nucleo(
+    secciones: gpd.GeoDataFrame,
+    puntos: gpd.GeoSeries,
+    centros: gpd.GeoSeries,
+    zona: gpd.GeoDataFrame,
+) -> gpd.GeoSeries:
+    """Si el centro cae fuera de su zona o en un hueco, lo lleva al punto de población más central de la zona.
+
+    En un municipio de varios núcleos (Puentes Viejas, El Escorial) la media cae entre ellos, lejos de todo
+    punto de población; a más de `HUECO_MAX_M` se considera hueco. El más central es el punto de sección que
+    minimiza la distancia ponderada por población a las demás secciones: el pueblo grande, no un diseminado.
+    """
+    zona_de = secciones["zona_id"]
+    distancia = puntos.distance(centros.reindex(zona_de).set_axis(puntos.index))
+    hueco = distancia.groupby(zona_de).min().reindex(zona.index) > HUECO_MAX_M
+    mover = zona.index[~centros.within(zona.geometry) | hueco]
+    if mover.size:
+        LOG.warning(
+            "Centro fuera de un núcleo, pasa al más central: %s", mover.tolist()
+        )
+    centros = centros.copy()
+    for zona_id in mover:  # pocas zonas; cada una, vectorizada
+        propios = puntos[zona_de == zona_id]
+        xy = np.column_stack([propios.x, propios.y])
+        d = np.hypot(*(xy[:, None, :] - xy[None, :, :]).transpose(2, 0, 1))
+        peso = secciones.loc[propios.index, "poblacion"].to_numpy(dtype=float)
+        centros.loc[zona_id] = propios.iloc[int(np.argmin(d @ peso))]
+    return centros
 
 
 def _corona(centros: gpd.GeoSeries, coronas: gpd.GeoDataFrame) -> pd.Series:
@@ -185,11 +286,15 @@ def secciones_por_zona(
 
 
 def zonas(
-    secciones: gpd.GeoDataFrame, poblacion: pd.Series, coronas: gpd.GeoDataFrame
+    secciones: gpd.GeoDataFrame,
+    poblacion: pd.Series,
+    coronas: gpd.GeoDataFrame,
+    edificios: gpd.GeoSeries,
 ) -> gpd.GeoDataFrame:
     """Tabla `zonas`: una fila por municipio o distrito de Madrid, validada con su contrato."""
     secciones = secciones_por_zona(secciones, poblacion)
-    centros = _centros(secciones)
+    puntos = puntos_poblacion(secciones, edificios)
+    centros = _centros(secciones, puntos)
     zona = secciones.dissolve(
         "zona_id",
         aggfunc={
@@ -200,6 +305,7 @@ def zonas(
         },
     )
     # en una zona cóncava o partida el centro podría caer en el vecino y tomar su corona
+    centros = _en_un_nucleo(secciones, puntos, centros, zona)
     if (fuera := zona.index[~centros.within(zona.geometry)]).size:
         raise ValueError(f"Centros fuera de su zona: {fuera.tolist()}")
     lonlat = centros.to_crs(4326)
@@ -281,7 +387,7 @@ def coronas_dudosas(
 
 def main() -> None:
     poblacion = poblacion_secciones()
-    zona = zonas(leer_secciones(), poblacion, leer_coronas())
+    zona = zonas(leer_secciones(), poblacion, leer_coronas(), leer_edificios())
     distritos = zona[zona["tipo"] == "distrito"]
     if len(zona) != 199 or len(distritos) != 21:
         raise ValueError(
