@@ -1,17 +1,17 @@
 escenario,joven,corona,dias,viajes_dia,titulo,coste_mes
-vigente_2026,True,A,1,2,Billete sencillo,12.9
-vigente_2026,True,A,5,2,Abono Joven,20.0
-vigente_2026,True,B1,1,2,Billete sencillo,17.2
-vigente_2026,True,B1,5,2,Abono Joven,20.0
-vigente_2026,False,A,1,2,Billete sencillo,12.9
-vigente_2026,False,A,5,2,Abono Mensual,54.6
-vigente_2026,False,B1,1,2,Billete sencillo,17.2
-vigente_2026,False,B1,5,2,Abono Mensual,63.7
-sin_descuento,True,A,1,2,Billete sencillo,12.9
-sin_descuento,True,A,5,2,Abono Mensual,54.6
-sin_descuento,True,B1,1,2,Billete sencillo,17.2
-sin_descuento,True,B1,5,2,Abono Mensual,63.7
-sin_descuento,False,A,1,2,Billete sencillo,12.9
-sin_descuento,False,A,5,2,Abono Mensual,54.6
-sin_descuento,False,B1,1,2,Billete sencillo,17.2
-sin_descuento,False,B1,5,2,Abono Mensual,63.7
+vigente_2026,False,A,1,2,10 viajes,7.30
+vigente_2026,False,A,5,2,Abono 30 días,32.70
+vigente_2026,False,B1,1,2,10 viajes,7.30
+vigente_2026,False,B1,5,2,10 viajes,36.50
+vigente_2026,True,A,1,2,10 viajes,7.30
+vigente_2026,True,A,5,2,Abono Joven,10.00
+vigente_2026,True,B1,1,2,10 viajes,7.30
+vigente_2026,True,B1,5,2,Abono Joven,10.00
+sin_descuento,False,A,1,2,10 viajes,12.50
+sin_descuento,False,A,5,2,Abono 30 días,56.20
+sin_descuento,False,B1,1,2,10 viajes,12.50
+sin_descuento,False,B1,5,2,10 viajes,62.50
+sin_descuento,True,A,1,2,10 viajes,12.50
+sin_descuento,True,A,5,2,Abono Joven,20.00
+sin_descuento,True,B1,1,2,10 viajes,12.50
+sin_descuento,True,B1,5,2,Abono Joven,20.00
