@@ -537,8 +537,8 @@ La ficha describe el alcance completo. La prioridad entre piezas se fija al plan
 - [ ] Probar r5py (transporte público y coche) con 3–5 pares origen-destino.
 - [ ] Tarifas 2026 por zona en el BOCM y condiciones del Abono Joven (límite de edad).
 - [ ] Reglas vigentes del Bono Alquiler Joven en la Comunidad.
-- [ ] Coincidencia entre distritos censales y municipales en Madrid capital.
-- [ ] Identificador correcto del IPC de alquiler regional (`1927681` o `1934665`).
+- [x] Coincidencia entre distritos censales y municipales en Madrid capital. Tienen los mismos 21 códigos y las mismas secciones. Los límites difieren en menos del 4 % del área de cada distrito, porque las cartografías son de fechas distintas: [verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), #68.
+- [x] Identificador correcto del IPC de alquiler regional (`1927681` o `1934665`). El factor se calcula con la serie del INE `IPC297196` (Comunidad de Madrid, mensual), y `1934665` se cita como control: [decisión del 2026-11-14](../../../docs/decisiones.md), #67.
 - [ ] Régimen de tenencia en el Censo de edificios y viviendas de la Comunidad (`19155xx`) y nivel territorial del Censo 2021.
 - [ ] Nivel territorial de la renta del catálogo regional (`1916304`).
 - [ ] Licencia de los GTFS del CRTM.
