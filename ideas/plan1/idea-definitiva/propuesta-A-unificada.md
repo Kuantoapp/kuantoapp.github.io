@@ -533,7 +533,7 @@ La ficha describe el alcance completo. La prioridad entre piezas se fija al plan
 | Datos personales en el test | Consentimiento informado y anonimato |
 
 ### Verificaciones pendientes
-- [ ] Abrir el Excel del SERPAVI: años, cobertura en Madrid y huecos.
+- [x] Abrir el Excel del SERPAVI: años, cobertura en Madrid y huecos. Trae los años 2011 a 2024 y tiene los 21 distritos de Madrid. En 2024 tienen dato 157 de las 199 zonas. Las 42 sin dato son municipios pequeños con menos de 10 testigos, y su lista está en el PR #151. En 2024, los testigos de vivienda colectiva de la Comunidad suman 474.935 (fuente: SERPAVI, MIVAU).
 - [ ] Probar r5py (transporte público y coche) con 3–5 pares origen-destino.
 - [ ] Tarifas 2026 por zona en el BOCM y condiciones del Abono Joven (límite de edad).
 - [ ] Reglas vigentes del Bono Alquiler Joven en la Comunidad.
