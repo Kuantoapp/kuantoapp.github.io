@@ -31,6 +31,7 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 - 2026-11-12 · Sin aprobación obligatoria de GitHub; check `revision`: Yeray e Izan mergean con CI verde, el resto necesita su aprobación · quitar al humano como cuello de botella sin abrir la puerta a código no revisado · estructura del repo
 - 2026-11-12 · Flujo GitHub Flow: ramas `<usuario>/<tema>`, PR con squash a `main`, 1 revisión · tres personas con agentes, historial lineal y revisable · estructura del repo
 - _Pendiente_ · Bases del concurso: criterios y pesos del jurado, formato de entrega y duración de la presentación
+- _Pendiente_ · Licencia de los datos derivados del INE en `app/datos/`: CC BY 4.0 (lo que dice el apartado de reutilización del aviso legal del INE) o CC BY-SA 4.0 (lo que dice el pie de su web). #108 y #110 dan por hecho CC BY 4.0. Hay que decidirlo antes de #110 (corte el 23-11) · #147
 
 ## Fechas clave
 
