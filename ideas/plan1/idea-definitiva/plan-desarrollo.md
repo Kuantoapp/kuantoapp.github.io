@@ -64,6 +64,7 @@ Los identificadores `F1-04` son estables. Las duraciones, los tamaños y los umb
 | Sobrecarga log-normal (7.2) | N1 | F3-06 | Solo arranca con el visto bueno de S3. El 21 a las 18:00 fuera del margen de la cifra de control, o sin cifra de control → no se publica; el Bono usa el esfuerzo |
 | Simulación del criterio del Bono (7.4) y fin del descuento agregado (7.5) | N1 | F3-07, F3-08 | El 21 a las 20:00 sin mergear → fuera; queda el escenario individual |
 | Informe con las piezas N1 (7) | N1 | F3-09 | Se reduce a lo que haya llegado |
+| Transporte con la ruta real: interzonales, operador, calendario laboral, colectivos y todo el hogar (6.3; decisión del 15/11, supuestos de #80) | N1 | F3-10, F3-11, F3-12, F3-13, F3-14 | F3-12 el 20 a las 12:00 sin mergear → 4,33 semanas. F3-10 sin puerta D6 o el 20 a las 20:00 sin mergear → heurística por la recta. F3-11 el 21 a las 12:00 sin mergear → `tarifas` v1. F3-13 el 21 a las 12:00 → solo «ordinario». F3-14 (b) el 21 a las 16:00 → solo cuenta quien trabaja. Lo que no llegue se declara en F5-03 |
 | Metadatos DCAT-AP (11.2) | N1 | F5-04 | El 23 a las 14:00 sin F4-03 → el README describe los ficheros |
 | Piloto con usuarios (10.3) | N1 | T-01, T-02 | El 17 sin responsable → fuera, y el impacto es el análisis del Bono; con responsable y sin web publicada el 20 → prueba de uso en local con cinco personas |
 | Nóminas reales (6.1, 10.2) | N1 | T-03 | El 18 sin nóminas → auditoría y casos de control |
@@ -154,6 +155,11 @@ La issue es la fuente de verdad: allí están el texto para el agente, los crite
 | F3-07 | [#101](https://github.com/yeraybc/DataMad-hackaton-2026/issues/101) feat(src): simulación del criterio del Bono con transporte en casos tipo | N1 | Yeray | 21 nov | F2-09 | opus · esfuerzo alto | 330 |
 | F3-08 | [#102](https://github.com/yeraybc/DataMad-hackaton-2026/issues/102) feat(src): efecto del fin del descuento del abono por municipio | N1 | Yeray | 21 nov | F1-12, F1-08, F3-07 | sonnet · esfuerzo medio | 180 |
 | F3-09 | [#103](https://github.com/yeraybc/DataMad-hackaton-2026/issues/103) feat(app): informe con sobrecarga, simulaciones y titulares | N1 | Yeray | 22 nov | F2-06, F2-09, F3-06, F3-07, F3-08 | opus · esfuerzo alto | 320 |
+| F3-10 | [#161](https://github.com/yeraybc/DataMad-hackaton-2026/issues/161) feat(src): validaciones, sistemas tarifarios y rango de coronas de cada ruta | N1 | Izan | 19–20 nov | F1-04, D6 | opus · esfuerzo alto | 300 |
+| F3-11 | [#162](https://github.com/yeraybc/DataMad-hackaton-2026/issues/162) feat(src): título más barato por la ruta real (interzonales, operador y viajes no laborables) | N1 | Yeray | 20 nov | F1-12, F1-15, F3-10, F3-12 | opus · esfuerzo alto | 380 |
+| F3-12 | [#160](https://github.com/yeraybc/DataMad-hackaton-2026/issues/160) feat(src): calendario laboral de 2026 en el coste de transporte (vacaciones y festivos) | N1 | Yeray | 19 nov | F1-12 | sonnet · esfuerzo medio | 120 |
+| F3-13 | [#163](https://github.com/yeraybc/DataMad-hackaton-2026/issues/163) feat(src): descuentos de familia numerosa, monoparental y discapacidad en el transporte | N1 | Yeray | 21 nov | F3-11 | sonnet · esfuerzo medio | 150 |
+| F3-14 | [#164](https://github.com/yeraybc/DataMad-hackaton-2026/issues/164) feat(app): coste de transporte de todo el hogar con tarifas v2 | N1 | Izan | 21 nov | F3-11, F3-03 | sonnet · esfuerzo medio | 250 |
 | F4-01 | [#104](https://github.com/yeraybc/DataMad-hackaton-2026/issues/104) chore(src): un comando regenera y comprueba toda la API estática | N0 | Izan | 21 nov | F1-08, F1-15, F2-06, F2-07 | sonnet · esfuerzo bajo | 90 |
 | F4-02 | [#105](https://github.com/yeraybc/DataMad-hackaton-2026/issues/105) data(app): API estática congelada de zonas y tiempos | N0 | Izan | 22 nov | F4-01, F1-08 | sonnet · esfuerzo medio | 40 |
 | F4-03 | [#106](https://github.com/yeraybc/DataMad-hackaton-2026/issues/106) data(app): API estática congelada de euros y análisis | N0 | Yeray | 22 nov | F4-01, F4-02, F1-15, F2-07, F2-09 | sonnet · esfuerzo medio | 40 |
@@ -215,6 +221,11 @@ flowchart LR
   F3_07["F3-07 simulación del Bono"]
   F3_08["F3-08 fin del descuento"]
   F3_09["F3-09 informe N1"]
+  F3_10["F3-10 rutas: validaciones y coronas"]
+  F3_11["F3-11 título por la ruta real"]
+  F3_12["F3-12 calendario laboral"]
+  F3_13["F3-13 colectivos"]
+  F3_14["F3-14 transporte del hogar"]
   F4_01["F4-01 un comando"]
   F4_02["F4-02 congelación de territorio"]
   F4_03["F4-03 congelación de euros y análisis"]
@@ -264,6 +275,11 @@ flowchart LR
   F2_09 --> F3_07
   F3_07 --> F3_08
   F3_06 & F3_08 --> F3_09
+  F1_04 --> F3_10
+  F1_12 --> F3_12
+  F1_12 & F1_15 & F3_10 & F3_12 --> F3_11
+  F3_11 --> F3_13
+  F3_11 & F3_03 --> F3_14
   F1_15 & F2_06 & F2_07 --> F4_01
   F4_01 --> F4_02
   F4_02 & F2_09 --> F4_03
@@ -281,8 +297,8 @@ flowchart LR
   classDef yeray fill:#dcfce7,stroke:#14532d,color:#111
   classDef tercero fill:#fef3c7,stroke:#78350f,color:#111
   classDef critico fill:#fee2e2,stroke:#b91c1c,stroke-width:3px,color:#111
-  class F0_03,F0_05,F1_05,F1_06,F1_07,F1_16,F2_03,F3_01,F3_02,F3_03,F4_01,F4_02,F5_02 izan
-  class F0_02,F0_04,F1_02,F1_10,F1_11,F1_12,F1_13,F1_14,F1_15,F2_04,F2_05,F2_06,F2_07,F2_08,F2_09,F2_10,F3_04,F3_05,F3_06,F3_07,F3_08,F3_09,F4_03,F5_03,F5_04 yeray
+  class F0_03,F0_05,F1_05,F1_06,F1_07,F1_16,F2_03,F3_01,F3_02,F3_03,F3_10,F3_14,F4_01,F4_02,F5_02 izan
+  class F0_02,F0_04,F1_02,F1_10,F1_11,F1_12,F1_13,F1_14,F1_15,F2_04,F2_05,F2_06,F2_07,F2_08,F2_09,F2_10,F3_04,F3_05,F3_06,F3_07,F3_08,F3_09,F3_11,F3_12,F3_13,F4_03,F5_03,F5_04 yeray
   class F5_05,F5_06,T_01,T_02,T_03 tercero
   class F0_01,F1_01,F1_03,F1_04,F1_08,F1_09,F2_01,F2_02,F5_01 critico
 ```
@@ -297,9 +313,9 @@ Azul: Izan. Verde: Yeray. Amarillo: tercer carril. Rojo: camino crítico (todo �
 | 16 lun | F1-03 ‖ F1-05 ‖ F1-06 (3: `zonas.py`, `calculo.py` y `app/` son independientes y usan fixtures); F1-04, pasos 0 y A, en cuanto quede un agente libre | F1-10 ‖ F1-12 ‖ F1-14 (3: un módulo cada uno); F1-11 termina con el auditor | **S2, 20:00:** puerta de r5py (D6). D4, D7, D8 y D12 |
 | 17 mar | F1-04 paso B ‖ F1-07 → F1-09 con los ejemplos ‖ F1-16 (3: la matriz es tiempo de máquina; F1-16 es mecánica) → F1-08 | F1-15 por la mañana ‖ F1-13 → F2-04 (2) | T-01 ‖ T-03 si hay responsable |
 | 18 mié | F1-08 → F1-09 con los datos reales (1: es la integración, no se paraleliza) | F2-05 ‖ F2-07 ‖ F2-10 (3: `bono.py`, `sdm.py` y `alquiler.py`) | T-01 y T-03 terminan. **S3, 19:00:** H1 juntos, mapa con datos reales; se decide si arrancan F3-05 y F3-06. D5 |
-| 19 jue | F2-01 ‖ F2-03 ‖ F3-01 (3: `app/`, el MCP y los polos no comparten ficheros) | F2-06 ‖ F2-08 ‖ F3-04 (3: informe, workflow y fuentes) | Web publicada; empieza el piloto |
-| 20 vie | F2-02 ‖ F3-02 (2); F2-03 termina | F2-09 ‖ F3-05 ‖ F3-06 (3: `titulares.py`, `imputacion.py` y `sobrecarga.py`) | **S4, 20:00:** H2 y corte de N1 (D9) |
-| 21 sáb | F3-03 ‖ F4-01 (2) | F3-07 → F3-08 (1: comparten fichero); F3-05 y F3-06 terminan | Por la noche, ensayo de congelación: `python -m mesobra` completo, sin PR |
+| 19 jue | F2-01 ‖ F2-03 ‖ F3-01 (3: `app/`, el MCP y los polos no comparten ficheros); por la mañana, cronometrar F3-10 con 200 pares | F2-06 ‖ F2-08 ‖ F3-04 (3: informe, workflow y fuentes); F3-12 si hay hueco (pequeña) | Web publicada; empieza el piloto |
+| 20 vie | F2-02 ‖ F3-02 ‖ F3-10 (3); F2-03 termina | F2-09 ‖ F3-05 ‖ F3-06 (3: `titulares.py`, `imputacion.py` y `sobrecarga.py`); F3-11 entra al liberarse uno (`transporte.py`) | **S4, 20:00:** H2 y corte de N1 (D9) |
+| 21 sáb | F3-03 → F3-14 (b) ‖ F4-01 ‖ F3-14 (a) (3: `app/` en secuencia; el cálculo, aparte) | F3-07 → F3-08 (1: comparten fichero) ‖ F3-11 → F3-13 (`transporte.py`); F3-05 y F3-06 terminan | Por la noche, ensayo de congelación: `python -m mesobra` completo, sin PR |
 | 22 dom | F4-02 (1: ejecución completa, una vez) | F3-09 → F4-03 (1: mismos ficheros, en secuencia, y F4-03 espera a F4-02) | **S5, 20:00:** firma de la congelación (D10) y etiqueta |
 | 23 lun | F5-01 ‖ F5-02 (2) | F5-03 ‖ F5-04 (2) | F5-05. D11 a las 12:00 |
 | 24 mar | F5-02 termina; correcciones del ensayo | Correcciones del ensayo | F5-05 termina → F5-06 ‖ T-02. **Ensayo 1** a las 17:00 |
