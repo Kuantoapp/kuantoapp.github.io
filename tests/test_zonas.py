@@ -206,7 +206,20 @@ def test_seccion_sin_corona_cuenta_cero(secciones, poblacion):
     dudosas = zonas.coronas_dudosas(
         zonas.secciones_por_zona(secciones, poblacion), z, coronas
     )
-    assert dudosas.loc["28065", "cuota_punto"] == 0.75
+    assert dudosas.loc["28065", ["cuota_punto", "cuota_area"]].tolist() == [0.75, 0.75]
+
+
+def test_coronas_dudosas_compara_sin_redondear(secciones, poblacion):
+    # 8.996 de 10.000 en B1: 0,8996 se redondea a 0,900 pero está por debajo del umbral
+    secciones.loc[secciones["CUSEC"] == "2806501002", "geometry"] = ANCHA
+    poblacion[["2806501001", "2806501002"]] = [1004, 8996]
+    coronas = _coronas(X0 + 31000)
+    z = zonas.zonas(secciones, poblacion, coronas)
+    dudosas = zonas.coronas_dudosas(
+        zonas.secciones_por_zona(secciones, poblacion), z, coronas
+    )
+    assert dudosas.index.tolist() == ["28065"]
+    assert dudosas.loc["28065", "cuota_punto"] == 0.9
 
 
 CABECERA = "Municipios;Distritos;Secciones;Indicadores demográficos;Periodo;Total"

@@ -232,13 +232,15 @@ def coronas_dudosas(
     punto = gpd.GeoDataFrame(
         secciones[["zona_id", "poblacion"]], geometry=secciones.representative_point()
     )
-    # shortcut: un punto en un solape de borde entre coronas (1 km² en total) cuenta en la primera
+    # shortcut: en un solape de borde entre coronas (1 km² en total) un punto cuenta en la primera y un
+    # trozo, en las dos (cubre hasta el 100,4 % de su sección); quitar los solapes si la capa empeora
     en_punto = gpd.sjoin(punto, coronas, how="left", predicate="intersects")
     en_punto = en_punto[~en_punto.index.duplicated()]
     trozos = gpd.overlay(
         secciones[["CUSEC", "zona_id", "poblacion", "geometry"]],
         coronas,
         how="intersection",
+        keep_geom_type=False,  # los contactos entre bordes salen como líneas de área 0
     )
     area = secciones.set_index("CUSEC").area
     trozos["poblacion"] = (
@@ -249,6 +251,9 @@ def coronas_dudosas(
         .where(df["corona"].eq(df["zona_id"].map(z["corona"])), 0)
         .groupby(df["zona_id"])
         .sum()
+        .reindex(
+            z.index, fill_value=0
+        )  # una zona sin trozo en ninguna corona tiene cuota 0
         / z["poblacion"]
         for nombre, df in {"cuota_punto": en_punto, "cuota_area": trozos}.items()
     }
@@ -263,15 +268,15 @@ def coronas_dudosas(
         {
             "nombre": z["nombre"],
             "corona": z["corona"],
-            "cuota_punto": cuotas["cuota_punto"].round(3),
-            "cuota_area": cuotas["cuota_area"].round(3),
-            "distancia_borde_m": distancia.round(0),
+            **cuotas,
+            "distancia_borde_m": distancia,
         }
     )
     dudosa = (tabla[list(cuotas)].min(axis=1) < CUOTA_MINIMA) | (
         tabla["distancia_borde_m"] < DISTANCIA_MINIMA_M
     )
-    return tabla[dudosa].sort_values("cuota_punto")
+    redondeo = {"cuota_punto": 3, "cuota_area": 3, "distancia_borde_m": 0}
+    return tabla[dudosa].round(redondeo).sort_values("cuota_punto")
 
 
 def main() -> None:
