@@ -142,3 +142,30 @@ def test_tramos_solidaridad(mensual, solidaridad_mes):
     assert neto.cotizacion(bruto) - ordinaria == (D(solidaridad_mes) * 12).quantize(
         D("0.01")
     )
+
+
+# Casos oficiales de la AEAT, Manual práctico de Renta 2024 y 2025 (consultados el 15/11/2026), en
+# https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/. Ninguno
+# parte solo de rendimientos del trabajo de 2026, así que contrastan cada pieza por separado; la escala
+# estatal, la de Madrid y el art. 20 no cambian de 2024 a 2026. No contrastan la cotización ni la DA 61.ª.
+def test_aeat_cuota_estatal():
+    """Fuente: AEAT, manuales-practicos/irpf-2024/c15-…/ejemplo-practico-calculo-cuotas-integras-autonomica."""
+    # base liquidable general 23.900 y mínimo 5.550: cuota íntegra general estatal 2.140,50
+    assert neto._escala(D(23900), p.ESCALA_ESTATAL) == D("2667.75")
+    assert neto._cuota(D(23900), D(5550), p.ESCALA_ESTATAL) == D("2140.50")
+
+
+def test_aeat_escala_madrid():
+    """Fuente: AEAT, manuales-practicos/irpf-2024/c15-…/supuestos-especiales-concurrencia-rentas."""
+    # Madrid: 24.050 → 2.385,33 y 7.757,55 → 659,39. La AEAT trunca el parcial (645,807 → 645,80),
+    # de ahí la tolerancia de un céntimo. Su mínimo autonómico (5.777,55) es el de 2022: el DL 1/2010,
+    # art. 2.a, fija 5.956,65 desde 2023 (Ley 13/2023), así que solo se contrasta la escala.
+    assert abs(neto._escala(D(24050), p.ESCALA_MADRID) - D("2385.33")) <= D("0.01")
+    assert neto._redondea(neto._escala(D("7757.55"), p.ESCALA_MADRID)) == D("659.39")
+
+
+def test_aeat_reduccion_art20():
+    """Fuente: AEAT, manuales-practicos/irpf-2025/c03-rendimientos-trabajo/caso-practico."""
+    # rendimiento neto previo 13.640 → 7.302
+    # La nota (*) de la fase 3 del capítulo 3 define el RNT sin los gastos del art. 19.2.f, como `cuota_irpf`.
+    assert neto._reduccion_art20(D(13640)) == D(7302)
