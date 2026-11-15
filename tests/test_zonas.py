@@ -147,7 +147,25 @@ def test_leer_edificios_quita_los_que_no_son_vivienda(tmp_path):
     assert sorted(round(p.x) for p in edificios) == [X0 + 5, X0 + 205]
 
 
-def test_centro_en_un_hueco_entre_nucleos_pasa_al_nucleo_mas_cercano(
+def test_el_nucleo_mas_central_no_es_el_mas_cercano_a_la_media():
+    # tres núcleos: A (0 km, 100 hab.), B (5 km, 1 hab.) y C (9 km, 300 hab.); la media (+6.745) cae a 1.745 m de B,
+    # que es el más cercano, pero el más central por población es C
+    x = [X0, X0 + 5000, X0 + 9000]
+    secciones = gpd.GeoDataFrame(
+        {"zona_id": ["Z"] * 3, "poblacion": [100, 1, 300]},
+        geometry=gpd.points_from_xy(x, [Y0] * 3),
+        crs=25830,
+    )
+    puntos = secciones.geometry
+    centros = gpd.GeoSeries.from_xy([X0 + 6745], [Y0], crs=25830, index=["Z"])
+    zona = gpd.GeoDataFrame(
+        geometry=[box(X0 - 100, Y0 - 100, X0 + 9100, Y0 + 100)], index=["Z"], crs=25830
+    )
+    centro = zonas._en_un_nucleo(secciones, puntos, centros, zona)["Z"]
+    assert centro.x == pytest.approx(X0 + 9000)
+
+
+def test_centro_en_un_hueco_entre_nucleos_pasa_al_nucleo_mas_central(
     secciones, poblacion, coronas, caplog
 ):
     # Getafe continuo, pero la segunda sección mide 7 km y su núcleo está al fondo (+37.900):
@@ -217,7 +235,7 @@ def test_zona_sin_poblacion_falla(secciones, poblacion, coronas):
         zonas.zonas(secciones, poblacion, coronas, SIN_EDIFICIOS)
 
 
-def test_centro_fuera_de_su_zona_pasa_a_la_seccion_mas_cercana(
+def test_centro_fuera_de_su_zona_pasa_al_nucleo_mas_central(
     secciones, poblacion, coronas, caplog
 ):
     # Getafe partido en dos trozos: la media (+33.500) cae en el hueco; la sección más cercana es la de +34.500

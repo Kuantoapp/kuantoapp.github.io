@@ -31,7 +31,7 @@ NO_VIVIENDA = (
     "industrial", "warehouse", "commercial", "retail", "office", "farm_auxiliary", "barn",
     "shed", "garage", "garages", "roof", "greenhouse", "hangar", "construction", "ruins",
     "service", "transformer_tower", "parking", "church", "chapel", "school", "hospital",
-    "university", "sports_hall", "stadium", "kiosk",
+    "university", "sports_hall", "stadium", "kiosk", "no",
 )  # fmt: skip
 PROCESSED = RAIZ / "data/processed"
 
@@ -142,9 +142,11 @@ def leer_edificios(ruta: Path = OSM) -> gpd.GeoSeries:
     edificios = gpd.read_file(
         ruta, layer="multipolygons", columns=["building"], where="building IS NOT NULL"
     )
-    if edificios.empty:
-        raise ValueError(f"{ruta.name} no tiene edificios en la capa multipolygons")
     edificios = edificios[~edificios["building"].isin(NO_VIVIENDA)]
+    if edificios.empty:
+        raise ValueError(
+            f"{ruta.name} no tiene edificios de vivienda en la capa multipolygons"
+        )
     return edificios.to_crs(25830).centroid.reset_index(drop=True)
 
 
@@ -180,6 +182,13 @@ def puntos_poblacion(
         )
     puntos = secciones.representative_point()
     puntos.loc[centro.index] = centro
+    if (sin := secciones.index.difference(centro.index)).size:
+        # un PBF incompleto degradaría el punto sin fallar: que se vea cuántas secciones caen al respaldo
+        LOG.info(
+            "%d secciones sin edificios usan su punto representativo: %s",
+            sin.size,
+            secciones.loc[sin, "CUSEC"].tolist(),
+        )
     return puntos
 
 
