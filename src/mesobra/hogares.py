@@ -13,6 +13,7 @@ Fuente de los datos: Comunidad de Madrid (INE, Encuesta de Presupuestos Familiar
 Supuestos y límites:
 - Unidades de consumo (UC) de la escala OCDE modificada de la EPF: 1 + 0,5 por cada adulto más
   + 0,3 por cada hijo (menor de 14 años). Alimentación = gasto por UC × UC del perfil.
+  `cesta_uc` da el gasto por UC para recalcular la cesta con otro hogar (#180).
 - Cada persona compra su comida, también en piso compartido. Los suministros del piso se reparten:
   UC del piso (UC del perfil + 0,5 por cada persona más) entre `personas_comparten`.
 - `personas_comparten` cuenta las unidades que pagan el alquiler: la pareja suma sus dos
@@ -79,17 +80,22 @@ def _gasto_uc(carpeta: Path) -> pd.Series:
     return pd.Series(gasto)
 
 
+def cesta_uc(carpeta: Path = RAW) -> pd.Series:
+    """€/mes por unidad de consumo de 2025: alimentacion y suministros; la fórmula por hogar está en `hogares`."""
+    return _gasto_uc(carpeta) / 12
+
+
 def hogares(carpeta: Path = RAW) -> pd.DataFrame:
     """Alimentación y suministros €/mes por perfil de hogar (contrato `hogares`)."""
-    gasto = _gasto_uc(carpeta)
+    gasto = cesta_uc(carpeta)
     df = pd.DataFrame(
         PERFILES, index=["adultos", "hijos", "personas_comparten"]
     ).T.rename_axis("perfil")
     df = df.reset_index()
     uc = 1 + 0.5 * (df["adultos"] - 1) + 0.3 * df["hijos"]
     uc_piso = uc + 0.5 * (df["personas_comparten"] - 1)
-    df["alimentacion"] = gasto["alimentacion"] * uc / 12
-    df["suministros"] = gasto["suministros"] * uc_piso / df["personas_comparten"] / 12
+    df["alimentacion"] = gasto["alimentacion"] * uc
+    df["suministros"] = gasto["suministros"] * uc_piso / df["personas_comparten"]
     df["anio"] = ANIO
     df = df.astype(contratos.dtypes("hogares"))
     contratos.validar(df, "hogares")

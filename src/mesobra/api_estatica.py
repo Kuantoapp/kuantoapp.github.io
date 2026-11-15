@@ -355,10 +355,12 @@ PERFIL = {
 }
 # fmt: on
 PERFILES = ["solo", "comparte", "pareja", "monoparental"]
+CESTA_UC = {"alimentacion": POS, "suministros": POS}
 
 
 def _hogares(o):
-    p = _raiz(o, {"perfiles": None})
+    p = _raiz(o, {"perfiles": None, "cesta_uc": None})
+    p += _registro("cesta_uc", o.get("cesta_uc"), CESTA_UC)
     return p + _mapa(
         "perfiles", o.get("perfiles"), PERFILES, lambda r, v: _registro(r, v, PERFIL)
     )
