@@ -14,29 +14,156 @@
         "licencia": "Reutilización con cita de la fuente (BOE)"
       }
     ],
-    "nota": "Ejemplo inventado para tests; no son datos."
+    "nota": "Ejemplo para tests (coronas A y B1); no son los ficheros publicados."
   },
-  "orden_coronas": ["A","B1"],
+  "orden_coronas": [
+    "A",
+    "B1"
+  ],
   "edad_max_joven": 25,
+  "viajes_dia": [
+    2,
+    4
+  ],
   "escenarios": {
-    "vigente_2026": {
-      "joven": {
-        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0}],
-        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0},{"titulo":"Abono Joven","coste_mes":20.0}]
-      },
+    "sin_descuento": {
       "general": {
-        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
-        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
+        "2": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":12.5},
+            {"titulo":"10 viajes","coste_mes":25.0},
+            {"titulo":"10 viajes","coste_mes":37.5},
+            {"titulo":"10 viajes","coste_mes":50.0},
+            {"titulo":"Abono 30 días","coste_mes":56.2}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":12.5},
+            {"titulo":"10 viajes","coste_mes":25.0},
+            {"titulo":"10 viajes","coste_mes":37.5},
+            {"titulo":"10 viajes","coste_mes":50.0},
+            {"titulo":"10 viajes","coste_mes":62.5}
+          ]
+        },
+        "4": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":25.0},
+            {"titulo":"10 viajes","coste_mes":50.0},
+            {"titulo":"Abono 30 días","coste_mes":56.2},
+            {"titulo":"Abono 30 días","coste_mes":56.2},
+            {"titulo":"Abono 30 días","coste_mes":56.2}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":25.0},
+            {"titulo":"10 viajes","coste_mes":50.0},
+            {"titulo":"Abono 30 días","coste_mes":65.6},
+            {"titulo":"Abono 30 días","coste_mes":65.6},
+            {"titulo":"Abono 30 días","coste_mes":65.6}
+          ]
+        }
+      },
+      "joven": {
+        "2": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":12.5},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":12.5},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0}
+          ]
+        },
+        "4": {
+          "A": [
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0}
+          ],
+          "B1": [
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0},
+            {"titulo":"Abono Joven","coste_mes":20.0}
+          ]
+        }
       }
     },
-    "sin_descuento": {
-      "joven": {
-        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
-        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
-      },
+    "vigente_2026": {
       "general": {
-        "A": [{"titulo":"Billete sencillo","coste_mes":12.9},{"titulo":"Billete sencillo","coste_mes":25.8},{"titulo":"Billete sencillo","coste_mes":38.7},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":54.6}],
-        "B1": [{"titulo":"Billete sencillo","coste_mes":17.2},{"titulo":"Billete sencillo","coste_mes":34.4},{"titulo":"Billete sencillo","coste_mes":51.6},{"titulo":"Abono Mensual","coste_mes":63.7},{"titulo":"Abono Mensual","coste_mes":63.7}]
+        "2": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":7.3},
+            {"titulo":"10 viajes","coste_mes":14.6},
+            {"titulo":"10 viajes","coste_mes":21.9},
+            {"titulo":"10 viajes","coste_mes":29.2},
+            {"titulo":"Abono 30 días","coste_mes":32.7}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":7.3},
+            {"titulo":"10 viajes","coste_mes":14.6},
+            {"titulo":"10 viajes","coste_mes":21.9},
+            {"titulo":"10 viajes","coste_mes":29.2},
+            {"titulo":"10 viajes","coste_mes":36.5}
+          ]
+        },
+        "4": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":14.6},
+            {"titulo":"10 viajes","coste_mes":29.2},
+            {"titulo":"Abono 30 días","coste_mes":32.7},
+            {"titulo":"Abono 30 días","coste_mes":32.7},
+            {"titulo":"Abono 30 días","coste_mes":32.7}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":14.6},
+            {"titulo":"10 viajes","coste_mes":29.2},
+            {"titulo":"Abono 30 días","coste_mes":38.2},
+            {"titulo":"Abono 30 días","coste_mes":38.2},
+            {"titulo":"Abono 30 días","coste_mes":38.2}
+          ]
+        }
+      },
+      "joven": {
+        "2": {
+          "A": [
+            {"titulo":"10 viajes","coste_mes":7.3},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0}
+          ],
+          "B1": [
+            {"titulo":"10 viajes","coste_mes":7.3},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0}
+          ]
+        },
+        "4": {
+          "A": [
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0}
+          ],
+          "B1": [
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0},
+            {"titulo":"Abono Joven","coste_mes":10.0}
+          ]
+        }
       }
     }
   }
