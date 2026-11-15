@@ -125,29 +125,53 @@ def test_distritos_que_no_casan_fallan(secciones, cambio):
         zonas.comprobar_distritos(secciones)
 
 
-def test_en_dos_coronas_ignora_astillas():
-    zona = gpd.GeoDataFrame(
-        {
-            "zona_id": ["28001", "28002"],
-            "geometry": [box(0, 0, 10000, 1000), box(0, 2000, 10000, 3000)],
-        },
-        crs=25830,
+def test_centro_en_dos_coronas_falla(secciones, poblacion, coronas):
+    solape = coronas.assign(
+        corona="B2", geometry=box(X0 + 30000, Y0, X0 + 32000, Y0 + 1000)
     )
-    coronas = gpd.GeoDataFrame(
+    with pytest.raises(ValueError, match="dos coronas"):
+        zonas.zonas(secciones, poblacion, pd.concat([coronas, solape]))
+
+
+def test_zona_sin_poblacion_falla(secciones, poblacion, coronas):
+    poblacion[["2806501001", "2806501002"]] = 0
+    with pytest.raises(ValueError, match="sin población"):
+        zonas.zonas(secciones, poblacion, coronas)
+
+
+def test_centro_fuera_de_su_zona_falla(secciones, poblacion, coronas):
+    # Getafe partido en dos trozos: el centro ponderado cae en el hueco
+    lejos = secciones["CUSEC"] == "2806501002"
+    secciones.loc[lejos, "geometry"] = box(X0 + 34000, Y0, X0 + 35000, Y0 + 1000)
+    with pytest.raises(ValueError, match="fuera de su zona"):
+        zonas.zonas(secciones, poblacion, coronas)
+
+
+def test_coronas_dudosas(secciones, poblacion, coronas):
+    por_zona = zonas.secciones_por_zona(secciones, poblacion)
+    z = zonas.zonas(secciones, poblacion, coronas)
+    assert zonas.coronas_dudosas(por_zona, z, coronas).empty
+    # La frontera A/B1 parte Getafe: 10 de 40 personas en A y centro a 250 m del borde
+    partidas = gpd.GeoDataFrame(
         {
-            "corona": ["A", "B1", "A", "B1"],
+            "corona": ["A", "B1"],
             "geometry": [
-                box(0, 0, 3000, 1000),  # 30 % de 28001
-                box(3000, 0, 10000, 1000),
-                box(0, 2000, 10, 3000),  # 0,1 % de 28002
-                box(10, 2000, 10000, 3000),
+                box(X0 - 1000, Y0 - 1000, X0 + 31000, Y0 + 3000),
+                box(X0 + 31000, Y0 - 1000, X0 + 40000, Y0 + 3000),
             ],
         },
         crs=25830,
     )
-    dos = zonas.en_dos_coronas(zona, coronas)
-    assert dos.index.tolist() == ["28001"]
-    assert dos.loc["28001", ["A", "B1"]].tolist() == [0.3, 0.7]
+    z = zonas.zonas(secciones, poblacion, partidas)
+    dudosas = zonas.coronas_dudosas(por_zona, z, partidas)
+    assert dudosas.index.tolist() == ["28065"]
+    assert dudosas.loc[
+        "28065", ["corona", "cuota_poblacion", "distancia_borde_m"]
+    ].tolist() == [
+        "B1",
+        0.75,
+        250,
+    ]
 
 
 CABECERA = "Municipios;Distritos;Secciones;Indicadores demográficos;Periodo;Total"

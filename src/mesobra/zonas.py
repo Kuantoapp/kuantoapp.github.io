@@ -23,8 +23,9 @@ PROCESSED = RAIZ / "data/processed"
 MADRID = "28079"
 ANIO_POBLACION = "2024"
 CORONAS_CM = ("A", "B1", "B2", "B3", "C1", "C2")  # E1 y E2 están fuera de la Comunidad
-# supuesto: una corona que ocupa menos del 1 % del término es una astilla de borde entre cartografías
-UMBRAL_DOS_CORONAS = 0.01
+# supuesto: corona dudosa si vive en ella menos del 90 % de la zona o el centro está a menos de 1 km del borde
+CUOTA_MINIMA = 0.9
+DISTANCIA_MINIMA_M = 1000
 # Nombres oficiales de los distritos (Ayuntamiento de Madrid, Distritos.csv del geoportal); el INE solo da el código
 DISTRITOS = {
     "01": "Centro",
@@ -59,7 +60,10 @@ def _entero(serie: pd.Series) -> pd.Series:
 def poblacion_secciones(ruta: Path = POBLACION) -> pd.Series:
     """Población 2024 por sección (`CUSEC` → personas); comprueba que suma lo mismo que los municipios."""
     df = pd.read_csv(ruta, sep=";", dtype=str, encoding="utf-8-sig")
-    df = df[(df.iloc[:, 3] == "Población") & (df["Periodo"] == ANIO_POBLACION)]
+    df = df[
+        (df["Indicadores demográficos"] == "Población")
+        & (df["Periodo"] == ANIO_POBLACION)
+    ]
     if (df["Total"] == ".").any():
         raise ValueError(f"Población sin dato («.») en {ruta.name}")
     # una sección sin valor en 2024 ya no existe en ese seccionado; zonas() exige luego el mismo conjunto
@@ -157,10 +161,10 @@ def _corona(centros: gpd.GeoSeries, coronas: gpd.GeoDataFrame) -> pd.Series:
     return union["corona"]
 
 
-def zonas(
-    secciones: gpd.GeoDataFrame, poblacion: pd.Series, coronas: gpd.GeoDataFrame
+def secciones_por_zona(
+    secciones: gpd.GeoDataFrame, poblacion: pd.Series
 ) -> gpd.GeoDataFrame:
-    """Tabla `zonas`: una fila por municipio o distrito de Madrid, validada con su contrato."""
+    """Secciones con su población, `zona_id`, `nombre` y `tipo` de zona."""
     comprobar_distritos(secciones)
     if set(secciones["CUSEC"]) != set(poblacion.index):
         faltan = set(secciones["CUSEC"]) ^ set(poblacion.index)
@@ -171,13 +175,20 @@ def zonas(
         poblacion, left_on="CUSEC", right_index=True, validate="one_to_one"
     )
     es_madrid = secciones["CUMUN"] == MADRID
-    secciones["zona_id"] = secciones["CUMUN"].where(
-        ~es_madrid, secciones["CUMUN"] + secciones["CDIS"]
+    return secciones.assign(
+        zona_id=secciones["CUMUN"].where(
+            ~es_madrid, secciones["CUMUN"] + secciones["CDIS"]
+        ),
+        nombre=secciones["NMUN"].where(~es_madrid, secciones["CDIS"].map(DISTRITOS)),
+        tipo=es_madrid.map({True: "distrito", False: "municipio"}),
     )
-    secciones["nombre"] = secciones["NMUN"].where(
-        ~es_madrid, secciones["CDIS"].map(DISTRITOS)
-    )
-    secciones["tipo"] = es_madrid.map({True: "distrito", False: "municipio"})
+
+
+def zonas(
+    secciones: gpd.GeoDataFrame, poblacion: pd.Series, coronas: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """Tabla `zonas`: una fila por municipio o distrito de Madrid, validada con su contrato."""
+    secciones = secciones_por_zona(secciones, poblacion)
     centros = _centros(secciones)
     zona = secciones.dissolve(
         "zona_id",
@@ -188,6 +199,9 @@ def zonas(
             "poblacion": "sum",
         },
     )
+    # en una zona cóncava o partida el centro podría caer en el vecino y tomar su corona
+    if (fuera := zona.index[~centros.within(zona.geometry)]).size:
+        raise ValueError(f"Centros fuera de su zona: {fuera.tolist()}")
     lonlat = centros.to_crs(4326)
     zona = zona.assign(
         corona=_corona(centros, coronas),
@@ -202,21 +216,45 @@ def zonas(
     return zona
 
 
-def en_dos_coronas(zona: gpd.GeoDataFrame, coronas: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Zonas cuyo término cae en más de una corona (cuota de área por corona), para revisarlas a mano."""
-    trozos = gpd.overlay(zona[["zona_id", "geometry"]], coronas, how="intersection")
-    cuota = (
-        trozos.assign(area=trozos.area)
-        .pivot_table(
-            index="zona_id",
-            columns="corona",
-            values="area",
-            aggfunc="sum",
-            fill_value=0,
-        )
-        .div(zona.set_index("zona_id").area, axis=0)
+def coronas_dudosas(
+    secciones: gpd.GeoDataFrame, zona: gpd.GeoDataFrame, coronas: gpd.GeoDataFrame
+) -> pd.DataFrame:
+    """Zonas cuya corona conviene revisar a mano: poca población en ella o centro cerca del borde.
+
+    `secciones` es la salida de `secciones_por_zona`. La capa del CRTM son bandas que no siguen los
+    términos municipales, así que se mide la cuota de población de la corona asignada, no la de área.
+    """
+    punto = gpd.GeoDataFrame(
+        secciones[["zona_id", "poblacion"]], geometry=secciones.representative_point()
     )
-    return cuota[(cuota > UMBRAL_DOS_CORONAS).sum(axis=1) > 1].round(3)
+    # shortcut: un punto en un solape de borde entre coronas (1 km² en total) cuenta en la primera
+    en_corona = gpd.sjoin(punto, coronas, how="left", predicate="intersects")
+    en_corona = en_corona[~en_corona.index.duplicated()]
+    z = zona.set_index("zona_id")
+    misma = en_corona["corona"].eq(en_corona["zona_id"].map(z["corona"]))
+    cuota = (
+        en_corona["poblacion"].where(misma, 0).groupby(en_corona["zona_id"]).sum()
+        / z["poblacion"]
+    )
+    centros = gpd.GeoSeries.from_xy(
+        z["lon_centro"], z["lat_centro"], crs=4326, index=z.index
+    ).to_crs(coronas.crs)
+    borde = coronas.set_index("corona").boundary
+    distancia = centros.distance(
+        gpd.GeoSeries(borde.loc[z["corona"]].values, index=z.index)
+    )
+    tabla = pd.DataFrame(
+        {
+            "nombre": z["nombre"],
+            "corona": z["corona"],
+            "cuota_poblacion": cuota.round(3),
+            "distancia_borde_m": distancia.round(0),
+        }
+    )
+    dudosa = (tabla["cuota_poblacion"] < CUOTA_MINIMA) | (
+        tabla["distancia_borde_m"] < DISTANCIA_MINIMA_M
+    )
+    return tabla[dudosa].sort_values("cuota_poblacion")
 
 
 def main() -> None:
