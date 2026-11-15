@@ -67,6 +67,8 @@ Precios en €. **VERIFICADO** en BOCM-20251231-2, pág. 66 (con descuento) y BO
 
 **Otros títulos y reglas.** VERIFICADO en las mismas páginas.
 - **Abono anual**: vale 10 veces el título de 30 días correspondiente y es válido desde el 1 de enero.
+  - **No se vende a particulares.** La web del CRTM dice: "Desde 2023 se encuentra suspendida la venta de títulos anuales particulares. Actualmente se mantiene la comercialización para personas jurídicas (abono anual empresas)" (https://www.crtm.es/billetes-y-tarifas/, VERIFICADO el 15/11/2026). No lo uses como opción de un particular aunque el BOCM le ponga precio.
+  - El BOCM no nombra ningún abono anual joven: la regla del ×10 solo aparece al pie de la tabla de abonos, en la que está la fila JOVEN.
 - **Abono Joven**: 10,00 € con bonificación y 20,00 € de tarifa oficial, válido en todas las zonas.
   - Edad, según la ficha del CRTM: "desde los 15 años hasta la fecha en que se cumplen 26 años" (https://www.crtm.es/billetes-y-tarifas/buscador/abono-joven/).
   - El abono de 7 a 14 años es gratuito ("Abono de 7 hasta 14 años: Título gratuito", BOCM-20251231-2, pág. 66).
