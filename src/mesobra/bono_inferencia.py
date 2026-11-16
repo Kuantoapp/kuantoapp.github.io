@@ -363,15 +363,15 @@ def robustez_vivienda_alquilada(
     alq, principal = bloques["alquiler"], bloques["principal_misma_submuestra"]
     en_bono = tabla["municipio_id"].isin(pct.index[pct.notna()])
     pa, pp = alq["pearson_parcial"], principal["pearson_parcial"]
+    # solo cifras y conclusiones de la regla: la interpretación va en el docstring, que no se recalcula
     lectura = (
-        f"Principal en los {len(d)} (regla fijada de antemano): {conclusion_principal}. Sensibilidad en los {len(r)} municipios "
-        f"con porcentaje: la principal da {principal['conclusion']} (r = {pp['r']:.3f}, p = {pp['p']:.3f}; regresión "
-        f"elegida k = {K}: p = {principal['espacial'][f'k{K}']['elegido']['p']:.3f}), así que la conclusión depende de los "
-        f"{len(fuera)} municipios pequeños, de tasas ruidosas; con el denominador de vivienda alquilada da {alq['conclusion']} "
-        f"(r = {pa['r']:.3f}, p = {pa['p']:.3f}). El denominador atenúa la relación porque el porcentaje se correlaciona "
-        f"con el esfuerzo ({r['esfuerzo'].corr(pct[r.index]):+.2f}). La Pearson de la principal en los {len(r)} es optimista: "
-        f"el Moran de los residuos del MCO es {principal['moran_mco'][f'k{K}']['I']:.3f} con k = {K} (p de permutaciones "
-        f"bilateral = {principal['moran_mco'][f'k{K}']['p']:.3f})."
+        f"Principal en los {len(d)} (regla fijada de antemano): {conclusion_principal}. Principal en los {len(r)} "
+        f"municipios con porcentaje: {principal['conclusion']} (r = {pp['r']:.3f}, p = {pp['p']:.3f}; regresión "
+        f"elegida k = {K}: p = {principal['espacial'][f'k{K}']['elegido']['p']:.3f}; Moran de los residuos del MCO "
+        f"{principal['moran_mco'][f'k{K}']['I']:.3f}, p = {principal['moran_mco'][f'k{K}']['p']:.3f}). Con el "
+        f"denominador de vivienda alquilada: {alq['conclusion']} (r = {pa['r']:.3f}, p = {pa['p']:.3f}). Correlación "
+        f"del porcentaje en alquiler con el esfuerzo: {r['esfuerzo'].corr(pct[r.index]):+.2f}. Fuera de la "
+        f"submuestra: {len(fuera)} municipios."
     )
     return {
         **bloques,
@@ -409,6 +409,7 @@ def main() -> None:
     val = bono.validacion(tabla, renta, xy)
     pearson = val[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
+    conclusion = _concluir_modelo(pearson, esp[f"k{K}"]["elegido"])
     resultado = {
         "n": len(d),
         "pearson_parcial": pearson,
@@ -417,7 +418,7 @@ def main() -> None:
         "geary_residuos_k5": bono.geary(bono._residuos(d[Y], d[X]), puntos, K),
         "lisa": _resumen_lisa(lisa(d, puntos)),
         "lisa_k8": _resumen_lisa(lisa(d, puntos, k=8)),
-        "conclusion": _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
+        "conclusion": conclusion,
         "pearson_parcial_eb": val["rechazadas_por_mil_eb"]["pearson"],
         "robustez_vivienda_alquilada": {
             **robustez_vivienda_alquilada(
@@ -425,7 +426,7 @@ def main() -> None:
                 d,
                 puntos,
                 censo2021.pct_alquiler_joven(),
-                _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
+                conclusion,
             ),
             "recuento_censo": censo2021.recuento(),
         },
@@ -433,7 +434,7 @@ def main() -> None:
     eb = resultado["pearson_parcial_eb"]
     resultado["robustez_vivienda_alquilada"]["lectura"] += (
         f" Diagnóstico: con las rechazadas suavizadas por Bayes empírico en los {len(d)}, r = {eb['r']:.3f} y "
-        f"p = {eb['p']:.3f}: el ruido de los municipios pequeños atenúa r."
+        f"p = {eb['p']:.3f}."
     )
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)

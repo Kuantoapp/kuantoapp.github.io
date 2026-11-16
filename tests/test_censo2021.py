@@ -106,6 +106,9 @@ def test_error_si_los_municipios_no_son_los_esperados(tmp_path):
     de_mas = {**cuatro, "28001 X ": fila, "28001 Y": fila}
     with pytest.raises(ValueError, match="5 municipios"):
         c.pct_alquiler_joven(_xml(tmp_path / "b.xml", de_mas))
+    dup = {**cuatro, "28001 Y": fila}
+    with pytest.raises(ValueError, match="únicos"):
+        c.pct_alquiler_joven(_xml(tmp_path / "d.xml", dup))
     mal = {**cuatro, "29005 X": fila}
     with pytest.raises(ValueError, match="28xxx"):
         c.pct_alquiler_joven(_xml(tmp_path / "c.xml", mal))
