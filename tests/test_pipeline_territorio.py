@@ -28,7 +28,7 @@ def _vecinos() -> gpd.GeoSeries:
     return gpd.GeoSeries([izq, der], crs=25830)
 
 
-def _solape_y_union(g: gpd.GeoSeries) -> tuple[float, float]:
+def _solape_y_union(g: gpd.GeoSeries) -> tuple[float, shapely.Geometry]:
     metros = g.to_crs(25830)
     union = metros.union_all()
     return metros.area.sum() - union.area, union
@@ -65,17 +65,24 @@ def _tiempos(minutos: list[float]) -> pd.DataFrame:
     pares = pd.MultiIndex.from_product(
         [["2807901", "28002", "28001"]] * 2, names=["zona_id", "destino_id"]
     )
-    return pares.to_frame(index=False).assign(minutos=minutos, estimado=False)
+    return pares.to_frame(index=False).assign(
+        modo="tp", minutos=minutos, estimado=False
+    )
 
 
 def test_tiempos_json_redondea_y_ordena():
-    minutos = [1.0, 2.5, np.nan, 3.49, 4.0, 5.0, 6.0, 7.0, 119.6]
+    minutos = [1.0, 2.5, np.nan, 3.49, 4.0, 120.5, 6.0, 7.0, 119.6]
     t = tiempos_json(_tiempos(minutos), _zonas())
     assert t["origenes"] == ["28001", "28002", "2807901"]
     assert [d["destino_id"] for d in t["destinos"]] == t["origenes"]
-    # filas y columnas en el orden de las zonas: 28001 era la tercera de _tiempos
-    assert t["tp"] == [[120, 7, 6], [5, 4, 3], [None, 3, 1]]
-    assert "r5py" in t["meta"]["nota"]
+    # filas y columnas en el orden de las zonas: 28001 era la tercera de _tiempos; 120,5 → 121 → null
+    assert t["tp"] == [[120, 7, 6], [None, 4, 3], [None, 3, 1]]
+    assert "r5py" in t["meta"]["nota"] and "7:30 y las 8:30" in t["meta"]["nota"]
+
+
+def test_tiempos_json_falla_si_falta_un_par():
+    with pytest.raises(ValueError, match="Faltan pares"):
+        tiempos_json(_tiempos([1.0] * 9).iloc[1:], _zonas())
 
 
 def test_tiempos_json_plan_b_lo_dice():
@@ -84,8 +91,11 @@ def test_tiempos_json_plan_b_lo_dice():
 
 
 def test_tiempos_json_falla_si_faltan_zonas():
+    zonas = pd.DataFrame(
+        {"zona_id": ["28001", "28002", "28003"], "nombre": list("ABC")}
+    )
     with pytest.raises(ValueError, match="mismos ids"):
-        tiempos_json(_tiempos([1.0] * 9), _zonas().iloc[:2])
+        tiempos_json(_tiempos([1.0] * 9), zonas)
 
 
 def _real(nombre: str) -> dict:
@@ -107,12 +117,15 @@ def test_ficheros_reales():
     assert len(tiempos["tp"]) == 199 and {len(fila) for fila in tiempos["tp"]} == {199}
     geom = gpd.GeoSeries([shape(f["geometry"]) for f in zonas["features"]], crs=4326)
     assert geom.is_valid.all()
-    assert all(p.exterior.is_ccw for g in geom for p in getattr(g, "geoms", [g]))
+    poligonos = [p for g in geom for p in getattr(g, "geoms", [g])]
+    # RFC 7946: exteriores en sentido antihorario e interiores en horario
+    assert all(p.exterior.is_ccw for p in poligonos)
+    assert not any(r.is_ccw for p in poligonos for r in p.interiors)
     solape, union = _solape_y_union(geom)
     assert solape < 1000  # m², redondeo de coordenadas en toda la Comunidad
     # dos partes como en el seccionado: la Comunidad y el enclave de Santa María de la Alameda (13,8 km²)
     assert sorted(round(p.area / 1e6, 1) for p in union.geoms) == [13.8, 8011.0]
     huecos = [Polygon(r).area for p in union.geoms for r in p.interiors]
-    # el único hueco visible es el del seccionado entre Hortaleza y Barajas (sin sección del INE);
-    # el resto son astillas de redondeo de unos m²
+    # el único hueco visible es el enclave de Torrejón del Rey (Guadalajara, sección 1928001001) entre Fresno
+    # de Torote, Ribatejada y Valdeavero, que no es de la Comunidad; el resto son astillas de redondeo de unos m²
     assert [round(h / 1e6, 2) for h in huecos if h > 100] == [1.23]
