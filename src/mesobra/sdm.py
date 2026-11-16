@@ -7,6 +7,7 @@ Modelo fijado en `docs/verificaciones/movilidad-interoperabilidad.md` (fila 3).
 import json
 import re
 from pathlib import Path
+from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -63,7 +64,8 @@ INDICADORES = {
 # Mención que exige cada publicador (nota del 16-11 de #110), buscada en el nombre de la fuente y en
 # `meta.nota`; además, cada fuente necesita su «actualizado el AAAA-MM-DD».
 MENCIONES = {
-    "ine.es": "www.ine.es",
+    # Datos tratados: la cita de «sitio web del INE» a secas es para datos sin tratar (licencia-ine.md).
+    "ine.es": "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
     "mivau.gob.es": "Origen de los datos: Ministerio de Vivienda y Agenda Urbana",
     "comunidad.madrid": "Fuente de los datos: Comunidad de Madrid",
 }
@@ -121,14 +123,21 @@ def validar(por_indicador: dict[str, list[dict]], esquema: dict) -> None:
 
 
 def _citas_que_faltan(meta: dict) -> list[str]:
-    """Menciones obligatorias que no están ni en el nombre de las fuentes ni en `meta.nota`."""
+    """Lo que falta de lo que exige cada fuente: su mención (en su nombre o en `meta.nota`) y su fecha (en `meta.nota`)."""
     texto = " ".join(f["nombre"] for f in meta["fuentes"]) + " " + meta["nota"]
-    falta = [
-        f"«{mencion}»"
-        for f in meta["fuentes"]
-        for dominio, mencion in MENCIONES.items()
-        if dominio in f["url"] and mencion not in texto
-    ]
+    falta = []
+    for f in meta["fuentes"]:
+        host = urlparse(f["url"]).hostname or ""
+        dominio = next(
+            (d for d in MENCIONES if host == d or host.endswith("." + d)), None
+        )
+        if (
+            dominio is None
+        ):  # una fuente nueva falla hasta que alguien escriba su regla de cita
+            falta.append(f"una regla de cita para {host or f['url']} en sdm.MENCIONES")
+        elif MENCIONES[dominio] not in texto:
+            falta.append(f"«{MENCIONES[dominio]}»")
+    # shortcut: cuenta fechas, no las asocia a cada fuente; asociarlas si una nota llega a citar varias de la misma
     if len(ACTUALIZADO.findall(meta["nota"])) < len(meta["fuentes"]):
         falta.append("«actualizado el AAAA-MM-DD» de cada fuente")
     return list(dict.fromkeys(falta))
@@ -188,7 +197,7 @@ Cada fichero de esta carpeta es una lista de entidades NGSI-LD del modelo **{TIP
 
 ## Procedencia y licencia
 
-Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean: son derivados, no cifras de los publicadores, y ninguno de ellos participa, patrocina ni apoya este proyecto. La cita, la fecha de actualización y las condiciones que pide cada fuente van en la nota de su fichero (`sdm.py` no escribe nada si falta alguna). Procedencia, fecha y licencia de cada fichero:
+Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean. Son derivados, no cifras de los publicadores, y ninguno de ellos participa, patrocina ni apoya este proyecto. La cita, la fecha de actualización y las condiciones que pide cada fuente van en la nota de su fichero (`sdm.py` no escribe nada si falta alguna). Procedencia, fecha y licencia de cada fichero:
 
 {procedencia}"""
 

@@ -163,7 +163,7 @@ def leeme_real(tmp_path):
     ("quitar", "error"),
     [
         ("Fuente de los datos: Comunidad de Madrid", "Comunidad de Madrid"),
-        ("www.ine.es", "www.ine.es"),
+        ("Elaboración propia con datos extraídos del sitio web del INE: ", "INE"),
         (", actualizado el 2026-11-05", "actualizado el AAAA-MM-DD"),
     ],
 )
@@ -173,6 +173,15 @@ def test_sin_una_cita_obligatoria_falla_sin_escribir(tmp_path, quitar, error):
     with pytest.raises(ValueError, match=error):
         sdm.escribir(analisis, ALQUILER, tmp_path, ESQUEMA)
     assert [p.name for p in tmp_path.iterdir()] == ["viejo.json"]
+
+
+def test_fuente_sin_regla_de_cita_falla_y_se_compara_el_host():
+    # «routine.es» contiene «ine.es» pero no es el INE: sin regla, falla en vez de exigir otra cita.
+    fuente = {"nombre": "Otra", "url": "https://routine.es/x", "licencia": "CC0"}
+    meta = {"fuentes": [fuente], "nota": "actualizado el 2026-01-01"}
+    assert sdm._citas_que_faltan(meta) == [
+        "una regla de cita para routine.es en sdm.MENCIONES"
+    ]
 
 
 def test_serpavi_exige_su_origen():
