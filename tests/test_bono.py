@@ -187,15 +187,16 @@ def _rejilla(n=8):
     return np.array([(i, j) for i in range(n) for j in range(n)], float)
 
 
-def test_moran():
+def test_moran_y_geary():
     xy = _rejilla()
     gradiente = bono.moran(xy[:, 0], xy, 4)
     assert gradiente["I"] > 0.5 and gradiente["p"] < 0.05
-    tablero = bono.moran((xy[:, 0] + xy[:, 1]) % 2, xy, 4)
-    assert tablero["I"] < 0
-    vecinos = bono._vecinos(xy, 4)
-    assert vecinos.shape == (64, 4)
-    assert not (vecinos == np.arange(64)[:, None]).any()  # nadie es vecino de sí mismo
+    tablero = (xy[:, 0] + xy[:, 1]) % 2
+    assert bono.moran(tablero, xy, 4)["I"] < 0
+    # segunda vía: I > E[I] <-> C < 1
+    g = bono.geary(xy[:, 0], xy, 4)
+    assert g["C"] < 1 and g["p"] < 0.05
+    assert bono.geary(tablero, xy, 4)["C"] > 1
 
 
 def test_moran_igual_que_w_densa():
@@ -248,6 +249,8 @@ def test_validacion():
         "moran_k8",
         "moran_x_k5",
         "moran_x_k8",
+        "geary_k5",
+        "geary_k8",
     }
     assert pr["pearson"]["n"] == 60
     t = tabla.set_index("municipio_id")

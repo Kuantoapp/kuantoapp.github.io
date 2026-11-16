@@ -9,7 +9,7 @@ Especificación principal, fijada antes de ver el resultado real: Pearson parcia
 jóvenes, x = esfuerzo de 2023, controles = renta neta media por hogar del ADRH 2023 + tope de alquiler
 (600/900 €), sin ponderar. Todo lo demás es robustez y se informa entero, coincida o no: Spearman parcial,
 renta del catálogo regional, esfuerzo y renta de 2022, solicitudes por 1.000 y tasa de aceptación como y,
-rechazadas suavizadas por Bayes empírico, I de Moran de los residuos de y y de x (k = 5 y k = 8) y la
+rechazadas suavizadas por Bayes empírico, I de Moran (esda) de los residuos de y y de x y C de Geary de los de y (k = 5 y k = 8) y la
 exclusión de Madrid. La conclusión se apoya solo en la principal.
 
 Supuestos:
@@ -33,10 +33,10 @@ Supuestos:
   de 14-09-2022, art. 5 y Anexo II, texto completo en BDNS 648964, doc. 858536; extracto BOCM-20220920-16). Es un parámetro normativo que sirve de control, no prueba que el rechazo se deba a él. El de
   habitación (300/450 €) no se distingue porque el dataset no separa.
 - Autocorrelación: I de Moran de los residuos con W de k vecinos más cercanos entre centroides (la W reina
-  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p por permutaciones. Se calcula sobre
+  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p unilateral por permutaciones (esda; Geary como segunda vía). Se calcula sobre
   el residuo de y y sobre el de x (ambos sobre los controles). El n efectivo depende de la autocorrelación de
   los dos residuos. Un Moran significativo puede indicar también una variable espacial omitida, que sesga el
-  r y no solo hace optimista el IC. No se ha probado un SEM ni un SLX (no hay spreg) y el n efectivo
+  r y no solo hace optimista el IC. El SEM, el SLX y el LISA van en `bono_inferencia.py`; el n efectivo
   (Clifford-Richardson-Hémon o Dutilleul) no se calcula. Las coordenadas son el centroide geométrico del
   municipio, no el centro de población de #175.
 - Bayes empírico global (Marshall) de las rechazadas sobre la población joven, como robustez para las tasas
@@ -58,8 +58,10 @@ import io
 import logging
 from pathlib import Path
 
+import esda
 import numpy as np
 import pandas as pd
+from libpysal.weights import KNN
 from scipy import stats
 
 from mesobra import contratos, zonas
@@ -280,40 +282,29 @@ def correlacion_parcial(x: pd.Series, y: pd.Series, controles: pd.DataFrame) -> 
     }
 
 
-def _vecinos(xy: np.ndarray, k: int) -> np.ndarray:
-    """Índices de los k vecinos más cercanos de cada punto (euclídea, sin él mismo)."""
-    if len(xy) <= k:
-        raise ValueError(f"Con {len(xy)} puntos no hay {k} vecinos")
-    dist = np.linalg.norm(xy[:, None, :] - xy[None, :, :], axis=2)
-    np.fill_diagonal(dist, np.inf)
-    return np.argsort(dist, axis=1, kind="stable")[:, :k]
+def _w(xy: np.ndarray, k: int) -> KNN:
+    """W de k vecinos más cercanos (euclídea, sin él mismo) normalizada por filas."""
+    w = KNN.from_array(np.asarray(xy, float), k=k)
+    w.transform = "r"
+    return w
 
 
 def moran(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
-    """I de Moran con W de k vecinos normalizada por filas; p pseudo-bilateral por permutaciones.
+    """I de Moran (esda) con W de k vecinos; p unilateral por permutaciones, en el sentido del I observado.
 
     E[I] = -1/(n-1) es el de una variable, no el de residuos de MCO, que sería tr(MW)/(n-k) (≈ -0,016 aquí);
     con I ≈ 0,16 no cambia la conclusión.
     """
-    vecinos = _vecinos(xy, k)
-    z = np.asarray(valores, float) - np.mean(valores)
+    np.random.seed(SEMILLA)  # esda permuta con el generador global
+    m = esda.Moran(valores, _w(xy, k), permutations=PERMUTACIONES)
+    return {"I": float(m.I), "esperado": float(m.EI), "p": float(m.p_sim)}
 
-    # W normalizada por filas: S0 = n, así que I = z'Wz / z'z (permutar no cambia z'z)
-    def indice(zz: np.ndarray) -> np.ndarray:
-        return (zz * zz[..., vecinos].mean(axis=-1)).sum(axis=-1) / (z @ z)
 
-    n = len(z)
-    esperado = -1 / (n - 1)
-    perm = z[
-        np.argsort(np.random.default_rng(SEMILLA).random((PERMUTACIONES, n)), axis=1)
-    ]
-    obs = float(indice(z))
-    mayor = (np.abs(indice(perm) - esperado) >= abs(obs - esperado)).sum()
-    return {
-        "I": obs,
-        "esperado": esperado,
-        "p": float((1 + mayor) / (PERMUTACIONES + 1)),
-    }
+def geary(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
+    """C de Geary (esda), segunda vía del Moran: C < 1 es autocorrelación positiva, como I > E[I]."""
+    np.random.seed(SEMILLA)
+    g = esda.Geary(valores, _w(xy, k), permutations=PERMUTACIONES)
+    return {"C": float(g.C), "p": float(g.p_sim)}
 
 
 def bayes_empirico(casos: pd.Series, poblacion: pd.Series) -> pd.Series:
@@ -327,8 +318,17 @@ def bayes_empirico(casos: pd.Series, poblacion: pd.Series) -> pd.Series:
     return w * tasa + (1 - w) * m
 
 
+def eb_por_mil(casos: pd.Series, poblacion: pd.Series) -> pd.Series:
+    """Tasa por 1.000 suavizada por Bayes empírico; la media a priori se calcula sin Madrid, que conserva su tasa."""
+    # Madrid (52 % de los jóvenes) fijaría la media a priori: se suaviza sin él y conserva su tasa (w ≈ 1)
+    eb = 1000 * casos / poblacion
+    otros = casos.index != MADRID
+    eb[otros] = 1000 * bayes_empirico(casos[otros], poblacion[otros])
+    return eb
+
+
 def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
-    """Por cada y de `Y`: Pearson y Spearman parcial (controles renta y tope) y Moran k = 5 y 8 de los residuos.
+    """Por cada y de `Y`: Pearson y Spearman parcial (controles renta y tope) y Moran y Geary k = 5 y 8 de los residuos.
 
     `tabla` es la tabla `bono`; `renta` y `xy` (columnas x, y; EPSG:25830) van por `municipio_id`.
     """
@@ -339,16 +339,11 @@ def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
     con = t["necesidad"].notna()
     if faltan := list(t.index[con & controles["renta"].isna()]):
         raise ValueError(f"Municipios con necesidad y sin renta: {faltan}")
-    # Madrid (52 % de los jóvenes) fijaría la media a priori: se suaviza sin él y conserva su tasa (w ≈ 1)
-    suaviza = con & (t.index != MADRID)
-    eb = por_mil(t)["rechazadas_por_mil"].where(con)
-    eb[suaviza] = 1000 * bayes_empirico(
-        t.loc[suaviza, "rechazadas"], t.loc[suaviza, "poblacion_joven"]
-    )
+    eb = eb_por_mil(t.loc[con, "rechazadas"], t.loc[con, "poblacion_joven"])
     base = pd.concat(
         [
             (t["necesidad"] / t["poblacion_joven"]).rename("x"),
-            por_mil(t).assign(rechazadas_por_mil_eb=eb),
+            por_mil(t).assign(rechazadas_por_mil_eb=eb.reindex(t.index)),
             controles,
         ],
         axis=1,
@@ -366,6 +361,7 @@ def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
         for k in (5, 8):
             res[f"moran_k{k}"] = moran(residuos, puntos, k)
             res[f"moran_x_k{k}"] = moran(res_x, puntos, k)
+            res[f"geary_k{k}"] = geary(residuos, puntos, k)
         salida[y] = res
     return salida
 
@@ -412,10 +408,11 @@ def _informe(etiqueta: str, res: dict) -> None:
     for y, r in res.items():
         p, s = r["pearson"], r["spearman"]
         LOG.info(
-            "%s | %s | Pearson r=%.3f n=%d k=%d IC95=[%.3f, %.3f] p=%.4f | Spearman r=%.3f p=%.4f | Moran y k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f | Moran x k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f",
+            "%s | %s | Pearson r=%.3f n=%d k=%d IC95=[%.3f, %.3f] p=%.4f | Spearman r=%.3f p=%.4f | Moran y k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f | Moran x k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f | Geary y k5 C=%.3f p=%.3f, k8 C=%.3f p=%.3f",
             etiqueta, y, p["r"], p["n"], p["k"], *p["ic95"], p["p"], s["r"], s["p"],
             r["moran_k5"]["I"], r["moran_k5"]["p"], r["moran_k8"]["I"], r["moran_k8"]["p"],
             r["moran_x_k5"]["I"], r["moran_x_k5"]["p"], r["moran_x_k8"]["I"], r["moran_x_k8"]["p"],
+            r["geary_k5"]["C"], r["geary_k5"]["p"], r["geary_k8"]["C"], r["geary_k8"]["p"],
         )  # fmt: skip
 
 
