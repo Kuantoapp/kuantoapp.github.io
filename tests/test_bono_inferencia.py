@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+import spreg
 import statsmodels.api as sm
 
 from mesobra import bono
@@ -30,6 +31,13 @@ def test_sem_recupera_lambda_y_beta():
     assert res["elegido"]["modelo"] == "SEM"
     # el SEM generado gana a los demás con el mismo criterio de AIC
     assert res["sem"]["aic"] < min(res[m]["aic"] for m in ("ols", "sar", "slx", "sdem"))
+    # spreg no cuenta λ en el AIC de ML_Error y sí ρ en ML_Lag: `_aic` los cuenta igual
+    w5 = bono._w(xy, 5)
+    xs = d[bi.X].to_numpy()
+    sem = spreg.ML_Error(d[[bi.Y]].to_numpy(), xs, w=w5)
+    sar = spreg.ML_Lag(d[[bi.Y]].to_numpy(), xs, w=w5)
+    assert bi._aic(sem) == pytest.approx(sem.aic + 2)
+    assert bi._aic(sar) == pytest.approx(sar.aic)
 
 
 def test_sar_se_elige_y_recupera_rho_y_efectos():

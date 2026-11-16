@@ -40,6 +40,9 @@ Lectura (añadida en la revisión):
   porque β sube de 60,8 (MCO) a 85,4 (SEM) con un error estándar parecido (38,6 y 39,4), no porque se corrijan los
   errores estándar (corregir unos infraestimados subiría la p). La regla exige además la Pearson parcial: de ahí
   «no concluyente».
+- La p del SEM no es estable a la especificación: con el retardo WX (SDEM o SLX), β baja a unos 71-75 y la p
+  vuelve a 0,11-0,16 con k = 5 y k = 8. El salto de β entre MCO y SEM (+40 %) apunta a una variable omitida con
+  estructura espacial o a la falta de WX, así que el SEM no cuenta como corroboración: es una limitación.
 
 LISA bivariante: `Moran_Local_BV(x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas por Bayes empírico
 (media a priori sin Madrid, como las rechazadas), W de k = 5)`, con `PERMUTACIONES_LISA` = 99.999 permutaciones, p
