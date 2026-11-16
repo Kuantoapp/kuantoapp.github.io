@@ -24,7 +24,8 @@ Reglas, fijadas antes de ver el resultado:
   dos en miles de €; W de k = 5, normalizada por filas): si solo el LM-error robusto tiene p < 0,05, SEM
   (`spreg.ML_Error`); si solo el LM-lag robusto, SAR (`spreg.ML_Lag`, con efectos directo, indirecto y total,
   nunca β); si los dos, el de menor p robusta; si ninguno, MCO. Siempre se informan además el SEM y el SLX
-  (`OLS` con `slx_lags=1`), el SAR y el SDEM (`ML_Error` con `slx_lags=1`) con su AIC, y la robustez con k = 8.
+  (`OLS` con `slx_lags=1`), el SAR y el SDEM (`ML_Error` con `slx_lags=1`) con su AIC, y la robustez con k = 8. El AIC se calcula igual para todos, `2 * parámetros - 2 * logll` con λ o ρ
+  contados (spreg no cuenta λ en `ML_Error`, y así el SEM y el SDEM salían favorecidos frente al SAR).
 - Regla de conclusión: «robusta» si la Pearson parcial (la principal de `bono.validacion`) y el modelo espacial
   elegido coinciden en signo y en p < 0,05; si no, «no concluyente». En el SAR el signo es el del efecto total
   y la p la del coeficiente del esfuerzo (shortcut: no hay p del efecto total, por simulación si hiciera falta).
@@ -35,13 +36,15 @@ Lectura (añadida en la revisión):
 - λ es dependencia residual (una molestia que corrige el error), no un desbordamiento entre vecinos; en el SEM, β es
   el efecto marginal del esfuerzo y no hay efectos indirectos.
 - La p de la principal (0,118) y la de la binomial negativa (0,068) son optimistas: sus residuos tienen
-  autocorrelación (Moran 0,157 y 0,176), así que sus errores estándar están infraestimados. El SEM la corrige y
-  sale p = 0,030, pero la regla exige además la Pearson parcial: de ahí «no concluyente».
+  autocorrelación (Moran 0,157 y 0,176), así que sus errores estándar están infraestimados. La p del SEM (0,030) baja
+  porque β sube de 60,8 (MCO) a 85,4 (SEM) con un error estándar parecido (38,6 y 39,4), no porque se corrijan los
+  errores estándar (corregir unos infraestimados subiría la p). La regla exige además la Pearson parcial: de ahí
+  «no concluyente».
 
 LISA bivariante: `Moran_Local_BV(x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas por Bayes empírico
 (media a priori sin Madrid, como las rechazadas), W de k = 5)`, con `PERMUTACIONES_LISA` = 99.999 permutaciones, p
-bilateral y corrección por comparaciones múltiples `esda.fdr(p, 0,05)`. Con 999 permutaciones la p mínima (0,002)
-no llega al primer escalón de la FDR con n = 134 (0,05/134), y `lisa` falla si las permutaciones no bastan.
+bilateral y corrección por comparaciones múltiples `esda.fdr(p, 0,05)`. Con 999 permutaciones la p mínima (0,003, es decir, 3/(R+1))
+no llega al primer escalón de la FDR con n = 134 (0,05/134), y `lisa` falla si las permutaciones no bastan. Se ejecuta con k = 5 y k = 8 (estabilidad).
 «alta_baja» es necesidad alta en el municipio y ayuda baja en su entorno; «baja_alta», el inverso. Es una
 asociación local, sin lectura causal; si sale un solo municipio (28080, Majadahonda, en la ejecución con los datos
 actuales) es un resultado frágil. Se informa junto al I de Moran bivariante global, que dice si hay patrón en conjunto.
@@ -107,6 +110,11 @@ def preparar(
     return d, xy.loc[d.index].to_numpy(float)
 
 
+def _aic(m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag) -> float:
+    """AIC comparable: `betas` de spreg incluye λ o ρ en los modelos de máxima verosimilitud, `m.aic` no los cuenta igual."""
+    return float(2 * len(m.betas) - 2 * m.logll)
+
+
 def _coef(m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag, i: int) -> dict:
     """Coeficiente `i` de un modelo de spreg: beta, error estándar, estadístico (t o z) y p."""
     est = getattr(m, "z_stat", None) or m.t_stat
@@ -150,11 +158,11 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
             "lag_robusto": p_lag,
         },
         "moran_ols": {"I": ols.moran_res[0], "p": ols.moran_res[2]},
-        "ols": {**_coef(ols, 1), "aic": ols.aic},
-        "sem": {**_coef(sem, 1), "lambda": sem.lam, "aic": sem.aic},
-        "sar": {**_coef(sar, 1), "rho": sar.rho, "aic": sar.aic},
-        "slx": {**_coef(slx, 1), "beta_lag": slx.betas[4, 0], "aic": slx.aic},
-        "sdem": {**_coef(sdem, 1), "lambda": sdem.lam, "aic": sdem.aic},
+        "ols": {**_coef(ols, 1), "aic": _aic(ols)},
+        "sem": {**_coef(sem, 1), "lambda": sem.lam, "aic": _aic(sem)},
+        "sar": {**_coef(sar, 1), "rho": sar.rho, "aic": _aic(sar)},
+        "slx": {**_coef(slx, 1), "beta_lag": slx.betas[4, 0], "aic": _aic(slx)},
+        "sdem": {**_coef(sdem, 1), "lambda": sdem.lam, "aic": _aic(sdem)},
         "elegido": {
             "modelo": elegido,
             **_coef(m, 1),
@@ -210,17 +218,20 @@ def glm(d: pd.DataFrame, puntos: np.ndarray) -> dict:
 
 
 def lisa(
-    d: pd.DataFrame, puntos: np.ndarray, permutaciones: int = PERMUTACIONES_LISA
+    d: pd.DataFrame,
+    puntos: np.ndarray,
+    permutaciones: int = PERMUTACIONES_LISA,
+    k: int = K,
 ) -> tuple[pd.Series, pd.Series, dict]:
-    """Cuadrante significativo tras la FDR, p bilateral por `municipio_id` y el Moran_BV global (I, p bilateral).
+    """Cuadrante significativo (W de k vecinos) tras la FDR, p bilateral por `municipio_id` y el Moran_BV global (I, p bilateral).
 
     x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas (el retardo Wy es el entorno).
     """
-    if 2 / (permutaciones + 1) >= ALFA / len(d):
+    if 3 / (permutaciones + 1) >= ALFA / len(d):
         raise ValueError(
             f"Con {permutaciones} permutaciones la p mínima no llega al umbral de la FDR con n = {len(d)}"
         )
-    w = bono._w(puntos, K)
+    w = bono._w(puntos, k)
     x = d["esfuerzo"].to_numpy()
     y = bono.eb_por_mil(d["aceptadas"], d["poblacion_joven"]).to_numpy()
     local = esda.Moran_Local_BV(
@@ -238,6 +249,17 @@ def lisa(
     )
 
 
+def _resumen_lisa(res: tuple) -> dict:
+    cuadrante, p, bv = res
+    return {
+        "cuadrantes": cuadrante.value_counts().to_dict(),
+        "alta_baja": sorted(cuadrante.index[cuadrante == "alta_baja"]),
+        "p_alta_baja": p[cuadrante == "alta_baja"].to_dict(),
+        "moran_bv_global": bv,
+        "lectura": "asociación local, no causal; un solo municipio es un resultado frágil",
+    }
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
     tabla = pd.read_parquet(bono.PROCESSED / "bono.parquet")
@@ -248,7 +270,6 @@ def main() -> None:
     d, puntos = preparar(tabla, renta, xy)
     pearson = bono.validacion(tabla, renta, xy)[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
-    cuadrante, p_lisa, bv = lisa(d, puntos)
     elegido = esp[f"k{K}"]["elegido"]
     sar = elegido["modelo"] == "SAR"
     efecto = elegido["efectos"]["total"] if sar else elegido["beta"]
@@ -258,13 +279,8 @@ def main() -> None:
         "espacial": esp,
         "glm": glm(d, puntos),
         "geary_residuos_k5": bono.geary(bono._residuos(d[Y], d[X]), puntos, K),
-        "lisa": {
-            "cuadrantes": cuadrante.value_counts().to_dict(),
-            "alta_baja": sorted(cuadrante.index[cuadrante == "alta_baja"]),
-            "p_alta_baja": p_lisa[cuadrante == "alta_baja"].to_dict(),
-            "moran_bv_global": bv,
-            "lectura": "asociación local, no causal; un solo municipio es un resultado frágil",
-        },
+        "lisa": _resumen_lisa(lisa(d, puntos)),
+        "lisa_k8": _resumen_lisa(lisa(d, puntos, k=8)),
         "conclusion": concluir(pearson["r"], pearson["p"], efecto, elegido["p"]),
     }
     texto = json.dumps(resultado, indent=1, default=float)

@@ -28,7 +28,8 @@ def test_sem_recupera_lambda_y_beta():
     assert res["lm"]["error"] < 0.05  # el SEM generado deja autocorrelación en el MCO
     assert abs(res["elegido"]["moran_residuos"]["I"]) < 0.1
     assert res["elegido"]["modelo"] == "SEM"
-    assert res["sdem"]["aic"] > 0 and res["sar"]["aic"] > res["sem"]["aic"]
+    # el SEM generado gana a los demás con el mismo criterio de AIC
+    assert res["sem"]["aic"] < min(res[m]["aic"] for m in ("ols", "sar", "slx", "sdem"))
 
 
 def test_sar_se_elige_y_recupera_rho_y_efectos():
@@ -85,7 +86,7 @@ def test_lisa_detecta_bloque_alta_baja_y_ruido_no_da_nada():
     cuadrante, p, bv = _lisa(x, y, n)
     assert (cuadrante[bloque] == "alta_baja").sum() >= 4
     assert (cuadrante[~bloque] == "alta_baja").sum() == 0
-    assert p[cuadrante == "alta_baja"].max() < 0.001 and bv["p"] <= 1
+    assert p[cuadrante == "alta_baja"].max() < 0.001 and bv["I"] < 0 and bv["p"] < 0.05
     with pytest.raises(ValueError, match="permutaciones"):
         bi.lisa(pd.DataFrame({"esfuerzo": x}, index=range(n * n)), _rejilla(n), 999)
 
