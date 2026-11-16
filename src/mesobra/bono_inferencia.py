@@ -36,7 +36,8 @@ a «robusta»: la regla del SEM solo mide estabilidad frente a W, no robustez):
 - «indicio» si se cumple la regla del SEM y la segunda vía (MCO-HAC, k = 5) no la confirma; «robusta» solo si además
   el MCO-HAC da β > 0 y p < 0,05. La regla del SEM: pasa si el β del esfuerzo de `spreg.GM_Error_Het` (SEM heterocedástico, W de k = 5) es positivo (el signo
   teórico: más esfuerzo, más rechazadas) con p < 0,05 y con k = 8 mantiene el signo y p < 0,05; si no, «no concluyente»
-  (un NaN da «no concluyente» y un aviso en el log, porque la estimación falló). Estimador: GMM iterado de Arraiz et
+  (un NaN en el SEM da «no concluyente», y en el MCO-HAC, «indicio»; los dos dejan un aviso en el log, porque la estimación
+  falló). Estimador: GMM iterado de Arraiz et
   al. (2010) (`max_iter=10`, sin el paso 1c opcional; `iteraciones` dice si convergió), elegido DESPUÉS de ver la p
   (decisión del humano, #223): da p < 0,05 y el de dos pasos no. Iterar quita la dependencia de la estimación inicial
   de λ, pero no mejora la eficiencia asintótica: las dos variantes son válidas. El GMM en dos pasos (`max_iter=1,
@@ -100,8 +101,12 @@ JSON; no cambia la conclusión principal ni el contrato `bono`):
 - Descomposición (cifras del JSON, `lectura`). La regla del #221 con el estimador del #223 (los dos elegidos después de
   ver los datos) es la de los 134 («indicio», al límite; la Pearson, r = 0,137 y p = 0,118, es referencia); los 112 son una
   sensibilidad. En los municipios con al menos 300 jóvenes de 20-34 (los 112), la principal da «robusta» (r = 0,197,
-  p = 0,039; SEM heterocedástico: p = 0,022 con k = 5 y 0,030 con k = 8; el MCO-HAC la confirma justo, p = 0,049), así que los 22 municipios pequeños,
-  de tasas ruidosas, atenúan la relación; con el denominador de vivienda alquilada da «no concluyente» (p = 0,096 con k = 5
+  p = 0,039; SEM heterocedástico: p = 0,022 con k = 5 y 0,030 con k = 8; el MCO-HAC la confirma
+  justo, p = 0,049 con k = 5, pero con k = 8 da 0,051). En los 112, «robusta» solo significa que pasa la regla del #235, en el
+  umbral y según el ancho del HAC: en esa misma submuestra, el denominador de vivienda alquilada y el control por el %
+  en alquiler (#225) no la confirman, así que no se presenta como robustez. Lectura a posteriori: la submuestra se eligió por
+  disponibilidad del dato, no por tamaño; con esa reserva, los 22 municipios pequeños,
+  de tasas ruidosas, parecen atenuar la relación; con el denominador de vivienda alquilada da «no concluyente» (p = 0,096 con k = 5
   y 0,205 con k = 8; MCO r = 0,153, p = 0,109). Quitar los 22 refuerza la relación y el denominador la atenúa, porque el
   porcentaje se correlaciona con el esfuerzo (+0,27) y con la renta (-0,35). El diagnóstico de Bayes empírico
   (`bono.validacion`, `pearson_parcial_eb`: r = 0,156, p = 0,075 en los 134) apunta también a que el ruido de los
@@ -467,7 +472,8 @@ def robustez_vivienda_alquilada(
 
     Lectura (la regla es la del SEM heterocedástico del #221, con el GMM iterado del #223, en los 134; los 112 son una
     sensibilidad): en los 134 queda «indicio» (SEM p ≈ 0,043, MCO-HAC p ≈ 0,17; #235); en los municipios con porcentaje la
-    misma regla da «robusta» (el MCO-HAC la confirma justo), así que los municipios pequeños, de tasas ruidosas, atenúan la relación. El denominador
+    misma regla da «robusta» en el umbral (MCO-HAC p = 0,049 con k = 5 y 0,051 con k = 8; el denominador y el control
+    por el % no la confirman, así que no se presenta como robustez), así que los municipios pequeños, de tasas ruidosas, atenúan la relación. El denominador
     atenúa la relación porque el porcentaje se correlaciona con el esfuerzo. El Moran del MCO que se cita es el de
     permutaciones y bilateral (`bono.moran`), no el analítico de spreg: no supone normalidad con n pequeño.
 
