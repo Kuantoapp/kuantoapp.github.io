@@ -8,6 +8,7 @@ import pytest
 from jsonschema import ValidationError
 
 from mesobra import sdm
+from mesobra.pipeline_euros import ORIGEN_SERPAVI
 
 RAIZ = Path(__file__).parent
 EJEMPLOS = RAIZ / "fixtures/api"
@@ -67,11 +68,18 @@ def test_sin_dato_no_se_publica_y_estimado_se_marca(salida):
     assert e["description"].endswith(", estimado")
 
 
-def test_esfuerzo_de_zona_con_alquiler_estimado_es_estimado(salida):
+def test_esfuerzo_no_hereda_el_estimado_del_alquiler_en_m2(salida):
+    # 28092 tiene el €/m² estimado, pero el esfuerzo usa la cuantía mensual del SERPAVI, no ese €/m².
     e = next(e for e in salida["esfuerzo"] if e["area"] == "28092")
-    assert e["description"].endswith(", estimado")
-    e = next(e for e in salida["esfuerzo"] if e["area"] == "2807901")
     assert "estimado" not in e["description"]
+
+
+def test_sobrecarga_sale_de_un_modelo_y_siempre_es_estimada(salida):
+    sobrecarga = salida["sobrecarga_40"] + salida["sobrecarga_30"]
+    assert sobrecarga
+    for e in sobrecarga:
+        assert e["description"].endswith(", estimado")
+        assert "inquilinos" in e["description"]
 
 
 def test_sin_bloque_de_sobrecarga_no_se_publica_vacio(tmp_path):
@@ -110,15 +118,43 @@ def test_leeme_nombra_modelo_y_version_exacta(tmp_path):
     assert "KeyPerformanceIndicator" in texto
     assert ESQUEMA["$schemaVersion"] == "0.2.1"
     assert "versión 0.2.1 del esquema" in texto
-    assert "CC BY 4.0" in texto
     assert "www.ine.es" in texto  # los ejemplos citan al INE
 
 
-def test_leeme_cumple_cifras_con_fuente(tmp_path):
+def test_leeme_separa_la_licencia_del_modelo_de_la_de_los_datos(tmp_path):
+    sdm.escribir(ANALISIS, ALQUILER, tmp_path, ESQUEMA)
+    texto = (tmp_path / "LEEME.md").read_text("utf-8")
+    assert "El modelo y su esquema tienen licencia CC BY 4.0" in texto
+    assert "Datos: no llevan la licencia del modelo" in texto
+    for meta in (ANALISIS["meta"], ALQUILER["meta"]):
+        for f in meta["fuentes"]:
+            assert f"Licencia: {f['licencia']}." in texto
+
+
+# Nota como la del `alquiler.json` real: origen, fecha de actualización, «no participa» y una cifra.
+NOTA_REAL = "Cada zona va en euros de su año (factor_ipc 1,0). " + ORIGEN_SERPAVI
+
+
+@pytest.fixture
+def leeme_real(tmp_path):
+    alquiler = {**ALQUILER, "meta": {**ALQUILER["meta"], "nota": NOTA_REAL}}
+    sdm.escribir(ANALISIS, alquiler, tmp_path, ESQUEMA)
+    return tmp_path / "LEEME.md"
+
+
+def test_leeme_lleva_fecha_y_nota_de_origen_de_cada_fichero(leeme_real):
+    texto = leeme_real.read_text("utf-8")
+    # «Origen de los datos: …, actualizado el …; el Ministerio no participa ni patrocina…»
+    assert ORIGEN_SERPAVI in texto
+    assert f"`analisis.json`, generado el {ANALISIS['meta']['generado']}" in texto
+    assert f"`alquiler.json`, generado el {ALQUILER['meta']['generado']}" in texto
+    assert ANALISIS["meta"]["nota"] in texto
+
+
+def test_leeme_cumple_cifras_con_fuente(leeme_real):
     spec = importlib.util.spec_from_file_location(
         "cifras", RAIZ.parent / ".github/scripts/cifras_con_fuente.py"
     )
     cifras = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cifras)
-    sdm.escribir(ANALISIS, ALQUILER, tmp_path, ESQUEMA)
-    assert cifras.revisar(tmp_path / "LEEME.md") == []
+    assert cifras.revisar(leeme_real) == []
