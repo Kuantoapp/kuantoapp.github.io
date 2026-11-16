@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿Me sobra? · Mapa de zonas</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <main>
+    <aside>
+      <!-- Contenedores vacíos: los rellenan F1-09 (formulario), F2-01 (ficha) y F2-02 (escenarios). -->
+      <form id="formulario"></form>
+      <section id="ficha" aria-live="polite"></section>
+      <section id="escenarios"></section>
+    </aside>
+    <section id="mapa-contenedor">
+      <div id="mapa" role="img" aria-label="Mapa de las zonas coloreadas por alquiler"></div>
+      <div id="leyenda"></div>
+      <div id="tooltip" hidden></div>
+      <p id="estado" role="status"></p>
+    </section>
+  </main>
+  <script src="vendor/maplibre-gl.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
