@@ -66,6 +66,20 @@ def test_sin_dato_no_se_publica_y_estimado_se_marca(salida):
     assert e["description"].endswith(", estimado")
 
 
+def test_esfuerzo_de_zona_con_alquiler_estimado_es_estimado(salida):
+    e = next(e for e in salida["esfuerzo"] if e["area"] == "28092")
+    assert e["description"].endswith(", estimado")
+    e = next(e for e in salida["esfuerzo"] if e["area"] == "2807901")
+    assert "estimado" not in e["description"]
+
+
+def test_sin_bloque_de_sobrecarga_no_se_publica_vacio(tmp_path):
+    sin = {k: v for k, v in ANALISIS.items() if k != "sobrecarga"}
+    sdm.escribir(sin, ALQUILER, tmp_path, ESQUEMA)
+    assert not (tmp_path / "sobrecarga_40.json").exists()
+    assert "sobrecarga_40" not in (tmp_path / "LEEME.md").read_text("utf-8")
+
+
 def test_sobrecarga_es_un_intervalo(salida):
     e = next(e for e in salida["sobrecarga_40"] if e["area"] == "2807901")
     assert e["kpiValue"] == {"inf": 14.0, "sup": 19.5}

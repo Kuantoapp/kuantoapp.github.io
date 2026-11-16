@@ -50,6 +50,8 @@ def _filas(analisis: dict, alquiler: dict, origen: str) -> list[dict]:
 
 def entidades(analisis: dict, alquiler: dict) -> dict[str, list[dict]]:
     """Una entidad por indicador, zona y año con valor; sin dato no se publica."""
+    # Un indicador de una zona con alquiler estimado también lo es.
+    estimadas = {z for z, v in alquiler["zonas"].items() if v["origen"] == "estimado"}
     salida = {}
     for nombre, (origen, campos, texto) in INDICADORES.items():
         lista = []
@@ -57,8 +59,7 @@ def entidades(analisis: dict, alquiler: dict) -> dict[str, list[dict]]:
             valores = [f[c] for c in campos]
             if None in valores:
                 continue
-            # shortcut: solo el alquiler lleva marca de estimado; el esfuerzo de una zona estimada no, y debería, si se quiere
-            estimado = f.get("origen") == "estimado"
+            estimado = f["zona_id"] in estimadas
             lista.append(
                 {
                     "id": f"urn:ngsi-ld:{TIPO}:{nombre}-{f['zona_id']}-{f['anio']}",
@@ -92,7 +93,9 @@ def validar(por_indicador: dict[str, list[dict]], esquema: dict) -> None:
         ids.add(e["id"])
 
 
-def leeme(esquema: dict, analisis: dict, alquiler: dict) -> str:
+def leeme(
+    esquema: dict, analisis: dict, alquiler: dict, por_indicador: dict[str, list]
+) -> str:
     origen = esquema["x-origen"]
     fuentes = [
         f"- `{n}`: {f['nombre']}, {f['url']}, {f['licencia']}"
@@ -102,6 +105,7 @@ def leeme(esquema: dict, analisis: dict, alquiler: dict) -> str:
     filas = [
         f"| `{n}` | {t} | `{o}.{'` y `'.join(c)}` | <!-- sin-fuente: umbral o unidad del indicador, no un dato -->"
         for n, (o, c, t) in INDICADORES.items()
+        if por_indicador[n]
     ]
     ine = any("INE" in f for f in fuentes)
     cita = (
@@ -151,9 +155,15 @@ def escribir(analisis: dict, alquiler: dict, carpeta: Path, esquema: dict) -> No
     for viejo in carpeta.glob("*.json"):
         viejo.unlink()
     for nombre, lista in por_indicador.items():
+        if (
+            not lista
+        ):  # bloque opcional ausente (p. ej. sobrecarga): no se publica vacío
+            continue
         compacto = json.dumps(lista, ensure_ascii=False, separators=(",", ":"))
         (carpeta / f"{nombre}.json").write_text(compacto, "utf-8")
-    (carpeta / "LEEME.md").write_text(leeme(esquema, analisis, alquiler), "utf-8")
+    (carpeta / "LEEME.md").write_text(
+        leeme(esquema, analisis, alquiler, por_indicador), "utf-8"
+    )
 
 
 def main() -> None:
