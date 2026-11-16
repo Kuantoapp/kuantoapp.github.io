@@ -219,6 +219,52 @@ def test_limites_fallan(cambios: dict, mensaje: str) -> None:
         calculo.calcular(API, _entrada(**cambios))
 
 
+@pytest.mark.parametrize(
+    ("entrada", "mensaje"),
+    [
+        (_entrada(zonas=["99999"]), "zonas sin entrada"),
+        (_entrada(ref="99999"), "zonas sin entrada"),
+        ({"hogar": {"perfil": "solo", "edad": 30}}, "entrada sin"),
+        ({"sueldos": [CENTRO]}, "entrada sin"),
+        (_entrada(sueldos=[{"bruto": 22000, "modo": "tp"}]), "sueldo sin"),
+        (_entrada(sueldos=[CENTRO | {"bruto": "22000"}]), "debe ser un número"),
+        (_entrada(sueldos=[CENTRO | {"destino": "00000"}]), "no tiene tp"),
+        (_entrada(ref=""), "zonas sin entrada"),
+        (_entrada(ref=0), "zonas y ref"),
+        (_entrada(zonas="2807901"), "zonas: debe ser"),
+        (_entrada(zonas=[2807901]), "zonas y ref"),
+        (_entrada(hogar="solo"), "hogar: debe ser"),
+        (_entrada(hogar={"perfil": ["solo"], "edad": 30}), "perfil desconocido"),
+        (_entrada(hogar={"perfil": "solo", "edad": 30, "m2": "40"}), "m2 = '40'"),
+        (_entrada(hogar={"perfil": "solo", "edad": 30, "m2": None}), "m2 = None"),
+        (_entrada(sueldos=None), "sueldos: debe ser"),
+        (_entrada(sueldos=["tp"]), "cada sueldo"),
+        (_entrada(sueldos=[CENTRO | {"viajes_dia": 2.0}]), "viajes_dia"),
+        (_entrada(sueldos=[{**CENTRO, "bruto": float("nan")}]), "fuera de la tabla"),
+        (_entrada(escenario=["sin_descuento"]), "escenario: debe ser"),
+        (_entrada(escenario={"tarifas": ["x"]}), "inválido"),
+        (_entrada(escenario={"subida_alquiler": float("inf")}), "mayor que"),
+        (
+            _entrada(sueldos=[{"neto_mes": float("inf")} | CENTRO | {"bruto": None}]),
+            "uno de los dos",
+        ),
+        (
+            _entrada(
+                sueldos=[
+                    {k: v for k, v in CENTRO.items() if k != "bruto"}
+                    | {"neto_mes": float("inf")}
+                ]
+            ),
+            "neto_mes = inf",
+        ),
+    ],
+)
+def test_entradas_incompletas_dan_value_error(entrada: dict, mensaje: str) -> None:
+    with pytest.raises(ValueError, match=mensaje):
+        calculo.calcular(API, entrada)
+    assert "error" in calculo.resolver(API, entrada)
+
+
 def test_escenario_aplicado_en_la_salida() -> None:
     r = calculo.calcular(API, _entrada(escenario={"subida_alquiler": 5}))
     assert r["escenario"] == {
