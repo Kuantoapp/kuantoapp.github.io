@@ -223,7 +223,7 @@ def test_bayes_empirico():
 
 def test_validacion():
     rng = np.random.default_rng(1)
-    ids = [f"28{i:03d}" for i in range(60)]
+    ids = [f"28{i:03d}" for i in range(40, 100)]  # incluye Madrid (28079)
     jov = pd.Series(rng.integers(100, 1000, 60), index=ids, name="poblacion_joven")
     ind = pd.Series(rng.uniform(0.1, 0.5, 60), index=ids, name="esfuerzo")
     acept = rng.integers(0, 20, 60)
@@ -267,7 +267,17 @@ def test_validacion():
     assert pr["moran_x_k5"]["I"] == pytest.approx(
         bono.moran(res_x, xy.to_numpy(float), 5)["I"]
     )
-    eb = 1000 * bono.bayes_empirico(t["rechazadas"], t["poblacion_joven"])
+    # el prior se calcula sin Madrid, que conserva su tasa sin suavizar
+    otros = t.index != bono.MADRID
+    eb = 1000 * bono.bayes_empirico(
+        t.loc[otros, "rechazadas"], t.loc[otros, "poblacion_joven"]
+    )
+    eb[bono.MADRID] = y[bono.MADRID]
+    assert not np.isclose(
+        eb.drop(bono.MADRID),
+        1000
+        * bono.bayes_empirico(t["rechazadas"], t["poblacion_joven"]).drop(bono.MADRID),
+    ).all()
     assert res["rechazadas_por_mil_eb"]["pearson"]["r"] == pytest.approx(
         bono.correlacion_parcial(x, eb, ctrl)["r"]
     )
