@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { PALETA, SIN_DATO, colorPara, colorear, cortesCuantiles, fuentes, leyenda } from "./vista.js";
+import { PALETA, SIN_DATO, colorPara, colorear, cortesCuantiles, fuentes, leyenda, licencias } from "./vista.js";
 
 const leer = (nombre) => JSON.parse(readFileSync(new URL(`../tests/fixtures/api/${nombre}`, import.meta.url), "utf8"));
 const zonas = leer("zonas.geojson");
@@ -71,4 +71,9 @@ test("la fuente sale de meta.fuentes sin repetir nombres", () => {
 test("un formato inesperado falla en voz alta", () => {
   assert.throws(() => colorear({}, alquiler), /Formato inesperado/);
   assert.throws(() => colorear(zonas, {}), /Formato inesperado/);
+});
+
+test("las licencias salen de meta.fuentes sin repetir", () => {
+  const meta = { fuentes: [{ licencia: "CC BY 4.0" }, { licencia: "ODbL 1.0" }] };
+  assert.equal(licencias(meta, meta), "CC BY 4.0; ODbL 1.0");
 });

@@ -1,5 +1,5 @@
 // Conecta la página: carga los datos, crea el mapa y pinta. La lógica de color y leyenda está en vista.js.
-import { METODO, SIN_DATO, colorear, fuentes, leyenda } from "./vista.js";
+import { METODO, SIN_DATO, colorear, fuentes, leyenda, licencias } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -18,11 +18,11 @@ async function cargarJSON(base, nombre) {
   return res.json();
 }
 
-function pintarLeyenda(cortes, textoFuente) {
+function pintarLeyenda(cortes, textoFuente, zonas, alquiler) {
   const cont = $("leyenda");
   const titulo = document.createElement("p");
   titulo.className = "titulo";
-  titulo.textContent = METODO;
+  titulo.textContent = `${METODO}. Dato de ${alquiler.meta.anio_dato} (alguna zona, de un año anterior)`;
   cont.replaceChildren(titulo);
   for (const { color, texto } of leyenda(cortes)) {
     const fila = document.createElement("div");
@@ -37,7 +37,13 @@ function pintarLeyenda(cortes, textoFuente) {
   }
   const pie = document.createElement("p");
   pie.textContent = `${textoFuente}. Borde discontinuo: valor estimado.`;
-  cont.append(pie);
+  const detalle = document.createElement("details");
+  const resumen = document.createElement("summary");
+  resumen.textContent = "Nota metodológica y licencias";
+  const nota = document.createElement("p");
+  nota.textContent = `${alquiler.meta.nota} Licencias: ${licencias(zonas.meta, alquiler.meta)}.`;
+  detalle.append(resumen, nota);
+  cont.append(pie, detalle);
 }
 
 function pintarMapa(zonas) {
@@ -86,7 +92,7 @@ async function main() {
   const base = carpetaDatos();
   const [zonas, alquiler] = await Promise.all([cargarJSON(base, "zonas.geojson"), cargarJSON(base, "alquiler.json")]);
   const { zonas: pintadas, cortes } = colorear(zonas, alquiler);
-  pintarLeyenda(cortes, fuentes(zonas.meta, alquiler.meta));
+  pintarLeyenda(cortes, fuentes(zonas.meta, alquiler.meta), zonas, alquiler);
   pintarMapa(pintadas);
 }
 

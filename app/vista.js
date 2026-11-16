@@ -66,6 +66,12 @@ export function leyenda(cortes) {
   return [...clases, { color: SIN_DATO, texto: "Sin dato" }];
 }
 
+/** Licencias de los `meta.fuentes` sin repetir, separadas por «; ». */
+export function licencias(...metas) {
+  const textos = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.licencia)));
+  return [...textos].join("; ");
+}
+
 /** «fuente: A, B» sin repetir, a partir de los `meta.fuentes` de los ficheros cargados. */
 export function fuentes(...metas) {
   const nombres = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.nombre)));
