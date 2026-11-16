@@ -157,7 +157,7 @@ def test_cuartil_sin_mediana():
             "eur_m2_p25": [10.0],
             "eur_m2_p50": [float("nan")],
             "eur_m2_p75": [15.0],
-            **CUANTIA_OK,
+            **{k: [float("nan")] for k in CUANTIA_OK},
         }
     )
     with pytest.raises(ValueError, match="incoherentes"):
