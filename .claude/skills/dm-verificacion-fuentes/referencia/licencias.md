@@ -138,7 +138,9 @@ URL: aviso legal en https://www.ine.es/ss/Satellite?L=es_ES&c=Page&cid=125473584
 - Fecha de la última actualización, si figura en el original.
 - No sugerir patrocinio.
 
-**Licencia declarada: incoherente.** El pie de página enlaza a CC BY 4.0 (creativecommons.org/licenses/by/4.0) con los iconos CC y BY. Sin embargo, el atributo `title` del enlace dice «Este sitio web y su contenido están bajo licencia CC BY-SA 4.0». Hay que tratarlo como pendiente de aclaración (ver «No verificado»).
+**Licencia declarada: CC BY 4.0 (resuelto el 16-11, #147).** El apartado «Reutilización de la información contenida en este sitio web» del aviso legal canónico fija CC BY 4.0, y el cuerpo del aviso remite a él toda reutilización. El pie de las páginas, renderizado con JavaScript, muestra «Este sitio web y su contenido están bajo licencia CC BY-SA 4.0» (en el HTML estático solo está en el `title`), pero enlaza a CC BY 4.0 y habla del sitio, no de la información estadística. Detalle y método en [`docs/verificaciones/licencia-ine.md`](../../../../docs/verificaciones/licencia-ine.md).
+
+La URL Satellite de esta sección es la versión antigua del aviso, todavía accesible pero sin licencia CC en su texto. La canónica es https://www.ine.es/dyngs/AYU/es/index.htm?cid=125 (a la que redirige /aviso_legal).
 
 ### 2.4 BOE
 
@@ -358,7 +360,7 @@ URL: https://eur-lex.europa.eu/legal-content/ES/TXT/HTML/?uri=CELEX:32016R0679 (
 
 1. Que la Ley 18/2022 modificara la Ley 37/2007. El consolidado del BOE no la cita: solo cita el RDL 24/2021 y la Ley 11/2023.
 2. Fecha exacta de aplicación del Reglamento 2023/138 (9 de junio de 2024). El texto solo dice «dieciséis meses».
-3. Licencia real del INE: CC BY 4.0 (enlace e iconos) frente a CC BY-SA 4.0 (`title` del pie). Hay que preguntar al INE o mirar la licencia en el catálogo de datos.gob.es.
+3. ~~Licencia real del INE~~ Resuelto el 16-11: CC BY 4.0 (#147, `docs/verificaciones/licencia-ine.md`).
 4. Si la licencia de Catastro de 2016 (que prohíbe difundir información sin transformar) sigue vigente o la sustituye otra (CC BY 4.0, alto valor).
 5. El texto de licencia que muestra el portal datos.crtm.es. Solo se leyó la licencia de crtm.es.
 6. Las condiciones de la EMT, Bibliotecas y Madrid Destino en datos.madrid.es.
