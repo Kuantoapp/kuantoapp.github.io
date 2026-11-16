@@ -7,17 +7,20 @@ sobran pasan al mes siguiente (decisión del equipo).
 Calendario: 227 días de trabajo al año (261 laborables de 2026, menos 10 festivos en laborable, 2
 locales y 22 laborables de vacaciones), es decir 3,7833 semanas al mes. El abono de 30 días se compra
 335/30 veces al año: no se compra en los 30 días de vacaciones. Supuestos del calendario:
-S1 30 días naturales de vacaciones son 22 laborables (el máximo; pocos días de trabajo de más);
+S1 30 días naturales de vacaciones son 22 laborables (el máximo posible: 20 a 22, media 21,43);
 S2 vacaciones en un solo bloque sin abono (si se parten el abono cuesta más, y favorece al abono);
 S3 festivos y vacaciones repartidos por igual entre los días de la semana;
 S4 los 2 locales caen en laborable (BOCM-20251212-34; en Madrid, 15-may y 9-nov; en Móstoles,
 Fuenlabrada, Alcobendas o Tres Cantos uno cae en sábado: 228 días, sin cambio de título);
 S5 `sin_descuento` usa también el calendario de 2026;
-S6 solo viajes al trabajo, sin ocio ni fin de semana (favorece a los títulos por viaje);
+S6 solo viajes al trabajo, sin ocio ni fin de semana (favorece a los títulos por viaje: en la zona A
+con 5 días, con más de 2 viajes de ocio al mes vuelve a ganar el abono);
 S7 el 10 viajes se compra en paquetes mensuales enteros (con paquetes anuales, la zona A saldría a
-27,98 €; #162);
+27,98 €; #162); por eso, sin descuento, el sencillo fraccionario gana en 12 casos de pocos días;
 S8 sin turnos en festivos ni teletrabajo;
-S9 un mes es 1/12 del año, igual para el coste y para las horas.
+S9 un mes es 1/12 del año, igual para el coste y para las horas;
+S10 335/30 abonos es la media continua y una cota inferior: 11 abonos enteros más el resto de días
+cuestan de 0 a 0,2 €/mes más (zona A: 30,58 frente a 30,43); el sesgo va contra el 10 viajes.
 Sin abono anual: el BOCM le pone precio (10 × 30 días) pero su venta a particulares está suspendida
 desde 2023 (crtm.es/billetes-y-tarifas).
 Viajes al día: 2 (ida y vuelta directa) o 4 (un transbordo en cada sentido); 2 viajes se cobran a
@@ -94,8 +97,8 @@ DIEZ_VIAJES = {
     "C2": _p("22.40", "38.50"),
 }
 # A: EMT; B1-C2: autobús interurbano. BOCM-20251231-2 pág. 68 = BOCM-20251231-3 pág. 71
-# shortcut: el Metro de la zona A va de 1,50 a 2,00 € por tramos y se usa el mínimo; no cambia el
-# resultado en la zona A porque su 10 viajes sale a 0,73 o 1,25 € por viaje
+# shortcut: el Metro de la zona A va de 1,50 a 2,00 € por tramos y se usa el mínimo (EMT o Metro de
+# hasta 5 estaciones); en sin_descuento decide 7 celdas de la zona A, que con 2,00 € serían 10 viajes
 SENCILLO = {
     c: _p("1.50", "1.50") if c == "A" else _p("3.00", "3.00") for c in ORDEN_CORONAS
 }

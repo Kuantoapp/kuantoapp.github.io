@@ -42,10 +42,35 @@ def test_calendario_laboral_de_2026():
     # 261 laborables - 10 festivos en laborable - 2 locales - 22 de vacaciones
     assert sum(f.weekday() < 5 for f in t.FESTIVOS_2026) == 10
     assert (t.LABORABLES_2026, t.DIAS_TRABAJO) == (261, 227)
+    assert {(f.month, f.day) for f in t.FESTIVOS_2026 if f.weekday() >= 5} == {
+        (5, 2),
+        (8, 15),
+    }
+
+
+@pytest.mark.parametrize(
+    ("dias_trabajo", "esperado"),
+    [
+        (
+            228,
+            ("10 viajes", D("29.20")),
+        ),  # S4: un local en sábado, 38 viajes, 4 paquetes
+        (240, ("10 viajes", D("29.20"))),  # 40 viajes, 4 paquetes
+        (241, ("Abono 30 días", D("30.43"))),  # 40,17 viajes, 5 paquetes (36,50)
+    ],
+)
+def test_umbral_del_10_viajes_en_zona_a(monkeypatch, dias_trabajo, esperado):
+    monkeypatch.setattr(t, "SEMANAS_MES", D(dias_trabajo) / 5 / 12)
+    assert titulo("vigente_2026", "A", 5, 2) == esperado
+
+
+def test_joven_al_borde_en_b2_con_un_dia():
+    # 10 × 335/360 = 9,31 frente a un paquete de B2 a 9,60
+    assert titulo("vigente_2026", "B2", 1, 2, joven=True) == ("Abono Joven", D("9.31"))
 
 
 def test_abono_de_la_zona_a_con_335_entre_30_al_anio():
-    # 32,70 × 335/30 / 12 = 30,425 €/mes; con 3 días y 4 viajes gana el abono
+    # 32,70 × 335/30 / 12 = 30,429 €/mes; con 3 días y 4 viajes gana el abono
     assert titulo("vigente_2026", "A", 3, 4) == ("Abono 30 días", D("30.43"))
 
 
