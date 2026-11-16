@@ -105,13 +105,39 @@ def test_reglas():
     assert bi.elegir_modelo(0.01, 0.02) == "SEM"
     assert bi.elegir_modelo(0.03, 0.02) == "SAR"
     assert bi.elegir_modelo(0.2, 0.3) == "OLS"
-    assert bi.concluir(0.14, 0.01, 0.3, 0.02) == "robusta"
-    assert (
-        bi.concluir(0.14, 0.01, 0.3, 0.2) == "no concluyente"
-    )  # el espacial no es significativo
-    assert bi.concluir(0.14, 0.2, 0.3, 0.01) == "no concluyente"  # la Pearson no lo es
-    assert bi.concluir(0.14, 0.01, -0.3, 0.01) == "no concluyente"  # signos opuestos
-    assert bi.concluir(0.14, 0.01, 0.3, float("nan")) == "no concluyente"
+
+
+def _c(beta, p):
+    return {"beta": beta, "p": p}
+
+
+def test_concluir_sem_het_con_k5_y_k8():
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.04)) == "robusta"
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.2)) == "no concluyente"  # k = 8 no
+    assert bi.concluir(_c(80, 0.2), _c(70, 0.01)) == "no concluyente"  # k = 5 no
+    assert bi.concluir(_c(80, 0.01), _c(-70, 0.01)) == "no concluyente"  # signos
+    assert bi.concluir(_c(80, float("nan")), _c(70, 0.01)) == "no concluyente"
+    assert bi.concluir(_c(80, 0.01), _c(70, float("nan"))) == "no concluyente"
+
+
+def test_sem_het_recupera_beta_y_lambda_con_heterocedasticidad_y_hac_finito():
+    rng = np.random.default_rng(3)
+    xy = _rejilla(20)
+    n = len(xy)
+    x = rng.normal(size=(n, 3))
+    pob = rng.uniform(50, 5000, n)
+    w = bono._w(xy, 5).full()[0]
+    # varianza ∝ 1/población en la innovación, luego filtrada por el SEM
+    u = np.linalg.solve(np.eye(n) - 0.5 * w, rng.normal(size=n) * 10 / np.sqrt(pob))
+    y = 2 + x @ [1.0, 0.5, -0.5] + u
+    d = pd.DataFrame(x, columns=bi.X).assign(**{bi.Y: y})
+    res = bi.regresion(d, xy, 5)
+    het = res["sem_het"]
+    assert het["lambda"]["beta"] == pytest.approx(0.5, abs=0.2)
+    assert het["beta"] == pytest.approx(1.0, abs=0.15)
+    assert het["beta"] - 1.96 * het["se"] <= 1.0 <= het["beta"] + 1.96 * het["se"]
+    assert np.isfinite(res["ols_hac"]["se"]) and res["ols_hac"]["se"] > 0
+    assert 0 <= res["heterocedasticidad"]["koenker_bassett"]["p"] <= 1
 
 
 def test_preparar_exige_renta():
@@ -193,9 +219,10 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     # si se rompe el denominador (p. ej. solo población), r deja de coincidir con la relación plantada
     assert r["r"] == pytest.approx(esperado["r"])
     assert r["n"] == 22 and esperado["r"] > 0.9
-    e = sal["alquiler"]["espacial"]["k5"]["elegido"]
-    efecto = e["efectos"]["total"] if e["modelo"] == "SAR" else e["beta"]
-    assert sal["alquiler"]["conclusion"] == bi.concluir(r["r"], r["p"], efecto, e["p"])
+    e = sal["alquiler"]["espacial"]
+    assert sal["alquiler"]["conclusion"] == bi.concluir(
+        e["k5"]["sem_het"], e["k8"]["sem_het"]
+    )
     assert sal["alquiler"]["conclusion"] == "robusta"
     assert set(sal["alquiler"]["espacial"]) == {"k5", "k8"}
     # los dos bloques tienen la misma forma y la lectura lleva la conclusión de la principal que se le pasa
