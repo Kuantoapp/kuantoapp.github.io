@@ -21,6 +21,9 @@ OK = {
     "ALQTBID12_75_VC": 900,
 }
 
+EUR_OK = {"eur_m2_p25": [1.0], "eur_m2_p50": [2.0], "eur_m2_p75": [3.0]}
+CUANTIA_OK = {"cuantia_p25": [1.0], "cuantia_p50": [2.0], "cuantia_p75": [3.0]}
+
 
 def _fila(codigos, valores):
     return [*codigos, *(valores.get(m[:-3], "") for m in MEDIDAS)]
@@ -90,6 +93,8 @@ def test_sin_dato_nulo_y_no_cero(xlsx, tmp_path):
     assert fila["origen"] == "sin_dato" and fila["testigos"] == 0
     assert pd.isna(fila[["eur_m2_p25", "eur_m2_p50", "eur_m2_p75", "m2_p50"]]).all()
     assert zona.loc[("28002", 2024), "origen"] == "observado"
+    assert zona.loc[("28002", 2024), "cuantia_p50"] == 800
+    assert pd.isna(fila["cuantia_p50"])
 
 
 def test_formato_largo(xlsx, tmp_path):
@@ -106,8 +111,27 @@ def test_formato_largo(xlsx, tmp_path):
 
 def test_comprobar_percentiles():
     df = pd.DataFrame(
-        {"eur_m2_p25": [13.0], "eur_m2_p50": [12.0], "eur_m2_p75": [15.0]}
+        {"eur_m2_p25": [13.0], "eur_m2_p50": [12.0], "eur_m2_p75": [15.0], **CUANTIA_OK}
     )
+    with pytest.raises(ValueError, match="incoherentes"):
+        alquiler._comprobar(df)
+
+
+def test_comprobar_cuantia():
+    df = pd.DataFrame(
+        {
+            "cuantia_p25": [900.0],
+            "cuantia_p50": [800.0],
+            "cuantia_p75": [1000.0],
+            **EUR_OK,
+        }
+    )
+    with pytest.raises(ValueError, match="incoherentes"):
+        alquiler._comprobar(df)
+
+
+def test_cuantia_nula_con_eur_m2():
+    df = pd.DataFrame({**EUR_OK, **{k: [float("nan")] for k in CUANTIA_OK}})
     with pytest.raises(ValueError, match="incoherentes"):
         alquiler._comprobar(df)
 
@@ -129,7 +153,12 @@ def test_mismos_recuentos_otros_anios():
 
 def test_cuartil_sin_mediana():
     df = pd.DataFrame(
-        {"eur_m2_p25": [10.0], "eur_m2_p50": [float("nan")], "eur_m2_p75": [15.0]}
+        {
+            "eur_m2_p25": [10.0],
+            "eur_m2_p50": [float("nan")],
+            "eur_m2_p75": [15.0],
+            **{k: [float("nan")] for k in CUANTIA_OK},
+        }
     )
     with pytest.raises(ValueError, match="incoherentes"):
         alquiler._comprobar(df)

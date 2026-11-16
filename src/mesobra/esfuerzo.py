@@ -13,11 +13,8 @@ Limitaciones:
   así que el indicador subestima el esfuerzo de quien alquila. Además es una media (los ingresos
   altos la suben) y el SERPAVI recoge contratos declarados, no precios de oferta (va por detrás
   del mercado).
-- Numerador: alquiler_zona no trae la cuantía mensual, así que se usa €/m² mediano × superficie
-  mediana. Ese producto de medianas no es la mediana del alquiler: en 2024, en los 137 municipios
-  con los dos datos, producto ÷ cuantía mediana da mediana 1,061, P10 0,984 y P90 1,173 (Madrid
-  capital 1,061); el esfuerzo sale en torno a un 6 % más alto, hasta un 17 % en algunas zonas
-  (#151).
+- Numerador: el alquiler es la cuantía mediana mensual del SERPAVI (`ALQTBID12_M_VC`), vivienda
+  colectiva; antes de #202 se usaba €/m² × m² mediano, que lo sobrestimaba en torno a un 6 % (#151).
 - Desde los datos de 2020, las zonas de menos de 100 residentes tienen en el ADRH la renta común
   de su comarca agraria, no la suya (#166): su esfuerzo queda nulo; renta_hogar_mes conserva el
   valor publicado.
@@ -42,7 +39,7 @@ def esfuerzo(alquiler: pd.DataFrame, renta: pd.DataFrame) -> pd.DataFrame:
     zonas = renta[renta["nivel"] == "zona"].rename(columns={"unidad_id": "zona_id"})
     # el inner deja la ventana común de las dos series
     df = alquiler.merge(zonas, on=CLAVE, how="inner", validate="one_to_one")
-    df["alquiler_mes_p50"] = df["eur_m2_p50"] * df["m2_p50"]
+    df["alquiler_mes_p50"] = df["cuantia_p50"]
     df["renta_hogar_mes"] = df["renta_hogar"] / 12
     # población nula no es valor de grupo: conserva su esfuerzo
     pequena = df["poblacion"].fillna(MIN_RESIDENTES) < MIN_RESIDENTES

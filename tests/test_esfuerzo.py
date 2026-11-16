@@ -17,10 +17,17 @@ def _tabla(nombre, columnas, filas, **fijas):
 
 
 def _alquiler(filas):
-    """Filas (zona_id, anio, eur_m2_p50, m2_p50); nulos = sin_dato."""
-    df = pd.DataFrame(filas, columns=["zona_id", "anio", "eur_m2_p50", "m2_p50"])
-    origen = df["eur_m2_p50"].notna().map({True: "observado", False: "sin_dato"})
-    return _tabla("alquiler_zona", df.columns, df.values.tolist(), origen=origen)
+    """Filas (zona_id, anio, cuantia_p50); nulo = sin_dato. €/m² × m² (1200) no es la cuantía."""
+    df = pd.DataFrame(filas, columns=["zona_id", "anio", "cuantia_p50"])
+    origen = df["cuantia_p50"].notna().map({True: "observado", False: "sin_dato"})
+    return _tabla(
+        "alquiler_zona",
+        df.columns,
+        df.values.tolist(),
+        origen=origen,
+        eur_m2_p50=20.0,
+        m2_p50=60.0,
+    )
 
 
 def _renta(filas, nivel="zona"):
@@ -35,7 +42,7 @@ def _fila(tabla, zona, anio):
 
 def test_caso_a_mano():
     tabla = esfuerzo.esfuerzo(
-        _alquiler([("28001", 2024, 15.0, 60.0)]),
+        _alquiler([("28001", 2024, 900.0)]),
         _renta([("28001", 2024, 36000, 5000)]),
     )
     fila = tabla.iloc[0]
@@ -46,7 +53,7 @@ def test_caso_a_mano():
 
 def test_sin_alquiler_esfuerzo_nulo():
     tabla = esfuerzo.esfuerzo(
-        _alquiler([("28001", 2024, None, None)]),
+        _alquiler([("28001", 2024, None)]),
         _renta([("28001", 2024, 36000, 5000)]),
     )
     assert pd.isna(tabla.loc[0, "esfuerzo"])
@@ -56,9 +63,9 @@ def test_sin_alquiler_esfuerzo_nulo():
 def test_renta_comun_de_zonas_pequenas():
     alquiler = _alquiler(
         [
-            ("28001", 2019, 10.0, 60.0),
-            ("28001", 2020, 10.0, 60.0),
-            ("28002", 2020, 10.0, 60.0),
+            ("28001", 2019, 600.0),
+            ("28001", 2020, 600.0),
+            ("28002", 2020, 600.0),
         ]
     )
     renta = _renta(
@@ -76,7 +83,7 @@ def test_renta_comun_de_zonas_pequenas():
 
 
 def test_ventana_comun_y_nivel():
-    alquiler = _alquiler([("28001", 2014, 10.0, 60.0), ("28001", 2015, 10.0, 60.0)])
+    alquiler = _alquiler([("28001", 2014, 600.0), ("28001", 2015, 600.0)])
     renta = pd.concat(
         [
             _renta([("28001", 2015, 36000, 5000)]),
