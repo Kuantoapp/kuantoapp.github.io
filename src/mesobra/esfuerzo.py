@@ -40,7 +40,8 @@ ANIO_RENTA_COMUN = 2020
 def esfuerzo(alquiler: pd.DataFrame, renta: pd.DataFrame) -> pd.DataFrame:
     """Esfuerzo por zona y año en la ventana común (contrato `esfuerzo`)."""
     zonas = renta[renta["nivel"] == "zona"].rename(columns={"unidad_id": "zona_id"})
-    df = alquiler.merge(zonas, on=CLAVE)
+    # el inner deja la ventana común de las dos series
+    df = alquiler.merge(zonas, on=CLAVE, how="inner", validate="one_to_one")
     df["alquiler_mes_p50"] = df["eur_m2_p50"] * df["m2_p50"]
     df["renta_hogar_mes"] = df["renta_hogar"] / 12
     # población nula no es valor de grupo: conserva su esfuerzo
@@ -59,6 +60,8 @@ def cambio(tabla: pd.DataFrame) -> pd.Series:
     Es nulo si la zona no tiene esfuerzo en alguno de los dos años.
     """
     ancho = tabla.pivot(index="zona_id", columns="anio", values="esfuerzo")
+    if len(ancho.columns) < 2:
+        raise ValueError(f"cambio necesita al menos dos años, hay {len(ancho.columns)}")
     return (ancho[ancho.columns.max()] - ancho[ancho.columns.min()]).rename("cambio")
 
 

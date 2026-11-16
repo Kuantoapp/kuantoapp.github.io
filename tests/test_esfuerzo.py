@@ -101,6 +101,12 @@ def test_cambio():
     assert pd.isna(resultado["b"]) and pd.isna(resultado["c"])
 
 
+def test_cambio_exige_dos_anios():
+    tabla = pd.DataFrame({"zona_id": ["a"], "anio": [2024], "esfuerzo": [0.3]})
+    with pytest.raises(ValueError, match="dos años"):
+        esfuerzo.cambio(tabla)
+
+
 def test_fixtures_dan_el_esfuerzo_esperado():
     def leer(nombre):
         return pd.read_csv(FIXTURES / f"{nombre}.csv", dtype=contratos.dtypes(nombre))
