@@ -12,8 +12,8 @@ renta del catálogo regional, esfuerzo y renta de 2022, solicitudes por 1.000 y 
 I de Moran de los residuos (k = 5 y k = 8) y la exclusión de Madrid. La conclusión se apoya solo en la principal.
 
 Supuestos:
-- Año 2023 (ejercicio IRPF 2023): unos 10,5 de los 14 meses del plazo y 24 de los 31,8 M€ caen en 2023,
-  igual que la población a 1-1-2023. El 2022 queda como robustez.
+- Año 2023 (ejercicio IRPF 2023): unos 10,5 de los 14 meses del plazo y las anualidades de 2023 de los dos
+  créditos del procedimiento (24 M€ de la Orden 3026/2022 y 27,7 M€ de la Orden 424/2023) caen en 2023, igual que la población a 1-1-2023. El 2022 queda como robustez.
 - `necesidad` = esfuerzo × población joven (volumen), pero los terciles y la correlación usan el esfuerzo
   (necesidad por joven) frente a aceptadas o rechazadas por 1.000 jóvenes; si no, «necesidad alta» sería
   casi «municipio grande».
@@ -26,12 +26,19 @@ Supuestos:
   ayuda es aceptadas por 1.000 jóvenes.
 - La fila «Otro» (3.352 solicitudes sin contrato de un inmueble concreto, ninguna aceptada) se informa aparte
   y no se reparte; sin ella la tasa de aceptación es del 23,7 %.
-- Tope de alquiler: 600 € o 900 € en los 29 municipios de `TOPE_900` (BOCM-20220920-16; el Anexo II no está
-  leído). Es un parámetro normativo que sirve de control, no prueba que el rechazo se deba a él. El de
+- Tope de alquiler: 600 € o 900 € en los 29 municipios de `TOPE_900` (Acuerdo del Consejo de Gobierno
+  de 14-09-2022, art. 5 y Anexo II, texto completo en BDNS 648964, doc. 858536; extracto BOCM-20220920-16). Es un parámetro normativo que sirve de control, no prueba que el rechazo se deba a él. El de
   habitación (300/450 €) no se distingue porque el dataset no separa.
 - Autocorrelación: I de Moran de los residuos con W de k vecinos más cercanos entre centroides (la W reina
-  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p por permutaciones. Si sale
-  significativo, el n efectivo es menor que n y el IC es optimista.
+  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p por permutaciones. Se calcula sobre
+  el residuo de y y sobre el de x (ambos sobre los controles). El n efectivo depende de la autocorrelación de
+  los dos residuos. Un Moran significativo puede indicar también una variable espacial omitida, que sesga el
+  r y no solo hace optimista el IC. No se ha probado un SEM ni un SLX (no hay spreg) y el n efectivo
+  (Clifford-Richardson-Hémon o Dutilleul) no se calcula. Las coordenadas son el centroide geométrico del
+  municipio, no el centro de población de #175.
+- Bayes empírico global (Marshall) de las rechazadas sobre la población joven, como robustez para las tasas
+  ruidosas de los municipios pequeños. La familia es lineal sobre tasas: sin GLM de Poisson ni binomial
+  porque no hay statsmodels.
 Sin modelar, se declaran: la solicitud cuenta en el municipio del piso, no en el de residencia; cuenta
 solicitudes, no personas; el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen requisitos
 (tenencia, renta ≤ 3 × IPREM); «fuente regular de ingresos»; concesión por orden de llegada hasta agotar el
@@ -65,11 +72,12 @@ EDADES = (18, 35)
 TOTALES = (51735, 11477, 3352)  # solicitudes, aceptadas y solicitudes «Otro»
 INDICADORES = ("esfuerzo", "sobrecarga")
 Y = ("rechazadas_por_mil", "solicitudes_por_mil", "tasa_aceptacion")
+Y = (*Y, "rechazadas_por_mil_eb")
 PERMUTACIONES = 999
 SEMILLA = 2026
 MADRID = "28079"
-# Municipios con tope de 900 € (vivienda) en el Bono 2022: extracto BOCM-20220920-16, apartado primero, y
-# sede A235 (https://sede.comunidad.madrid/ayudas-becas-subvenciones/bono-alquiler-joven). Código INE: nombre del CSV.
+# Municipios con tope de 900 € (vivienda) en el Bono 2022: Acuerdo del Consejo de Gobierno de 14-09-2022,
+# art. 5 y Anexo II (texto completo en BDNS 648964, doc. 858536; extracto BOCM-20220920-16). Código INE: nombre del CSV.
 TOPE_900 = {
     "28005": "Alcalá de Henares",
     "28006": "Alcobendas",
@@ -106,6 +114,9 @@ TOPE_900 = {
 def leer_bono(ruta: Path = BONO) -> pd.DataFrame:
     """Solicitudes del Bono por municipio; `municipio_id` es nulo en la fila «Otro»."""
     df = pd.read_csv(ruta, sep=";", encoding="latin-1", dtype={"municipio": str})
+    valido = df["municipio"].str.fullmatch(r"\d{3}|-", na=False)
+    if not valido.all():
+        raise ValueError(f"Códigos de municipio no válidos:\n{df[~valido]}")
     df["municipio_id"] = ("28" + df["municipio"]).where(df["municipio"] != "-")
     cuadra = df["aceptadas"] + df["rechazadas"] == df["solicitudes"]
     if not cuadra.all():
@@ -243,7 +254,10 @@ def correlacion_parcial(x: pd.Series, y: pd.Series, controles: pd.DataFrame) -> 
     if n - 3 - k < 2:
         raise ValueError(f"Faltan datos: n = {n} con {k} controles")
     c = d[list(controles.columns)]
-    r = float(np.corrcoef(_residuos(d["x"], c), _residuos(d["y"], c))[0, 1])
+    rx, ry = _residuos(d["x"], c), _residuos(d["y"], c)
+    if min(rx.std(), ry.std()) <= 1e-9 * max(d["x"].std(), d["y"].std()):
+        raise ValueError("x o y es colineal con los controles")
+    r = float(np.corrcoef(rx, ry)[0, 1])
     r = min(max(r, -1.0), 1.0)
     with np.errstate(divide="ignore"):
         z, se = np.arctanh(r), 1 / np.sqrt(n - 3 - k)
@@ -267,7 +281,11 @@ def _vecinos(xy: np.ndarray, k: int) -> np.ndarray:
 
 
 def moran(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
-    """I de Moran con W de k vecinos normalizada por filas; p pseudo-bilateral por permutaciones."""
+    """I de Moran con W de k vecinos normalizada por filas; p pseudo-bilateral por permutaciones.
+
+    E[I] = -1/(n-1) es el de una variable, no el de residuos de MCO, que sería tr(MW)/(n-k) (≈ -0,016 aquí);
+    con I ≈ 0,16 no cambia la conclusión.
+    """
     vecinos = _vecinos(xy, k)
     z = np.asarray(valores, float) - np.mean(valores)
 
@@ -289,6 +307,17 @@ def moran(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
     }
 
 
+def bayes_empirico(casos: pd.Series, poblacion: pd.Series) -> pd.Series:
+    """Tasa suavizada por Bayes empírico global (Marshall): w·r + (1 - w)·m hacia la media global m."""
+    tasa = casos / poblacion
+    m = casos.sum() / poblacion.sum()
+    s2 = max(
+        (poblacion * (tasa - m) ** 2).sum() / poblacion.sum() - m / poblacion.mean(), 0
+    )
+    w = s2 / (s2 + m / poblacion)
+    return w * tasa + (1 - w) * m
+
+
 def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
     """Por cada y de `Y`: Pearson y Spearman parcial (controles renta y tope) y Moran k = 5 y 8 de los residuos.
 
@@ -298,8 +327,16 @@ def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
     controles = pd.DataFrame(
         {"renta": renta.reindex(t.index), "tope": tope_eur(t.index)}
     )
+    con = t["necesidad"].notna()
+    if faltan := list(t.index[con & controles["renta"].isna()]):
+        raise ValueError(f"Municipios con necesidad y sin renta: {faltan}")
+    eb = 1000 * bayes_empirico(t.loc[con, "rechazadas"], t.loc[con, "poblacion_joven"])
     base = pd.concat(
-        [(t["necesidad"] / t["poblacion_joven"]).rename("x"), por_mil(t), controles],
+        [
+            (t["necesidad"] / t["poblacion_joven"]).rename("x"),
+            por_mil(t).assign(rechazadas_por_mil_eb=eb),
+            controles,
+        ],
         axis=1,
     )
     salida = {}
@@ -309,9 +346,12 @@ def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
             nombre: correlacion_parcial(datos["x"], datos[y], datos[["renta", "tope"]])
             for nombre, datos in (("pearson", d), ("spearman", d.rank()))
         }
+        puntos = xy.loc[d.index].to_numpy(float)
         residuos = _residuos(d[y], d[["x", "renta", "tope"]])
+        res_x = _residuos(d["x"], d[["renta", "tope"]])
         for k in (5, 8):
-            res[f"moran_k{k}"] = moran(residuos, xy.loc[d.index].to_numpy(float), k)
+            res[f"moran_k{k}"] = moran(residuos, puntos, k)
+            res[f"moran_x_k{k}"] = moran(res_x, puntos, k)
         salida[y] = res
     return salida
 
@@ -358,9 +398,10 @@ def _informe(etiqueta: str, res: dict) -> None:
     for y, r in res.items():
         p, s = r["pearson"], r["spearman"]
         LOG.info(
-            "%s | %s | Pearson r=%.3f n=%d k=%d IC95=[%.3f, %.3f] p=%.4f | Spearman r=%.3f p=%.4f | Moran k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f",
+            "%s | %s | Pearson r=%.3f n=%d k=%d IC95=[%.3f, %.3f] p=%.4f | Spearman r=%.3f p=%.4f | Moran y k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f | Moran x k5 I=%.3f p=%.3f, k8 I=%.3f p=%.3f",
             etiqueta, y, p["r"], p["n"], p["k"], *p["ic95"], p["p"], s["r"], s["p"],
             r["moran_k5"]["I"], r["moran_k5"]["p"], r["moran_k8"]["I"], r["moran_k8"]["p"],
+            r["moran_x_k5"]["I"], r["moran_x_k5"]["p"], r["moran_x_k8"]["I"], r["moran_x_k8"]["p"],
         )  # fmt: skip
 
 
@@ -399,7 +440,8 @@ def main() -> None:
     tabla = _por_anio(solicitudes, poblacion, esfuerzo, ANIO)
     if len(tabla) != 159:
         raise ValueError(f"Se esperaban 159 municipios y hay {len(tabla)}")
-    tasa = tabla["aceptadas"].sum() / (tabla["solicitudes"].sum())
+    tasa = tabla["aceptadas"].sum() / tabla["solicitudes"].sum()
+    nombres = solicitudes.set_index("municipio_id")["municipio_nombre"]
     mil = por_mil(tabla)
     con = tabla["grupo"] != "sin_dato"
     LOG.info(
@@ -418,7 +460,7 @@ def main() -> None:
              madrid["necesidad"] / madrid["poblacion_joven"])  # fmt: skip
     mayor = mil["solicitudes_por_mil"].idxmax()
     LOG.info("Máximo de solicitudes por 1.000 jóvenes: %.1f en %s", mil.loc[mayor, "solicitudes_por_mil"],
-             solicitudes.dropna(subset=["municipio_id"]).set_index("municipio_id").loc[tabla.loc[mayor, "municipio_id"], "municipio_nombre"])  # fmt: skip
+             nombres[tabla.loc[mayor, "municipio_id"]])  # fmt: skip
     LOG.info(
         "Medianas con esfuerzo / sin esfuerzo:\n%s",
         mil.groupby(con.to_numpy()).median().to_string(),
