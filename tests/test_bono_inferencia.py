@@ -116,6 +116,9 @@ def test_concluir_sem_het_con_k5_y_k8():
     assert bi.concluir(_c(80, 0.03), _c(70, 0.2)) == "no concluyente"  # k = 8 no
     assert bi.concluir(_c(80, 0.2), _c(70, 0.01)) == "no concluyente"  # k = 5 no
     assert bi.concluir(_c(80, 0.01), _c(-70, 0.01)) == "no concluyente"  # signos
+    assert (
+        bi.concluir(_c(-80, 0.01), _c(-70, 0.01)) == "no concluyente"
+    )  # signo teórico
     assert bi.concluir(_c(80, float("nan")), _c(70, 0.01)) == "no concluyente"
     assert bi.concluir(_c(80, 0.01), _c(70, float("nan"))) == "no concluyente"
 
@@ -125,19 +128,24 @@ def test_sem_het_recupera_beta_y_lambda_con_heterocedasticidad_y_hac_finito():
     xy = _rejilla(20)
     n = len(xy)
     x = rng.normal(size=(n, 3))
-    pob = rng.uniform(50, 5000, n)
     w = bono._w(xy, 5).full()[0]
-    # varianza ∝ 1/población en la innovación, luego filtrada por el SEM
-    u = np.linalg.solve(np.eye(n) - 0.5 * w, rng.normal(size=n) * 10 / np.sqrt(pob))
+    # heterocedasticidad plantada: la desviación típica de la innovación crece con |x0|
+    sd = 0.2 + 1.5 * np.abs(x[:, 0])
+    u = np.linalg.solve(np.eye(n) - 0.5 * w, rng.normal(size=n) * sd)
     y = 2 + x @ [1.0, 0.5, -0.5] + u
     d = pd.DataFrame(x, columns=bi.X).assign(**{bi.Y: y})
     res = bi.regresion(d, xy, 5)
     het = res["sem_het"]
-    assert het["lambda"]["beta"] == pytest.approx(0.5, abs=0.2)
-    assert het["beta"] == pytest.approx(1.0, abs=0.15)
+    assert het["lambda"]["valor"] == pytest.approx(0.5, abs=0.2)
+    assert het["beta"] == pytest.approx(1.0, abs=0.3)
     assert het["beta"] - 1.96 * het["se"] <= 1.0 <= het["beta"] + 1.96 * het["se"]
+    # distingue el estimador heterocedástico del homocedástico: ML_Error infraestima el error estándar
+    assert het["se"] > res["sem"]["se"]
+    assert abs(het["moran_residuos"]["I"]) < 0.15
+    assert np.isfinite(res["sem_het_iterado"]["se"])
     assert np.isfinite(res["ols_hac"]["se"]) and res["ols_hac"]["se"] > 0
-    assert 0 <= res["heterocedasticidad"]["koenker_bassett"]["p"] <= 1
+    assert res["heterocedasticidad"]["koenker_bassett"]["p"] < 0.05
+    assert res["heterocedasticidad"]["jarque_bera"]["p"] >= 0
 
 
 def test_preparar_exige_renta():

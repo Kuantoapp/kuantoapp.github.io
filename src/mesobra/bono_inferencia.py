@@ -22,23 +22,30 @@ interpretar nada):
   error estándar de `GM_Error_Het` igual o mayor que el de `ML_Error` (la heterocedasticidad infraestima el del ML);
   Koenker-Bassett significativo (p < 0,05); y el error estándar HAC del MCO, parecido al del SEM heterocedástico.
 
-Reglas, fijadas antes de ver el resultado:
+Reglas de la regla de Anselin y de los modelos de referencia, fijadas antes de ver el resultado (#213):
 - Regla de Anselin sobre los LM robustos del MCO (y = rechazadas por 1.000, X = esfuerzo 2023, renta ADRH 2023 y tope, estos
   dos en miles de €; W de k = 5, normalizada por filas): si solo el LM-error robusto tiene p < 0,05, SEM
   (`spreg.ML_Error`); si solo el LM-lag robusto, SAR (`spreg.ML_Lag`, con efectos directo, indirecto y total,
   nunca β); si los dos, el de menor p robusta; si ninguno, MCO. Siempre se informan además el SEM y el SLX
   (`OLS` con `slx_lags=1`), el SAR y el SDEM (`ML_Error` con `slx_lags=1`) con su AIC, y la robustez con k = 8. El AIC se calcula igual para todos, `2 * parámetros - 2 * logll` con λ o ρ
   contados (spreg no cuenta λ en `ML_Error`, y así el SEM y el SDEM salían favorecidos frente al SAR).
-- Regla de conclusión (#221, sustituye a la del #209): «robusta» si el β del esfuerzo de `spreg.GM_Error_Het`
-  (SEM heterocedástico, W de k = 5) tiene p < 0,05 y con k = 8 mantiene el signo y p < 0,05; si no, «no concluyente»
-  (un NaN da «no concluyente»). El modelo principal se eligió DESPUÉS de ver los datos (decisión del humano, #221): por
+
+Regla de conclusión (#221, sustituye a la del #209; elegida DESPUÉS de ver los datos, no fijada de antemano):
+- «robusta» si el β del esfuerzo de `spreg.GM_Error_Het` (SEM heterocedástico, W de k = 5) es positivo (el signo
+  teórico: más esfuerzo, más rechazadas) con p < 0,05 y con k = 8 mantiene el signo y p < 0,05; si no, «no concluyente»
+  (un NaN da «no concluyente» y un aviso en el log, porque la estimación falló). Estimador fijado: GMM en dos pasos de
+  Arraiz et al. (`max_iter=1, step1c=False`, el valor por defecto de spreg), el de referencia: iterar no mejora la
+  eficiencia asintótica, y cambiar de variante a la vista de la p sería elegirla por el resultado. El GMM iterado
+  (`max_iter=10`, `sem_het_iterado`) se guarda como sensibilidad. El modelo principal se eligió DESPUÉS de ver los datos (decisión del humano, #221): por
   los LM robustos y el AIC (#213), que eligen el SEM, más la heterocedasticidad de las tasas de municipios pequeños,
   que el SEM por máxima verosimilitud (`ML_Error`) no admite; `GM_Error_Het` (Kelejian y Prucha, 2010; Arraiz et al.,
-  2010) es consistente con heterocedasticidad de forma desconocida. La Pearson parcial, el SEM por máxima verosimilitud
+  2010) es consistente con heterocedasticidad de forma desconocida y válido haya o no heterocedasticidad. La Pearson parcial, el SEM por máxima verosimilitud
   y la regla de Anselin se siguen informando como referencia, pero ya no deciden.
 - Segunda vía: MCO con errores estándar HAC espaciales (`spreg.OLS(robust="hac", gwk=...)`), con pesos de kernel de
-  `libpysal.weights.Kernel` sobre las coordenadas: kernel triangular y ancho de banda adaptativo de k + 1 vecinos
-  (el municipio y sus k más cercanos). Se informa también Breusch-Pagan y Koenker-Bassett del MCO (heterocedasticidad).
+  `libpysal.weights.Kernel` sobre las coordenadas: kernel triangular y ancho de banda adaptativo con
+  `k = k + 1`: libpysal ya suma 1 por el propio municipio, así que el ancho llega al vecino k + 1, que queda con peso
+  ≈ 1e-7; el soporte efectivo es el municipio y sus k vecinos. Se informa también Breusch-Pagan, Koenker-Bassett y
+  Jarque-Bera del MCO.
 - Los modelos de conteo (binomial negativa, con `offset = log(población joven)`) y la quasi-binomial de
   aceptadas sobre solicitudes (`scale = "X2"`) son robustez: no entran en la regla de conclusión.
 
@@ -46,16 +53,23 @@ Resultado del principal (#221, ejecución con los datos reales, 134 municipios):
 43,11, p = 0,0515, λ = 0,39) con k = 5 y β = 85,32 (error estándar 44,01, p = 0,0525, λ = 0,46) con k = 8: ninguna llega a
 p < 0,05, así que «no concluyente», aunque por poco. El SEM por máxima verosimilitud daba p = 0,030 con error estándar 39,4
 (k = 5): la heterocedasticidad lo infraestimaba un 9 %. MCO-HAC: β = 60,8, error estándar 43,8 (k = 5) y 44,5 (k = 8),
-p = 0,167 y 0,175. Breusch-Pagan p = 0,0008 y Koenker-Bassett p = 0,046. Se cumplen las expectativas de signo, λ, error
-estándar y HAC. La de Koenker-Bassett se cumple justo en los 134 y falla en los 112 (p = 0,21): ahí solo Breusch-Pagan
-(p = 0,038) detecta heterocedasticidad, que Koenker-Bassett (robusta a no normalidad) no confirma.
+p = 0,167 y 0,175. Se cumplen las expectativas de signo, λ, error estándar y HAC. Heterocedasticidad: Jarque-Bera del
+MCO da p = 2,4e-10 (errores no normales), así que Breusch-Pagan (p = 0,0008) rechaza de más y el contraste válido es
+Koenker-Bassett: p = 0,046 en los 134 (se cumple justo la expectativa) y p = 0,21 en los 112 (falla; ahí solo
+Breusch-Pagan, p = 0,038, la detecta). Residuos filtrados del principal sin autocorrelación (Moran −0,020, p = 0,84
+con k = 5; −0,010 con k = 8).
+La etiqueta depende de la opción de estimación: con GMM iterado (`max_iter=10`) p = 0,043 / 0,048, «robusta»; con
+el GMM en dos pasos, p = 0,0515 / 0,0525, «no concluyente»: está al límite y no se debe leer como un resultado firme
+en ningún sentido.
 
 Lectura (añadida en la revisión):
 - λ es dependencia residual (una molestia que corrige el error), no un desbordamiento entre vecinos; en el SEM, β es
   el efecto marginal del esfuerzo y no hay efectos indirectos.
-- El efecto del esfuerzo es positivo y estable en tamaño (β ≈ 84-87 en el SEM, con k = 5 y k = 8), pero su p queda
+- El efecto del esfuerzo es positivo y estable entre W dentro del SEM (β ≈ 84-87, con k = 5 y k = 8), pero su p queda
   justo por encima de 0,05 una vez corregida la heterocedasticidad: el resultado es «no concluyente» por poco, no un
-  efecto nulo. El p = 0,030 del SEM por máxima verosimilitud venía en parte de un error estándar infraestimado.
+  efecto nulo. Limitación: β varía según la especificación (MCO 61, WX 71-75, `GM_Combo_Het` 113, MCO ponderado por
+  población 247; cifras de la revisión del #221), señal de una especificación incompleta o de un efecto que cambia con
+  el tamaño del municipio. El p = 0,030 del SEM por máxima verosimilitud venía en parte de un error estándar infraestimado.
 - Las p de la Pearson parcial (0,118) y de la binomial negativa (0,068) son optimistas: sus residuos tienen
   autocorrelación (Moran 0,157 y 0,176). El MCO-HAC (p ≈ 0,17) corrige eso, pero su β es el del MCO, más bajo que el
   del SEM (60,8 frente a 84): la diferencia no es significativa (Hausman espacial de la revisión del #213, p = 0,33).
@@ -77,8 +91,8 @@ JSON; no cambia la conclusión principal ni el contrato `bono`):
 - Expectativa (añadida en la revisión, tras ver el resultado): con el denominador de población × porcentaje en alquiler
   de 20-34 (Censo 2021, `censo2021`), r baja y la conclusión no mejora; el cambio de muestra (los municipios con
   porcentaje) y el del denominador son efectos distintos, y por eso la principal se repite en la MISMA submuestra.
-- Descomposición (cifras del JSON, `lectura`). La regla fijada de antemano es la de los 134 (r = 0,137, p = 0,118;
-  «no concluyente»); los 112 son una sensibilidad. En los municipios con al menos 300 jóvenes de 20-34 (los 112), la
+- Descomposición (cifras del JSON, `lectura`). La regla del #221 (elegida después de ver los datos) es la de los 134
+  («no concluyente»; la Pearson, r = 0,137 y p = 0,118, es referencia); los 112 son una sensibilidad. En los municipios con al menos 300 jóvenes de 20-34 (los 112), la
   principal da «robusta» (r = 0,197, p = 0,039; con la regla del #221, SEM heterocedástico: p = 0,023 con k = 5 y 0,030 con
   k = 8), así que la conclusión depende de los 22 municipios pequeños, que tienen tasas ruidosas; con el denominador de
   vivienda alquilada da «no concluyente» (p = 0,0995 con k = 5 y 0,197 con k = 8; MCO r = 0,153, p = 0,109). Quitar los 22
@@ -130,10 +144,10 @@ def elegir_modelo(p_error: float, p_lag: float) -> str:
 
 
 def concluir(k5: dict, k8: dict) -> str:
-    """«robusta» si el β del esfuerzo del SEM heterocedástico tiene p < 0,05 con k = 5 y, con k = 8, mantiene el signo y p < 0,05."""
-    ok = (
-        k5["p"] < ALFA and k8["p"] < ALFA and np.sign(k5["beta"]) == np.sign(k8["beta"])
-    )
+    """«robusta» si el β del esfuerzo del SEM heterocedástico es positivo con p < 0,05 (k = 5) y con k = 8 mantiene el signo y p < 0,05."""
+    if np.isnan([k5["p"], k8["p"]]).any():
+        LOG.warning("p del SEM heterocedástico es NaN: la estimación falló")
+    ok = k5["p"] < ALFA and k8["p"] < ALFA and k5["beta"] > 0 and k8["beta"] > 0
     return "robusta" if ok else "no concluyente"
 
 
@@ -162,7 +176,9 @@ def _aic(m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag) -> float:
     return float(2 * len(m.betas) - 2 * m.logll)
 
 
-def _coef(m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag, i: int) -> dict:
+def _coef(
+    m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag | spreg.GM_Error_Het, i: int
+) -> dict:
     """Coeficiente `i` de un modelo de spreg: beta, error estándar, estadístico (t o z) y p."""
     est = getattr(m, "z_stat", None) or m.t_stat
     return {
@@ -183,7 +199,9 @@ def _efectos_sar(m: spreg.ML_Lag, w: W, i: int) -> dict:
 
 
 def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
-    """Principal: SEM heterocedástico (`sem_het`). Referencias: MCO con diagnósticos, SEM, SAR, SLX y SDEM (con su AIC), MCO-HAC y el modelo de la regla de Anselin.
+    """Principal: SEM heterocedástico (`sem_het`, GMM en dos pasos; `sem_het_iterado` es la sensibilidad con GMM iterado). Referencias: MCO con diagnósticos, SEM, SAR, SLX y SDEM (con su AIC), MCO-HAC y el modelo de la regla de Anselin.
+
+    En `sem_het`, `lambda` es un dict `{valor, se, p}` (en `sem` y `sdem` es el float).
 
     El esfuerzo es la columna 1 (la 0 es la constante). `elegido` lleva beta (o efectos), p y el Moran de sus residuos.
     """
@@ -193,7 +211,10 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     sar = spreg.ML_Lag(y, x, w)
     slx = spreg.OLS(y, x, w, slx_lags=1)
     sdem = spreg.ML_Error(y, x, w, slx_lags=1)
-    het = spreg.GM_Error_Het(y, x, w=w)
+    # GMM en dos pasos (por defecto de spreg), fijado: ver el docstring del módulo
+    het = spreg.GM_Error_Het(y, x, w=w, max_iter=1, step1c=False)
+    iterado = spreg.GM_Error_Het(y, x, w=w, max_iter=10)
+    lam = _coef(het, -1)
     hac = spreg.OLS(
         y,
         x,
@@ -213,7 +234,12 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
         },
         "moran_ols": {"I": ols.moran_res[0], "p": ols.moran_res[2]},
         "ols": {**_coef(ols, 1), "aic": _aic(ols)},
-        "sem_het": {**_coef(het, 1), "lambda": _coef(het, -1)},
+        "sem_het": {
+            **_coef(het, 1),
+            "lambda": {"valor": lam["beta"], "se": lam["se"], "p": lam["p"]},
+            "moran_residuos": bono.moran(het.e_filtered.ravel(), puntos, k),
+        },
+        "sem_het_iterado": _coef(iterado, 1),
         "ols_hac": _coef(hac, 1),
         "heterocedasticidad": {
             "breusch_pagan": {
@@ -223,6 +249,10 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
             "koenker_bassett": {
                 "estadistico": ols.koenker_bassett["kb"],
                 "p": ols.koenker_bassett["pvalue"],
+            },
+            "jarque_bera": {
+                "estadistico": ols.jarque_bera["jb"],
+                "p": ols.jarque_bera["pvalue"],
             },
         },
         "sem": {**_coef(sem, 1), "lambda": sem.lam, "aic": _aic(sem)},
@@ -327,7 +357,7 @@ def _resumen_lisa(res: tuple) -> dict:
 
 
 def _bloque(r: pd.DataFrame, puntos: np.ndarray, y: str, otras: list[str]) -> dict:
-    """En los municipios de `r`: Pearson parcial de `y` (más el de `otras`), regresión espacial (k = 5 y 8), conclusión (k = 5) y Moran del MCO.
+    """En los municipios de `r`: Pearson parcial de `y` (más el de `otras`), regresión espacial (k = 5 y 8), conclusión (SEM heterocedástico, k = 5 y 8) y Moran del MCO.
 
     El Moran del MCO es el de permutaciones y bilateral de `bono.moran` (el de spreg es analítico y se queda en `espacial`).
     """
@@ -343,7 +373,7 @@ def _bloque(r: pd.DataFrame, puntos: np.ndarray, y: str, otras: list[str]) -> di
         },
         "espacial": esp,
         "moran_mco": {f"k{k}": bono.moran(residuos, puntos, k) for k in (K, 8)},
-        "conclusion": concluir(esp["k5"]["sem_het"], esp["k8"]["sem_het"]),
+        "conclusion": concluir(esp[f"k{K}"]["sem_het"], esp["k8"]["sem_het"]),
     }
 
 
@@ -366,7 +396,7 @@ def robustez_vivienda_alquilada(
     renta de excluidos e incluidos) y las correlaciones del porcentaje con el esfuerzo y la renta. Supuestos en
     `censo2021`. El porcentaje no puede ser 0: sería dividir por cero.
 
-    Lectura (la conclusión es la del SEM heterocedástico en los 134; los 112 son una sensibilidad): en los 134 queda
+    Lectura (la regla es la del SEM heterocedástico del #221 en los 134; los 112 son una sensibilidad): en los 134 queda
     «no concluyente» por poco (p ≈ 0,052); en los municipios con porcentaje la misma regla da «robusta», así que la
     conclusión depende de los municipios pequeños, de tasas ruidosas. El denominador
     atenúa la relación porque el porcentaje se correlaciona con el esfuerzo. El Moran del MCO que se cita es el de
@@ -397,9 +427,10 @@ def robustez_vivienda_alquilada(
     pa, pp = alq["pearson_parcial"], principal["pearson_parcial"]
     # solo cifras y conclusiones de la regla: la interpretación va en el docstring, que no se recalcula
     lectura = (
-        f"Principal en los {len(d)} (regla fijada de antemano): {conclusion_principal}. Principal en los {len(r)} "
+        f"Principal en los {len(d)} (regla del #221, elegida después de ver los datos; la Pearson es referencia): {conclusion_principal}. Principal en los {len(r)} "
         f"municipios con porcentaje: {principal['conclusion']} (r = {pp['r']:.3f}, p = {pp['p']:.3f}; regresión "
-        f"SEM heterocedástico k = {K}: p = {principal['espacial'][f'k{K}']['sem_het']['p']:.3f}; Moran de los residuos del MCO "
+        f"SEM heterocedástico p = {principal['espacial'][f'k{K}']['sem_het']['p']:.3f} (k = {K}) y "
+        f"{principal['espacial']['k8']['sem_het']['p']:.3f} (k = 8); Moran de los residuos del MCO "
         f"{principal['moran_mco'][f'k{K}']['I']:.3f}, p = {principal['moran_mco'][f'k{K}']['p']:.3f}). Con el "
         f"denominador de vivienda alquilada: {alq['conclusion']} (r = {pa['r']:.3f}, p = {pa['p']:.3f}). Correlación "
         f"del porcentaje en alquiler con el esfuerzo: {r['esfuerzo'].corr(pct[r.index]):+.2f}. Fuera de la "
@@ -441,7 +472,7 @@ def main() -> None:
     val = bono.validacion(tabla, renta, xy)
     pearson = val[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
-    conclusion = concluir(esp["k5"]["sem_het"], esp["k8"]["sem_het"])
+    conclusion = concluir(esp[f"k{K}"]["sem_het"], esp["k8"]["sem_het"])
     resultado = {
         "n": len(d),
         "pearson_parcial": pearson,
@@ -468,6 +499,8 @@ def main() -> None:
         f" Diagnóstico: con las rechazadas suavizadas por Bayes empírico en los {len(d)}, r = {eb['r']:.3f} y "
         f"p = {eb['p']:.3f}."
     )
+    for k, e in esp.items():
+        LOG.info("GMM iterado (sensibilidad) %s: %s", k, e["sem_het_iterado"])
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)
     SALIDA.write_text(texto)
