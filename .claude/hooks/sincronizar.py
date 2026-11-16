@@ -72,22 +72,20 @@ def avisar_skills(orden: str, salida: str, base: Path) -> str:
     if not m:
         return ""
     nombres = re.findall(r"dm-[a-z0-9-]+", m.group(1))
-    reglas = [n for n in nombres if n == "dm-codigo-minimo"]
-    skills = [
-        n for n in nombres if (base / ".claude/skills" / n / "SKILL.md").is_file()
-    ]
-    faltan = [n for n in nombres if n not in skills and n not in reglas]
-    if not skills and not reglas and not faltan:
-        return ""
+    rutas = {n: f".claude/skills/{n}/SKILL.md" for n in nombres}
+    skills = [n for n in nombres if (base / rutas[n]).is_file()]
+    agentes = [n for n in nombres if (base / f".claude/agents/{n}.md").is_file()]
+    faltan = [n for n in nombres if n not in skills + agentes + ["dm-codigo-minimo"]]
     partes = []
     if skills:
         partes.append(
-            f"La issue nombra las skills {', '.join(skills)}: invócalas con la herramienta Skill antes de planificar o implementar, y si delegas en un subagente, dile que lea su SKILL.md y sus referencias (no las ve)."
+            f"Si vas a trabajar en esta issue, invoca con Skill: {', '.join(skills)} y, si delegas, pasa al subagente las rutas {', '.join(rutas[n] for n in skills)} (no las ve)."
         )
-    if reglas:
+    if "dm-codigo-minimo" in nombres:
         partes.append(
             "dm-codigo-minimo no es una skill: es la regla .claude/rules/codigo-minimo.md, ya cargada."
         )
+    partes += [f"{n} es un agente, no una skill." for n in agentes]
     if faltan:
         partes.append(f"{', '.join(faltan)} no existe en .claude/skills.")
     return " ".join(partes)
@@ -114,12 +112,16 @@ def main() -> int:
         orden = (evento.get("tool_input") or {}).get("command", "")
         texto = sincronizar(raiz(evento)) if PR.search(orden) else ""
         aviso = avisar_worktree(orden, Path(evento.get("cwd") or os.getcwd()))
-        salida = (evento.get("tool_response") or {}).get("stdout", "")
-        aviso = "\n".join(
-            t for t in (aviso, avisar_skills(orden, salida, raiz(evento))) if t
-        )
     except Exception:  # noqa: BLE001 — son ayudas; si fallan, el comando ya se ejecutó
         return 0
+    try:  # aparte: si falla, no se pierde el mensaje del merge ni el del worktree
+        if ISSUE.search(orden) and not evento.get("agent_type"):
+            salida = (evento.get("tool_response") or {}).get("stdout", "")
+            aviso = "\n".join(
+                t for t in (aviso, avisar_skills(orden, salida, raiz(evento))) if t
+            )
+    except Exception as e:  # noqa: BLE001 — aparte: no se pierde el mensaje del merge ni el del worktree
+        aviso += f"\n(El aviso de skills ha fallado: {type(e).__name__}.)"
     contexto = "\n".join(t for t in (texto, aviso) if t)
     if contexto:
         print(

@@ -1,5 +1,5 @@
 ---
-description: "Explica, predice y valida con datos territoriales, contrastando cada resultado con la teoría: correlación parcial o regresión (MCO, SAR, SEM, SDM) entre indicadores por municipio o zona controlando por otras variables, conteos o tasas con GLM (binomial negativa con offset, binomial) y sus residuos; imputación con Wy sin fuga, validación espacial, kriging, intervalos y SHAP. No prepara geometrías (dm-cartografia) ni explora el patrón (dm-eda-espacial)."
+description: "Estima cuánto explica una variable de otra y predice con datos territoriales, contrastando cada resultado con la teoría: correlación parcial o regresión (MCO, SAR, SEM, SDM) entre indicadores por municipio o zona controlando por otras variables, conteos o tasas con GLM (binomial negativa con offset, binomial) y sus residuos; imputación con Wy sin fuga, validación espacial, kriging, intervalos y SHAP. No prepara geometrías (dm-cartografia) ni explora el patrón (dm-eda-espacial)."
 when_to_use: "¿X explica Y entre municipios controlando por la renta?, correlación parcial con datos por zona, ¿es significativa esta relación entre municipios?, ¿MCO, SEM o SAR?, GLM binomial negativa con offset, ¿mi modelo tiene fuga?, spatial cross-validation, calcular intervalos, explicar una predicción."
 ---
 
@@ -47,7 +47,7 @@ Validar el caso B al azar da un error engañosamente bajo. Ver [prediccion-y-val
 
 ## Para explicar (inferencia)
 
-Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto vale X aquí?»: MCO → Moran de residuos → tests LM (Anselin) o comparación por AIC (LeSage y Pace) → SAR, SEM o SDM por máxima verosimilitud → efectos directos e indirectos. Ver [regresion-espacial.md](referencia/regresion-espacial.md). Superficies continuas: [interpolacion.md](referencia/interpolacion.md).
+Correlación parcial y GLM de conteos o tasas por zona: [correlacion-y-glm.md](referencia/correlacion-y-glm.md). Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto vale X aquí?»: MCO → Moran de residuos → tests LM (Anselin) o comparación por AIC (LeSage y Pace) → SAR, SEM o SDM por máxima verosimilitud → efectos directos e indirectos. Ver [regresion-espacial.md](referencia/regresion-espacial.md). Superficies continuas: [interpolacion.md](referencia/interpolacion.md).
 
 ## Contrastar cada resultado con la teoría
 

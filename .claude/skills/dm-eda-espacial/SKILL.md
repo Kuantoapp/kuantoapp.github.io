@@ -1,6 +1,6 @@
 ---
-description: "Explora si una variable territorial tiene patrón espacial e interpreta el resultado con la teoría: matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi*, Moran bivariante, correlograma, tasas con Bayes empírico, necesidad frente a recurso por municipio y patrones de puntos (Ripley, kernel). No hace mapas finales (dm-cartografia) ni explica, infiere o predice (dm-modelado-espacial)."
-when_to_use: "¿Dónde hay mucha necesidad y poca ayuda (necesidad frente a recurso)?, tasas por 1.000 habitantes por municipio, comparar dos indicadores por municipio, ¿hay autocorrelación espacial?, ¿dónde están los clústeres o atípicos?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿a qué escala llega el patrón?, ¿es real o un artefacto?, qué significa este Moran."
+description: "Explora dónde hay patrón espacial en una variable territorial e interpreta el resultado con la teoría: matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi*, Moran bivariante, correlograma, tasas con Bayes empírico, mapa de necesidad frente a recurso por municipio y patrones de puntos (Ripley, kernel). No hace mapas finales (dm-cartografia) ni estima efectos ni predice (dm-modelado-espacial)."
+when_to_use: "¿Dónde hay mucha necesidad y poca ayuda (necesidad frente a recurso)?, ¿son fiables las tasas por 1.000 de zonas pequeñas?, ¿hay autocorrelación espacial?, ¿dónde están los clústeres o atípicos?, ¿esta W es razonable?, ¿a qué escala llega el patrón?, ¿es real o un artefacto?, qué significa este Moran."
 ---
 
 # Exploración espacial (ESDA)
@@ -74,8 +74,8 @@ Guía completa de lectura y de qué hacer después: [interpretar-resultados.md](
 
 ## Errores a evitar
 
-- LISA con FDR y pocas permutaciones: con R permutaciones la p mínima bilateral de esda es 3/(R+1); si no es menor que α/n, la FDR no puede rechazar nada y «todo ns» es un artefacto (con n = 134 hacen falta unas 9.999 o más).
-- `esda.Moran.p_sim` es unilateral, en la dirección del estadístico: para una p bilateral se dobla.
+- LISA con FDR y pocas permutaciones: la FDR (Benjamini–Hochberg, `esda.fdr`) solo rechaza si hay k zonas con p ≤ k·α/n, y con un suelo p_min hacen falta al menos ⌈p_min·n/α⌉ zonas en el suelo. p_min = 3/(R+1) con `alternative='two-sided'` y 1/(R+1) con `'directed'` (el valor por defecto de `Moran_Local` en esda 2.10). Elige R para que un municipio aislado pueda salir (p_min < α/n): si no, «todo ns» puede ser un artefacto.
+- `esda.Moran.p_sim` es unilateral, en la dirección del estadístico (no depende de `alternative`, que es de `Moran_Local`): para una p bilateral se dobla.
 - Bayes empírico global con una zona que concentra la población (la capital): fija la media a priori; se calcula sin ella y se declara.
 - Moran o LISA con W sin normalizar, con islas sin tratar o con una W construida con la propia variable.
 - Conclusiones que solo se sostienen con una W.
