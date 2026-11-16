@@ -14,8 +14,9 @@ exclusión de Madrid. La conclusión se apoya solo en la principal.
 
 Supuestos:
 - Año 2023 (ejercicio IRPF 2023): caen en 2023 unos 10,5 de los 14 meses del plazo y la mayor parte del
-  crédito: 16 M€ (Orden 3026/2022, modificada por la 4508/2022) y 40,04 M€ (Orden 424/2023, modificada por
-  la 1099/2023), frente a 12 M€ en 2022; igual que la población a 1-1-2023. El 2022 queda como robustez.
+  crédito: 16 M€ (Orden 3026/2022, modificada por la Orden 4508/2022, BDNS 648964 doc. 858538) y 40,04 M€
+  (Orden 424/2023, modificada por la 1099/2023; incluyen 12,34 M€ no comprometidos en 2022), frente a 12 M€
+  en 2022; igual que la población a 1-1-2023. El 2022 queda como robustez.
 - `necesidad` = esfuerzo × población joven (volumen), pero los terciles y la correlación usan el esfuerzo
   (necesidad por joven) frente a aceptadas o rechazadas por 1.000 jóvenes; si no, «necesidad alta» sería
   casi «municipio grande».
