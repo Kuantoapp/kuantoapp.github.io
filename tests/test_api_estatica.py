@@ -119,6 +119,7 @@ FALLOS = [
     ("cesta_uc ausente", "hogares.json", "cesta_uc", ..., r"faltan claves \['cesta_uc'\]"),
     ("cesta_uc negativa", "hogares.json", "cesta_uc.suministros", -1, "fuera del rango"),
     ("orden de coronas", "tarifas.json", "orden_coronas", ["B1", "A"], "debe seguir el orden de CORONAS"),
+    ("semanas_mes fuera de rango", "tarifas.json", "semanas_mes", 7, "fuera del rango"),
     ("feature que no es objeto", "zonas.geojson", "features.0", 5, r"features\[0\]: se esperaba un objeto"),
     ("matriz mal dimensionada", "tiempos.json", "tp.0", [9], r"tp\[0\]: se esperaban 2 columnas"),
     ("p25 > p50", "alquiler.json", "zonas.28065.p25", 13.0, "p25 <= p50 <= p75"),

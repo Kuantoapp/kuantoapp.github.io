@@ -87,4 +87,4 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
 def test_tarifas_trae_los_dos_viajes_al_dia():
     a = tarifas_json(transporte.tabla())["escenarios"]["vigente_2026"]["general"]
     assert a["2"]["A"][2] == {"titulo": "10 viajes", "coste_mes": 21.9}
-    assert a["4"]["A"][2] == {"titulo": "Abono 30 días", "coste_mes": 32.7}
+    assert a["4"]["A"][2] == {"titulo": "Abono 30 días", "coste_mes": 30.43}

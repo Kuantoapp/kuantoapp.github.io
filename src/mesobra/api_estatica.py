@@ -331,7 +331,11 @@ def _dias(ruta, filas):
 
 
 def _tarifas(o):
-    campos = {"orden_coronas": None, "edad_max_joven": ("entero", 0, 100)}
+    campos = {
+        "orden_coronas": None,
+        "edad_max_joven": ("entero", 0, 100),
+        "semanas_mes": ("decimal", 1, 5),
+    }
     p = _raiz(o, {**campos, "viajes_dia": None, "escenarios": None})
     p += _campo("viajes_dia", o.get("viajes_dia"), [VIAJES_DIA])
     ordenadas = _lista("orden_coronas", o.get("orden_coronas"), CORONAS)

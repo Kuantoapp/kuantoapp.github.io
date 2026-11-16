@@ -185,7 +185,7 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
         "lleva el descuento del RDL 17/2025, que solo vale para 2026; sin_descuento, los precios "
-        "oficiales. 4,33 semanas al mes; el viaje pasa por la zona A; sin abono anual (venta a "
+        "oficiales. 227 días de trabajo al año (calendario laboral de 2026 de la Comunidad de Madrid, 2 festivos locales y 22 laborables de vacaciones); el abono de 30 días se compra 335/30 veces al año; el viaje pasa por la zona A; sin abono anual (venta a "
         "particulares suspendida desde 2023); el 10 viajes se compra en paquetes enteros. viajes_dia 2: "
         "ida y vuelta directa; 4: cambio de operador en cada sentido (interurbano↔Metro, Metro↔EMT), "
         "con los 2 viajes extra a precio de la zona A. "
@@ -196,6 +196,7 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
         "orden_coronas": [c for c in api_estatica.CORONAS if c in set(tabla["corona"])],
         "edad_max_joven": transporte.EDAD_MAX_JOVEN,
         "viajes_dia": list(api_estatica.VIAJES_DIA),
+        "semanas_mes": float(transporte.SEMANAS_MES),
         "escenarios": escenarios,
     }
 

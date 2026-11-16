@@ -38,7 +38,18 @@ def test_precios_de_10_viajes_y_sencillo():
     assert t.SENCILLO["C2"]["sin_descuento"] == D("3.00")
 
 
-@pytest.mark.parametrize("corona", ["A", "B2", "B3", "C1", "C2"])
+def test_calendario_laboral_de_2026():
+    # 261 laborables - 10 festivos en laborable - 2 locales - 22 de vacaciones
+    assert sum(f.weekday() < 5 for f in t.FESTIVOS_2026) == 10
+    assert (t.LABORABLES_2026, t.DIAS_TRABAJO) == (261, 227)
+
+
+def test_abono_de_la_zona_a_con_335_entre_30_al_anio():
+    # 32,70 × 335/30 / 12 = 30,425 €/mes; con 3 días y 4 viajes gana el abono
+    assert titulo("vigente_2026", "A", 3, 4) == ("Abono 30 días", D("30.43"))
+
+
+@pytest.mark.parametrize("corona", ["B3", "C1", "C2"])
 def test_cinco_dias_es_abono(corona):
     for esc, joven in product(t.ESCENARIOS, (False, True)):
         assert "Abono" in titulo(esc, corona, 5, 2, joven=joven)[0]
@@ -47,17 +58,23 @@ def test_cinco_dias_es_abono(corona):
 def test_b1_con_cinco_dias_gana_el_10_viajes():
     assert titulo("vigente_2026", "B1", 5, 2) == (
         "10 viajes",
-        D("36.50"),
-    )  # frente a 38,20 del abono
+        D("29.20"),
+    )  # 3,7833 × 10 = 37,8 viajes, 4 paquetes × 7,30; el abono sale a 35,55
 
 
-def test_dias_en_los_que_deja_de_ser_10_viajes_en_zona_a():
-    for dias in (1, 2, 3, 4):
+def test_zona_a_con_2_viajes_siempre_es_10_viajes():
+    for dias in (1, 2, 3, 4, 5):
         assert titulo("vigente_2026", "A", dias, 2)[0] == "10 viajes"
     assert titulo("vigente_2026", "A", 3, 2)[1] == D("21.90")
     assert titulo("vigente_2026", "A", 4, 2)[1] == D("29.20")
-    assert titulo("vigente_2026", "A", 5, 2) == ("Abono 30 días", D("32.70"))
-    assert titulo("vigente_2026", "C2", 5, 2) == ("Abono 30 días", D("49.20"))
+    assert titulo("vigente_2026", "C2", 5, 2) == ("Abono 30 días", D("45.78"))
+
+
+def test_cinco_dias_en_zona_a_y_b2_gana_el_10_viajes():
+    # A: 37,8 viajes, 4 paquetes × 7,30 = 29,20 frente a 30,43 del abono
+    assert titulo("vigente_2026", "A", 5, 2) == ("10 viajes", D("29.20"))
+    # B2: 4 × 9,60 = 38,40 frente a 40,20 del abono
+    assert titulo("vigente_2026", "B2", 5, 2) == ("10 viajes", D("38.40"))
 
 
 def test_edad_joven():
@@ -65,12 +82,12 @@ def test_edad_joven():
     assert not t.es_joven(14)
     assert t.es_joven(25)
     assert not t.es_joven(26)
-    assert titulo("vigente_2026", "A", 5, 2, joven=True) == ("Abono Joven", D("10.00"))
+    assert titulo("vigente_2026", "A", 5, 2, joven=True) == ("Abono Joven", D("9.31"))
 
 
 def test_transbordo_a_precio_de_la_zona_a():
     assert titulo("vigente_2026", "A", 1, 4) == ("10 viajes", D("14.60"))
-    # 1 paquete de C2 + 1 de A; los sencillos (38,97) y el abono (49,20) salen peor
+    # 1 paquete de C2 + 1 de A; los sencillos (34,05) y el abono (45,78) salen peor
     assert titulo("vigente_2026", "C2", 1, 4) == ("10 viajes", D("29.70"))
 
 
@@ -104,7 +121,7 @@ def test_tabla():
         & (df.dias == 5)
         & (df.viajes_dia == 2)
     ]
-    assert fila.coste_mes.item() == 49.20
+    assert fila.coste_mes.item() == 45.78
 
 
 @pytest.mark.parametrize(("dias", "viajes"), [(0, 2), (3, 3)])
