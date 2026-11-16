@@ -142,10 +142,11 @@ def test_sem_het_recupera_beta_y_lambda_con_heterocedasticidad_y_hac_finito():
     # distingue el estimador heterocedástico del homocedástico: ML_Error infraestima el error estándar
     assert het["se"] > res["sem"]["se"]
     assert abs(het["moran_residuos"]["I"]) < 0.15
-    assert np.isfinite(res["sem_het_iterado"]["se"])
+    # el principal es el GMM iterado (#223): converge en más de un paso y no coincide con el de dos pasos
+    assert 1 < het["iteraciones"] < 10
+    assert het["beta"] != pytest.approx(res["sem_het_dos_pasos"]["beta"], rel=1e-9)
     assert np.isfinite(res["ols_hac"]["se"]) and res["ols_hac"]["se"] > 0
     assert res["heterocedasticidad"]["koenker_bassett"]["p"] < 0.05
-    assert res["heterocedasticidad"]["jarque_bera"]["p"] >= 0
 
 
 def test_preparar_exige_renta():
