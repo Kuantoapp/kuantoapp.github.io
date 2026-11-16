@@ -70,9 +70,9 @@ def test_extensiva_se_conserva_e_intensiva_se_pondera(capas) -> None:
     # un origen sin dato se excluye y el resto se renormaliza
     sin_c = p.pasar_intensiva(tabla, valor.drop("C"), testigos)
     assert sin_c["CD"] == pytest.approx(20)
-    assert p.pureza(tabla, testigos)[["A2", "B1", "CD"]].tolist() == pytest.approx(
-        [1, 0, 1]
-    )
+    assert p.pureza(tabla, valor, testigos)[
+        ["A2", "B1", "CD"]
+    ].tolist() == pytest.approx([1, 0, 1])
 
 
 def test_total_por_municipio_falla_si_cae_en_otro(capas) -> None:
@@ -132,3 +132,28 @@ def test_total_por_municipio_conserva_con_codigos_del_mismo_municipio() -> None:
         tabla, pd.Series({"2800101001": 8}), pd.Series({"2800101001": "28001"})
     )
     assert cuadro.loc["28001"].tolist() == [8, 8]
+
+
+def test_destino_sin_poblacion_con_origenes_mixtos_pondera_por_area() -> None:
+    # X solo toca D0 (sin población); Y toca D0 y D1: en D0 las piezas mezclarían m² y personas
+    o = _capa(
+        {"X": (X0, Y0, X0 + 100, Y0 + 100), "Y": (X0 + 100, Y0, X0 + 300, Y0 + 100)}
+    )
+    d = _capa(
+        {"D0": (X0, Y0, X0 + 200, Y0 + 100), "D1": (X0 + 200, Y0, X0 + 300, Y0 + 100)}
+    )
+    tabla, _ = p.tabla_paso(o, d, pd.Series({"D0": 0, "D1": 10}))
+    pd_ = tabla.set_index(["origen", "destino"])["peso_destino"]
+    assert pd_["X", "D0"] == pytest.approx(0.5)
+    assert pd_["Y", "D0"] == pytest.approx(0.5)
+    fusion = p.secciones_cambiadas(tabla, pd.Index(["X", "Y"]), pd.Index(["D0", "D1"]))
+    assert list(fusion["fusionados"]) == ["D0"]
+
+
+def test_intensiva_y_pureza_con_origen_fuera_de_la_tabla_fallan(capas) -> None:
+    tabla, _ = p.tabla_paso(*capas)
+    valor = pd.Series({"A": 1.0, "Z": 9.0})
+    with pytest.raises(ValueError, match="no están en la tabla"):
+        p.pasar_intensiva(tabla, valor, pd.Series({"A": 1, "Z": 1}))
+    with pytest.raises(ValueError, match="no están en la tabla"):
+        p.pureza(tabla, pd.Series({"A": 1.0}), pd.Series({"A": 1, "Z": 1}))

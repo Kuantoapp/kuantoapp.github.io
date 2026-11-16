@@ -85,13 +85,10 @@ def tabla_paso(
         a=("a", "sum"), area_pieza=("area", "sum")
     )
     piezas["peso"] = piezas["a"] / piezas.groupby("origen")["a"].transform("sum")
-    # un destino sin población (0/0) pondera por área, como el origen sin población
-    a_destino = piezas["a"].where(
-        piezas.groupby("destino")["a"].transform("sum") > 0, piezas["area_pieza"]
-    )
-    piezas["peso_destino"] = a_destino / a_destino.groupby(piezas["destino"]).transform(
-        "sum"
-    )
+    # con población, `a` es proporcional al área de la pieza: peso_destino es siempre la parte de área
+    piezas["peso_destino"] = piezas["area_pieza"] / piezas.groupby("destino")[
+        "area_pieza"
+    ].transform("sum")
     return piezas[["origen", "destino", "peso", "peso_destino", "metodo"]], cobertura
 
 
@@ -121,6 +118,24 @@ def pasar_extensiva(tabla: pd.DataFrame, datos: pd.Series) -> pd.Series:
     return (tabla["peso"] * valor).groupby(tabla["destino"]).sum()
 
 
+def _aportes(
+    tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series
+) -> pd.DataFrame:
+    """Pares con `valor` y `aporta = peso × denominador`, sin los orígenes sin dato o sin denominador.
+
+    Falla si hay datos o denominadores de orígenes que no están en la tabla: se perderían sin aviso.
+    """
+    for serie in (datos, denominador):
+        if not serie.index.isin(tabla["origen"]).all():
+            raise ValueError(
+                "Hay datos de orígenes que no están en la tabla: se perderían"
+            )
+    t = tabla.assign(
+        valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
+    ).dropna(subset=["valor", "aporta"])
+    return t.assign(aporta=t["aporta"] * t["peso"])
+
+
 def pasar_intensiva(
     tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series
 ) -> pd.Series:
@@ -128,27 +143,24 @@ def pasar_intensiva(
 
     `denominador` es el extensivo del origen con el que se calculó el dato (testigos, m² alquilados). Con medianas
     es una aproximación, a presentar como «estimado». Orígenes sin dato o sin denominador se excluyen y los pesos
-    se renormalizan; un destino sin ningún origen válido no aparece en el resultado. `peso_destino` no sirve aquí: reparte por área.
+    se renormalizan; un destino sin ningún origen válido no aparece en el resultado. `peso_destino` no sirve aquí:
+    reparte por área.
     """
-    t = tabla.assign(
-        valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
-    ).dropna(subset=["valor", "aporta"])
-    t["aporta"] = t["aporta"] * t["peso"]
+    t = _aportes(tabla, datos, denominador)
     return (t["aporta"] * t["valor"]).groupby(t["destino"]).sum() / t.groupby(
         "destino"
     )["aporta"].sum()
 
 
-def pureza(tabla: pd.DataFrame, denominador: pd.Series) -> pd.Series:
+def pureza(tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series) -> pd.Series:
     """Parte de lo que llega a cada destino (`peso × denominador`) que viene de orígenes enteros (peso ≥ 0,99).
 
-    Un destino con pureza baja depende del supuesto de reparto: su valor es una estimación. Nulo si no llega nada.
+    Mide el mismo conjunto que `pasar_intensiva` (orígenes con dato). Pureza baja: el valor depende del supuesto
+    de reparto y es una estimación. Nulo si no llega nada.
     """
-    llega = tabla["peso"] * tabla["origen"].map(denominador)
-    entera = llega.where(tabla["peso"] >= ENTERA, 0)
-    return (
-        entera.groupby(tabla["destino"]).sum() / llega.groupby(tabla["destino"]).sum()
-    )
+    t = _aportes(tabla, datos, denominador)
+    entera = t["aporta"].where(t["peso"] >= ENTERA, 0)
+    return entera.groupby(t["destino"]).sum() / t.groupby("destino")["aporta"].sum()
 
 
 def secciones_cambiadas(
