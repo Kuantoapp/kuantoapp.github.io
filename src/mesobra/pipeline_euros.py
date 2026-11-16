@@ -67,13 +67,21 @@ FUENTES_TARIFAS = [
             "BOCM nº 311 de 31-12-2025, BOCM-20251231-3: tarifas oficiales del transporte público (copia del CRTM)",
             "https://www.crtm.es/media/sjqj4ggj/bocm-20251231-tarifas_transporte.pdf",
         ),
+        (
+            "Decreto 75/2025, BOCM nº 229 de 25-09-2025, BOCM-20250925-16: fiestas laborales de 2026 en la Comunidad de Madrid",
+            "https://www.bocm.es/bocm-20250925-16",
+        ),
     )
 ] + [
+    _boe(
+        "Estatuto de los Trabajadores (BOE-A-2015-11430), arts. 37.2 (fiestas) y 38.1 (vacaciones)",
+        "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11430",
+    ),
     {
         "nombre": "Ficha del Abono Joven, Consorcio Regional de Transportes de Madrid",
         "url": "https://www.crtm.es/billetes-y-tarifas/buscador/abono-joven/",
         "licencia": "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)",
-    }
+    },
 ]
 EPF_IDS = {
     3: "39d6f25b-e043-428f-b8f6-4a46214bf34e/resource/83b08257-b457-4fe4-a11b-0fd37a2c33f7",
@@ -185,8 +193,13 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
         "lleva el descuento del RDL 17/2025, que solo vale para 2026; sin_descuento, los precios "
-        "oficiales. 4,33 semanas al mes; el viaje pasa por la zona A; sin abono anual (venta a "
-        "particulares suspendida desde 2023); el 10 viajes se compra en paquetes enteros. viajes_dia 2: "
+        "oficiales. coste_mes es la media mensual del año (1/12), estimada con supuestos: 227 días de "
+        "trabajo al año (calendario laboral de 2026 de la Comunidad de Madrid, Decreto 75/2025; supuestos: "
+        "2 festivos locales en laborable y 22 laborables de vacaciones en un bloque); el Abono 30 días y "
+        "el Abono Joven se compran 335/30 veces al año; solo viajes al trabajo; el viaje pasa por la zona A; "
+        "sin abono anual (venta a particulares suspendida desde 2023); el 10 viajes se compra en paquetes "
+        "enteros cada mes sobre los viajes medios; el billete sencillo de la zona A, a 1,50 € (EMT o Metro "
+        "de hasta 5 estaciones). viajes_dia 2: "
         "ida y vuelta directa; 4: cambio de operador en cada sentido (interurbano↔Metro, Metro↔EMT), "
         "con los 2 viajes extra a precio de la zona A. "
         f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
@@ -196,6 +209,7 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
         "orden_coronas": [c for c in api_estatica.CORONAS if c in set(tabla["corona"])],
         "edad_max_joven": transporte.EDAD_MAX_JOVEN,
         "viajes_dia": list(api_estatica.VIAJES_DIA),
+        "semanas_mes": float(transporte.SEMANAS_MES),
         "escenarios": escenarios,
     }
 
