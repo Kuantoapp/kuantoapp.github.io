@@ -124,6 +124,15 @@ def test_zona_sin_dato_da_nulos() -> None:
     ] == [None] * 5
     assert z["horas"] > 0
     assert r["ref"] == "2807901"
+    assert r["zonas"]["2807901"]["etiqueta"] == "referencia"
+
+
+def test_sin_ruta_no_hay_coste_ni_sobra() -> None:
+    api = copy.deepcopy(API)
+    api["tiempos"]["tp"][1][0] = None
+    z = _zona(_entrada(), "2807913", api)
+    assert [z[k] for k in ("horas", "transporte", "sobra", "precio_hora")] == [None] * 4
+    assert z["alquiler"] is not None
 
 
 def test_cesta_con_el_hogar_del_visitante() -> None:
@@ -156,8 +165,87 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
         ({"sueldos": [CENTRO | {"destino": "polo:ifema"}]}, "sin tarifa"),
         ({"zonas": ["28092"]}, "sin tarifa"),
         ({"hogar": {"perfil": "otro", "edad": 30}}, "perfil desconocido"),
+        ({"sueldos": [CENTRO | {"neto_mes": 1500}]}, "uno de los dos"),
+        (
+            {
+                "hogar": {"perfil": "solo", "edad": 30, "hijos": 3},
+                "sueldos": [
+                    {"neto_mes": 1500, "destino": "2807901", "dias": 3, "modo": "tp"}
+                ],
+            },
+            "hijos = 3",
+        ),
+        (
+            {"sueldos": [{"destino": "2807901", "dias": 3, "modo": "tp"}]},
+            "uno de los dos",
+        ),
+        ({"escenario": {"subida": 10}}, "claves desconocidas"),
+        ({"escenario": {"subida_alquiler": -150}}, "mayor que"),
+        (
+            {
+                "sueldos": [CENTRO | {"modo": "coche"}],
+                "ref": "28001",
+                "zonas": ["2807901"],
+            },
+            "referencia 28001",
+        ),
     ],
 )
 def test_entradas_invalidas_fallan(cambios: dict, mensaje: str) -> None:
     with pytest.raises(ValueError, match=mensaje):
         calculo.calcular(API, _entrada(**cambios))
+
+
+@pytest.mark.parametrize("edad", [16, 64])
+def test_edades_limite_calculan(edad: int) -> None:
+    assert calculo.calcular(API, _entrada(hogar={"perfil": "solo", "edad": edad}))[
+        "ref"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("cambios", "mensaje"),
+    [
+        ({"hogar": {"perfil": "solo", "edad": 15}}, "edad = 15"),
+        (
+            {"hogar": {"perfil": "solo", "edad": 70}, "escenario": {"edad": 30}},
+            "edad = 70",
+        ),
+        ({"sueldos": [CENTRO | {"bruto": 14999.99}]}, "fuera de la tabla"),
+    ],
+)
+def test_limites_fallan(cambios: dict, mensaje: str) -> None:
+    with pytest.raises(ValueError, match=mensaje):
+        calculo.calcular(API, _entrada(**cambios))
+
+
+def test_escenario_aplicado_en_la_salida() -> None:
+    r = calculo.calcular(API, _entrada(escenario={"subida_alquiler": 5}))
+    assert r["escenario"] == {
+        "tarifas": "vigente_2026",
+        "subida_alquiler": 5,
+        "edad": 30,
+    }
+
+
+NETOS_REALES = calculo.RAIZ / "app/datos/netos.json"
+
+
+@pytest.mark.skipif(not NETOS_REALES.exists(), reason="sin app/datos/netos.json")
+@pytest.mark.parametrize(
+    ("bruto", "hogar", "tolerancia"),
+    [
+        (22000, {"adultos": 1, "hijos": 0}, 0.01),
+        (22100, {"adultos": 2, "hijos": 1}, 1.0),
+        (37777, {"adultos": 1, "hijos": 2}, 1.0),
+    ],
+)
+def test_neto_cuadra_con_neto_py(bruto: int, hogar: dict, tolerancia: float) -> None:
+    from mesobra import neto
+
+    netos = json.loads(NETOS_REALES.read_text("utf-8"))
+    mono = hogar["adultos"] == 1 and hogar["hijos"] >= 1
+    exacto = float(neto.neto_anual(bruto, hijos=hogar["hijos"], monoparental=mono)) / 12
+    assert calculo.neto_mes(netos, bruto, hogar) == pytest.approx(
+        exacto, abs=tolerancia
+    )

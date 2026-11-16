@@ -24,6 +24,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 30
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -41,7 +46,7 @@
       "horas": 3.40497,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -105,6 +110,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 24
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -122,7 +132,7 @@
       "horas": 3.40497,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -189,6 +199,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "sin_descuento",
+     "subida_alquiler": 0.0,
+     "edad": 24
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -206,7 +221,7 @@
       "horas": 3.40497,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -273,6 +288,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 10,
+     "edad": 30
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -290,7 +310,7 @@
       "horas": 3.40497,
       "esfuerzo": 0.6370205548158823,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -356,6 +376,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 27
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -373,7 +398,7 @@
       "horas": 5.67495,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "28065": {
       "origen": "observado",
@@ -397,7 +422,7 @@
    }
   },
   {
-   "nombre": "4 viajes al día, zona A 3 días: abono de 32,70 €",
+   "nombre": "4 viajes al día, zona A 3 días: pasa del 10 viajes al abono",
    "entrada": {
     "hogar": {
      "perfil": "solo",
@@ -420,6 +445,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 30
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -437,7 +467,7 @@
       "horas": 3.40497,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -501,6 +531,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 30
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -518,7 +553,7 @@
       "horas": 1.13499,
       "esfuerzo": 0.5791095952871657,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -583,6 +618,11 @@
    },
    "salida": {
     "ref": "28065",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 28
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -636,7 +676,7 @@
       "horas": 20.682039999999997,
       "esfuerzo": 0.23184,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      }
     }
    }
@@ -670,6 +710,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 32
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -687,7 +732,7 @@
       "horas": 17.78151,
       "esfuerzo": 0.3860730635247771,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -759,6 +804,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 35
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -776,7 +826,7 @@
       "horas": 5.67495,
       "esfuerzo": 0.44003192975454,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -842,6 +892,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 33
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -859,7 +914,7 @@
       "horas": 5.67495,
       "esfuerzo": 0.6678919345296787,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "2807913": {
       "origen": "observado",
@@ -923,6 +978,11 @@
    },
    "salida": {
     "ref": "2807901",
+    "escenario": {
+     "tarifas": "vigente_2026",
+     "subida_alquiler": 0.0,
+     "edad": 40
+    },
     "zonas": {
      "2807901": {
       "origen": "observado",
@@ -940,7 +1000,7 @@
       "horas": 4.41385,
       "esfuerzo": 0.4447993275898298,
       "precio_hora": null,
-      "etiqueta": "mismo tiempo"
+      "etiqueta": "referencia"
      },
      "28092": {
       "origen": "estimado",
@@ -1019,7 +1079,7 @@
      "2807901"
     ]
    },
-   "error": "hijos = 3: la tabla de netos llega a 2"
+   "error": "hijos = 3: debe ser un entero de 0 a 2"
   },
   {
    "nombre": "error: destino polo sin corona en transporte público",

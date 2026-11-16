@@ -12,10 +12,13 @@ Entrada de `calcular` (un dict):
 - `hogar`: `perfil` y `edad`; opcionales `adultos`, `hijos`, `personas_comparten` y `m2` (por
   defecto, los del perfil de `hogares.json`).
 - `sueldos`: 1 o 2, cada uno con `destino` (`destino_id`), `dias` (1 a 5), `modo` (`tp` o `coche`),
-  `bruto` (€/año) o `neto_mes` (€/mes), y opcional `viajes_dia` (2 o 4; por defecto 2).
+  `bruto` (€/año) o `neto_mes` (€/mes, neto anual ÷ 12: con 14 pagas, nómina × 14 ÷ 12), y opcional
+  `viajes_dia` (2 o 4; por defecto 2).
 - Opcionales: `escenario` (`tarifas`: `vigente_2026` o `sin_descuento`; `subida_alquiler` en %;
   `edad`, que sustituye a la del hogar), `zonas` (por defecto, los orígenes de `tiempos.json`) y
   `ref` (zona de referencia).
+
+Salida: `{"ref", "escenario" (el aplicado, con sus valores por defecto), "zonas": {zona_id: {...}}}`.
 
 Supuestos:
 1. sobra = neto − alquiler − transporte − cesta, en €/mes del hogar; esfuerzo = alquiler ÷ neto.
@@ -28,11 +31,15 @@ Supuestos:
    extrapola). Monoparental = 1 adulto con hijos; cada sueldo usa los hijos del hogar (#183).
 5. Transporte público: tabla de `tarifas.json` con la corona más exterior entre origen y destino; tarifa
    joven si edad ≤ `edad_max_joven`. Un destino sin corona conocida (los polos, hasta F3-01) da error.
+   shortcut: una sola edad (la del visitante) para los dos sueldos, aunque el Abono Joven es personal;
+   pasar a `edad` por sueldo cuando el formulario de pareja la pida (F3-03, #97).
 6. Coche: 2 × km × días × semanas_mes × `eur_km`, sin aparcamiento ni congestión (F3-02, #96).
 7. Horas al mes = Σ sueldos de minutos de ida × 2 × días × `semanas_mes` ÷ 60, con `semanas_mes` del
    calendario laboral de `tarifas.json` (3,7833 en 2026, #197), no 4,33.
 8. Referencia por defecto: la zona con menos horas entre las que tienen sobrante y horas. Si la
-   diferencia de horas con ella es menor de 5 al mes, `precio_hora` es nulo y `etiqueta` es «mismo tiempo».
+   diferencia de horas con ella es menor de 5 al mes, `precio_hora` es nulo y `etiqueta` es «mismo tiempo»;
+   la propia referencia lleva `etiqueta` «referencia». Una `ref` pedida sin sobrante u horas da error.
+   Sin ruta (minutos nulos), el viaje no tiene horas ni coste, y la zona queda sin sobrante.
 9. Cesta por unidades de consumo OCDE modificada con el hogar del visitante (#180, `hogares.py`).
 """
 
@@ -47,11 +54,12 @@ CASOS = RAIZ / "tests/fixtures/casos_referencia.json"
 
 UMBRAL_HORAS = 5.0
 MISMO_TIEMPO = "mismo tiempo"
-EDAD_MIN, EDAD_MAX = (
-    16,
-    64,
-)  # edad legal para trabajar; el neto supone menos de 65 años (#183)
+REFERENCIA = "referencia"
+# 16: edad mínima para trabajar (ET art. 6.1, BOE-A-2015-11430); 64: el neto supone no tener
+# el mínimo por edad de más de 65 años (LIRPF art. 57.2, BOE-A-2006-20764; #183).
+EDAD_MIN, EDAD_MAX = 16, 64
 MODOS = ("tp", "coche")
+ESCENARIO = {"tarifas", "subida_alquiler", "edad"}
 
 Api = dict[str, Any]
 
@@ -160,6 +168,8 @@ def viaje(
     tarifas, tiempos, dias = api["tarifas"], api["tiempos"], sueldo["dias"]
     semanas, destino = tarifas["semanas_mes"], sueldo["destino"]
     minutos = _celda(tiempos, sueldo["modo"], origen, destino)
+    if minutos is None:  # sin ruta no hay viaje que pagar: ni horas ni coste
+        return None, None
     if sueldo["modo"] == "coche":
         km = _celda(tiempos, "km_coche", origen, destino)
         coste = (
@@ -173,8 +183,7 @@ def viaje(
             str(sueldo["viajes_dia"])
         ]
         coste = tabla[_corona(api, origen, destino)][dias - 1]["coste_mes"]
-    horas = None if minutos is None else minutos * 2 * dias * semanas / 60
-    return horas, coste
+    return minutos * 2 * dias * semanas / 60, coste
 
 
 def _suma(valores: list[float | None]) -> float | None:
@@ -188,19 +197,20 @@ def calcular_zona(
     neto = sum(s["neto_mes"] for s in sueldos)
     alq = alquiler(api["alquiler"]["zonas"][zona], hogar, escenario["subida_alquiler"])
     horas, costes = zip(*(viaje(api, s, zona, escenario) for s in sueldos), strict=True)
-    resto = _suma([*costes]), cesta(api["hogares"]["cesta_uc"], hogar)
-    fijo = None if alq is None or resto[0] is None else neto - resto[0] - resto[1]
+    transporte = _suma(list(costes))
+    cesta_mes = cesta(api["hogares"]["cesta_uc"], hogar)
+    fijo = None if alq is None or transporte is None else neto - transporte - cesta_mes
     return {
         "origen": api["alquiler"]["zonas"][zona]["origen"],
         "neto": neto,
         "alquiler": None if alq is None else alq["p50"],
         "alquiler_p25": None if alq is None else alq["p25"],
         "alquiler_p75": None if alq is None else alq["p75"],
-        "transporte": resto[0],
-        "cesta": resto[1],
+        "transporte": transporte,
+        "cesta": cesta_mes,
         "sobra": None if fijo is None else fijo - alq["p50"],
         "sobra_banda": None if fijo is None else [fijo - alq["max"], fijo - alq["min"]],
-        "horas": _suma([*horas]),
+        "horas": _suma(list(horas)),
         "esfuerzo": None if alq is None else alq["p50"] / neto,
     }
 
@@ -218,11 +228,23 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     if h.get("perfil") not in api["hogares"]["perfiles"]:
         raise ValueError(f"perfil desconocido: {h.get('perfil')!r}")
     hogar = {**api["hogares"]["perfiles"][h["perfil"]], **h}
+    pedido = entrada.get("escenario", {})
+    if extra := set(pedido) - ESCENARIO:
+        raise ValueError(f"escenario con claves desconocidas: {sorted(extra)}")
+    _entero("edad", hogar.get("edad"), range(EDAD_MIN, EDAD_MAX + 1))
     esc = {"tarifas": "vigente_2026", "subida_alquiler": 0.0, "edad": hogar["edad"]}
-    esc |= {k: v for k, v in entrada.get("escenario", {}).items() if v is not None}
+    esc |= {k: v for k, v in pedido.items() if v is not None}
+    subida = esc["subida_alquiler"]
+    if type(subida) not in (int, float) or not subida > -100:
+        raise ValueError(
+            f"subida_alquiler = {subida!r}: debe ser un número mayor que −100"
+        )
     _entero("edad", esc["edad"], range(EDAD_MIN, EDAD_MAX + 1))
     _entero("adultos", hogar["adultos"], range(1, 3))
-    _entero("hijos", hogar["hijos"], range(10))
+    maximo = max(c["hijos"] for c in api["netos"]["configuraciones"])
+    _entero(
+        "hijos", hogar["hijos"], range(maximo + 1)
+    )  # la rejilla de netos llega a 2 (#183)
     _entero("personas_comparten", hogar["personas_comparten"], range(1, 21))
     if not hogar["m2"] > 0 or esc["tarifas"] not in api["tarifas"]["escenarios"]:
         raise ValueError(
@@ -247,9 +269,11 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
             raise ValueError(
                 f"modo {s['modo']!r} o viajes_dia {s['viajes_dia']!r} inválido"
             )
-        if "neto_mes" not in s:
+        if ("bruto" in s) == ("neto_mes" in s):
+            raise ValueError("cada sueldo lleva bruto o neto_mes, uno de los dos")
+        if "bruto" in s:
             s["neto_mes"] = neto_mes(api["netos"], s["bruto"], hogar)
-        elif not s["neto_mes"] > 0:
+        elif type(s["neto_mes"]) not in (int, float) or not s["neto_mes"] > 0:
             raise ValueError(f"neto_mes = {s['neto_mes']!r}: debe ser positivo")
         salida.append(s)
     return salida
@@ -273,12 +297,16 @@ def calcular(api: Api, entrada: dict) -> dict:
             if res[z]["sobra"] is not None and res[z]["horas"] is not None
         ]
         ref = min(validas, key=lambda z: res[z]["horas"], default=None)
+    elif res[ref]["sobra"] is None or res[ref]["horas"] is None:
+        raise ValueError(f"zona de referencia {ref} sin sobrante u horas")
     r = res.get(ref, {"sobra": None, "horas": None})
     for z in res.values():
         z["precio_hora"], z["etiqueta"] = precio_hora(
             z["sobra"], z["horas"], r["sobra"], r["horas"]
         )
-    return {"ref": ref, "zonas": res}
+    if ref is not None:
+        res[ref]["etiqueta"] = REFERENCIA
+    return {"ref": ref, "escenario": escenario, "zonas": res}
 
 
 def leer_api(carpeta: Path) -> Api:
