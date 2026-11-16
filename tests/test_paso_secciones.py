@@ -152,6 +152,19 @@ def test_destino_sin_poblacion_con_origenes_mixtos_pondera_por_area() -> None:
     assert list(fusion["fusionados"]) == ["D0"]
 
 
+def test_denominador_cero_se_excluye_y_negativo_falla(capas) -> None:
+    tabla, _ = p.tabla_paso(*capas)
+    valor = pd.Series({"A": 1.0, "B": 2.0, "C": 10.0, "D": 20.0})
+    # C y D sin testigos: CD no tiene origen válido y desaparece, sin NaN
+    precio = p.pasar_intensiva(
+        tabla, valor, pd.Series({"A": 1, "B": 1, "C": 0, "D": 0})
+    )
+    assert "CD" not in precio.index
+    assert not precio.isna().any()
+    with pytest.raises(ValueError, match="Denominador negativo"):
+        p.pasar_intensiva(tabla, valor, pd.Series({"A": 1, "B": 1, "C": -6, "D": 4}))
+
+
 def test_intensiva_y_pureza_con_origen_fuera_de_la_tabla_fallan(capas) -> None:
     tabla, _ = p.tabla_paso(*capas)
     valor = pd.Series({"A": 1.0, "Z": 9.0})

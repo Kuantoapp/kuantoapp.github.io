@@ -121,19 +121,22 @@ def pasar_extensiva(tabla: pd.DataFrame, datos: pd.Series) -> pd.Series:
 def _aportes(
     tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series
 ) -> pd.DataFrame:
-    """Pares con `valor` y `aporta = peso × denominador`, sin los orígenes sin dato o sin denominador.
+    """Pares con `valor` y `aporta = peso × denominador`, sin los orígenes sin dato, sin denominador o con denominador 0.
 
-    Falla si hay datos o denominadores de orígenes que no están en la tabla: se perderían sin aviso.
+    Falla si hay datos o denominadores de orígenes que no están en la tabla, o un denominador negativo.
     """
-    for serie in (datos, denominador):
+    for nombre, serie in (("datos", datos), ("denominador", denominador)):
         if not serie.index.isin(tabla["origen"]).all():
             raise ValueError(
-                "Hay orígenes en datos o denominador que no están en la tabla: se perderían"
+                f"Hay orígenes en {nombre} que no están en la tabla: se perderían"
             )
+    if (denominador < 0).any():
+        raise ValueError("Denominador negativo: la media ponderada no tiene sentido")
     t = tabla.assign(
         valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
     ).dropna(subset=["valor", "aporta"])
-    return t.assign(aporta=t["aporta"] * t["peso"])
+    t = t.assign(aporta=t["aporta"] * t["peso"])
+    return t[t["aporta"] > 0]
 
 
 def pasar_intensiva(
@@ -142,8 +145,8 @@ def pasar_intensiva(
     """Pasa una intensiva (€/m²) como media ponderada por lo que aporta cada origen: `peso × denominador`.
 
     `denominador` es el extensivo del origen con el que se calculó el dato (testigos, m² alquilados). Con medianas
-    es una aproximación, a presentar como «estimado». Orígenes sin dato o sin denominador se excluyen y los pesos
-    se renormalizan; un destino sin ningún origen válido no aparece en el resultado y uno cuyo denominador suma 0 da NaN. `peso_destino` no sirve aquí:
+    es una aproximación, a presentar como «estimado». Orígenes sin dato o con denominador 0 se excluyen y los pesos
+    se renormalizan; un destino sin ningún origen válido no aparece en el resultado. `peso_destino` no sirve aquí:
     reparte por área.
     """
     t = _aportes(tabla, datos, denominador)
@@ -156,7 +159,7 @@ def pureza(tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series) -> pd.
     """Parte de lo que llega a cada destino (`peso × denominador`) que viene de orígenes enteros (peso ≥ 0,99).
 
     Mide el mismo conjunto que `pasar_intensiva` (orígenes con dato). Pureza baja: el valor depende del supuesto
-    de reparto y es una estimación. No aparece si no llega ningún origen con dato; NaN si el denominador suma 0.
+    de reparto y es una estimación. No aparece si no llega ningún origen con dato ni denominador positivo.
     """
     t = _aportes(tabla, datos, denominador)
     entera = t["aporta"].where(t["peso"] >= ENTERA, 0)
@@ -203,6 +206,7 @@ def total_por_municipio(
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO)
     origen, destino = leer_origen(), zonas.leer_secciones()
     tabla, cobertura = tabla_paso(origen, destino, zonas.poblacion_secciones())
     comprobar_tabla(tabla)
