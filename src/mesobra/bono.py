@@ -272,7 +272,8 @@ def correlacion_parcial(x: pd.Series, y: pd.Series, controles: pd.DataFrame) -> 
     r = min(max(r, -1.0), 1.0)
     with np.errstate(divide="ignore"):
         z, se = np.arctanh(r), 1 / np.sqrt(n - 3 - k)
-        t = r * np.sqrt((n - 2 - k) / (1 - r**2))
+        # np.divide: con |r| = 1 da t infinito (p = 0) en vez de ZeroDivisionError de los float de Python
+        t = r * np.sqrt(np.divide(n - 2 - k, 1 - r**2))
     return {
         "r": r,
         "n": n,

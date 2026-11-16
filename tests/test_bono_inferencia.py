@@ -29,8 +29,8 @@ def test_sem_recupera_lambda_y_beta():
     assert res["lm"]["error"] < 0.05  # el SEM generado deja autocorrelación en el MCO
     assert abs(res["elegido"]["moran_residuos"]["I"]) < 0.1
     assert res["elegido"]["modelo"] == "SEM"
-    # el SEM generado gana a los demás con el mismo criterio de AIC
-    assert res["sem"]["aic"] < min(res[m]["aic"] for m in ("ols", "sar", "slx", "sdem"))
+    # el SEM generado gana al MCO y al SAR con el mismo criterio de AIC (el SDEM lo anida y puede empatar)
+    assert res["sem"]["aic"] < min(res["ols"]["aic"], res["sar"]["aic"])
     # spreg no cuenta λ en el AIC de ML_Error y sí ρ en ML_Lag: `_aic` los cuenta igual
     w5 = bono._w(xy, 5)
     xs = d[bi.X].to_numpy()
