@@ -111,6 +111,20 @@ JSON; no cambia la conclusión principal ni el contrato `bono`):
   0,203 con k = 5 (principal) y 0,100 con k = 8 (denominador de vivienda alquilada; p = 0,032). La p que se cita es la de
   permutaciones y bilateral (`bono.moran`, clave `moran_mco`), no la analítica de spreg (`moran_ols`): con n pequeño no
   supone normalidad, y es la misma que usa el resto del módulo.
+
+Control por el % de jóvenes en alquiler (#225, exploratorio; `control_alquiler`, elegido DESPUÉS de ver los datos; no cambia
+la regla ni la conclusión principal). Entre quienes piden el Bono, el porcentaje de rechazo apenas cambia con el esfuerzo
+(aceptadas + rechazadas = solicitudes, así que la quasi-binomial de `glm` es la tasa de rechazo con el signo cambiado;
+p = 0,82 en los 134). Hay más rechazadas por joven donde el esfuerzo es mayor porque hay más solicitudes. En los 112
+municipios con %, parte de ese volumen coincide con que allí alquilan más jóvenes (corr % y esfuerzo +0,27; % y
+solicitudes por 1.000 +0,61; % y tasa de rechazo +0,01). Controlando el %, el β del esfuerzo baja de ~94 a ~46 (k = 5) y de
+~88 a ~34 (k = 8), con p 0,22 y 0,37 e IC95 [-27,5; 118,9] y [-39,2; 106,5], que contienen tanto el 0 como el β sin control:
+es pérdida de precisión, no un efecto nulo («no concluyente»). Cuánto se reduce depende del estimador (-51 % en el SEM y -22 %
+en el MCO-HAC, β 83 a 65, p = 0,11: el sesgo de variable omitida β_% · δ, con δ = esfuerzo → % mayor tras el filtro espacial).
+El error de medida del % (2021, 20-34, incluye a quien vive en un piso alquilado de sus padres) dejaría confusión residual
+a favor del esfuerzo, no en contra. El % es anterior al Bono, así que no es un control posterior al tratamiento; actúa como
+exposición (solo quien alquila puede pedir). Vale para los 112, no para los 134. Moran de los residuos filtrados ≈ 0
+(0,000 y 0,005).
 """
 
 import json
@@ -201,6 +215,18 @@ def _efectos_sar(m: spreg.ML_Lag, w: W, i: int) -> dict:
     return {"directo": directo, "indirecto": total - directo, "total": total}
 
 
+def _gmm_iterado(y: np.ndarray, x: np.ndarray, w: W, k: int) -> spreg.GM_Error_Het:
+    """`GM_Error_Het` con GMM iterado (`max_iter=10`); avisa si llegó al máximo, porque puede no haber convergido."""
+    m = spreg.GM_Error_Het(y, x, w=w, max_iter=10)
+    if (
+        m.iteration == 10
+    ):  # spreg no distingue «sin converger» de «convergió justo en la décima»
+        LOG.warning(
+            "GMM iterado: alcanzó max_iter=10 con k = %s; puede no haber convergido", k
+        )
+    return m
+
+
 def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     """Principal: SEM heterocedástico (`sem_het`, GMM iterado; `sem_het_dos_pasos` es la sensibilidad con GMM en dos pasos). Referencias: MCO con diagnósticos, SEM, SAR, SLX y SDEM (con su AIC), MCO-HAC y el modelo de la regla de Anselin.
 
@@ -215,14 +241,8 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     slx = spreg.OLS(y, x, w, slx_lags=1)
     sdem = spreg.ML_Error(y, x, w, slx_lags=1)
     # principal, GMM iterado (#223); el de dos pasos (por defecto de spreg) es la sensibilidad: ver el docstring
-    het = spreg.GM_Error_Het(y, x, w=w, max_iter=10)
+    het = _gmm_iterado(y, x, w, k)
     dos_pasos = spreg.GM_Error_Het(y, x, w=w, max_iter=1, step1c=False)
-    if (
-        het.iteration == 10
-    ):  # spreg no distingue «sin converger» de «convergió justo en la décima»
-        LOG.warning(
-            "GMM iterado: alcanzó max_iter=10 con k = %s; puede no haber convergido", k
-        )
     lam = _coef(het, -1)
     hac = spreg.OLS(
         y,
@@ -278,6 +298,36 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     if elegido == "SAR":
         sal["elegido"]["rho"] = m.rho
         sal["elegido"]["efectos"] = _efectos_sar(m, w, 1)
+    return sal
+
+
+def control_alquiler(r: pd.DataFrame, puntos: np.ndarray) -> dict:
+    """EXPLORATORIO (#225, elegido después de ver los datos): el esfuerzo con el % de jóvenes en alquiler como covariable.
+
+    `r` lleva las columnas de `X`, `Y` y `alquiler_joven` (fracción 0-1). SEM heterocedástico (GMM iterado) con k = 5 y 8
+    (`alquiler_joven` es el coeficiente 4), MCO-HAC y la conclusión con la misma regla que la principal.
+    """
+    cols = X + ["alquiler_joven"]
+    y, x = r[[Y]].to_numpy(float), r[cols].to_numpy(float)
+    sal = {}
+    for k in (K, 8):
+        m = _gmm_iterado(y, x, bono._w(puntos, k), k)
+        c = _coef(m, 1)
+        sal[f"k{k}"] = {
+            **c,
+            "ic95": [c["beta"] - 1.96 * c["se"], c["beta"] + 1.96 * c["se"]],
+            "alquiler_joven": _coef(m, 4),
+            "moran_residuos": bono.moran(m.e_filtered.ravel(), puntos, k),
+            "iteraciones": m.iteration,
+        }
+    hac = spreg.OLS(
+        y,
+        x,
+        robust="hac",
+        gwk=Kernel(puntos, k=K + 1, fixed=False, function="triangular"),
+    )
+    sal["ols_hac"] = _coef(hac, 1)
+    sal["conclusion"] = concluir(sal[f"k{K}"], sal["k8"])
     return sal
 
 
@@ -411,6 +461,8 @@ def robustez_vivienda_alquilada(
     «robusta» con más margen, así que los municipios pequeños, de tasas ruidosas, atenúan la relación. El denominador
     atenúa la relación porque el porcentaje se correlaciona con el esfuerzo. El Moran del MCO que se cita es el de
     permutaciones y bilateral (`bono.moran`), no el analítico de spreg: no supone normalidad con n pequeño.
+
+    Lleva también `control_alquiler` (#225, exploratorio): el esfuerzo controlando el % de jóvenes en alquiler.
     """
     if (pct == 0).any():
         raise ValueError(f"Municipios con 0 % en alquiler: {list(pct.index[pct == 0])}")
@@ -435,6 +487,14 @@ def robustez_vivienda_alquilada(
     alq, principal = bloques["alquiler"], bloques["principal_misma_submuestra"]
     en_bono = tabla["municipio_id"].isin(pct.index[pct.notna()])
     pa, pp = alq["pearson_parcial"], principal["pearson_parcial"]
+    ca = control_alquiler(r.assign(alquiler_joven=pct[r.index]), puntos[ok])
+    c5, c8 = ca[f"k{K}"], ca["k8"]
+    corr = {
+        "esfuerzo": float(r["esfuerzo"].corr(pct[r.index])),
+        "renta": float(r["renta"].corr(pct[r.index])),
+        "solicitudes_por_mil": float(r["solicitudes_por_mil"].corr(pct[r.index])),
+        "tasa_rechazo": float((r["rechazadas"] / r["solicitudes"]).corr(pct[r.index])),
+    }
     # solo cifras y conclusiones de la regla: la interpretación va en el docstring, que no se recalcula
     lectura = (
         f"Principal en los {len(d)} (regla del #221 con el GMM iterado del #223, elegidos después de ver los datos; la Pearson es referencia): {conclusion_principal}. Principal en los {len(r)} "
@@ -443,8 +503,12 @@ def robustez_vivienda_alquilada(
         f"{principal['espacial']['k8']['sem_het']['p']:.3f} (k = 8); Moran de los residuos del MCO "
         f"{principal['moran_mco'][f'k{K}']['I']:.3f}, p = {principal['moran_mco'][f'k{K}']['p']:.3f}). Con el "
         f"denominador de vivienda alquilada: {alq['conclusion']} (r = {pa['r']:.3f}, p = {pa['p']:.3f}). Correlación "
-        f"del porcentaje en alquiler con el esfuerzo: {r['esfuerzo'].corr(pct[r.index]):+.2f}. Fuera de la "
-        f"submuestra: {len(fuera)} municipios."
+        f"del porcentaje en alquiler con el esfuerzo: {corr['esfuerzo']:+.2f}. Fuera de la "
+        f"submuestra: {len(fuera)} municipios. Controlando el porcentaje (exploratorio, #225), el esfuerzo da β = "
+        f"{c5['beta']:.1f}, p = {c5['p']:.3f}, IC95 [{c5['ic95'][0]:.1f}, {c5['ic95'][1]:.1f}] (k = {K}) y β = "
+        f"{c8['beta']:.1f}, p = {c8['p']:.3f}, IC95 [{c8['ic95'][0]:.1f}, {c8['ic95'][1]:.1f}] (k = 8): "
+        f"{ca['conclusion']}. Correlación del porcentaje con las solicitudes por 1.000: "
+        f"{corr['solicitudes_por_mil']:+.2f}; con la tasa de rechazo: {corr['tasa_rechazo']:+.2f}."
     )
     return {
         **bloques,
@@ -463,10 +527,8 @@ def robustez_vivienda_alquilada(
                 "incluidos": float(r["renta"].mean()),
             },
         },
-        "correlacion_porcentaje": {
-            "esfuerzo": float(r["esfuerzo"].corr(pct[r.index])),
-            "renta": float(r["renta"].corr(pct[r.index])),
-        },
+        "control_alquiler": ca,
+        "correlacion_porcentaje": corr,
         "lectura": lectura,
     }
 

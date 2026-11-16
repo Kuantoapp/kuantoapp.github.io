@@ -252,3 +252,24 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
         bi.robustez_vivienda_alquilada(
             tabla, d, xy, pct.where(pct.index != "28001", 0.0), "x"
         )
+
+
+def test_control_alquiler_quita_el_efecto_que_solo_pasa_por_el_porcentaje():
+    rng = np.random.default_rng(0)
+    xy = _rejilla(20)
+    n = len(xy)
+    pct = rng.normal(size=n)
+    x = np.column_stack([0.8 * pct + 0.6 * rng.normal(size=n), rng.normal(size=(n, 2))])
+    w = bono._w(xy, 5).full()[0]
+    u = np.linalg.solve(np.eye(n) - 0.4 * w, rng.normal(size=n))
+    # el esfuerzo (columna 0) no entra en y: solo el porcentaje, la renta y el tope
+    y = 2 + pct + 0.5 * x[:, 1] - 0.5 * x[:, 2] + u
+    d = pd.DataFrame(x, columns=bi.X).assign(**{bi.Y: y, "alquiler_joven": pct})
+    assert bi.regresion(d, xy, 5)["sem_het"]["p"] < 0.05  # sin el %, parece un efecto
+    res = bi.control_alquiler(d, xy)
+    for k in ("k5", "k8"):
+        assert res[k]["p"] > 0.05
+        assert res[k]["ic95"][0] < 0 < res[k]["ic95"][1]
+        assert res[k]["alquiler_joven"]["p"] < 0.05
+        assert 1 < res[k]["iteraciones"] < 10
+    assert res["conclusion"] == "no concluyente"
