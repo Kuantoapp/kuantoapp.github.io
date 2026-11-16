@@ -93,11 +93,9 @@ def _largo(df: pd.DataFrame, id_col: str, renombre: dict[str, str]) -> pd.DataFr
 
 
 def _comprobar(df: pd.DataFrame) -> None:
-    """P25 <= mediana <= P75 en las filas con dato, y los tres percentiles nulos a la vez o ninguno."""
-    mal = pd.Series(data=False, index=df.index)
+    """P25 <= mediana <= P75 con los tres nulos a la vez, en €/m² y en cuantía, y ambos nulos a la vez."""
+    mal = df["cuantia_p50"].isna() != df["eur_m2_p50"].isna()
     for prefijo in ("eur_m2", "cuantia"):
-        if f"{prefijo}_p50" not in df:
-            continue
         p25, p50, p75 = (df[f"{prefijo}_p{p}"] for p in (25, 50, 75))
         mal |= (
             (p25 > p50)
