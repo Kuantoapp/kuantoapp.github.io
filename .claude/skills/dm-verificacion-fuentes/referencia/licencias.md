@@ -240,6 +240,17 @@ URLs (C: 2026-11-13):
 
 **Pendiente.** No se han encontrado términos específicos de la API del portal: **NO VERIFICADO**.
 
+
+### 2.10 Boletines oficiales (BOE, BOCM)
+
+URL: https://www.boe.es/buscar/act.php?id=BOE-A-1996-8930#a13 (Real Decreto Legislativo 1/1996, TRLPI, BOE-A-1996-8930; consolidado actualizado el 30/03/2022; C: 2026-11-16, leído en bruto).
+
+**Norma.** Art. 13 del TRLPI: «No son objeto de propiedad intelectual las disposiciones legales o reglamentarias y sus correspondientes proyectos, las resoluciones de los órganos jurisdiccionales y los actos, acuerdos, deliberaciones y dictámenes de los organismos públicos, así como las traducciones oficiales de todos los textos anteriores.»
+
+**Para el proyecto.** Las resoluciones del CRTM publicadas en el BOCM (BOCM-20251231-2 y -3) son actos y acuerdos de un organismo público: según el art. 13 no son objeto de propiedad intelectual (el encabezado del BOCM dice «O. A. Consorcio Regional de Transportes Públicos Regulares de Madrid» y la resolución publica un «acuerdo del Consejo de Administración»); se citan igualmente por la regla de cifras con fuente. Es la licencia que `app/datos/tarifas.json` da a esas dos fuentes.
+
+**Matiz.** El art. 13 no menciona los textos consolidados ni otros productos del boletín. El aviso legal del BOE (https://www.boe.es/informacion/aviso_legal/index.php, leído en bruto el 2026-11-16) aplica su licencia «a los documentos alojados en la sede electrónica», exige indicar que la legislación consolidada es «un texto consolidado de carácter meramente informativo» y excluye la Biblioteca Jurídica Digital (CC BY-NC-ND 4.0). Ver 2.4.
+
 ---
 
 ## 3. CC BY 4.0 y CC0
