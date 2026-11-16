@@ -5,6 +5,7 @@ Modelo fijado en `docs/verificaciones/movilidad-interoperabilidad.md` (fila 3).
 """
 
 import json
+import re
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -34,24 +35,39 @@ INDICADORES = {
         "esfuerzo",
         ("esfuerzo",),
         (
-            "Cuantía mediana mensual del alquiler (SERPAVI) entre la renta neta media mensual "
-            "por hogar (ADRH del INE), fracción; el año es el ejercicio del IRPF"
+            "Cuantía mediana mensual del alquiler de vivienda colectiva (SERPAVI) entre la renta "
+            "neta media mensual por hogar (ADRH del INE), fracción; el año es el ejercicio fiscal"
         ),
         False,
     ),
+    # Definiciones de F3-06 (#100): el 40 % cuenta alquiler y suministros; el 30 %, solo alquiler.
     "sobrecarga_40": (
         "sobrecarga",
         ("pct_40_inf", "pct_40_sup"),
-        "Hogares inquilinos con alquiler sobre el 40 % de su renta, % (intervalo de un modelo log-normal)",
+        (
+            "% de hogares inquilinos con alquiler y suministros por encima del 40 % de su renta "
+            "(rango de un modelo log-normal: σ del Gini y del P80/P20)"
+        ),
         True,
     ),
     "sobrecarga_30": (
         "sobrecarga",
         ("pct_30_inf", "pct_30_sup"),
-        "Hogares inquilinos con alquiler sobre el 30 % de su renta, % (intervalo de un modelo log-normal)",
+        (
+            "% de hogares inquilinos con alquiler por encima del 30 % de su renta "
+            "(rango de un modelo log-normal: σ del Gini y del P80/P20)"
+        ),
         True,
     ),
 }
+# Mención que exige cada publicador (nota del 16-11 de #110), buscada en el nombre de la fuente y en
+# `meta.nota`; además, cada fuente necesita su «actualizado el AAAA-MM-DD».
+MENCIONES = {
+    "ine.es": "www.ine.es",
+    "mivau.gob.es": "Origen de los datos: Ministerio de Vivienda y Agenda Urbana",
+    "comunidad.madrid": "Fuente de los datos: Comunidad de Madrid",
+}
+ACTUALIZADO = re.compile(r"actualizad[oa] el \d{4}-\d{2}-\d{2}")
 LICENCIA_MODELO = "CC BY 4.0"
 
 
@@ -104,8 +120,26 @@ def validar(por_indicador: dict[str, list[dict]], esquema: dict) -> None:
         ids.add(e["id"])
 
 
+def _citas_que_faltan(meta: dict) -> list[str]:
+    """Menciones obligatorias que no están ni en el nombre de las fuentes ni en `meta.nota`."""
+    texto = " ".join(f["nombre"] for f in meta["fuentes"]) + " " + meta["nota"]
+    falta = [
+        f"«{mencion}»"
+        for f in meta["fuentes"]
+        for dominio, mencion in MENCIONES.items()
+        if dominio in f["url"] and mencion not in texto
+    ]
+    if len(ACTUALIZADO.findall(meta["nota"])) < len(meta["fuentes"]):
+        falta.append("«actualizado el AAAA-MM-DD» de cada fuente")
+    return list(dict.fromkeys(falta))
+
+
 def _procedencia(nombre: str, meta: dict) -> str:
-    """Fuentes, fecha y nota de un fichero de entrada: la nota lleva el origen, la fecha y el «no avala» de cada fuente."""
+    """Fuentes, fecha y nota de un fichero de entrada; falla si la nota no trae lo que exigen sus fuentes."""
+    if falta := _citas_que_faltan(meta):
+        raise ValueError(
+            f"{nombre}: falta en meta.nota {', '.join(falta)} (condiciones de las fuentes, nota del 16-11 de #110)"
+        )
     fuentes = "\n".join(
         f"- fuente: {f['nombre']}, {f['url']}. Licencia: {f['licencia']}."
         for f in meta["fuentes"]
@@ -127,14 +161,7 @@ def leeme(
         if por_indicador[n]
     ]
     metas = (("analisis.json", analisis["meta"]), ("alquiler.json", alquiler["meta"]))
-    ine = any(f["nombre"].startswith("INE") for _, m in metas for f in m["fuentes"])
-    cita = (
-        "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es; la fecha de "
-        "actualización de cada tabla del INE va en la nota de su fichero. El INE no participa, "
-        "patrocina ni apoya este proyecto, y estos valores son derivados, no cifras del INE.\n\n"
-        if ine
-        else ""
-    )
+    procedencia = "\n".join(_procedencia(n, m) for n, m in metas)
     return f"""# Indicadores en Smart Data Models
 
 Cada fichero de esta carpeta es una lista de entidades NGSI-LD del modelo **{TIPO}** (Smart Data Models), en forma simplificada. Una entidad por indicador, zona y año; si no hay dato, no hay entidad.
@@ -161,9 +188,9 @@ Cada fichero de esta carpeta es una lista de entidades NGSI-LD del modelo **{TIP
 
 ## Procedencia y licencia
 
-Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean. {cita}Procedencia, fecha y licencia de cada fichero:
+Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean: son derivados, no cifras de los publicadores, y ninguno de ellos participa, patrocina ni apoya este proyecto. La cita, la fecha de actualización y las condiciones que pide cada fuente van en la nota de su fichero (`sdm.py` no escribe nada si falta alguna). Procedencia, fecha y licencia de cada fichero:
 
-{chr(10).join(_procedencia(n, m) for n, m in metas)}"""
+{procedencia}"""
 
 
 def escribir(analisis: dict, alquiler: dict, carpeta: Path, esquema: dict) -> None:
@@ -172,6 +199,8 @@ def escribir(analisis: dict, alquiler: dict, carpeta: Path, esquema: dict) -> No
     api_estatica.validar("alquiler.json", alquiler)
     por_indicador = entidades(analisis, alquiler)
     validar(por_indicador, esquema)
+    # El LEEME falla si faltan citas: se genera antes de tocar la carpeta.
+    texto = leeme(esquema, analisis, alquiler, por_indicador)
     carpeta.mkdir(parents=True, exist_ok=True)
     for viejo in carpeta.glob("*.json"):
         viejo.unlink()
@@ -181,9 +210,7 @@ def escribir(analisis: dict, alquiler: dict, carpeta: Path, esquema: dict) -> No
             continue
         compacto = json.dumps(lista, ensure_ascii=False, separators=(",", ":"))
         (carpeta / f"{nombre}.json").write_text(compacto, "utf-8")
-    (carpeta / "LEEME.md").write_text(
-        leeme(esquema, analisis, alquiler, por_indicador), "utf-8"
-    )
+    (carpeta / "LEEME.md").write_text(texto, "utf-8")
 
 
 def main() -> None:
