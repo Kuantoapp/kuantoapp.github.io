@@ -94,13 +94,17 @@ def _largo(df: pd.DataFrame, id_col: str, renombre: dict[str, str]) -> pd.DataFr
 
 def _comprobar(df: pd.DataFrame) -> None:
     """P25 <= mediana <= P75 en las filas con dato, y los tres percentiles nulos a la vez o ninguno."""
-    p25, p50, p75 = (df[f"eur_m2_p{p}"] for p in (25, 50, 75))
-    mal = (
-        (p25 > p50)
-        | (p50 > p75)
-        | (p25.isna() != p50.isna())
-        | (p75.isna() != p50.isna())
-    )
+    mal = pd.Series(data=False, index=df.index)
+    for prefijo in ("eur_m2", "cuantia"):
+        if f"{prefijo}_p50" not in df:
+            continue
+        p25, p50, p75 = (df[f"{prefijo}_p{p}"] for p in (25, 50, 75))
+        mal |= (
+            (p25 > p50)
+            | (p50 > p75)
+            | (p25.isna() != p50.isna())
+            | (p75.isna() != p50.isna())
+        )
     if mal.any():
         raise ValueError(
             f"{int(mal.sum())} filas con percentiles incoherentes:\n{df[mal].head()}"
@@ -117,7 +121,7 @@ def _tipado(df: pd.DataFrame, nombre: str) -> pd.DataFrame:
 
 def alquiler_zona(hojas: dict[str, pd.DataFrame]) -> pd.DataFrame:
     """178 municipios, Madrid (28079) y sus 21 distritos, por año."""
-    renombre = {**TESTIGOS, **EUR_M2, **M2}
+    renombre = {**TESTIGOS, **EUR_M2, **CUANTIA, **M2}
     distritos = hojas["distritos"][hojas["distritos"]["CUDIS"].str.startswith("28079")]
     zonas = pd.concat(
         [

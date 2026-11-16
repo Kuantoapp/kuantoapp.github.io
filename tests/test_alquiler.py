@@ -90,6 +90,8 @@ def test_sin_dato_nulo_y_no_cero(xlsx, tmp_path):
     assert fila["origen"] == "sin_dato" and fila["testigos"] == 0
     assert pd.isna(fila[["eur_m2_p25", "eur_m2_p50", "eur_m2_p75", "m2_p50"]]).all()
     assert zona.loc[("28002", 2024), "origen"] == "observado"
+    assert zona.loc[("28002", 2024), "cuantia_p50"] == 800
+    assert pd.isna(fila["cuantia_p50"])
 
 
 def test_formato_largo(xlsx, tmp_path):
@@ -107,6 +109,14 @@ def test_formato_largo(xlsx, tmp_path):
 def test_comprobar_percentiles():
     df = pd.DataFrame(
         {"eur_m2_p25": [13.0], "eur_m2_p50": [12.0], "eur_m2_p75": [15.0]}
+    )
+    with pytest.raises(ValueError, match="incoherentes"):
+        alquiler._comprobar(df)
+
+
+def test_comprobar_cuantia():
+    df = pd.DataFrame(
+        {"cuantia_p25": [900.0], "cuantia_p50": [800.0], "cuantia_p75": [1000.0]}
     )
     with pytest.raises(ValueError, match="incoherentes"):
         alquiler._comprobar(df)

@@ -47,6 +47,9 @@ CONTRATOS: dict[str, dict] = {
             "eur_m2_p50": "decimal",  # €/m² al mes
             "eur_m2_p75": "decimal",  # €/m² al mes
             "m2_p50": "decimal",  # m²
+            "cuantia_p25": "decimal",  # €/mes
+            "cuantia_p50": "decimal",  # €/mes
+            "cuantia_p75": "decimal",  # €/mes
             "testigos": "entero",  # anuncios o contratos
             "origen": "texto",  # {observado, estimado, sin_dato}
             "ic_inf": "decimal",  # €/m² al mes, solo estimado
