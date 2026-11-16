@@ -139,7 +139,7 @@ def test_preparar_exige_renta():
         bi.preparar(tabla.assign(aceptadas=[4, np.nan]), renta, xy)
 
 
-def test_robustez_inquilinos_denominador_perdidos_y_regla():
+def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     rng = np.random.default_rng(1)
     xy = _rejilla(5)
     ids = [f"280{i:02d}" for i in range(1, 26)]
@@ -161,9 +161,10 @@ def test_robustez_inquilinos_denominador_perdidos_y_regla():
         },
         index=pd.Index(ids, name="municipio_id"),
     )
-    # sin porcentaje: nulo (28003), ausente (28007) y cero (28011); 28099 tiene porcentaje pero no está en la muestra
+    d[bi.Y] = 1000 * d["rechazadas"] / d["poblacion_joven"]
+    # sin porcentaje: nulo (28003 y 28011) y ausente (28007); 28099 tiene porcentaje pero no está en la muestra
     pct["28003"] = np.nan
-    pct["28011"] = 0.0
+    pct["28011"] = np.nan
     pct = pct.drop("28007")
     pct["28099"] = 0.4
     tabla = pd.DataFrame(
@@ -172,11 +173,11 @@ def test_robustez_inquilinos_denominador_perdidos_y_regla():
             "solicitudes": [*d["solicitudes"], 7.0, 5.0],
         }
     )
-    sal = bi.robustez_inquilinos(tabla, d, xy, pct)
+    sal = bi.robustez_vivienda_alquilada(tabla, d, xy, pct)
     perdidos = ["28003", "28007", "28011"]
-    assert sal["n"] == 22
-    assert sal["perdidos_de_la_muestra"] == 3
-    assert sal["solicitudes_perdidas_de_la_muestra"] == int(
+    assert sal["alquiler"]["n"] == 22 == sal["principal_misma_submuestra"]["n"]
+    assert sal["seleccion"]["excluidos"] == 3
+    assert sal["seleccion"]["solicitudes_excluidas"] == int(
         d.loc[perdidos, "solicitudes"].sum()
     )
     # del Bono se pierden además 28098 (sin porcentaje); 28099 sí lo tiene
@@ -185,14 +186,26 @@ def test_robustez_inquilinos_denominador_perdidos_y_regla():
         d.loc[perdidos, "solicitudes"].sum() + 7
     )
     ok = d.drop(perdidos)
-    r = sal["pearson_parcial"]["rechazadas"]
+    r = sal["alquiler"]["pearson_parcial"]["rechazadas"]
     esperado = bono.correlacion_parcial(
         ok["esfuerzo"], pd.Series(y, index=ids).drop(perdidos), ok[["renta", "tope"]]
     )
     # si se rompe el denominador (p. ej. solo población), r deja de coincidir con la relación plantada
     assert r["r"] == pytest.approx(esperado["r"])
     assert r["n"] == 22 and esperado["r"] > 0.9
-    e = sal["espacial"]["elegido"]
+    e = sal["alquiler"]["espacial"]["k5"]["elegido"]
     efecto = e["efectos"]["total"] if e["modelo"] == "SAR" else e["beta"]
-    assert sal["conclusion"] == bi.concluir(r["r"], r["p"], efecto, e["p"])
-    assert sal["conclusion"] == "robusta"
+    assert sal["alquiler"]["conclusion"] == bi.concluir(r["r"], r["p"], efecto, e["p"])
+    assert sal["alquiler"]["conclusion"] == "robusta"
+    assert set(sal["alquiler"]["espacial"]) == {"k5", "k8"}
+    # la principal sobre la misma submuestra usa la población de 18-35 sin el porcentaje: otra r
+    assert sal["principal_misma_submuestra"]["pearson_parcial"]["r"] != pytest.approx(
+        r["r"]
+    )
+    assert sal["correlacion_porcentaje"]["esfuerzo"] == pytest.approx(
+        ok["esfuerzo"].corr(pct[ok.index])
+    )
+    with pytest.raises(ValueError, match="0 %"):
+        bi.robustez_vivienda_alquilada(
+            tabla, d, xy, pct.where(pct.index != "28001", 0.0)
+        )

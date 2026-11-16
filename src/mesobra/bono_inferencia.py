@@ -52,6 +52,25 @@ no llega al primer escalón de la FDR con n = 134 (0,05/134), y `lisa` falla si 
 asociación local, sin lectura causal; si sale un solo municipio (28080, Majadahonda, en la ejecución con los datos
 actuales) es un resultado frágil. Se informa junto al I de Moran bivariante global, que dice si hay patrón en conjunto.
 Las p de Moran y Geary de `bono` son bilaterales: `min(1, 2 * p_sim)`.
+
+Robustez con jóvenes en vivienda alquilada (`robustez_vivienda_alquilada`, #210; bloque `robustez_vivienda_alquilada` del
+JSON; no cambia la conclusión principal ni el contrato `bono`):
+- Expectativa (añadida en la revisión, tras ver el resultado): con el denominador de población × porcentaje en alquiler
+  de 20-34 (Censo 2021, `censo2021`), r baja y la conclusión no mejora; el cambio de muestra (los municipios con
+  porcentaje) y el del denominador son efectos distintos, y por eso la principal se repite en la MISMA submuestra.
+- Descomposición (cifras del JSON, `lectura`): en los 134 la principal es «no concluyente» (r = 0,137, p = 0,118); en
+  los 112 con porcentaje, «robusta» (r = 0,197, p = 0,039; SEM p = 0,020 con k = 5); con el denominador de vivienda
+  alquilada, «no concluyente» (r = 0,153, p = 0,109; MCO). Quitar los 22 municipios pequeños refuerza la relación y el
+  denominador la atenúa: la conclusión de la principal depende de los municipios pequeños. El «no concluyente» se
+  sostiene por la inestabilidad con el retardo WX (SLX y SDEM en los 112, p entre 0,15 y 0,21) y por estos municipios,
+  no por esta robustez. Diagnóstico: con las rechazadas suavizadas por Bayes empírico en los 134 (`bono.validacion`,
+  `pearson_parcial_eb`), r = 0,156 y p = 0,075: el ruido de los municipios pequeños atenúa r.
+- Sesgo de selección (JSON, `seleccion`): 22 municipios y 111 solicitudes fuera de la muestra, todos por el umbral de
+  300 personas; mediana de población joven 257 de los excluidos frente a 1.893,5 de los incluidos, y renta media de
+  35,3 frente a 45,6 miles de €. Del Bono se pierden 44 municipios y 166 solicitudes.
+- Mecanismo: el porcentaje se correlaciona con el esfuerzo (+0,27) y con la renta (-0,35), y al dividir por él r baja.
+- Autocorrelación residual: el Moran de los residuos del MCO con k = 8 es 0,100 (p = 0,004), así que la p del MCO
+  (0,109) es optimista.
 """
 
 import json
@@ -270,42 +289,86 @@ def _concluir_modelo(pearson: dict, elegido: dict) -> str:
     return concluir(pearson["r"], pearson["p"], efecto, elegido["p"])
 
 
-def robustez_inquilinos(
-    tabla: pd.DataFrame, d: pd.DataFrame, puntos: np.ndarray, pct: pd.Series
-) -> dict:
-    """Robustez: la ayuda por 1.000 jóvenes en alquiler (población 18-35 de 2023 por el porcentaje en alquiler de 20-34 en 2021).
-
-    Mismo esfuerzo y controles que la principal; solo cambia el denominador de la ayuda. Pearson parcial de las tres
-    (solicitudes, aceptadas y rechazadas); regresión espacial y regla de conclusión con las rechazadas. Se quedan
-    los municipios con porcentaje (el INE lo suprime o es nulo bajo el umbral de `censo2021`). `tabla` es la del Bono
-    (159 municipios), `d` y `puntos` los de `preparar`. Supuestos en `censo2021`: el porcentaje de 2021 vale para 2023,
-    20-34 representa a 18-35 y cuenta a quien vive en el piso alquilado de sus padres.
-    """
-    ok = pct.reindex(d.index).gt(0).to_numpy()  # el nulo da False
-    r = d[ok].copy()
-    inquilinos = r["poblacion_joven"] * pct[r.index]
-    pearson = {}
-    for c in ("solicitudes", "aceptadas", "rechazadas"):
-        r[f"{c}_por_mil_inq"] = 1000 * r[c] / inquilinos
-        pearson[c] = bono.correlacion_parcial(
-            r["esfuerzo"], r[f"{c}_por_mil_inq"], r[["renta", "tope"]]
-        )
-    r[Y] = r["rechazadas_por_mil_inq"]
-    esp = regresion(r, puntos[ok], K)
-    en_bono = tabla["municipio_id"].isin(pct.index[pct.gt(0)])
+def _bloque(r: pd.DataFrame, puntos: np.ndarray, y: str) -> dict:
+    """Pearson parcial de `y`, regresión espacial con k = 5 y 8 y conclusión (k = 5) en los municipios de `r`."""
+    pearson = bono.correlacion_parcial(r["esfuerzo"], r[y], r[["renta", "tope"]])
+    esp = {f"k{k}": regresion(r.assign(**{Y: r[y]}), puntos, k) for k in (K, 8)}
     return {
         "n": len(r),
-        "municipios_con_porcentaje": int(pct.notna().sum()),
-        "perdidos_de_la_muestra": len(d) - len(r),
-        "solicitudes_perdidas_de_la_muestra": int(
-            d["solicitudes"].sum() - r["solicitudes"].sum()
-        ),
-        "perdidos_del_bono": int((~en_bono).sum()),
-        "solicitudes_perdidas_del_bono": int(tabla.loc[~en_bono, "solicitudes"].sum()),
         "pearson_parcial": pearson,
         "espacial": esp,
-        "conclusion": _concluir_modelo(pearson["rechazadas"], esp["elegido"]),
+        "conclusion": _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
     }
+
+
+def robustez_vivienda_alquilada(
+    tabla: pd.DataFrame, d: pd.DataFrame, puntos: np.ndarray, pct: pd.Series
+) -> dict:
+    """Robustez: la ayuda por 1.000 jóvenes en vivienda alquilada (población 18-35 de 2023 × porcentaje en alquiler de 20-34 de 2021).
+
+    Mismo esfuerzo y controles que la principal; solo cambia el denominador de la ayuda. Cambia a la vez la muestra
+    (los municipios con porcentaje: el INE lo suprime o hay menos de `censo2021.MIN_JOVENES_20_34` personas), así que se
+    guarda también la principal (rechazadas por 1.000 jóvenes de 18-35) en la MISMA submuestra: la diferencia entre las dos
+    es el efecto del denominador, y la que hay entre la principal en `d` y en la submuestra es el de quitar municipios.
+    Pearson parcial de las tres (solicitudes, aceptadas y rechazadas); regresión espacial (k = 5 y 8) y regla de conclusión
+    con las rechazadas. `tabla` es la del Bono (159 municipios), `d` y `puntos` los de `preparar`. Se declara el sesgo de
+    selección (población joven y renta de excluidos e incluidos) y las correlaciones del porcentaje con el esfuerzo y la
+    renta, que es el mecanismo que atenúa r. Supuestos en `censo2021`. El porcentaje no puede ser 0: sería dividir por cero.
+    """
+    if (pct == 0).any():
+        raise ValueError(f"Municipios con 0 % en alquiler: {list(pct.index[pct == 0])}")
+    ok = pct.reindex(d.index).notna().to_numpy()
+    r, fuera = d[ok].copy(), d[~ok]
+    jovenes_alquilados = r["poblacion_joven"] * pct[r.index]
+    for c in ("solicitudes", "aceptadas", "rechazadas"):
+        r[f"{c}_por_mil_alq"] = 1000 * r[c] / jovenes_alquilados
+    alq = _bloque(r, puntos[ok], "rechazadas_por_mil_alq")
+    alq["pearson_parcial"] = {
+        c: bono.correlacion_parcial(
+            r["esfuerzo"], r[f"{c}_por_mil_alq"], r[["renta", "tope"]]
+        )
+        for c in ("solicitudes", "aceptadas", "rechazadas")
+    }
+    principal = _bloque(r, puntos[ok], Y)
+    en_bono = tabla["municipio_id"].isin(pct.index[pct.notna()])
+    sal = {
+        "alquiler": alq,
+        "principal_misma_submuestra": principal,
+        "municipios_con_porcentaje": int(pct.notna().sum()),
+        "perdidos_del_bono": int((~en_bono).sum()),
+        "solicitudes_perdidas_del_bono": int(tabla.loc[~en_bono, "solicitudes"].sum()),
+        "seleccion": {
+            "excluidos": len(fuera),
+            "solicitudes_excluidas": int(fuera["solicitudes"].sum()),
+            "poblacion_joven_mediana": {
+                "excluidos": float(fuera["poblacion_joven"].median()),
+                "incluidos": float(r["poblacion_joven"].median()),
+            },
+            "renta_media_miles": {
+                "excluidos": float(fuera["renta"].mean()),
+                "incluidos": float(r["renta"].mean()),
+            },
+        },
+        "correlacion_porcentaje": {
+            "esfuerzo": float(r["esfuerzo"].corr(pct[r.index])),
+            "renta": float(r["renta"].corr(pct[r.index])),
+        },
+    }
+    esp5 = {
+        n: sal[n]["espacial"]["k5"] for n in ("alquiler", "principal_misma_submuestra")
+    }
+    sal["lectura"] = (
+        f"Principal en los {len(d)}: {{}}. En los {len(r)} con porcentaje: {principal['conclusion']} "
+        f"(r = {principal['pearson_parcial']['r']:.3f}, p = {principal['pearson_parcial']['p']:.3f}); con el denominador "
+        f"de vivienda alquilada: {alq['conclusion']} (r = {alq['pearson_parcial']['rechazadas']['r']:.3f}, "
+        f"p = {alq['pearson_parcial']['rechazadas']['p']:.3f}). Quitar los {len(fuera)} municipios pequeños y el "
+        "denominador mueven r en sentidos opuestos: la conclusión de la principal depende de los municipios pequeños. "
+        f"p de la regresión elegida en los {len(r)} (k = 5): principal {esp5['principal_misma_submuestra']['elegido']['p']:.3f}, "
+        f"alquiler {esp5['alquiler']['elegido']['p']:.3f}; Moran de los residuos del MCO (k = 8): "
+        f"{alq['espacial']['k8']['moran_ols']['I']:.3f} (p = {alq['espacial']['k8']['moran_ols']['p']:.3f}), "
+        "así que la p del MCO es optimista."
+    )
+    return sal
 
 
 def main() -> None:
@@ -316,7 +379,8 @@ def main() -> None:
     )
     xy = bono._municipios_xy()
     d, puntos = preparar(tabla, renta, xy)
-    pearson = bono.validacion(tabla, renta, xy)[Y]["pearson"]
+    val = bono.validacion(tabla, renta, xy)
+    pearson = val[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
     resultado = {
         "n": len(d),
@@ -327,10 +391,16 @@ def main() -> None:
         "lisa": _resumen_lisa(lisa(d, puntos)),
         "lisa_k8": _resumen_lisa(lisa(d, puntos, k=8)),
         "conclusion": _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
-        "robustez_inquilinos": robustez_inquilinos(
-            tabla, d, puntos, censo2021.pct_alquiler_joven()
-        ),
+        "pearson_parcial_eb": val["rechazadas_por_mil_eb"]["pearson"],
+        "robustez_vivienda_alquilada": {
+            **robustez_vivienda_alquilada(
+                tabla, d, puntos, censo2021.pct_alquiler_joven()
+            ),
+            "recuento_censo": censo2021.recuento(),
+        },
     }
+    rob = resultado["robustez_vivienda_alquilada"]
+    rob["lectura"] = rob["lectura"].format(resultado["conclusion"])
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)
     SALIDA.write_text(texto)

@@ -12,14 +12,19 @@ texto es secreto estadístico (nulo, no cero); «0,00» es un cero publicado. Se
 Cada consulta vuelve a sortear el redondeo al azar a múltiplos de 3 del INE: una descarga nueva cambia el
 SHA-256 y hasta ±3 por celda con la misma supresión. Vale el fichero con fecha de `data/raw/`.
 
-Supuestos de la robustez del Bono (`bono_inferencia.robustez_inquilinos`): el porcentaje de 2021 vale para
-2023; 20-34 representa a 18-35; incluye a jóvenes que viven en el piso alquilado de sus padres.
+Supuestos de la robustez del Bono (`bono_inferencia.robustez_vivienda_alquilada`), con su magnitud:
+- El porcentaje en alquiler se correlaciona con el esfuerzo (+0,27) y con la renta (-0,35) en los 112 municipios de
+  la robustez (`correlacion_porcentaje` del JSON): es el mecanismo que atenúa r al usarlo de denominador.
+- Aplicar el de 2021 a 2023 solo sesga si el cambio entre 2021 y 2023 difiere entre municipios.
+- 20-34 representa a 18-35: el efecto de 18-19 es pequeño, porque a esa edad viven casi todos con sus padres.
+- El denominador es «jóvenes en vivienda alquilada», no «inquilinos»: incluye a quien vive en el piso alquilado de sus padres.
 Fuente: Elaboración propia con datos extraídos del sitio web del INE: www.ine.es
 """
 
 import hashlib
 import html
 import http.cookiejar
+import io
 import re
 import sys
 import time
@@ -29,6 +34,7 @@ import xml.etree.ElementTree as ET
 from datetime import date
 from http.client import HTTPException
 from pathlib import Path
+from typing import BinaryIO
 
 import pandas as pd
 
@@ -40,11 +46,13 @@ NOMBRE = "ine_censo2021_tenencia_edad_municipios"
 NS = {"s": "urn:schemas-microsoft-com:office:spreadsheet"}
 VALORES = 107
 GRUPOS_20_34 = (5, 6, 7)  # 20-24, 25-29 y 30-34 (el grupo 0 es «Total» y el 1, «0-4»)
-TOLERANCIA = (
-    10  # cada celda redondeada se desvía hasta 2: Total frente a la suma de cuatro
-)
-TOLERANCIA_TOTAL = 44  # 22 totales de edad frente al Total de la fila
-# cada celda se desvía hasta ±2; con 6 celdas y 300 personas el porcentaje se mueve como mucho ~2 puntos
+MUNICIPIOS = 179
+# cada celda redondeada se desvía hasta 2: el Total frente a la suma de cuatro (2 + 4 × 2)
+TOLERANCIA = 10
+# 21 totales de edad frente al Total de la fila (21 × 2 + 2)
+TOLERANCIA_TOTAL = 44
+# cada celda se desvía hasta ±2: con 6 celdas y 300 personas el porcentaje se mueve hasta ~3 puntos en el peor
+# caso ((150 + 6) / (300 - 6) = 0,531 frente a 0,5), mucho menos en el típico
 MIN_JOVENES_20_34 = 300
 METADATOS = (
     "[Municipio de residencia]",
@@ -55,7 +63,9 @@ METADATOS = (
 
 
 def _abrir(
-    opener: urllib.request.OpenerDirector, url: str, datos: list | None = None
+    opener: urllib.request.OpenerDirector,
+    url: str,
+    datos: list[tuple[str, str]] | None = None,
 ) -> bytes:
     if not url.startswith(BASE):
         raise ValueError(f"Solo {BASE}: {url}")
@@ -130,6 +140,7 @@ def descargar(raw: Path = RAW, hoy: date | None = None) -> Path:
     if final.exists():
         raise FileExistsError(f"Ya existe {final}: data/raw no se sobrescribe")
     datos = _consulta()
+    _leer(io.BytesIO(datos))  # un HTML o un XML de otro formato no llega a data/raw
     with final.open("xb") as f:
         f.write(datos)
     return final
@@ -141,7 +152,7 @@ def _celdas(fila: ET.Element) -> list[str | None]:
     ]
 
 
-def _leer(ruta: Path = CENSO) -> pd.DataFrame:
+def _leer(ruta: Path | BinaryIO = CENSO) -> pd.DataFrame:
     """Total y alquiler de cada grupo de 20-34 por municipio (nulo si el INE lo suprime), con el formato validado."""
     filas = ET.parse(ruta).getroot().findall(".//s:Row", NS)
     meta = tuple(_celdas(f)[1] for f in filas[1:5])
@@ -151,6 +162,15 @@ def _leer(ruta: Path = CENSO) -> pd.DataFrame:
     if celdas[0][0] != "Total" or any(len(c) != VALORES + 1 for c in celdas):
         raise ValueError(f"Filas sin {VALORES} valores o sin fila «Total» al principio")
     m = pd.DataFrame(celdas).set_index(0)
+    etiquetas = m.index[1:]
+    if (
+        len(etiquetas) != MUNICIPIOS
+        or not etiquetas.is_unique
+        or not etiquetas.str.fullmatch(r"28\d{3} .+").all()
+    ):
+        raise ValueError(
+            f"Se esperaban {MUNICIPIOS} municipios únicos con código 28xxx y hay {len(etiquetas)}"
+        )
     m = m.apply(lambda c: pd.to_numeric(c.str.replace(",", "."), errors="raise"))
     m.columns = range(VALORES)
     # el orden de las edades se comprueba con el Total: sus 21 totales de edad suman el total de la fila
@@ -172,6 +192,18 @@ def _leer(ruta: Path = CENSO) -> pd.DataFrame:
     )  # la suma de Series con NaN deja NaN: falta una pieza, falta el municipio
     salida.index = salida.index.str[:5]
     return salida.drop(index="Total")
+
+
+def recuento(ruta: Path = CENSO) -> dict:
+    """Municipios con porcentaje, con alguna pieza suprimida y bajo el umbral (con las piezas completas): suman el total."""
+    d = _leer(ruta)
+    suprimidos = d["total"].isna() | d["alquiler"].isna()
+    bajo = ~suprimidos & (d["total"] < MIN_JOVENES_20_34)
+    return {
+        "suprimidos": int(suprimidos.sum()),
+        "bajo_umbral": int(bajo.sum()),
+        "con_porcentaje": int((~suprimidos & ~bajo).sum()),
+    }
 
 
 def pct_alquiler_joven(ruta: Path = CENSO) -> pd.Series:
