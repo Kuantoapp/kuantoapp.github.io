@@ -22,7 +22,8 @@ function pintarLeyenda(cortes, textoFuente, zonas, alquiler) {
   const cont = $("leyenda");
   const titulo = document.createElement("p");
   titulo.className = "titulo";
-  titulo.textContent = `${METODO}. Dato de ${alquiler.meta.anio_dato} (alguna zona, de un año anterior)`;
+  const anterior = Object.values(alquiler.zonas).some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
+  titulo.textContent = `${METODO}. Dato de ${alquiler.meta.anio_dato}${anterior ? " (alguna zona, de un año anterior)" : ""}`;
   cont.replaceChildren(titulo);
   for (const { color, texto } of leyenda(cortes)) {
     const fila = document.createElement("div");
