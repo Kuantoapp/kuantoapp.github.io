@@ -112,19 +112,21 @@ JSON; no cambia la conclusión principal ni el contrato `bono`):
   permutaciones y bilateral (`bono.moran`, clave `moran_mco`), no la analítica de spreg (`moran_ols`): con n pequeño no
   supone normalidad, y es la misma que usa el resto del módulo.
 
-Control por el % de jóvenes en alquiler (#225, exploratorio; `control_alquiler`, elegido DESPUÉS de ver los datos; no cambia
-la regla ni la conclusión principal). Entre quienes piden el Bono, el porcentaje de rechazo apenas cambia con el esfuerzo
-(aceptadas + rechazadas = solicitudes, así que la quasi-binomial de `glm` es la tasa de rechazo con el signo cambiado;
-p = 0,82 en los 134). Hay más rechazadas por joven donde el esfuerzo es mayor porque hay más solicitudes. En los 112
-municipios con %, parte de ese volumen coincide con que allí alquilan más jóvenes (corr % y esfuerzo +0,27; % y
-solicitudes por 1.000 +0,61; % y tasa de rechazo +0,01). Controlando el %, el β del esfuerzo baja de ~94 a ~46 (k = 5) y de
-~88 a ~34 (k = 8), con p 0,22 y 0,37 e IC95 [-27,5; 118,9] y [-39,2; 106,5], que contienen tanto el 0 como el β sin control:
-es pérdida de precisión, no un efecto nulo («no concluyente»). Cuánto se reduce depende del estimador (-51 % en el SEM y -22 %
-en el MCO-HAC, β 83 a 65, p = 0,11: el sesgo de variable omitida β_% · δ, con δ = esfuerzo → % mayor tras el filtro espacial).
-El error de medida del % (2021, 20-34, incluye a quien vive en un piso alquilado de sus padres) dejaría confusión residual
-a favor del esfuerzo, no en contra. El % es anterior al Bono, así que no es un control posterior al tratamiento; actúa como
-exposición (solo quien alquila, o va a alquilar, puede pedirlo: art. 6.1.c RD 42/2022). Vale para los 112, no para los 134. Moran de los residuos filtrados ≈ 0
-(0,000 y 0,005).
+Control por el % de jóvenes en alquiler (#225, exploratorio; `control_alquiler`, elegido DESPUÉS de ver los datos; no
+cambia la regla ni la conclusión principal). Entre quienes piden el Bono, el porcentaje de rechazo apenas cambia con el
+esfuerzo (aceptadas + rechazadas = solicitudes, así que la quasi-binomial de `glm` es la tasa de rechazo con el signo
+cambiado; p = 0,82 en los 134): hay más rechazadas por joven donde el esfuerzo es mayor porque hay más solicitudes. En
+los 112 municipios con %, parte de ese volumen coincide con que allí alquilan más jóvenes (corr % y esfuerzo +0,27; % y
+solicitudes por 1.000 +0,61; % y tasa de rechazo +0,01). Controlando el %, el β del esfuerzo baja de 94,0 a 45,7 (k = 5)
+y de 88,3 a 33,7 (k = 8). El error estándar no crece (41,2 → 37,4 y 40,7 → 37,2), así que la significación se pierde por
+atenuación del β, no por pérdida de precisión: p = 0,22 y 0,37, con IC95 [-27,5; 118,9] y [-39,2; 106,5], que contienen
+tanto el 0 como el β sin control («no concluyente», no un efecto nulo). Cuánto se atenúa depende del estimador (-51 % en
+el SEM; -22 % en el MCO-HAC, de β 83,3 a 65,1, p = 0,11). El % se trata como exposición (solo quien alquila, o va a
+alquilar, puede pedirlo: art. 6.1.c RD 42/2022), como en el bloque `alquiler`. Es de 2021 y el esfuerzo de 2023, pero si
+el esfuerzo de años anteriores influye en cuántos jóvenes alquilan, el % es en parte un mediador y el β controlado es el
+efecto directo, no el total. Sin verificar: el error de medida del % (2021, 20-34, incluye a quien vive en un piso
+alquilado de sus padres) deja confusión residual de dirección no comprobada. Vale para los 112, no para los 134. Moran
+de los residuos filtrados ≈ 0 (0,000 y 0,005).
 """
 
 import json
