@@ -168,10 +168,10 @@ URL: https://ec.europa.eu/regional_policy/sources/studies/cba_guide.pdf. Todo VE
 
 ### 3.2 Comisión Europea, *Economic Appraisal Vademecum 2021-2027 – General Principles and Sector Applications* (DG REGIO, 2021)
 
-URL: https://ec.europa.eu/regional_policy/sources/guides/vademecum_2127/vademecum_2127_en.pdf. VERIFICADO, apartado *Perceived passenger time*, pág. 54.
+URL: https://ec.europa.eu/regional_policy/sources/guides/vademecum_2127/vademecum_2127_en.pdf. VERIFICADO, apartado *Perceived passenger time*, pág. 55 (comprobado el 2026-11-16).
 
 - Cita: "set values of business time in line with official (Eurostat) data on average hourly labour costs (including a mark-up for overheads), with **commuting estimated at approximately 25–40 % of business time** and **other/leisure trips estimated at approximately 20–35 % of business time**."
-- **Tabla 7** (págs. 54-55), pesos sobre el tiempo en vehículo:
+- **Tabla 7** (pág. 56; la introduce la 55), pesos sobre el tiempo en vehículo:
 
 | Elemento | Peso o penalización |
 |---|---|

@@ -203,9 +203,9 @@ Comprobado en vivo el 12 y 13 de noviembre de 2026. Cada URL marcada **OK-WF** r
 **Open data de movilidad (estudio con big data):**
 - Página del ministerio `https://www.transportes.gob.es/ministerio/proyectos-singulares/estudios-de-movilidad-con-big-data/opendata-movilidad`: **403 con WebFetch y con curl**.
 - Bucket público: `https://movilidad-opendata.mitma.es/` OK-curl (listado S3 en XML, truncado a 1000 claves).
-- RSS: `https://movilidad-opendata.mitma.es/RSS.xml` OK-WF. Lo último: `estudios_basicos/por-distritos/viajes/meses-completos/202512_Viajes_distritos.tar` (publicado el 23/02/2026) y un LEEME de cambio de metodología para los datos posteriores al 01/07/2025.
+- RSS: `https://movilidad-opendata.mitma.es/RSS.xml` OK-WF. Lo último: `estudios_basicos/por-distritos/viajes/meses-completos/202512_Viajes_distritos.tar` (publicado el 23/02/2026; solo trae 3 días, 0,33 GB) y un LEEME de cambio de metodología para los datos posteriores al 01/07/2025.
 - La licencia está en un PDF en la raíz: «LICENCIA de datos abiertos del MITMA 20201203.pdf» (listado, no leído). Las especificaciones están en `LEEME_Especificaciones_indicadores_OpenDataMovilidad.xlsx`.
-- **Último mes visto: diciembre de 2025.**
+- **Último mes completo: junio de 2025** (`202506_Viajes_distritos.tar`, 7,38 GB). Desde el cambio de metodología del 1-07-2025 solo hay semanas sueltas: agosto (7 días entre el 8 y el 17), octubre (del 13 al 19) y diciembre (del 6 al 8). Julio, septiembre y noviembre no tienen ficheros diarios. Comprobado en el listado del bucket el 2026-11-16 (fila 5a de `docs/verificaciones/movilidad-interoperabilidad.md`).
 
 **Seguridad Social, afiliados por municipio:**
 - `https://www.seg-social.es/wps/portal/wss/internet/EstadisticasPresupuestosEstudios/Estadisticas/EST8/EST10/EST305/c43ad8ea-fe79-4329-ac8e-e5758f3c4d7a/6609c55f-65e4-4e64-b1ab-8917fce27a84` (Total afiliados por régimen, a nivel municipal): OK-WF.
@@ -242,7 +242,7 @@ Comprobado en vivo el 12 y 13 de noviembre de 2026. Cada URL marcada **OK-WF** r
 - El WFS INSPIRE del Catastro, la descarga de Shapefile con certificado y la licencia del Catastro: no probados ni leídos.
 - El texto de la licencia del CRTM (`crtm.es/licencia-de-uso`) y el PDF de licencia del Ministerio de Transportes: no leídos.
 - Las tablas de la estadística de IRPF por municipios de 2024 (página `jrubik...` de detalle municipal y formato de descarga): no abiertas. Tampoco el calendario de publicaciones de la AEAT (la página carga, pero no se vio la fecha de 2025).
-- La página del Ministerio de Transportes sobre el estudio de movilidad (403). Tampoco se vio si hay datos posteriores a 202512 en el bucket: el listado y el RSS se leyeron truncados.
+- La página del Ministerio de Transportes sobre el estudio de movilidad (403).
 - El fichero de la Seguridad Social `/descarga/es/Muni092026`: no se comprobó la descarga ni su host completo (se supone `www.seg-social.es`). PX-Web no probado.
 - El fichero `.xls` del SEPE: no se descargó.
 - Por qué la serie del IPC IPC251852 acaba en 2025-12 (posible cambio de base).
