@@ -56,7 +56,7 @@ function pintarMapa(zonas) {
 
   mapa.on("load", () => {
     mapa.addSource("zonas", { type: "geojson", data: zonas, promoteId: "zona_id" });
-    mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.9 } });
+    mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"] } });
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#444", "line-width": 0.6 } });
     mapa.addLayer({
       id: "zonas-estimadas",

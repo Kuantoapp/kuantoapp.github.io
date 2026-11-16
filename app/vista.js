@@ -9,21 +9,16 @@ const formato = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 1, maxim
 
 const esNumero = (v) => typeof v === "number" && Number.isFinite(v);
 
-/** Cuantil con interpolación lineal sobre un array ya ordenado. */
-function cuantil(ordenados, p) {
-  const pos = p * (ordenados.length - 1);
-  const i = Math.floor(pos);
-  return i + 1 < ordenados.length
-    ? ordenados[i] + (pos - i) * (ordenados[i + 1] - ordenados[i])
-    : ordenados[i];
-}
-
-/** Bordes de las clases [mínimo, …, máximo]. Sin valores devuelve []; las clases nunca quedan vacías por empates. */
+/**
+ * Bordes de las clases [mínimo, …, máximo]. Sin valores devuelve [].
+ * Cada borde es un valor observado (cuantil «por arriba»): así cada clase [a, b) contiene al menos a `a`
+ * y ninguna queda vacía, ni con empates.
+ */
 export function cortesCuantiles(valores, k = 5) {
   const ordenados = valores.filter(esNumero).sort((a, b) => a - b);
   if (ordenados.length === 0) return [];
   const clases = Math.min(k, new Set(ordenados).size);
-  const bordes = Array.from({ length: clases + 1 }, (_, i) => cuantil(ordenados, i / clases));
+  const bordes = Array.from({ length: clases + 1 }, (_, i) => ordenados[Math.ceil((i / clases) * (ordenados.length - 1))]);
   return [...new Set(bordes)];
 }
 

@@ -39,6 +39,15 @@ test("los cortes salen ordenados, sin repetir y sin clases vacías por empates",
   assert.deepEqual(cortesCuantiles([1, 1, 2, 2, 2, 2]), [1, 2]);
 });
 
+test("ninguna clase queda vacía, tampoco cuando el cuantil interpolado caería entre dos valores", () => {
+  for (const valores of [[0, 2, 3, 3, 4, 5, 5, 5], [1, 2, 3, 4, 5, 6, 7, 8], [1, 1, 1, 2, 9, 9, 9, 10, 10]]) {
+    const cortes = cortesCuantiles(valores);
+    const cuenta = Array(cortes.length - 1).fill(0);
+    for (const v of valores) cuenta[Math.min(cortes.slice(1, -1).filter((b) => b <= v).length, cuenta.length - 1)]++;
+    assert.ok(cuenta.every((n) => n > 0), `${valores} -> ${cortes} -> ${cuenta}`);
+  }
+});
+
 test("sin valores, con nulos o con un solo valor no falla", () => {
   assert.deepEqual(cortesCuantiles([]), []);
   assert.deepEqual(cortesCuantiles([null, undefined, NaN]), []);
