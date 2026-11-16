@@ -262,3 +262,38 @@ def test_main_de_sincronizar_usa_el_cwd_del_evento(
 
 def git_estado(repo):
     return ctx.git(repo, "status", "--porcelain")
+
+
+def test_avisa_de_las_skills_de_la_issue(tmp_path):
+    (tmp_path / ".claude/agents").mkdir(parents=True)
+    (tmp_path / ".claude/agents/dm-ag.md").write_text("---\n---\n")
+    for n in ("dm-x", "dm-y"):
+        (tmp_path / f".claude/skills/{n}/SKILL.md").parent.mkdir(parents=True)
+        (tmp_path / f".claude/skills/{n}/SKILL.md").write_text("---\n---\n")
+    linea = "- **Skills:** dm-x, dm-codigo-minimo, dm-y, dm-ag, dm-nada · **Revisores:** dm-revisor-codigo"
+    aviso = sinc.avisar_skills
+    for salida in (f"title\n{linea}\nfin", json.dumps(f"a\n{linea}\nb")):
+        texto = aviso("gh issue view 89", salida, tmp_path)
+        assert "invoca con Skill: dm-x, dm-y" in texto
+        assert ".claude/skills/dm-x/SKILL.md" in texto
+        assert "dm-ag es un agente, no una skill" in texto
+        assert "dm-codigo-minimo no es una skill" in texto
+        assert "dm-nada no existe" in texto and "dm-revisor-codigo" not in texto
+    assert aviso("gh issue view 89", "- **Revisores:** dm-x", tmp_path) == ""
+    assert aviso("ls", linea, tmp_path) == ""
+
+
+def test_main_avisa_de_skills_salvo_en_subagente(tmp_path, monkeypatch, capsys):
+    (tmp_path / ".claude/skills/dm-x").mkdir(parents=True)
+    (tmp_path / ".claude/skills/dm-x/SKILL.md").write_text("---\n---\n")
+    evento = {
+        "tool_input": {"command": "gh issue view 89"},
+        "tool_response": {"stdout": "- **Skills:** dm-x · otro"},
+        "cwd": str(tmp_path),
+    }
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path))
+    for extra, esperado in (({}, True), ({"agent_type": "general-purpose"}, False)):
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({**evento, **extra})))
+        assert sinc.main() == 0
+        salida = capsys.readouterr().out
+        assert ("invoca con Skill: dm-x" in salida) is esperado

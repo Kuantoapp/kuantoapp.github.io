@@ -1,8 +1,10 @@
 """Hook PostToolUse (Bash) del flujo de ramas: trabaja sobre la raíz git del `cwd` del evento (en un worktree,
-CLAUDE_PROJECT_DIR sigue siendo el checkout principal) y hace dos cosas.
+CLAUDE_PROJECT_DIR sigue siendo el checkout principal) y hace tres cosas.
 
 1. Tras `git worktree add <ruta>`, recuerda al agente entrar en el worktree: los hooks miran la carpeta de la sesión.
 2. Tras `gh pr create`, trae origin/main a la rama con un merge, si es seguro.
+3. Tras `gh issue view`, avisa de las skills de la línea `**Skills:**` de la issue: que se invoquen con Skill y se
+   pasen al subagente, y de los nombres que no son skills.
 
 Solo actúa con el árbol limpio y fuera de main; si el merge da conflicto lo deshace y avisa. Nunca hace push
 (la rama ya está subida: reescribirla exigiría force push) ni se dispara solo: un merge al día no hace nada.
@@ -23,6 +25,10 @@ from contexto import git
 PR = re.compile(r"\bgh\s+pr\s+create\b")
 # shortcut: ignora cd y git -C previos; si se usa ese patrón, resolver la ruta con git worktree list
 WORKTREE = re.compile(r"\bgit\s+worktree\s+add\b")
+ISSUE = re.compile(r"\bgh\s+issue\s+view\b")
+SKILLS = re.compile(
+    r"\*\*Skills:\*\*((?:(?!·|\\u00b7|\\n)[^\n])*)"
+)  # hasta «·», fin de línea o `\n` literal
 CON_VALOR = {
     "-b",
     "-B",
@@ -59,6 +65,32 @@ def avisar_worktree(orden: str, cwd: Path) -> str:
     return ""
 
 
+def avisar_skills(orden: str, salida: str, base: Path) -> str:
+    """Aviso si `orden` lee una issue (también con `--json body`, donde el salto de línea llega como `\\n`) cuya línea
+    `**Skills:**` nombra skills `dm-…`."""
+    m = ISSUE.search(orden) and SKILLS.search(salida)
+    if not m:
+        return ""
+    nombres = re.findall(r"dm-[a-z0-9-]+", m.group(1))
+    rutas = {n: f".claude/skills/{n}/SKILL.md" for n in nombres}
+    skills = [n for n in nombres if (base / rutas[n]).is_file()]
+    agentes = [n for n in nombres if (base / f".claude/agents/{n}.md").is_file()]
+    faltan = [n for n in nombres if n not in skills + agentes + ["dm-codigo-minimo"]]
+    partes = []
+    if skills:
+        partes.append(
+            f"Si vas a trabajar en esta issue, invoca con Skill: {', '.join(skills)} y, si delegas, pasa al subagente las rutas {', '.join(rutas[n] for n in skills)} (no las ve)."
+        )
+    if "dm-codigo-minimo" in nombres:
+        partes.append(
+            "dm-codigo-minimo no es una skill: es la regla .claude/rules/codigo-minimo.md, ya cargada."
+        )
+    partes += [f"{n} es un agente, no una skill." for n in agentes]
+    if faltan:
+        partes.append(f"{', '.join(faltan)} no existe en .claude/skills.")
+    return " ".join(partes)
+
+
 def sincronizar(base: Path) -> str:
     rama = git(base, "branch", "--show-current")
     if not rama or rama == "main" or git(base, "status", "--porcelain") != "":
@@ -82,6 +114,14 @@ def main() -> int:
         aviso = avisar_worktree(orden, Path(evento.get("cwd") or os.getcwd()))
     except Exception:  # noqa: BLE001 — son ayudas; si fallan, el comando ya se ejecutó
         return 0
+    try:  # aparte: si falla, no se pierde el mensaje del merge ni el del worktree
+        if ISSUE.search(orden) and not evento.get("agent_type"):
+            salida = (evento.get("tool_response") or {}).get("stdout", "")
+            aviso = "\n".join(
+                t for t in (aviso, avisar_skills(orden, salida, raiz(evento))) if t
+            )
+    except Exception as e:  # noqa: BLE001 — aparte: no se pierde el mensaje del merge ni el del worktree
+        aviso += f"\n(El aviso de skills ha fallado: {type(e).__name__}.)"
     contexto = "\n".join(t for t in (texto, aviso) if t)
     if contexto:
         print(
