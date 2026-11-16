@@ -327,13 +327,15 @@ def resolver(api: Api, entrada: dict) -> dict:
 def main() -> None:
     """Regenera las salidas de `casos_referencia.json` con los ficheros de ejemplo de la API."""
     api, doc = leer_api(API_EJEMPLO), json.loads(CASOS.read_text("utf-8"))
-    doc["casos"] = [
+    casos = [
         {"nombre": c["nombre"], "entrada": c["entrada"], **resolver(api, c["entrada"])}
         for c in doc["casos"]
     ]
-    CASOS.write_text(
-        json.dumps(doc, ensure_ascii=False, indent=1) + "\n", "utf-8", newline="\n"
-    )
+    # Un caso por línea: el diff se lee y el PR no pasa de 800 líneas.
+    lineas = ",\n".join(f"  {json.dumps(c, ensure_ascii=False)}" for c in casos)
+    nota = json.dumps(doc["nota"], ensure_ascii=False)
+    texto = f'{{\n "nota": {nota},\n "casos": [\n{lineas}\n ]\n}}\n'
+    CASOS.write_text(texto, "utf-8", newline="\n")
 
 
 if __name__ == "__main__":
