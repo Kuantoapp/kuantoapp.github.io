@@ -13,7 +13,10 @@ interpretar nada):
 - α de la binomial negativa > 0 (sobredispersión; el AIC prefiere la binomial negativa a Poisson).
 - Moran de los residuos del SEM (filtrados) ≈ 0; el de los residuos de Pearson del GLM, cerca de 0 o algo
   positivo, porque el GLM no modela el espacio.
-- La tasa de aceptación no tiene patrón espacial (su Moran ya era ≈ 0,04): sin clústeres relevantes.
+- La tasa de aceptación no tiene patrón espacial (su Moran ya era ≈ 0,04).
+- Añadida en la revisión, tras ver el resultado (con 999 permutaciones no se podía rechazar nada): el I de Moran
+  bivariante global (esfuerzo frente a aceptadas por 1.000 suavizadas) es ≈ 0, y el LISA, con permutaciones
+  suficientes, deja a lo sumo uno o dos municipios, sin un patrón regional.
 - Con k = 8 el signo del β del esfuerzo se mantiene.
 
 Reglas, fijadas antes de ver el resultado:
@@ -21,18 +24,28 @@ Reglas, fijadas antes de ver el resultado:
   dos en miles de €; W de k = 5, normalizada por filas): si solo el LM-error robusto tiene p < 0,05, SEM
   (`spreg.ML_Error`); si solo el LM-lag robusto, SAR (`spreg.ML_Lag`, con efectos directo, indirecto y total,
   nunca β); si los dos, el de menor p robusta; si ninguno, MCO. Siempre se informan además el SEM y el SLX
-  (`OLS` con `slx_lags=1`) con su AIC, y la robustez con k = 8.
+  (`OLS` con `slx_lags=1`), el SAR y el SDEM (`ML_Error` con `slx_lags=1`) con su AIC, y la robustez con k = 8.
 - Regla de conclusión: «robusta» si la Pearson parcial (la principal de `bono.validacion`) y el modelo espacial
   elegido coinciden en signo y en p < 0,05; si no, «no concluyente». En el SAR el signo es el del efecto total
   y la p la del coeficiente del esfuerzo (shortcut: no hay p del efecto total, por simulación si hiciera falta).
 - Los modelos de conteo (binomial negativa, con `offset = log(población joven)`) y la quasi-binomial de
   aceptadas sobre solicitudes (`scale = "X2"`) son robustez: no entran en la regla de conclusión.
 
+Lectura (añadida en la revisión):
+- λ es dependencia residual (una molestia que corrige el error), no un desbordamiento entre vecinos; en el SEM, β es
+  el efecto marginal del esfuerzo y no hay efectos indirectos.
+- La p de la principal (0,118) y la de la binomial negativa (0,068) son optimistas: sus residuos tienen
+  autocorrelación (Moran 0,157 y 0,176), así que sus errores estándar están infraestimados. El SEM la corrige y
+  sale p = 0,030, pero la regla exige además la Pearson parcial: de ahí «no concluyente».
+
 LISA bivariante: `Moran_Local_BV(x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas por Bayes empírico
-(media a priori sin Madrid, como las rechazadas), W de k = 5)`, con 999 permutaciones y corrección por
-comparaciones múltiples `esda.fdr(p, 0,05)`. «alta_baja» es necesidad alta en el municipio y ayuda baja en su
-entorno; «baja_alta», el inverso. Es una asociación local, sin lectura causal. Control: la suma de los Is
-locales es proporcional al I global bivariante. El p es bilateral (`alternative="two-sided"`).
+(media a priori sin Madrid, como las rechazadas), W de k = 5)`, con `PERMUTACIONES_LISA` = 99.999 permutaciones, p
+bilateral y corrección por comparaciones múltiples `esda.fdr(p, 0,05)`. Con 999 permutaciones la p mínima (0,002)
+no llega al primer escalón de la FDR con n = 134 (0,05/134), y `lisa` falla si las permutaciones no bastan.
+«alta_baja» es necesidad alta en el municipio y ayuda baja en su entorno; «baja_alta», el inverso. Es una
+asociación local, sin lectura causal; si sale un solo municipio (28080, Majadahonda, en la ejecución con los datos
+actuales) es un resultado frágil. Se informa junto al I de Moran bivariante global, que dice si hay patrón en conjunto.
+Las p de Moran y Geary de `bono` son bilaterales: `min(1, 2 * p_sim)`.
 """
 
 import json
@@ -43,6 +56,8 @@ import numpy as np
 import pandas as pd
 import spreg
 import statsmodels.api as sm
+from libpysal.weights import W
+from statsmodels.discrete.discrete_model import NegativeBinomialResults
 
 from mesobra import bono
 
@@ -52,6 +67,7 @@ X = ["esfuerzo", "renta", "tope"]
 Y = "rechazadas_por_mil"
 ALFA = 0.05
 K = 5
+PERMUTACIONES_LISA = 99_999
 CUADRANTES = {1: "alta_alta", 2: "baja_alta", 3: "baja_baja", 4: "alta_baja"}
 
 
@@ -67,7 +83,7 @@ def elegir_modelo(p_error: float, p_lag: float) -> str:
 
 def concluir(r: float, p: float, beta: float, p_modelo: float) -> str:
     """«robusta» si la Pearson parcial (r, p) y el modelo espacial (beta, p) coinciden en signo y en p < 0,05."""
-    coinciden = np.sign(r) == np.sign(beta) and max(p, p_modelo) < ALFA
+    coinciden = np.sign(r) == np.sign(beta) and p < ALFA and p_modelo < ALFA
     return "robusta" if coinciden else "no concluyente"
 
 
@@ -80,16 +96,18 @@ def preparar(
     d = t[["solicitudes", "aceptadas", "rechazadas", "poblacion_joven"]].copy()
     d["esfuerzo"] = t["necesidad"] / t["poblacion_joven"]
     d["renta"] = renta.reindex(d.index) / 1000
-    d["tope"] = (
-        bono.tope_eur(d.index) / 1000
-    )  # miles de €: en € la binomial negativa no converge
+    # miles de €: en € la binomial negativa no converge
+    d["tope"] = bono.tope_eur(d.index) / 1000
     d[Y] = 1000 * d["rechazadas"] / d["poblacion_joven"]
     if faltan := list(d.index[d[X].isna().any(axis=1)]):
         raise ValueError(f"Municipios con necesidad y sin renta: {faltan}")
+    recuentos = d[["solicitudes", "aceptadas", "rechazadas"]]
+    if malos := list(d.index[recuentos.isna().any(axis=1) | (d["solicitudes"] == 0)]):
+        raise ValueError(f"Municipios con recuentos nulos o sin solicitudes: {malos}")
     return d, xy.loc[d.index].to_numpy(float)
 
 
-def _coef(m: object, i: int) -> dict:
+def _coef(m: spreg.OLS | spreg.ML_Error | spreg.ML_Lag, i: int) -> dict:
     """Coeficiente `i` de un modelo de spreg: beta, error estándar, estadístico (t o z) y p."""
     est = getattr(m, "z_stat", None) or m.t_stat
     return {
@@ -100,7 +118,7 @@ def _coef(m: object, i: int) -> dict:
     }
 
 
-def _efectos_sar(m: spreg.ML_Lag, w: object, i: int) -> dict:
+def _efectos_sar(m: spreg.ML_Lag, w: W, i: int) -> dict:
     """Efectos directo (media de la diagonal), indirecto y total de la X `i` en un SAR: (I - ρW)^-1 β."""
     n = w.n
     s = np.linalg.inv(np.eye(n) - m.rho * w.full()[0]) * m.betas[i, 0]
@@ -110,20 +128,19 @@ def _efectos_sar(m: spreg.ML_Lag, w: object, i: int) -> dict:
 
 
 def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
-    """MCO con diagnósticos, SEM y SLX siempre; el modelo elegido por la regla de Anselin (SAR solo si se elige).
+    """MCO con diagnósticos, SEM, SAR, SLX y SDEM siempre (con su AIC); el modelo elegido por la regla de Anselin.
 
     El esfuerzo es la columna 1 (la 0 es la constante). `elegido` lleva beta (o efectos), p y el Moran de sus residuos.
     """
     w, y, x = bono._w(puntos, k), d[[Y]].to_numpy(float), d[X].to_numpy(float)
     ols = spreg.OLS(y, x, w, spat_diag=True, moran=True)
     sem = spreg.ML_Error(y, x, w)
+    sar = spreg.ML_Lag(y, x, w)
     slx = spreg.OLS(y, x, w, slx_lags=1)
+    sdem = spreg.ML_Error(y, x, w, slx_lags=1)
     p_error, p_lag = ols.rlm_error[1], ols.rlm_lag[1]
     elegido = elegir_modelo(p_error, p_lag)
-    modelos = {"OLS": ols, "SEM": sem}
-    if elegido == "SAR":
-        modelos["SAR"] = spreg.ML_Lag(y, x, w)
-    m = modelos[elegido]
+    m = {"OLS": ols, "SEM": sem, "SAR": sar}[elegido]
     residuos = sem.e_filtered if elegido == "SEM" else m.u
     sal = {
         "lm": {
@@ -135,7 +152,9 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
         "moran_ols": {"I": ols.moran_res[0], "p": ols.moran_res[2]},
         "ols": {**_coef(ols, 1), "aic": ols.aic},
         "sem": {**_coef(sem, 1), "lambda": sem.lam, "aic": sem.aic},
+        "sar": {**_coef(sar, 1), "rho": sar.rho, "aic": sar.aic},
         "slx": {**_coef(slx, 1), "beta_lag": slx.betas[4, 0], "aic": slx.aic},
+        "sdem": {**_coef(sdem, 1), "lambda": sdem.lam, "aic": sdem.aic},
         "elegido": {
             "modelo": elegido,
             **_coef(m, 1),
@@ -148,17 +167,12 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     return sal
 
 
-def _nb(y: pd.Series, x: pd.DataFrame, offset: pd.Series) -> object:
+def _nb(y: pd.Series, x: pd.DataFrame, offset: pd.Series) -> NegativeBinomialResults:
     """Binomial negativa (NB2) con offset; falla si no converge."""
     res = sm.NegativeBinomial(y, x, offset=offset).fit(disp=0, maxiter=500)
     if not res.mle_retvals["converged"]:
         raise RuntimeError(f"La binomial negativa de {y.name} no converge")
     return res
-
-
-def _pearson_nb(res: object, y: pd.Series) -> np.ndarray:
-    mu = res.predict()
-    return ((y - mu) / np.sqrt(mu + res.params["alpha"] * mu**2)).to_numpy()
 
 
 def glm(d: pd.DataFrame, puntos: np.ndarray) -> dict:
@@ -169,13 +183,15 @@ def glm(d: pd.DataFrame, puntos: np.ndarray) -> dict:
     for y in ("rechazadas", "solicitudes"):
         nb = _nb(d[y], x, offset)
         poisson = sm.Poisson(d[y], x, offset=offset).fit(disp=0)
+        if not poisson.mle_retvals["converged"]:
+            raise RuntimeError(f"El Poisson de {y} no converge")
         sal[y] = {
             "esfuerzo": {"beta": nb.params["esfuerzo"], "p": nb.pvalues["esfuerzo"]},
             "alpha": nb.params["alpha"],
             "p_alpha": nb.pvalues["alpha"],
             "aic_nb": nb.aic,
             "aic_poisson": poisson.aic,
-            "moran_pearson": bono.moran(_pearson_nb(nb, d[y]), puntos, K),
+            "moran_pearson": bono.moran(nb.resid_pearson, puntos, K),
         }
     qb = sm.GLM(
         d["aceptadas"] / d["solicitudes"],
@@ -183,6 +199,8 @@ def glm(d: pd.DataFrame, puntos: np.ndarray) -> dict:
         family=sm.families.Binomial(),
         var_weights=d["solicitudes"],
     ).fit(scale="X2")
+    if not qb.converged:
+        raise RuntimeError("La quasi-binomial no converge")
     sal["aceptadas_sobre_solicitudes"] = {
         "esfuerzo": {"beta": qb.params["esfuerzo"], "p": qb.pvalues["esfuerzo"]},
         "escala": qb.scale,
@@ -191,27 +209,33 @@ def glm(d: pd.DataFrame, puntos: np.ndarray) -> dict:
     return sal
 
 
-def lisa(d: pd.DataFrame, puntos: np.ndarray) -> tuple[pd.Series, float]:
-    """Cuadrante significativo tras la FDR por `municipio_id` («ns» si no) y la razón Σ Is locales / I global.
+def lisa(
+    d: pd.DataFrame, puntos: np.ndarray, permutaciones: int = PERMUTACIONES_LISA
+) -> tuple[pd.Series, pd.Series, dict]:
+    """Cuadrante significativo tras la FDR, p bilateral por `municipio_id` y el Moran_BV global (I, p bilateral).
 
     x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas (el retardo Wy es el entorno).
     """
-    ayuda = bono.eb_por_mil(d["aceptadas"], d["poblacion_joven"])
+    if 2 / (permutaciones + 1) >= ALFA / len(d):
+        raise ValueError(
+            f"Con {permutaciones} permutaciones la p mínima no llega al umbral de la FDR con n = {len(d)}"
+        )
     w = bono._w(puntos, K)
-    x, y = d["esfuerzo"].to_numpy(), ayuda.to_numpy()
+    x = d["esfuerzo"].to_numpy()
+    y = bono.eb_por_mil(d["aceptadas"], d["poblacion_joven"]).to_numpy()
     local = esda.Moran_Local_BV(
-        x,
-        y,
-        w,
-        permutations=bono.PERMUTACIONES,
-        seed=bono.SEMILLA,
-        alternative="two-sided",
+        x, y, w, permutations=permutaciones, seed=bono.SEMILLA, alternative="two-sided"
     )
-    umbral = esda.fdr(local.p_sim, ALFA)
-    significativo = local.p_sim <= umbral
-    cuadrante = pd.Series(np.vectorize(CUADRANTES.get)(local.q), index=d.index)
-    razon = local.Is.sum() / esda.Moran_BV(x, y, w, permutations=0).I
-    return cuadrante.where(significativo, "ns"), float(razon)
+    significativo = local.p_sim <= esda.fdr(local.p_sim, ALFA)
+    cuadrante = pd.Series(local.q, index=d.index).map(CUADRANTES)
+    np.random.seed(bono.SEMILLA)  # esda permuta con el generador global
+    bv = esda.Moran_BV(x, y, w, permutations=bono.PERMUTACIONES)
+    global_ = {"I": float(bv.I), "p": min(1.0, 2 * float(bv.p_sim))}
+    return (
+        cuadrante.where(significativo, "ns"),
+        pd.Series(local.p_sim, index=d.index),
+        global_,
+    )
 
 
 def main() -> None:
@@ -224,7 +248,7 @@ def main() -> None:
     d, puntos = preparar(tabla, renta, xy)
     pearson = bono.validacion(tabla, renta, xy)[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
-    cuadrante, razon = lisa(d, puntos)
+    cuadrante, p_lisa, bv = lisa(d, puntos)
     elegido = esp[f"k{K}"]["elegido"]
     sar = elegido["modelo"] == "SAR"
     efecto = elegido["efectos"]["total"] if sar else elegido["beta"]
@@ -237,7 +261,9 @@ def main() -> None:
         "lisa": {
             "cuadrantes": cuadrante.value_counts().to_dict(),
             "alta_baja": sorted(cuadrante.index[cuadrante == "alta_baja"]),
-            "razon_suma_is_i_global": razon,
+            "p_alta_baja": p_lisa[cuadrante == "alta_baja"].to_dict(),
+            "moran_bv_global": bv,
+            "lectura": "asociación local, no causal; un solo municipio es un resultado frágil",
         },
         "conclusion": concluir(pearson["r"], pearson["p"], efecto, elegido["p"]),
     }

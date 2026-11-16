@@ -33,7 +33,7 @@ Supuestos:
   de 14-09-2022, art. 5 y Anexo II, texto completo en BDNS 648964, doc. 858536; extracto BOCM-20220920-16). Es un parámetro normativo que sirve de control, no prueba que el rechazo se deba a él. El de
   habitación (300/450 €) no se distingue porque el dataset no separa.
 - Autocorrelación: I de Moran de los residuos con W de k vecinos más cercanos entre centroides (la W reina
-  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p unilateral por permutaciones (esda; Geary como segunda vía). Se calcula sobre
+  deja islas al quitar municipios sin esfuerzo), normalizada por filas, p bilateral por permutaciones (esda; Geary como segunda vía). Se calcula sobre
   el residuo de y y sobre el de x (ambos sobre los controles). El n efectivo depende de la autocorrelación de
   los dos residuos. Un Moran significativo puede indicar también una variable espacial omitida, que sesga el
   r y no solo hace optimista el IC. El SEM, el SLX y el LISA van en `bono_inferencia.py`; el n efectivo
@@ -290,21 +290,21 @@ def _w(xy: np.ndarray, k: int) -> KNN:
 
 
 def moran(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
-    """I de Moran (esda) con W de k vecinos; p unilateral por permutaciones, en el sentido del I observado.
+    """I de Moran (esda) con W de k vecinos; p bilateral por permutaciones, `min(1, 2 * p_sim)`: el p_sim de esda es unilateral (en el sentido del I observado).
 
     E[I] = -1/(n-1) es el de una variable, no el de residuos de MCO, que sería tr(MW)/(n-k) (≈ -0,016 aquí);
     con I ≈ 0,16 no cambia la conclusión.
     """
     np.random.seed(SEMILLA)  # esda permuta con el generador global
     m = esda.Moran(valores, _w(xy, k), permutations=PERMUTACIONES)
-    return {"I": float(m.I), "esperado": float(m.EI), "p": float(m.p_sim)}
+    return {"I": float(m.I), "esperado": float(m.EI), "p": min(1.0, 2 * float(m.p_sim))}
 
 
 def geary(valores: np.ndarray, xy: np.ndarray, k: int) -> dict:
     """C de Geary (esda), segunda vía del Moran: C < 1 es autocorrelación positiva, como I > E[I]."""
     np.random.seed(SEMILLA)
     g = esda.Geary(valores, _w(xy, k), permutations=PERMUTACIONES)
-    return {"C": float(g.C), "p": float(g.p_sim)}
+    return {"C": float(g.C), "p": min(1.0, 2 * float(g.p_sim))}
 
 
 def bayes_empirico(casos: pd.Series, poblacion: pd.Series) -> pd.Series:

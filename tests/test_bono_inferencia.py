@@ -27,6 +27,29 @@ def test_sem_recupera_lambda_y_beta():
     assert res["sem"]["beta"] == pytest.approx(1.0, abs=0.15)
     assert res["lm"]["error"] < 0.05  # el SEM generado deja autocorrelación en el MCO
     assert abs(res["elegido"]["moran_residuos"]["I"]) < 0.1
+    assert res["elegido"]["modelo"] == "SEM"
+    assert res["sdem"]["aic"] > 0 and res["sar"]["aic"] > res["sem"]["aic"]
+
+
+def test_sar_se_elige_y_recupera_rho_y_efectos():
+    rng = np.random.default_rng(0)
+    xy = _rejilla(20)
+    n = len(xy)
+    x = rng.normal(size=(n, 3))
+    w = bono._w(xy, 5).full()[0]
+    y = np.linalg.solve(
+        np.eye(n) - 0.4 * w, 2 + x @ [1.0, 0.5, -0.5] + rng.normal(size=n)
+    )
+    d = pd.DataFrame(x, columns=bi.X).assign(**{bi.Y: y})
+    el = bi.regresion(d, xy, 5)["elegido"]
+    assert el["modelo"] == "SAR"
+    assert el["rho"] == pytest.approx(0.4, abs=0.15)
+    assert el["efectos"]["total"] == pytest.approx(
+        el["beta"] / (1 - el["rho"]), rel=1e-9
+    )
+    assert el["efectos"]["directo"] + el["efectos"]["indirecto"] == pytest.approx(
+        el["efectos"]["total"]
+    )
 
 
 def test_binomial_negativa_recupera_beta():
@@ -47,22 +70,24 @@ def _lisa(x, y, n):
         {"esfuerzo": x, "aceptadas": 5000 + 1000 * y, "poblacion_joven": 1e6},
         index=range(n * n),
     )
-    return bi.lisa(d, _rejilla(n))
+    return bi.lisa(d, _rejilla(n), permutaciones=9999)
 
 
 def test_lisa_detecta_bloque_alta_baja_y_ruido_no_da_nada():
     n = 10
     rng = np.random.default_rng(2)
     x, y = rng.normal(size=n * n), rng.normal(size=n * n)
-    ruido, _ = _lisa(x, y, n)
+    ruido, _, _ = _lisa(x, y, n)
     assert (ruido == "ns").all()
     bloque = np.array([i < 4 and j < 4 for i, j in _rejilla(n)])
     x[bloque] += 4  # esfuerzo alto en el bloque, ayuda baja en su entorno
     y[bloque] -= 4
-    cuadrante, razon = _lisa(x, y, n)
+    cuadrante, p, bv = _lisa(x, y, n)
     assert (cuadrante[bloque] == "alta_baja").sum() >= 4
     assert (cuadrante[~bloque] == "alta_baja").sum() == 0
-    assert razon > 0
+    assert p[cuadrante == "alta_baja"].max() < 0.001 and bv["p"] <= 1
+    with pytest.raises(ValueError, match="permutaciones"):
+        bi.lisa(pd.DataFrame({"esfuerzo": x}, index=range(n * n)), _rejilla(n), 999)
 
 
 def test_reglas():
@@ -77,6 +102,7 @@ def test_reglas():
     )  # el espacial no es significativo
     assert bi.concluir(0.14, 0.2, 0.3, 0.01) == "no concluyente"  # la Pearson no lo es
     assert bi.concluir(0.14, 0.01, -0.3, 0.01) == "no concluyente"  # signos opuestos
+    assert bi.concluir(0.14, 0.01, 0.3, float("nan")) == "no concluyente"
 
 
 def test_preparar_exige_renta():
@@ -90,18 +116,15 @@ def test_preparar_exige_renta():
             "necesidad": [20.0, 30.0],
         }
     )
-    xy = pd.DataFrame({"x": [0.0, 1.0], "y": [0.0, 1.0]}, index=tabla["municipio_id"])
+    # xy desordenado: `preparar` alinea por `municipio_id`
+    xy = pd.DataFrame({"x": [1.0, 0.0], "y": [1.0, 0.0]}, index=["28002", "28001"])
     renta = pd.Series([3e4, 4e4], index=tabla["municipio_id"])
     d, puntos = bi.preparar(tabla, renta, xy)
     assert d["esfuerzo"].tolist() == [0.2, 0.3] and d["renta"].iloc[0] == 30
-    assert puntos.shape == (2, 2)
+    assert puntos.tolist() == [[0.0, 0.0], [1.0, 1.0]]
     with pytest.raises(ValueError, match="sin renta"):
         bi.preparar(tabla, renta.iloc[:1], xy)
-
-
-def test_suma_de_is_locales_proporcional_al_global():
-    n = 10
-    razones = [
-        _lisa(*np.random.default_rng(s).normal(size=(2, n * n)), n)[1] for s in (3, 4)
-    ]
-    assert razones[0] == pytest.approx(razones[1])
+    with pytest.raises(ValueError, match="recuentos"):
+        bi.preparar(tabla.assign(solicitudes=[10, 0]), renta, xy)
+    with pytest.raises(ValueError, match="recuentos"):
+        bi.preparar(tabla.assign(aceptadas=[4, np.nan]), renta, xy)
