@@ -110,4 +110,9 @@ def test_ficheros_reales():
     assert all(p.exterior.is_ccw for g in geom for p in getattr(g, "geoms", [g]))
     solape, union = _solape_y_union(geom)
     assert solape < 1000  # m², redondeo de coordenadas en toda la Comunidad
-    assert union.geom_type == "Polygon" and not list(union.interiors)
+    # dos partes como en el seccionado: la Comunidad y el enclave de Santa María de la Alameda (13,8 km²)
+    assert sorted(round(p.area / 1e6, 1) for p in union.geoms) == [13.8, 8011.0]
+    huecos = [Polygon(r).area for p in union.geoms for r in p.interiors]
+    # el único hueco visible es el del seccionado entre Hortaleza y Barajas (sin sección del INE);
+    # el resto son astillas de redondeo de unos m²
+    assert [round(h / 1e6, 2) for h in huecos if h > 100] == [1.23]

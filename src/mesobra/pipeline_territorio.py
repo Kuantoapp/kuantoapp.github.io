@@ -108,10 +108,12 @@ def _nota_tiempos(tiempos: pd.DataFrame) -> str:
     if estimados.all():
         origen = "Plan B: línea base por distancia (línea recta × 1,3 a 25 km/h); todos los tiempos son estimados."
     else:
+        # cifras en formato español: 1.076 pares (2,7 %)
+        n = f"{estimados.sum():,}".replace(",", ".")
+        pct = f"{100 * estimados.mean():.1f}".replace(".", ",")
         origen = (
             "Calculado con r5py (a pie + transporte público), mediana de las salidas entre las 7:30 y las 8:30 "
-            "del martes 2026-11-17. Estimado: "
-            f"{estimados.sum()} pares ({estimados.mean():.1%}) mejoran con líneas que el CRTM publica sin viajes, "
+            f"del martes 2026-11-17. Estimado: {n} pares ({pct} %) mejoran con líneas que el CRTM publica sin viajes, "
             "reconstruidas con el trazado de OpenStreetMap (#173); el fichero no dice cuáles. Supuesto: el "
             "calendario del GTFS de Metro, caducado el 2026-05-27, se prolonga hasta el 2027-12-31."
         )
