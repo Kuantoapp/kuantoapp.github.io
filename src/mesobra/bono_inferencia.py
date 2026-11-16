@@ -217,6 +217,12 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
     # principal, GMM iterado (#223); el de dos pasos (por defecto de spreg) es la sensibilidad: ver el docstring
     het = spreg.GM_Error_Het(y, x, w=w, max_iter=10)
     dos_pasos = spreg.GM_Error_Het(y, x, w=w, max_iter=1, step1c=False)
+    if (
+        het.iteration == 10
+    ):  # spreg no distingue «sin converger» de «convergió justo en la décima»
+        LOG.warning(
+            "GMM iterado: alcanzó max_iter=10 con k = %s; puede no haber convergido", k
+        )
     lam = _coef(het, -1)
     hac = spreg.OLS(
         y,
@@ -241,7 +247,7 @@ def regresion(d: pd.DataFrame, puntos: np.ndarray, k: int) -> dict:
             **_coef(het, 1),
             "lambda": {"valor": lam["beta"], "se": lam["se"], "p": lam["p"]},
             "moran_residuos": bono.moran(het.e_filtered.ravel(), puntos, k),
-            "iteraciones": het.iteration,  # 10 = no convergió
+            "iteraciones": het.iteration,
         },
         "sem_het_dos_pasos": _coef(dos_pasos, 1),
         "ols_hac": _coef(hac, 1),
