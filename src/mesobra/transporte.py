@@ -21,11 +21,11 @@ import pandas as pd
 
 from mesobra import contratos
 from mesobra.api_estatica import CORONAS as ORDEN_CORONAS
+from mesobra.api_estatica import VIAJES_DIA
 
 CENTIMO = D("0.01")
 SEMANAS_MES = D("4.33")
 DIAS = range(1, 6)
-VIAJES_DIA = (2, 4)
 EDAD_MIN_JOVEN = 15
 # ficha CRTM: desde los 15 años hasta la fecha en que se cumplen 26
 # https://www.crtm.es/billetes-y-tarifas/buscador/abono-joven/
