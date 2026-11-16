@@ -262,3 +262,18 @@ def test_main_de_sincronizar_usa_el_cwd_del_evento(
 
 def git_estado(repo):
     return ctx.git(repo, "status", "--porcelain")
+
+
+def test_avisa_de_las_skills_de_la_issue(tmp_path):
+    for n in ("dm-x", "dm-y"):
+        (tmp_path / f".claude/skills/{n}/SKILL.md").parent.mkdir(parents=True)
+        (tmp_path / f".claude/skills/{n}/SKILL.md").write_text("---\n---\n")
+    linea = "- **Skills:** dm-x, dm-codigo-minimo, dm-y, dm-nada · **Revisores:** dm-revisor-codigo"
+    aviso = sinc.avisar_skills
+    for salida in (f"title\n{linea}\nfin", json.dumps(f"a\n{linea}\nb")):
+        texto = aviso("gh issue view 89", salida, tmp_path)
+        assert "skills dm-x, dm-y:" in texto and "Skill" in texto
+        assert "dm-codigo-minimo no es una skill" in texto
+        assert "dm-nada no existe" in texto and "dm-revisor-codigo" not in texto
+    assert aviso("gh issue view 89", "- **Revisores:** dm-x", tmp_path) == ""
+    assert aviso("ls", linea, tmp_path) == ""
