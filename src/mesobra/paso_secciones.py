@@ -9,6 +9,7 @@ Solo se conoce la población del seccionado de destino (tabla 31105), por eso la
 destino y reparte por área. Las intensivas (€/m²) se ponderan con `peso × denominador`; nunca se suman.
 """
 
+import logging
 from pathlib import Path
 
 import geopandas as gpd
@@ -17,6 +18,7 @@ import pandas as pd
 
 from mesobra import zonas
 
+LOG = logging.getLogger(__name__)
 RAIZ = Path(__file__).resolve().parents[2]
 ORIGEN = RAIZ / "data/raw/serpavi_capa_secciones_2026-11-16/ALQ_Secciones_2022_Web.shp"
 # supuesto: una pieza menor que esta fracción del origen es borde que no coincide entre fuentes, no una partición
@@ -68,7 +70,9 @@ def tabla_paso(
         piezas.groupby("origen")["area"].sum().reindex(area_o.index, fill_value=0)
         / area_o
     )
-    piezas = piezas[piezas["area"] >= ASTILLA * piezas["origen"].map(area_o)]
+    es_astilla = piezas["area"] < ASTILLA * piezas["origen"].map(area_o)
+    LOG.info("astillas descartadas: %d de %d piezas", es_astilla.sum(), len(piezas))
+    piezas = piezas[~es_astilla]
     piezas["a"] = (
         poblacion.reindex(piezas["destino"]).to_numpy()
         * piezas["area"]
@@ -124,7 +128,7 @@ def pasar_intensiva(
 
     `denominador` es el extensivo del origen con el que se calculó el dato (testigos, m² alquilados). Con medianas
     es una aproximación, a presentar como «estimado». Orígenes sin dato o sin denominador se excluyen y los pesos
-    se renormalizan; un destino sin ningún origen válido queda nulo. `peso_destino` no sirve aquí: reparte por área.
+    se renormalizan; un destino sin ningún origen válido no aparece en el resultado. `peso_destino` no sirve aquí: reparte por área.
     """
     t = tabla.assign(
         valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
@@ -190,7 +194,7 @@ def main() -> None:
     origen, destino = leer_origen(), zonas.leer_secciones()
     tabla, cobertura = tabla_paso(origen, destino, zonas.poblacion_secciones())
     comprobar_tabla(tabla)
-    if (cobertura < 0.99).any():
+    if (cobertura < COBERTURA_MINIMA).any():
         raise ValueError(
             f"Orígenes con cobertura < 0,99:\n{cobertura[cobertura < 0.99]}"
         )
