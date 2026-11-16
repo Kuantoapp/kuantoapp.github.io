@@ -32,7 +32,7 @@ Supuestos:
 5. Transporte público: tabla de `tarifas.json` con la corona más exterior entre origen y destino; tarifa
    joven si edad ≤ `edad_max_joven`. Un destino sin corona conocida (los polos, hasta F3-01) da error.
    shortcut: una sola edad (la del visitante) para los dos sueldos, aunque el Abono Joven es personal;
-   pasar a `edad` por sueldo cuando el formulario de pareja la pida (F3-03, #97).
+   pasar a `edad` por sueldo con el selector «edad de quien trabaja» (F3-14, #164).
 6. Coche: 2 × km × días × semanas_mes × `eur_km`, sin aparcamiento ni congestión (F3-02, #96).
 7. Horas al mes = Σ sueldos de minutos de ida × 2 × días × `semanas_mes` ÷ 60, con `semanas_mes` del
    calendario laboral de `tarifas.json` (3,7833 en 2026, #197), no 4,33.
@@ -81,6 +81,8 @@ def precio_hora(
 
 def neto_mes(netos: dict, bruto: float, hogar: dict) -> float:
     """Neto €/mes de un sueldo bruto anual, interpolado en la rejilla de `netos.json`."""
+    if type(bruto) not in (int, float):
+        raise ValueError(f"bruto = {bruto!r}: debe ser un número")
     brutos, maximo = netos["brutos"], max(c["hijos"] for c in netos["configuraciones"])
     if not 0 <= hogar["hijos"] <= maximo:
         raise ValueError(
@@ -260,6 +262,8 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
         raise ValueError(f"{len(sueldos)} sueldos para {hogar['adultos']} adultos")
     salida = []
     for s in sueldos:
+        if faltan := {"destino", "dias", "modo"} - s.keys():
+            raise ValueError(f"sueldo sin {sorted(faltan)}")
         s = {"viajes_dia": 2, **s}
         _entero("dias", s["dias"], range(1, 6))
         if (
@@ -281,6 +285,8 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
 
 def calcular(api: Api, entrada: dict) -> dict:
     """Resultado por zona con `precio_hora` frente a la referencia (ver el docstring del módulo)."""
+    if faltan := {"hogar", "sueldos"} - entrada.keys():
+        raise ValueError(f"entrada sin {sorted(faltan)}")
     hogar, escenario = _hogar(api, entrada)
     sueldos = _sueldos(api, entrada, hogar)
     ref = entrada.get("ref")
@@ -289,6 +295,8 @@ def calcular(api: Api, entrada: dict) -> dict:
             [*entrada.get("zonas", api["tiempos"]["origenes"]), *([ref] if ref else [])]
         )
     )
+    if desconocidas := [z for z in zonas if z not in api["alquiler"]["zonas"]]:
+        raise ValueError(f"zonas sin entrada en alquiler.json: {desconocidas}")
     res = {z: calcular_zona(api, hogar, sueldos, z, escenario) for z in zonas}
     if ref is None:
         validas = [

@@ -219,6 +219,24 @@ def test_limites_fallan(cambios: dict, mensaje: str) -> None:
         calculo.calcular(API, _entrada(**cambios))
 
 
+@pytest.mark.parametrize(
+    ("entrada", "mensaje"),
+    [
+        (_entrada(zonas=["99999"]), "zonas sin entrada"),
+        (_entrada(ref="99999"), "zonas sin entrada"),
+        ({"hogar": {"perfil": "solo", "edad": 30}}, "entrada sin"),
+        ({"sueldos": [CENTRO]}, "entrada sin"),
+        (_entrada(sueldos=[{"bruto": 22000, "modo": "tp"}]), "sueldo sin"),
+        (_entrada(sueldos=[CENTRO | {"bruto": "22000"}]), "debe ser un número"),
+        (_entrada(sueldos=[CENTRO | {"destino": "00000"}]), "no tiene tp"),
+    ],
+)
+def test_entradas_incompletas_dan_value_error(entrada: dict, mensaje: str) -> None:
+    with pytest.raises(ValueError, match=mensaje):
+        calculo.calcular(API, entrada)
+    assert "error" in calculo.resolver(API, entrada)
+
+
 def test_escenario_aplicado_en_la_salida() -> None:
     r = calculo.calcular(API, _entrada(escenario={"subida_alquiler": 5}))
     assert r["escenario"] == {
