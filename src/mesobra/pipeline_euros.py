@@ -89,7 +89,9 @@ FUENTES_HOGARES = [
 ] + [SERPAVI]
 
 
-def _meta(anio_dato: int, fuentes: list[dict[str, str]], nota: str) -> dict:
+def _meta(
+    anio_dato: int, fuentes: list[dict[str, str]], nota: str
+) -> dict[str, object]:
     return {
         "generado": date.today().isoformat(),
         "anio_dato": anio_dato,
@@ -193,7 +195,7 @@ def tarifas_json(tabla: pd.DataFrame) -> dict:
         "meta": _meta(2026, FUENTES_TARIFAS, nota),
         "orden_coronas": [c for c in api_estatica.CORONAS if c in set(tabla["corona"])],
         "edad_max_joven": transporte.EDAD_MAX_JOVEN,
-        "viajes_dia": list(transporte.VIAJES_DIA),
+        "viajes_dia": list(api_estatica.VIAJES_DIA),
         "escenarios": escenarios,
     }
 
