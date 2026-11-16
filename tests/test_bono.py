@@ -221,7 +221,7 @@ def test_bayes_empirico():
     assert abs(eb[1] - tasa[1]) < 0.01 * abs(tasa[1])  # el grande casi no cambia
 
 
-def test_validacion_devuelve_las_tres_y():
+def test_validacion():
     rng = np.random.default_rng(1)
     ids = [f"28{i:03d}" for i in range(60)]
     jov = pd.Series(rng.integers(100, 1000, 60), index=ids, name="poblacion_joven")
@@ -263,6 +263,14 @@ def test_validacion_devuelve_las_tres_y():
     e = y.to_numpy() - z @ beta
     se = np.sqrt(e @ e / (60 - 4) * np.linalg.inv(z.T @ z)[1, 1])
     assert pr["pearson"]["p"] == pytest.approx(2 * stats.t.sf(abs(beta[1] / se), 56))
+    res_x = bono._residuos(x, ctrl)
+    assert pr["moran_x_k5"]["I"] == pytest.approx(
+        bono.moran(res_x, xy.to_numpy(float), 5)["I"]
+    )
+    eb = 1000 * bono.bayes_empirico(t["rechazadas"], t["poblacion_joven"])
+    assert res["rechazadas_por_mil_eb"]["pearson"]["r"] == pytest.approx(
+        bono.correlacion_parcial(x, eb, ctrl)["r"]
+    )
     with pytest.raises(ValueError, match="sin renta"):
         bono.validacion(tabla, renta.drop(ids[0]), xy)
 

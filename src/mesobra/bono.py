@@ -9,11 +9,13 @@ Especificación principal, fijada antes de ver el resultado real: Pearson parcia
 jóvenes, x = esfuerzo de 2023, controles = renta neta media por hogar del ADRH 2023 + tope de alquiler
 (600/900 €), sin ponderar. Todo lo demás es robustez y se informa entero, coincida o no: Spearman parcial,
 renta del catálogo regional, esfuerzo y renta de 2022, solicitudes por 1.000 y tasa de aceptación como y,
-I de Moran de los residuos (k = 5 y k = 8) y la exclusión de Madrid. La conclusión se apoya solo en la principal.
+rechazadas suavizadas por Bayes empírico, I de Moran de los residuos de y y de x (k = 5 y k = 8) y la
+exclusión de Madrid. La conclusión se apoya solo en la principal.
 
 Supuestos:
-- Año 2023 (ejercicio IRPF 2023): unos 10,5 de los 14 meses del plazo y las anualidades de 2023 de los dos
-  créditos del procedimiento (24 M€ de la Orden 3026/2022 y 27,7 M€ de la Orden 424/2023) caen en 2023, igual que la población a 1-1-2023. El 2022 queda como robustez.
+- Año 2023 (ejercicio IRPF 2023): caen en 2023 unos 10,5 de los 14 meses del plazo y la mayor parte del
+  crédito: 16 M€ (Orden 3026/2022, modificada por la 4508/2022) y 40,04 M€ (Orden 424/2023, modificada por
+  la 1099/2023), frente a 12 M€ en 2022; igual que la población a 1-1-2023. El 2022 queda como robustez.
 - `necesidad` = esfuerzo × población joven (volumen), pero los terciles y la correlación usan el esfuerzo
   (necesidad por joven) frente a aceptadas o rechazadas por 1.000 jóvenes; si no, «necesidad alta» sería
   casi «municipio grande».
@@ -37,7 +39,9 @@ Supuestos:
   (Clifford-Richardson-Hémon o Dutilleul) no se calcula. Las coordenadas son el centroide geométrico del
   municipio, no el centro de población de #175.
 - Bayes empírico global (Marshall) de las rechazadas sobre la población joven, como robustez para las tasas
-  ruidosas de los municipios pequeños. La familia es lineal sobre tasas: sin GLM de Poisson ni binomial
+  ruidosas de los municipios pequeños. La media a priori se calcula sin Madrid, que tiene el 52 % de los
+  jóvenes y la llevaría de unos 19 a 25 por mil (con ella, r pasaba de 0,137 a 0,021: un artefacto); Madrid
+  conserva su tasa, que con su tamaño apenas se suavizaría. La familia es lineal sobre tasas: sin GLM de Poisson ni binomial
   porque no hay statsmodels.
 Sin modelar, se declaran: la solicitud cuenta en el municipio del piso, no en el de residencia; cuenta
 solicitudes, no personas; el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen requisitos
@@ -71,8 +75,12 @@ ANIO = 2023
 EDADES = (18, 35)
 TOTALES = (51735, 11477, 3352)  # solicitudes, aceptadas y solicitudes «Otro»
 INDICADORES = ("esfuerzo", "sobrecarga")
-Y = ("rechazadas_por_mil", "solicitudes_por_mil", "tasa_aceptacion")
-Y = (*Y, "rechazadas_por_mil_eb")
+Y = (
+    "rechazadas_por_mil",
+    "solicitudes_por_mil",
+    "tasa_aceptacion",
+    "rechazadas_por_mil_eb",
+)
 PERMUTACIONES = 999
 SEMILLA = 2026
 MADRID = "28079"
@@ -255,7 +263,7 @@ def correlacion_parcial(x: pd.Series, y: pd.Series, controles: pd.DataFrame) -> 
         raise ValueError(f"Faltan datos: n = {n} con {k} controles")
     c = d[list(controles.columns)]
     rx, ry = _residuos(d["x"], c), _residuos(d["y"], c)
-    if min(rx.std(), ry.std()) <= 1e-9 * max(d["x"].std(), d["y"].std()):
+    if rx.std() <= 1e-9 * d["x"].std() or ry.std() <= 1e-9 * d["y"].std():
         raise ValueError("x o y es colineal con los controles")
     r = float(np.corrcoef(rx, ry)[0, 1])
     r = min(max(r, -1.0), 1.0)
@@ -330,7 +338,12 @@ def validacion(tabla: pd.DataFrame, renta: pd.Series, xy: pd.DataFrame) -> dict:
     con = t["necesidad"].notna()
     if faltan := list(t.index[con & controles["renta"].isna()]):
         raise ValueError(f"Municipios con necesidad y sin renta: {faltan}")
-    eb = 1000 * bayes_empirico(t.loc[con, "rechazadas"], t.loc[con, "poblacion_joven"])
+    # Madrid (52 % de los jóvenes) fijaría la media a priori: se suaviza sin él y conserva su tasa (w ≈ 1)
+    suaviza = con & (t.index != MADRID)
+    eb = por_mil(t)["rechazadas_por_mil"].where(con)
+    eb[suaviza] = 1000 * bayes_empirico(
+        t.loc[suaviza, "rechazadas"], t.loc[suaviza, "poblacion_joven"]
+    )
     base = pd.concat(
         [
             (t["necesidad"] / t["poblacion_joven"]).rename("x"),
