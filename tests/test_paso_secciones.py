@@ -70,6 +70,8 @@ def test_extensiva_se_conserva_e_intensiva_se_pondera(capas) -> None:
     # un origen sin dato se excluye y el resto se renormaliza
     sin_c = p.pasar_intensiva(tabla, valor.drop("C"), testigos)
     assert sin_c["CD"] == pytest.approx(20)
+    # la pureza mide el mismo conjunto: B1 solo recibe de B, que sin dato no cuenta
+    assert "B1" not in p.pureza(tabla, valor.drop("B"), testigos).index
     assert p.pureza(tabla, valor, testigos)[
         ["A2", "B1", "CD"]
     ].tolist() == pytest.approx([1, 0, 1])

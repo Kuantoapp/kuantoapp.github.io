@@ -128,7 +128,7 @@ def _aportes(
     for serie in (datos, denominador):
         if not serie.index.isin(tabla["origen"]).all():
             raise ValueError(
-                "Hay datos de orígenes que no están en la tabla: se perderían"
+                "Hay orígenes en datos o denominador que no están en la tabla: se perderían"
             )
     t = tabla.assign(
         valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
@@ -143,7 +143,7 @@ def pasar_intensiva(
 
     `denominador` es el extensivo del origen con el que se calculó el dato (testigos, m² alquilados). Con medianas
     es una aproximación, a presentar como «estimado». Orígenes sin dato o sin denominador se excluyen y los pesos
-    se renormalizan; un destino sin ningún origen válido no aparece en el resultado. `peso_destino` no sirve aquí:
+    se renormalizan; un destino sin ningún origen válido no aparece en el resultado y uno cuyo denominador suma 0 da NaN. `peso_destino` no sirve aquí:
     reparte por área.
     """
     t = _aportes(tabla, datos, denominador)
@@ -156,7 +156,7 @@ def pureza(tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series) -> pd.
     """Parte de lo que llega a cada destino (`peso × denominador`) que viene de orígenes enteros (peso ≥ 0,99).
 
     Mide el mismo conjunto que `pasar_intensiva` (orígenes con dato). Pureza baja: el valor depende del supuesto
-    de reparto y es una estimación. Nulo si no llega nada.
+    de reparto y es una estimación. No aparece si no llega ningún origen con dato; NaN si el denominador suma 0.
     """
     t = _aportes(tabla, datos, denominador)
     entera = t["aporta"].where(t["peso"] >= ENTERA, 0)
@@ -208,7 +208,7 @@ def main() -> None:
     comprobar_tabla(tabla)
     if (cobertura < COBERTURA_MINIMA).any():
         raise ValueError(
-            f"Orígenes con cobertura < 0,99:\n{cobertura[cobertura < 0.99]}"
+            f"Orígenes con cobertura < {COBERTURA_MINIMA}:\n{cobertura[cobertura < COBERTURA_MINIMA]}"
         )
     datos = origen.set_index("CUSEC")
     total_por_municipio(tabla, datos["Num_VC"], datos["CUMUN"])
