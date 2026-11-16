@@ -62,12 +62,17 @@ def test_extensiva_se_conserva_e_intensiva_se_pondera(capas) -> None:
     repartido = p.pasar_extensiva(tabla, testigos)
     assert repartido.sum() == pytest.approx(testigos.sum())
     assert repartido["B1"] == pytest.approx(30)
-    # CD fusiona C y D con la misma superficie: media de 10 y 20, no suma
-    precio = p.pasar_intensiva(
-        tabla, pd.Series({"A": 1.0, "B": 2.0, "C": 10.0, "D": 20.0})
-    )
-    assert precio["CD"] == pytest.approx(15)
+    # CD fusiona C y D, misma superficie: pondera por testigos (6 y 4), no por área ni suma
+    valor = pd.Series({"A": 1.0, "B": 2.0, "C": 10.0, "D": 20.0})
+    precio = p.pasar_intensiva(tabla, valor, testigos)
+    assert precio["CD"] == pytest.approx((6 * 10 + 4 * 20) / 10)
     assert precio["B1"] == pytest.approx(2)
+    # un origen sin dato se excluye y el resto se renormaliza
+    sin_c = p.pasar_intensiva(tabla, valor.drop("C"), testigos)
+    assert sin_c["CD"] == pytest.approx(20)
+    assert p.pureza(tabla, testigos)[["A2", "B1", "CD"]].tolist() == pytest.approx(
+        [1, 0, 1]
+    )
 
 
 def test_total_por_municipio_falla_si_cae_en_otro(capas) -> None:
@@ -84,3 +89,46 @@ def test_origen_sin_poblacion_se_reparte_por_area(capas) -> None:
     b = tabla[tabla["origen"] == "B"]
     assert set(b["metodo"]) == {"area"}
     assert b["peso"].tolist() == pytest.approx([0.5, 0.5])
+
+
+def test_extensiva_con_origen_fuera_de_la_tabla_falla(capas) -> None:
+    tabla, _ = p.tabla_paso(*capas)
+    with pytest.raises(ValueError, match="no están en la tabla"):
+        p.pasar_extensiva(tabla, pd.Series({"A": 1, "B": 1, "C": 1, "D": 1, "Z": 99}))
+
+
+def test_destino_sin_poblacion_pondera_por_area(capas) -> None:
+    o, d, _ = capas
+    tabla, _ = p.tabla_paso(o, d, pd.Series({"A2": 100, "B1": 0, "B2": 10, "CD": 60}))
+    p.comprobar_tabla(tabla)  # peso_destino sin NaN
+    assert tabla.set_index(["origen", "destino"]).loc[("B", "B1"), "peso_destino"] == 1
+
+
+def test_astilla_se_descarta_y_el_peso_se_renormaliza() -> None:
+    o = _capa({"A": (X0, Y0, X0 + 1000, Y0 + 100)})
+    # B2 solo ocupa el 0,05 % del origen: borde que no coincide, no una partición
+    d = _capa(
+        {
+            "B1": (X0, Y0, X0 + 999.5, Y0 + 100),
+            "B2": (X0 + 999.5, Y0, X0 + 2000, Y0 + 100),
+        }
+    )
+    tabla, cobertura = p.tabla_paso(o, d, pd.Series({"B1": 10, "B2": 10}))
+    assert tabla["destino"].tolist() == ["B1"]
+    assert tabla["peso"].tolist() == [1]
+    assert cobertura["A"] == pytest.approx(1)
+
+
+def test_total_por_municipio_conserva_con_codigos_del_mismo_municipio() -> None:
+    o = _capa({"2800101001": (X0, Y0, X0 + 100, Y0 + 100)})
+    d = _capa(
+        {
+            "2800101001": (X0, Y0, X0 + 50, Y0 + 100),
+            "2800101002": (X0 + 50, Y0, X0 + 100, Y0 + 100),
+        }
+    )
+    tabla, _ = p.tabla_paso(o, d, pd.Series({"2800101001": 1, "2800101002": 3}))
+    cuadro = p.total_por_municipio(
+        tabla, pd.Series({"2800101001": 8}), pd.Series({"2800101001": "28001"})
+    )
+    assert cuadro.loc["28001"].tolist() == [8, 8]

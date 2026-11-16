@@ -6,7 +6,7 @@ la población de cada pieza `origen ∩ destino` es la de su destino por la frac
 Solo se conoce la población del seccionado de destino (tabla 31105), por eso la auxiliar es la suya.
 
 `peso` suma 1 por origen: reparte las variables extensivas (testigos, viviendas). `peso_destino` suma 1 por
-destino: pondera las intensivas (€/m²); nunca se suman.
+destino y reparte por área. Las intensivas (€/m²) se ponderan con `peso × denominador`; nunca se suman.
 """
 
 from pathlib import Path
@@ -25,6 +25,8 @@ ASTILLA = 0.001
 ENTERA = 0.99
 # tolerancia fijada de antemano para el total conservado por municipio (relativa; solo error de coma flotante)
 TOLERANCIA_TOTAL = 1e-9
+# supuesto: un origen con menos de esta fracción de su área en el destino cae en parte fuera del ámbito
+COBERTURA_MINIMA = 0.99
 CRS_METRICO = 25830
 
 
@@ -50,7 +52,7 @@ def tabla_paso(
     `origen` y `destino` llevan `CUSEC` y geometría en EPSG:25830; `poblacion` es `CUSEC` de destino → personas.
     Un origen cuyos destinos suman población 0 se reparte por área (`metodo = "area"`), declarado en la tabla.
     """
-    if origen.crs.to_epsg() != CRS_METRICO or destino.crs.to_epsg() != CRS_METRICO:
+    if any(c.crs is None or c.crs.to_epsg() != CRS_METRICO for c in (origen, destino)):
         raise ValueError(f"Origen y destino deben estar en EPSG:{CRS_METRICO}")
     if set(destino["CUSEC"]) != set(poblacion.index):
         raise ValueError(
@@ -75,9 +77,15 @@ def tabla_paso(
     sin_poblacion = piezas.groupby("origen")["a"].transform("sum") == 0
     piezas["metodo"] = np.where(sin_poblacion, "area", "poblacion")
     piezas["a"] = piezas["a"].where(~sin_poblacion, piezas["area"])
-    piezas = piezas.groupby(["origen", "destino", "metodo"], as_index=False)["a"].sum()
+    piezas = piezas.groupby(["origen", "destino", "metodo"], as_index=False).agg(
+        a=("a", "sum"), area_pieza=("area", "sum")
+    )
     piezas["peso"] = piezas["a"] / piezas.groupby("origen")["a"].transform("sum")
-    piezas["peso_destino"] = piezas["a"] / piezas.groupby("destino")["a"].transform(
+    # un destino sin población (0/0) pondera por área, como el origen sin población
+    a_destino = piezas["a"].where(
+        piezas.groupby("destino")["a"].transform("sum") > 0, piezas["area_pieza"]
+    )
+    piezas["peso_destino"] = a_destino / a_destino.groupby(piezas["destino"]).transform(
         "sum"
     )
     return piezas[["origen", "destino", "peso", "peso_destino", "metodo"]], cobertura
@@ -101,21 +109,42 @@ def pasar_extensiva(tabla: pd.DataFrame, datos: pd.Series) -> pd.Series:
     """Reparte una extensiva (`CUSEC` de origen → valor) entre los destinos: `y_j = Σ_i w_ij · y_i`."""
     if datos.isna().any():
         raise ValueError("Orígenes sin dato: decide antes de repartir")
+    if not datos.index.isin(tabla["origen"]).all():
+        raise ValueError("Hay datos de orígenes que no están en la tabla: se perderían")
     valor = tabla["origen"].map(datos)
     if valor.isna().any():
         raise ValueError("Hay orígenes de la tabla sin dato")
     return (tabla["peso"] * valor).groupby(tabla["destino"]).sum()
 
 
-def pasar_intensiva(tabla: pd.DataFrame, datos: pd.Series) -> pd.Series:
-    """Pasa una intensiva (€/m²) con la media ponderada por `peso_destino`; nunca la suma ni la media simple.
+def pasar_intensiva(
+    tabla: pd.DataFrame, datos: pd.Series, denominador: pd.Series
+) -> pd.Series:
+    """Pasa una intensiva (€/m²) como media ponderada por lo que aporta cada origen: `peso × denominador`.
 
-    Orígenes sin dato (huecos del SERPAVI) se excluyen y los pesos se renormalizan sobre los que sí lo tienen;
-    un destino sin ningún origen con dato queda nulo.
+    `denominador` es el extensivo del origen con el que se calculó el dato (testigos, m² alquilados). Con medianas
+    es una aproximación, a presentar como «estimado». Orígenes sin dato o sin denominador se excluyen y los pesos
+    se renormalizan; un destino sin ningún origen válido queda nulo. `peso_destino` no sirve aquí: reparte por área.
     """
-    t = tabla.assign(valor=tabla["origen"].map(datos)).dropna(subset=["valor"])
-    suma = t.groupby("destino")["peso_destino"].sum()
-    return (t["peso_destino"] * t["valor"]).groupby(t["destino"]).sum() / suma
+    t = tabla.assign(
+        valor=tabla["origen"].map(datos), aporta=tabla["origen"].map(denominador)
+    ).dropna(subset=["valor", "aporta"])
+    t["aporta"] = t["aporta"] * t["peso"]
+    return (t["aporta"] * t["valor"]).groupby(t["destino"]).sum() / t.groupby(
+        "destino"
+    )["aporta"].sum()
+
+
+def pureza(tabla: pd.DataFrame, denominador: pd.Series) -> pd.Series:
+    """Parte de lo que llega a cada destino (`peso × denominador`) que viene de orígenes enteros (peso ≥ 0,99).
+
+    Un destino con pureza baja depende del supuesto de reparto: su valor es una estimación. Nulo si no llega nada.
+    """
+    llega = tabla["peso"] * tabla["origen"].map(denominador)
+    entera = llega.where(tabla["peso"] >= ENTERA, 0)
+    return (
+        entera.groupby(tabla["destino"]).sum() / llega.groupby(tabla["destino"]).sum()
+    )
 
 
 def secciones_cambiadas(
@@ -169,6 +198,15 @@ def main() -> None:
     total_por_municipio(tabla, datos["Num_VC"], datos["CUMUN"])
     zonas.PROCESSED.mkdir(parents=True, exist_ok=True)
     tabla.to_parquet(zonas.PROCESSED / "paso_secciones_2021_2025.parquet")
+    cambiadas = secciones_cambiadas(
+        tabla, pd.Index(origen["CUSEC"]), pd.Index(destino["CUSEC"])
+    )
+    pd.concat(
+        [
+            pd.Series(v, name="seccion").to_frame().assign(tipo=k)
+            for k, v in cambiadas.items()
+        ]
+    ).to_parquet(zonas.PROCESSED / "paso_secciones_cambiadas.parquet")
 
 
 if __name__ == "__main__":
