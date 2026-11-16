@@ -4,6 +4,11 @@ Fórmula: esfuerzo = alquiler mediano mensual ÷ (renta neta media por hogar ÷ 
 (178 municipios, 21 distritos de Madrid y la fila de Madrid entero, 28079) y año, en la ventana
 común de las dos series (SERPAVI 2011-2024, ADRH 2015-2024 → 2015-2024).
 Fuentes: SERPAVI (MIVAU), vivienda colectiva; ADRH (INE).
+Años: el año t del SERPAVI y el «Periodo» t del ADRH son el ejercicio del IRPF t (MIVAU,
+metodología SERPAVI 18-03-2026, §6; INE, metodología ADRH oct. 2026, §2.3); los hogares del
+ADRH son los del 1 de enero de t+1.
+https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03-18_Metodologia_SERPAVI.pdf
+https://www.ine.es/metodologia/metodologia_adrh.pdf
 
 Es un índice territorial para comparar zonas y años, no la parte del sueldo de nadie: el cálculo
 por persona va en la herramienta (pipeline_euros).
@@ -11,8 +16,9 @@ por persona va en la herramienta (pipeline_euros).
 Limitaciones:
 - Ficha §7.1: la renta media incluye a los propietarios, que suelen ganar más que los inquilinos,
   así que el indicador subestima el esfuerzo de quien alquila. Además es una media (los ingresos
-  altos la suben) y el SERPAVI recoge contratos declarados, no precios de oferta (va por detrás
-  del mercado).
+  altos la suben) y el SERPAVI recoge todos los alquileres declarados en el ejercicio, incluidos
+  contratos antiguos (MIVAU §3.1), no el precio de oferta ni el de los contratos nuevos, así que
+  va por detrás del mercado.
 - Numerador: el alquiler es la cuantía mediana mensual del SERPAVI (`ALQTBID12_M_VC`), vivienda
   colectiva; antes de #202 se usaba €/m² × m² mediano, que lo sobrestimaba en torno a un 6 % (#151).
 - Desde los datos de 2020, las zonas de menos de 100 residentes tienen en el ADRH la renta común
