@@ -16,7 +16,7 @@ Supuestos de la robustez del Bono (`bono_inferencia.robustez_vivienda_alquilada`
 - El porcentaje en alquiler se correlaciona con el esfuerzo (+0,27) y con la renta (-0,35) en los 112 municipios de
   la robustez (`correlacion_porcentaje` del JSON): es el mecanismo que atenúa r al usarlo de denominador.
 - Aplicar el de 2021 a 2023 solo sesga si el cambio entre 2021 y 2023 difiere entre municipios.
-- 20-34 representa a 18-35: el efecto de 18-19 es pequeño, porque a esa edad viven casi todos con sus padres.
+- 20-34 representa a 18-35: las edades que faltan (18, 19 y 35) son 3 de los 18 años.
 - El denominador es «jóvenes en vivienda alquilada», no «inquilinos»: incluye a quien vive en el piso alquilado de sus padres.
 Fuente: Elaboración propia con datos extraídos del sitio web del INE: www.ine.es
 """
@@ -165,7 +165,7 @@ def _leer(ruta: Path | BinaryIO = CENSO) -> pd.DataFrame:
     etiquetas = m.index[1:]
     if (
         len(etiquetas) != MUNICIPIOS
-        or not etiquetas.is_unique
+        or not etiquetas.str[:5].is_unique
         or not etiquetas.str.fullmatch(r"28\d{3} .+").all()
     ):
         raise ValueError(

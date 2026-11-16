@@ -173,7 +173,7 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
             "solicitudes": [*d["solicitudes"], 7.0, 5.0],
         }
     )
-    sal = bi.robustez_vivienda_alquilada(tabla, d, xy, pct)
+    sal = bi.robustez_vivienda_alquilada(tabla, d, xy, pct, "PRINCIPAL")
     perdidos = ["28003", "28007", "28011"]
     assert sal["alquiler"]["n"] == 22 == sal["principal_misma_submuestra"]["n"]
     assert sal["seleccion"]["excluidos"] == 3
@@ -186,7 +186,7 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
         d.loc[perdidos, "solicitudes"].sum() + 7
     )
     ok = d.drop(perdidos)
-    r = sal["alquiler"]["pearson_parcial"]["rechazadas"]
+    r = sal["alquiler"]["pearson_parcial"]
     esperado = bono.correlacion_parcial(
         ok["esfuerzo"], pd.Series(y, index=ids).drop(perdidos), ok[["renta", "tope"]]
     )
@@ -198,6 +198,13 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     assert sal["alquiler"]["conclusion"] == bi.concluir(r["r"], r["p"], efecto, e["p"])
     assert sal["alquiler"]["conclusion"] == "robusta"
     assert set(sal["alquiler"]["espacial"]) == {"k5", "k8"}
+    # los dos bloques tienen la misma forma y la lectura lleva la conclusión de la principal que se le pasa
+    assert sal["alquiler"].keys() == sal["principal_misma_submuestra"].keys()
+    assert set(sal["alquiler"]["pearson_otras"]) == {
+        "solicitudes_por_mil_alq",
+        "aceptadas_por_mil_alq",
+    }
+    assert "PRINCIPAL" in sal["lectura"]
     # la principal sobre la misma submuestra usa la población de 18-35 sin el porcentaje: otra r
     assert sal["principal_misma_submuestra"]["pearson_parcial"]["r"] != pytest.approx(
         r["r"]
@@ -207,5 +214,5 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     )
     with pytest.raises(ValueError, match="0 %"):
         bi.robustez_vivienda_alquilada(
-            tabla, d, xy, pct.where(pct.index != "28001", 0.0)
+            tabla, d, xy, pct.where(pct.index != "28001", 0.0), "x"
         )

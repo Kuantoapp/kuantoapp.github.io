@@ -42,7 +42,8 @@ Lectura (añadida en la revisión):
   «no concluyente».
 - La p del SEM no es estable a la especificación: con el retardo WX (SDEM o SLX), β baja a unos 71-75 y la p
   vuelve a 0,11-0,16 con k = 5 y k = 8. El salto de β entre MCO y SEM (+40 %) apunta a una variable omitida con
-  estructura espacial o a la falta de WX, así que el SEM no cuenta como corroboración: es una limitación.
+  estructura espacial o a la falta de WX, así que el SEM no cuenta como corroboración: es una limitación. Tampoco es prueba en contra: el AIC prefiere el SEM
+  sin WX al SDEM (920,0 frente a 923,5) y el MCO al SLX (926,1 frente a 927,8).
 
 LISA bivariante: `Moran_Local_BV(x = esfuerzo del municipio, y = aceptadas por 1.000 suavizadas por Bayes empírico
 (media a priori sin Madrid, como las rechazadas), W de k = 5)`, con `PERMUTACIONES_LISA` = 99.999 permutaciones, p
@@ -58,19 +59,23 @@ JSON; no cambia la conclusión principal ni el contrato `bono`):
 - Expectativa (añadida en la revisión, tras ver el resultado): con el denominador de población × porcentaje en alquiler
   de 20-34 (Censo 2021, `censo2021`), r baja y la conclusión no mejora; el cambio de muestra (los municipios con
   porcentaje) y el del denominador son efectos distintos, y por eso la principal se repite en la MISMA submuestra.
-- Descomposición (cifras del JSON, `lectura`): en los 134 la principal es «no concluyente» (r = 0,137, p = 0,118); en
-  los 112 con porcentaje, «robusta» (r = 0,197, p = 0,039; SEM p = 0,020 con k = 5); con el denominador de vivienda
-  alquilada, «no concluyente» (r = 0,153, p = 0,109; MCO). Quitar los 22 municipios pequeños refuerza la relación y el
-  denominador la atenúa: la conclusión de la principal depende de los municipios pequeños. El «no concluyente» se
-  sostiene por la inestabilidad con el retardo WX (SLX y SDEM en los 112, p entre 0,15 y 0,21) y por estos municipios,
-  no por esta robustez. Diagnóstico: con las rechazadas suavizadas por Bayes empírico en los 134 (`bono.validacion`,
-  `pearson_parcial_eb`), r = 0,156 y p = 0,075: el ruido de los municipios pequeños atenúa r.
+- Descomposición (cifras del JSON, `lectura`). La regla fijada de antemano es la de los 134 (r = 0,137, p = 0,118;
+  «no concluyente»); los 112 son una sensibilidad. En los municipios con al menos 300 jóvenes de 20-34 (los 112), la
+  principal da «robusta» (r = 0,197, p = 0,039; SEM p = 0,020 con k = 5), así que la conclusión depende de los 22
+  municipios pequeños, que tienen tasas ruidosas; con el denominador de vivienda alquilada da «no concluyente»
+  (r = 0,153, p = 0,109; MCO). Quitar los 22 refuerza la relación y el denominador la atenúa, porque el porcentaje se
+  correlaciona con el esfuerzo (+0,27) y con la renta (-0,35). «No concluyente» descansa en la regla sobre los 134 y en
+  el diagnóstico de Bayes empírico (`bono.validacion`, `pearson_parcial_eb`: r = 0,156, p = 0,075 en los 134), que apunta
+  a que el ruido de los municipios pequeños atenúa r. No se apoya en el retardo WX: en los 112 el AIC prefiere el SEM
+  al SDEM (736,2 frente a 740,8) y el MCO al SLX (744,0 frente a 747,9), y el esfuerzo y su retardo están
+  correlacionados, de modo que añadir WX quita potencia.
 - Sesgo de selección (JSON, `seleccion`): 22 municipios y 111 solicitudes fuera de la muestra, todos por el umbral de
   300 personas; mediana de población joven 257 de los excluidos frente a 1.893,5 de los incluidos, y renta media de
   35,3 frente a 45,6 miles de €. Del Bono se pierden 44 municipios y 166 solicitudes.
-- Mecanismo: el porcentaje se correlaciona con el esfuerzo (+0,27) y con la renta (-0,35), y al dividir por él r baja.
-- Autocorrelación residual: el Moran de los residuos del MCO con k = 8 es 0,100 (p = 0,004), así que la p del MCO
-  (0,109) es optimista.
+- Autocorrelación residual: la Pearson de la principal en los 112 es optimista. El Moran de los residuos del MCO es
+  0,203 con k = 5 (principal) y 0,100 con k = 8 (denominador de vivienda alquilada; p = 0,032). La p que se cita es la de
+  permutaciones y bilateral (`bono.moran`, clave `moran_mco`), no la analítica de spreg (`moran_ols`): con n pequeño no
+  supone normalidad, y es la misma que usa el resto del módulo.
 """
 
 import json
@@ -289,20 +294,33 @@ def _concluir_modelo(pearson: dict, elegido: dict) -> str:
     return concluir(pearson["r"], pearson["p"], efecto, elegido["p"])
 
 
-def _bloque(r: pd.DataFrame, puntos: np.ndarray, y: str) -> dict:
-    """Pearson parcial de `y`, regresión espacial con k = 5 y 8 y conclusión (k = 5) en los municipios de `r`."""
-    pearson = bono.correlacion_parcial(r["esfuerzo"], r[y], r[["renta", "tope"]])
+def _bloque(r: pd.DataFrame, puntos: np.ndarray, y: str, otras: list[str]) -> dict:
+    """En los municipios de `r`: Pearson parcial de `y` (más el de `otras`), regresión espacial (k = 5 y 8), conclusión (k = 5) y Moran del MCO.
+
+    El Moran del MCO es el de permutaciones y bilateral de `bono.moran` (el de spreg es analítico y se queda en `espacial`).
+    """
+    controles = r[["renta", "tope"]]
+    pearson = bono.correlacion_parcial(r["esfuerzo"], r[y], controles)
     esp = {f"k{k}": regresion(r.assign(**{Y: r[y]}), puntos, k) for k in (K, 8)}
+    residuos = bono._residuos(r[y], r[X])
     return {
         "n": len(r),
         "pearson_parcial": pearson,
+        "pearson_otras": {
+            c: bono.correlacion_parcial(r["esfuerzo"], r[c], controles) for c in otras
+        },
         "espacial": esp,
+        "moran_mco": {f"k{k}": bono.moran(residuos, puntos, k) for k in (K, 8)},
         "conclusion": _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
     }
 
 
 def robustez_vivienda_alquilada(
-    tabla: pd.DataFrame, d: pd.DataFrame, puntos: np.ndarray, pct: pd.Series
+    tabla: pd.DataFrame,
+    d: pd.DataFrame,
+    puntos: np.ndarray,
+    pct: pd.Series,
+    conclusion_principal: str,
 ) -> dict:
     """Robustez: la ayuda por 1.000 jóvenes en vivienda alquilada (población 18-35 de 2023 × porcentaje en alquiler de 20-34 de 2021).
 
@@ -310,10 +328,17 @@ def robustez_vivienda_alquilada(
     (los municipios con porcentaje: el INE lo suprime o hay menos de `censo2021.MIN_JOVENES_20_34` personas), así que se
     guarda también la principal (rechazadas por 1.000 jóvenes de 18-35) en la MISMA submuestra: la diferencia entre las dos
     es el efecto del denominador, y la que hay entre la principal en `d` y en la submuestra es el de quitar municipios.
-    Pearson parcial de las tres (solicitudes, aceptadas y rechazadas); regresión espacial (k = 5 y 8) y regla de conclusión
-    con las rechazadas. `tabla` es la del Bono (159 municipios), `d` y `puntos` los de `preparar`. Se declara el sesgo de
-    selección (población joven y renta de excluidos e incluidos) y las correlaciones del porcentaje con el esfuerzo y la
-    renta, que es el mecanismo que atenúa r. Supuestos en `censo2021`. El porcentaje no puede ser 0: sería dividir por cero.
+    Cada bloque lleva la Pearson parcial de las rechazadas (la de la regla), la de las solicitudes y las aceptadas, la
+    regresión espacial con k = 5 y 8 y la conclusión. `tabla` es la del Bono (159 municipios), `d` y `puntos` los de
+    `preparar`, y `conclusion_principal` la de la principal en `d`. Se declara el sesgo de selección (población joven y
+    renta de excluidos e incluidos) y las correlaciones del porcentaje con el esfuerzo y la renta. Supuestos en
+    `censo2021`. El porcentaje no puede ser 0: sería dividir por cero.
+
+    Lectura (la regla fijada de antemano es la de los 134; los 112 son una sensibilidad): «no concluyente» descansa en
+    la regla sobre los 134 y en el diagnóstico de Bayes empírico (`pearson_parcial_eb`); en los municipios con porcentaje
+    la regla da «robusta», así que la conclusión depende de los municipios pequeños, de tasas ruidosas. El denominador
+    atenúa la relación porque el porcentaje se correlaciona con el esfuerzo. El Moran del MCO que se cita es el de
+    permutaciones y bilateral (`bono.moran`), no el analítico de spreg: no supone normalidad con n pequeño.
     """
     if (pct == 0).any():
         raise ValueError(f"Municipios con 0 % en alquiler: {list(pct.index[pct == 0])}")
@@ -322,18 +347,34 @@ def robustez_vivienda_alquilada(
     jovenes_alquilados = r["poblacion_joven"] * pct[r.index]
     for c in ("solicitudes", "aceptadas", "rechazadas"):
         r[f"{c}_por_mil_alq"] = 1000 * r[c] / jovenes_alquilados
-    alq = _bloque(r, puntos[ok], "rechazadas_por_mil_alq")
-    alq["pearson_parcial"] = {
-        c: bono.correlacion_parcial(
-            r["esfuerzo"], r[f"{c}_por_mil_alq"], r[["renta", "tope"]]
+        r[f"{c}_por_mil"] = 1000 * r[c] / r["poblacion_joven"]
+    bloques = {
+        nombre: _bloque(
+            r,
+            puntos[ok],
+            f"rechazadas_por_mil{sufijo}",
+            [f"solicitudes_por_mil{sufijo}", f"aceptadas_por_mil{sufijo}"],
         )
-        for c in ("solicitudes", "aceptadas", "rechazadas")
+        for nombre, sufijo in (
+            ("alquiler", "_alq"),
+            ("principal_misma_submuestra", ""),
+        )
     }
-    principal = _bloque(r, puntos[ok], Y)
+    alq, principal = bloques["alquiler"], bloques["principal_misma_submuestra"]
     en_bono = tabla["municipio_id"].isin(pct.index[pct.notna()])
-    sal = {
-        "alquiler": alq,
-        "principal_misma_submuestra": principal,
+    pa, pp = alq["pearson_parcial"], principal["pearson_parcial"]
+    lectura = (
+        f"Principal en los {len(d)} (regla fijada de antemano): {conclusion_principal}. Sensibilidad en los {len(r)} municipios "
+        f"con porcentaje: la principal da {principal['conclusion']} (r = {pp['r']:.3f}, p = {pp['p']:.3f}; regresión "
+        f"elegida k = {K}: p = {principal['espacial'][f'k{K}']['elegido']['p']:.3f}), así que la conclusión depende de los "
+        f"{len(fuera)} municipios pequeños, de tasas ruidosas; con el denominador de vivienda alquilada da {alq['conclusion']} "
+        f"(r = {pa['r']:.3f}, p = {pa['p']:.3f}). El denominador atenúa la relación porque el porcentaje se correlaciona "
+        f"con el esfuerzo ({r['esfuerzo'].corr(pct[r.index]):+.2f}). La Pearson de la principal en los {len(r)} es optimista: "
+        f"el Moran de los residuos del MCO es {principal['moran_mco'][f'k{K}']['I']:.3f} con k = {K} (p de permutaciones "
+        f"bilateral = {principal['moran_mco'][f'k{K}']['p']:.3f})."
+    )
+    return {
+        **bloques,
         "municipios_con_porcentaje": int(pct.notna().sum()),
         "perdidos_del_bono": int((~en_bono).sum()),
         "solicitudes_perdidas_del_bono": int(tabla.loc[~en_bono, "solicitudes"].sum()),
@@ -353,22 +394,8 @@ def robustez_vivienda_alquilada(
             "esfuerzo": float(r["esfuerzo"].corr(pct[r.index])),
             "renta": float(r["renta"].corr(pct[r.index])),
         },
+        "lectura": lectura,
     }
-    esp5 = {
-        n: sal[n]["espacial"]["k5"] for n in ("alquiler", "principal_misma_submuestra")
-    }
-    sal["lectura"] = (
-        f"Principal en los {len(d)}: {{}}. En los {len(r)} con porcentaje: {principal['conclusion']} "
-        f"(r = {principal['pearson_parcial']['r']:.3f}, p = {principal['pearson_parcial']['p']:.3f}); con el denominador "
-        f"de vivienda alquilada: {alq['conclusion']} (r = {alq['pearson_parcial']['rechazadas']['r']:.3f}, "
-        f"p = {alq['pearson_parcial']['rechazadas']['p']:.3f}). Quitar los {len(fuera)} municipios pequeños y el "
-        "denominador mueven r en sentidos opuestos: la conclusión de la principal depende de los municipios pequeños. "
-        f"p de la regresión elegida en los {len(r)} (k = 5): principal {esp5['principal_misma_submuestra']['elegido']['p']:.3f}, "
-        f"alquiler {esp5['alquiler']['elegido']['p']:.3f}; Moran de los residuos del MCO (k = 8): "
-        f"{alq['espacial']['k8']['moran_ols']['I']:.3f} (p = {alq['espacial']['k8']['moran_ols']['p']:.3f}), "
-        "así que la p del MCO es optimista."
-    )
-    return sal
 
 
 def main() -> None:
@@ -394,13 +421,20 @@ def main() -> None:
         "pearson_parcial_eb": val["rechazadas_por_mil_eb"]["pearson"],
         "robustez_vivienda_alquilada": {
             **robustez_vivienda_alquilada(
-                tabla, d, puntos, censo2021.pct_alquiler_joven()
+                tabla,
+                d,
+                puntos,
+                censo2021.pct_alquiler_joven(),
+                _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
             ),
             "recuento_censo": censo2021.recuento(),
         },
     }
-    rob = resultado["robustez_vivienda_alquilada"]
-    rob["lectura"] = rob["lectura"].format(resultado["conclusion"])
+    eb = resultado["pearson_parcial_eb"]
+    resultado["robustez_vivienda_alquilada"]["lectura"] += (
+        f" Diagnóstico: con las rechazadas suavizadas por Bayes empírico en los {len(d)}, r = {eb['r']:.3f} y "
+        f"p = {eb['p']:.3f}: el ruido de los municipios pequeños atenúa r."
+    )
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)
     SALIDA.write_text(texto)
