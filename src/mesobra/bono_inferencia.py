@@ -65,7 +65,7 @@ import statsmodels.api as sm
 from libpysal.weights import W
 from statsmodels.discrete.discrete_model import NegativeBinomialResults
 
-from mesobra import bono
+from mesobra import bono, censo2021
 
 LOG = logging.getLogger(__name__)
 SALIDA = bono.PROCESSED / "bono_inferencia.json"
@@ -263,6 +263,51 @@ def _resumen_lisa(res: tuple) -> dict:
     }
 
 
+def _concluir_modelo(pearson: dict, elegido: dict) -> str:
+    """Regla de conclusión con el modelo elegido (en el SAR, el efecto total)."""
+    sar = elegido["modelo"] == "SAR"
+    efecto = elegido["efectos"]["total"] if sar else elegido["beta"]
+    return concluir(pearson["r"], pearson["p"], efecto, elegido["p"])
+
+
+def robustez_inquilinos(
+    tabla: pd.DataFrame, d: pd.DataFrame, puntos: np.ndarray, pct: pd.Series
+) -> dict:
+    """Robustez: la ayuda por 1.000 jóvenes en alquiler (población 18-35 de 2023 por el porcentaje en alquiler de 20-34 en 2021).
+
+    Mismo esfuerzo y controles que la principal; solo cambia el denominador de la ayuda. Pearson parcial de las tres
+    (solicitudes, aceptadas y rechazadas); regresión espacial y regla de conclusión con las rechazadas. Se quedan
+    los municipios con porcentaje (el INE lo suprime o es nulo bajo el umbral de `censo2021`). `tabla` es la del Bono
+    (159 municipios), `d` y `puntos` los de `preparar`. Supuestos en `censo2021`: el porcentaje de 2021 vale para 2023,
+    20-34 representa a 18-35 y cuenta a quien vive en el piso alquilado de sus padres.
+    """
+    ok = pct.reindex(d.index).gt(0).to_numpy()  # el nulo da False
+    r = d[ok].copy()
+    inquilinos = r["poblacion_joven"] * pct[r.index]
+    pearson = {}
+    for c in ("solicitudes", "aceptadas", "rechazadas"):
+        r[f"{c}_por_mil_inq"] = 1000 * r[c] / inquilinos
+        pearson[c] = bono.correlacion_parcial(
+            r["esfuerzo"], r[f"{c}_por_mil_inq"], r[["renta", "tope"]]
+        )
+    r[Y] = r["rechazadas_por_mil_inq"]
+    esp = regresion(r, puntos[ok], K)
+    en_bono = tabla["municipio_id"].isin(pct.index[pct.gt(0)])
+    return {
+        "n": len(r),
+        "municipios_con_porcentaje": int(pct.notna().sum()),
+        "perdidos_de_la_muestra": len(d) - len(r),
+        "solicitudes_perdidas_de_la_muestra": int(
+            d["solicitudes"].sum() - r["solicitudes"].sum()
+        ),
+        "perdidos_del_bono": int((~en_bono).sum()),
+        "solicitudes_perdidas_del_bono": int(tabla.loc[~en_bono, "solicitudes"].sum()),
+        "pearson_parcial": pearson,
+        "espacial": esp,
+        "conclusion": _concluir_modelo(pearson["rechazadas"], esp["elegido"]),
+    }
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
     tabla = pd.read_parquet(bono.PROCESSED / "bono.parquet")
@@ -273,9 +318,6 @@ def main() -> None:
     d, puntos = preparar(tabla, renta, xy)
     pearson = bono.validacion(tabla, renta, xy)[Y]["pearson"]
     esp = {f"k{k}": regresion(d, puntos, k) for k in (K, 8)}
-    elegido = esp[f"k{K}"]["elegido"]
-    sar = elegido["modelo"] == "SAR"
-    efecto = elegido["efectos"]["total"] if sar else elegido["beta"]
     resultado = {
         "n": len(d),
         "pearson_parcial": pearson,
@@ -284,7 +326,10 @@ def main() -> None:
         "geary_residuos_k5": bono.geary(bono._residuos(d[Y], d[X]), puntos, K),
         "lisa": _resumen_lisa(lisa(d, puntos)),
         "lisa_k8": _resumen_lisa(lisa(d, puntos, k=8)),
-        "conclusion": concluir(pearson["r"], pearson["p"], efecto, elegido["p"]),
+        "conclusion": _concluir_modelo(pearson, esp[f"k{K}"]["elegido"]),
+        "robustez_inquilinos": robustez_inquilinos(
+            tabla, d, puntos, censo2021.pct_alquiler_joven()
+        ),
     }
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)

@@ -137,3 +137,62 @@ def test_preparar_exige_renta():
         bi.preparar(tabla.assign(solicitudes=[10, 0]), renta, xy)
     with pytest.raises(ValueError, match="recuentos"):
         bi.preparar(tabla.assign(aceptadas=[4, np.nan]), renta, xy)
+
+
+def test_robustez_inquilinos_denominador_perdidos_y_regla():
+    rng = np.random.default_rng(1)
+    xy = _rejilla(5)
+    ids = [f"280{i:02d}" for i in range(1, 26)]
+    esfuerzo = rng.uniform(0.1, 0.5, 25)
+    pob = rng.uniform(500, 5000, 25)
+    pct = pd.Series(rng.uniform(0.2, 0.6, 25), index=ids)
+    # la ayuda por 1.000 jóvenes en alquiler es lineal en el esfuerzo: solo sale bien con población × porcentaje
+    y = 2 + 30 * esfuerzo + rng.normal(0, 0.3, 25)
+    rechazadas = y * pob * pct.to_numpy() / 1000
+    d = pd.DataFrame(
+        {
+            "solicitudes": 2 * rechazadas + 1,
+            "aceptadas": rechazadas,
+            "rechazadas": rechazadas,
+            "poblacion_joven": pob,
+            "esfuerzo": esfuerzo,
+            "renta": rng.normal(30, 5, 25),
+            "tope": rng.normal(1, 0.3, 25),
+        },
+        index=pd.Index(ids, name="municipio_id"),
+    )
+    # sin porcentaje: nulo (28003), ausente (28007) y cero (28011); 28099 tiene porcentaje pero no está en la muestra
+    pct["28003"] = np.nan
+    pct["28011"] = 0.0
+    pct = pct.drop("28007")
+    pct["28099"] = 0.4
+    tabla = pd.DataFrame(
+        {
+            "municipio_id": [*ids, "28098", "28099"],
+            "solicitudes": [*d["solicitudes"], 7.0, 5.0],
+        }
+    )
+    sal = bi.robustez_inquilinos(tabla, d, xy, pct)
+    perdidos = ["28003", "28007", "28011"]
+    assert sal["n"] == 22
+    assert sal["perdidos_de_la_muestra"] == 3
+    assert sal["solicitudes_perdidas_de_la_muestra"] == int(
+        d.loc[perdidos, "solicitudes"].sum()
+    )
+    # del Bono se pierden además 28098 (sin porcentaje); 28099 sí lo tiene
+    assert sal["perdidos_del_bono"] == 4
+    assert sal["solicitudes_perdidas_del_bono"] == int(
+        d.loc[perdidos, "solicitudes"].sum() + 7
+    )
+    ok = d.drop(perdidos)
+    r = sal["pearson_parcial"]["rechazadas"]
+    esperado = bono.correlacion_parcial(
+        ok["esfuerzo"], pd.Series(y, index=ids).drop(perdidos), ok[["renta", "tope"]]
+    )
+    # si se rompe el denominador (p. ej. solo población), r deja de coincidir con la relación plantada
+    assert r["r"] == pytest.approx(esperado["r"])
+    assert r["n"] == 22 and esperado["r"] > 0.9
+    e = sal["espacial"]["elegido"]
+    efecto = e["efectos"]["total"] if e["modelo"] == "SAR" else e["beta"]
+    assert sal["conclusion"] == bi.concluir(r["r"], r["p"], efecto, e["p"])
+    assert sal["conclusion"] == "robusta"
