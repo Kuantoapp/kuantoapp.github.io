@@ -44,6 +44,7 @@ Supuestos:
 """
 
 import json
+import math
 from bisect import bisect_right
 from pathlib import Path
 from typing import Any
@@ -224,10 +225,43 @@ def _entero(nombre: str, valor: Any, rango: range) -> None:
         )
 
 
+def _numero(nombre: str, valor: Any, minimo: float) -> None:
+    """`valor` es un número finito (no bool) mayor que `minimo`."""
+    if (
+        type(valor) not in (int, float)
+        or not math.isfinite(valor)
+        or not valor > minimo
+    ):
+        raise ValueError(f"{nombre} = {valor!r}: debe ser un número mayor que {minimo}")
+
+
+def _estructura(entrada: Any) -> None:
+    """La entrada es un objeto con `hogar` y `sueldos`, y cada parte del tipo esperado."""
+    claves = entrada.keys() if isinstance(entrada, dict) else set()
+    if {"hogar", "sueldos"} - claves:
+        raise ValueError("entrada sin hogar o sueldos (debe ser un objeto con ambos)")
+    for clave, tipo in {
+        "hogar": dict,
+        "sueldos": list,
+        "escenario": dict,
+        "zonas": list,
+    }.items():
+        if clave in entrada and not isinstance(entrada[clave], tipo):
+            raise ValueError(f"{clave}: debe ser de tipo {tipo.__name__}")
+    ids = [*entrada.get("zonas", []), entrada.get("ref")]
+    if not all(isinstance(s, dict) for s in entrada["sueldos"]) or not all(
+        i is None or isinstance(i, str) for i in ids
+    ):
+        raise ValueError("cada sueldo debe ser un objeto, y zonas y ref, textos")
+
+
 def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     """Hogar con los valores del perfil por defecto y escenario completo, validados."""
     h = entrada["hogar"]
-    if h.get("perfil") not in api["hogares"]["perfiles"]:
+    if (
+        type(h.get("perfil")) is not str
+        or h["perfil"] not in api["hogares"]["perfiles"]
+    ):
         raise ValueError(f"perfil desconocido: {h.get('perfil')!r}")
     hogar = {**api["hogares"]["perfiles"][h["perfil"]], **h}
     pedido = entrada.get("escenario", {})
@@ -236,11 +270,7 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     _entero("edad", hogar.get("edad"), range(EDAD_MIN, EDAD_MAX + 1))
     esc = {"tarifas": "vigente_2026", "subida_alquiler": 0.0, "edad": hogar["edad"]}
     esc |= {k: v for k, v in pedido.items() if v is not None}
-    subida = esc["subida_alquiler"]
-    if type(subida) not in (int, float) or not subida > -100:
-        raise ValueError(
-            f"subida_alquiler = {subida!r}: debe ser un número mayor que −100"
-        )
+    _numero("subida_alquiler", esc["subida_alquiler"], -100)
     _entero("edad", esc["edad"], range(EDAD_MIN, EDAD_MAX + 1))
     _entero("adultos", hogar["adultos"], range(1, 3))
     maximo = max(c["hijos"] for c in api["netos"]["configuraciones"])
@@ -248,10 +278,12 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
         "hijos", hogar["hijos"], range(maximo + 1)
     )  # la rejilla de netos llega a 2 (#183)
     _entero("personas_comparten", hogar["personas_comparten"], range(1, 21))
-    if not hogar["m2"] > 0 or esc["tarifas"] not in api["tarifas"]["escenarios"]:
-        raise ValueError(
-            f"m2 = {hogar['m2']!r} o escenario {esc['tarifas']!r} inválido"
-        )
+    _numero("m2", hogar["m2"], 0)
+    if (
+        type(esc["tarifas"]) is not str
+        or esc["tarifas"] not in api["tarifas"]["escenarios"]
+    ):
+        raise ValueError(f"escenario {esc['tarifas']!r} inválido")
     return hogar, esc
 
 
@@ -268,6 +300,7 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
         _entero("dias", s["dias"], range(1, 6))
         if (
             s["modo"] not in MODOS
+            or type(s["viajes_dia"]) is not int
             or s["viajes_dia"] not in api["tarifas"]["viajes_dia"]
         ):
             raise ValueError(
@@ -277,22 +310,24 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
             raise ValueError("cada sueldo lleva bruto o neto_mes, uno de los dos")
         if "bruto" in s:
             s["neto_mes"] = neto_mes(api["netos"], s["bruto"], hogar)
-        elif type(s["neto_mes"]) not in (int, float) or not s["neto_mes"] > 0:
-            raise ValueError(f"neto_mes = {s['neto_mes']!r}: debe ser positivo")
+        else:
+            _numero("neto_mes", s["neto_mes"], 0)
         salida.append(s)
     return salida
 
 
 def calcular(api: Api, entrada: dict) -> dict:
     """Resultado por zona con `precio_hora` frente a la referencia (ver el docstring del módulo)."""
-    if faltan := {"hogar", "sueldos"} - entrada.keys():
-        raise ValueError(f"entrada sin {sorted(faltan)}")
+    _estructura(entrada)
     hogar, escenario = _hogar(api, entrada)
     sueldos = _sueldos(api, entrada, hogar)
     ref = entrada.get("ref")
     zonas = list(
         dict.fromkeys(
-            [*entrada.get("zonas", api["tiempos"]["origenes"]), *([ref] if ref else [])]
+            [
+                *entrada.get("zonas", api["tiempos"]["origenes"]),
+                *([] if ref is None else [ref]),
+            ]
         )
     )
     if desconocidas := [z for z in zonas if z not in api["alquiler"]["zonas"]]:
