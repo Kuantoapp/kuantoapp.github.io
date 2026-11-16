@@ -123,7 +123,7 @@ es pérdida de precisión, no un efecto nulo («no concluyente»). Cuánto se re
 en el MCO-HAC, β 83 a 65, p = 0,11: el sesgo de variable omitida β_% · δ, con δ = esfuerzo → % mayor tras el filtro espacial).
 El error de medida del % (2021, 20-34, incluye a quien vive en un piso alquilado de sus padres) dejaría confusión residual
 a favor del esfuerzo, no en contra. El % es anterior al Bono, así que no es un control posterior al tratamiento; actúa como
-exposición (solo quien alquila puede pedir). Vale para los 112, no para los 134. Moran de los residuos filtrados ≈ 0
+exposición (solo quien alquila, o va a alquilar, puede pedirlo: art. 6.1.c RD 42/2022). Vale para los 112, no para los 134. Moran de los residuos filtrados ≈ 0
 (0,000 y 0,005).
 """
 
@@ -316,7 +316,7 @@ def control_alquiler(r: pd.DataFrame, puntos: np.ndarray) -> dict:
         sal[f"k{k}"] = {
             **c,
             "ic95": [c["beta"] - 1.96 * c["se"], c["beta"] + 1.96 * c["se"]],
-            "alquiler_joven": _coef(m, 4),
+            "alquiler_joven": _coef(m, len(X) + 1),
             "moran_residuos": bono.moran(m.e_filtered.ravel(), puntos, k),
             "iteraciones": m.iteration,
         }

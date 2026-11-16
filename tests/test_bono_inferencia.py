@@ -248,6 +248,9 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     assert sal["correlacion_porcentaje"]["esfuerzo"] == pytest.approx(
         ok["esfuerzo"].corr(pct[ok.index])
     )
+    assert {"k5", "k8", "ols_hac", "conclusion"} <= set(sal["control_alquiler"])
+    for c in ("solicitudes_por_mil", "tasa_rechazo"):
+        assert np.isfinite(sal["correlacion_porcentaje"][c])
     with pytest.raises(ValueError, match="0 %"):
         bi.robustez_vivienda_alquilada(
             tabla, d, xy, pct.where(pct.index != "28001", 0.0), "x"
@@ -271,5 +274,6 @@ def test_control_alquiler_quita_el_efecto_que_solo_pasa_por_el_porcentaje():
         assert res[k]["p"] > 0.05
         assert res[k]["ic95"][0] < 0 < res[k]["ic95"][1]
         assert res[k]["alquiler_joven"]["p"] < 0.05
+        assert res[k]["alquiler_joven"]["beta"] == pytest.approx(1.0, abs=0.2)
         assert 1 < res[k]["iteraciones"] < 10
     assert res["conclusion"] == "no concluyente"
