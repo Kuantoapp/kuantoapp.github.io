@@ -1,6 +1,6 @@
 ---
-description: "Explora si una variable territorial tiene patrón espacial e interpreta el resultado con la teoría: matriz de pesos W, I de Moran global y local (LISA), hotspots Getis-Ord Gi*, Moran bivariante, correlograma, mapas de caja, tasas con Bayes empírico y patrones de puntos (K y L de Ripley, densidad kernel). No hace mapas finales (dm-cartografia) ni entrena modelos (dm-modelado-espacial)."
-when_to_use: "¿Hay autocorrelación espacial?, ¿dónde están los clústeres o los atípicos?, ¿esta W es razonable?, ¿son fiables las tasas de zonas pequeñas?, ¿los servicios están donde está la gente?, ¿a qué escala llega el patrón?, ¿es real o un artefacto?, ¿qué modelo pide esta variable?, qué significa este Moran."
+description: "Explora dónde hay patrón espacial en una variable territorial e interpreta el resultado con la teoría: matriz de pesos W, I de Moran global y local (LISA), Getis-Ord Gi*, Moran bivariante, correlograma, tasas con Bayes empírico, mapa de necesidad frente a recurso por municipio y patrones de puntos (Ripley, kernel). No hace mapas finales (dm-cartografia) ni estima efectos ni predice (dm-modelado-espacial)."
+when_to_use: "¿Dónde hay mucha necesidad y poca ayuda (necesidad frente a recurso)?, ¿son fiables las tasas por 1.000 de zonas pequeñas?, ¿hay autocorrelación espacial?, ¿dónde están los clústeres o atípicos?, ¿esta W es razonable?, ¿a qué escala llega el patrón?, ¿es real o un artefacto?, qué significa este Moran."
 ---
 
 # Exploración espacial (ESDA)
@@ -74,6 +74,9 @@ Guía completa de lectura y de qué hacer después: [interpretar-resultados.md](
 
 ## Errores a evitar
 
+- LISA con FDR y pocas permutaciones: la FDR (Benjamini–Hochberg, `esda.fdr`) solo rechaza si hay k zonas con p ≤ k·α/n, y con un suelo p_min hacen falta al menos ⌈p_min·n/α⌉ zonas en el suelo. p_min = 3/(R+1) con `alternative='two-sided'` y 1/(R+1) con `'directed'` (el valor por defecto de `Moran_Local` en esda 2.10). Elige R para que un municipio aislado pueda salir (p_min < α/n): si no, «todo ns» puede ser un artefacto.
+- `esda.Moran.p_sim` es unilateral, en la dirección del estadístico (no depende de `alternative`, que es de `Moran_Local`): para una p bilateral se dobla.
+- Bayes empírico global con una zona que concentra la población (la capital): fija la media a priori; se calcula sin ella y se declara.
 - Moran o LISA con W sin normalizar, con islas sin tratar o con una W construida con la propia variable.
 - Conclusiones que solo se sostienen con una W.
 - Clústeres LISA sin corregir por comparaciones múltiples.

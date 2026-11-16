@@ -1,6 +1,6 @@
 ---
-description: "Entrena, valida, interpreta y ajusta modelos con datos territoriales, contrastando cada resultado con la teoría: imputación o predicción por zona con retardos Wy sin fuga, validación aleatoria frente a espacial (bloques, buffer), selección de variables, kriging, intervalos conformales por grupo, equidad del error, SHAP y regresión SAR, SEM o SDM. No prepara geometrías (dm-cartografia) ni hace la exploración inicial (dm-eda-espacial)."
-when_to_use: "Partir train y test, spatial cross-validation, elegir variables o modelo, leer residuos, variogramas o métricas; ¿mi modelo tiene fuga?, ¿SAR o SEM?, ¿por qué el error por bloques es peor que el aleatorio?, calcular intervalos, explicar una predicción, ¿este resultado tiene sentido según la teoría?"
+description: "Estima cuánto explica una variable de otra y predice con datos territoriales, contrastando cada resultado con la teoría: correlación parcial o regresión (MCO, SAR, SEM, SDM) entre indicadores por municipio o zona controlando por otras variables, conteos o tasas con GLM (binomial negativa con offset, binomial) y sus residuos; imputación con Wy sin fuga, validación espacial, kriging, intervalos y SHAP. No prepara geometrías (dm-cartografia) ni explora el patrón (dm-eda-espacial)."
+when_to_use: "¿X explica Y entre municipios controlando por la renta?, correlación parcial con datos por zona, ¿es significativa esta relación entre municipios?, ¿MCO, SEM o SAR?, GLM binomial negativa con offset, ¿mi modelo tiene fuga?, spatial cross-validation, calcular intervalos, explicar una predicción."
 ---
 
 # Modelado espacial
@@ -47,7 +47,7 @@ Validar el caso B al azar da un error engañosamente bajo. Ver [prediccion-y-val
 
 ## Para explicar (inferencia)
 
-Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto vale X aquí?»: MCO → Moran de residuos → tests LM (Anselin) o comparación por AIC (LeSage y Pace) → SAR, SEM o SDM por máxima verosimilitud → efectos directos e indirectos. Ver [regresion-espacial.md](referencia/regresion-espacial.md). Superficies continuas: [interpolacion.md](referencia/interpolacion.md).
+Correlación parcial y GLM de conteos o tasas por zona: [correlacion-y-glm.md](referencia/correlacion-y-glm.md). Regresión espacial cuando la pregunta es «¿qué explica X?» y no «¿cuánto vale X aquí?»: MCO → Moran de residuos → tests LM (Anselin) o comparación por AIC (LeSage y Pace) → SAR, SEM o SDM por máxima verosimilitud → efectos directos e indirectos. Ver [regresion-espacial.md](referencia/regresion-espacial.md). Superficies continuas: [interpolacion.md](referencia/interpolacion.md).
 
 ## Contrastar cada resultado con la teoría
 
@@ -86,6 +86,11 @@ Guía completa de lectura y de qué ajustar: [interpretar-resultados.md](referen
 
 ## Errores que invalidan un resultado
 
+- AIC de spreg: `ML_Error` no cuenta λ y `ML_Lag` sí cuenta ρ; para comparar se calcula igual, `2·len(betas) − 2·logll`.
+- La regla de elección de modelo y la de conclusión se fijan antes de ver el dato, y se escriben.
+- Dos especificaciones se comparan sobre la misma submuestra; si cambian la muestra y el denominador a la vez, no se atribuye el efecto.
+- Que añadir WX (SLX o SDEM) baje la significación no prueba inestabilidad si el AIC prefiere el modelo sin WX: puede ser colinealidad entre X y WX.
+- Salidas generadas (JSON, log) con cifras y conclusiones de la regla; la interpretación va en el texto revisado, que no se recalcula.
 - `Wy` del test calculado con el **propio y de test**, o codificaciones por objetivo ajustadas fuera del fold.
 - Validación aleatoria presentada como error del caso B.
 - Coordenadas o identificadores de zona como variables en el caso B, o variables elegidas por importancia del modelo completo (RFE). El modelo memoriza y el mapa muestra artefactos.
