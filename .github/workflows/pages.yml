@@ -1,0 +1,27 @@
+name: Pages
+on:
+  push:
+    branches: [main]
+    paths: ["app/**"]
+  workflow_dispatch: # primer despliegue tras activar Pages, sin tener que tocar app/
+permissions: {}
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { persist-credentials: false }
+      - uses: actions/upload-pages-artifact@v5
+        with: { path: app }
+      - id: deploy
+        uses: actions/deploy-pages@v5
