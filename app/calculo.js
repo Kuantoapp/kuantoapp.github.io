@@ -6,6 +6,7 @@
 export const UMBRAL_HORAS = 5;
 export const MISMO_TIEMPO = "mismo tiempo";
 export const REFERENCIA = "referencia";
+// 16: ET art. 6.1 (BOE-A-2015-11430); 64: el neto supone sin mínimo por edad >65 (LIRPF art. 57.2, BOE-A-2006-20764).
 const EDAD_MIN = 16;
 const EDAD_MAX = 64;
 const MODOS = ["tp", "coche"];
