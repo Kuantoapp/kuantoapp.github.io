@@ -8,9 +8,6 @@ from itertools import pairwise
 from pathlib import Path
 
 import geopandas as gpd
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -18,10 +15,11 @@ from matplotlib.colors import BoundaryNorm, ListedColormap
 from matplotlib.patches import Patch
 
 from mesobra import esfuerzo as esf
+from mesobra.zonas import MADRID
 
 ZONAS = Path(__file__).resolve().parents[2] / "app/datos/zonas.geojson"
 CRS = 25830  # UTM 30N: se dibuja en metros, sin deformar la Comunidad
-MADRID = "28079"
+MIN_TESTIGOS = 50  # con menos contratos declarados el valor de la zona es impreciso
 FUENTE_MAPAS = "Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia."
 FUENTE_BONO = (
     "Fuente: Bono Alquiler Joven 2022 (Comunidad de Madrid), Censo anual (INE), SERPAVI (MIVAU) y ADRH (INE), "
@@ -35,7 +33,7 @@ def leer_zonas(ruta: Path = ZONAS) -> gpd.GeoDataFrame:
     return gpd.read_file(ruta).to_crs(CRS)
 
 
-def _es(x: float, decimales: int = 1) -> str:
+def es(x: float, decimales: int = 1) -> str:
     """Número en formato español: punto de miles, coma decimal y signo menos tipográfico."""
     return f"{x:,.{decimales}f}".translate(str.maketrans(",.-", ".,−"))
 
@@ -54,14 +52,41 @@ def _unir(zonas: gpd.GeoDataFrame, serie: pd.Series) -> gpd.GeoDataFrame:
     return zonas.assign(valor=zonas["zona_id"].map(serie))
 
 
+def _pocos(tabla: pd.DataFrame, anios: list[int]) -> pd.Series:
+    """Por zona: True si en alguno de los `anios` tiene menos de `MIN_TESTIGOS` testigos del SERPAVI."""
+    t = tabla[tabla["anio"].isin(anios)]
+    return (t["testigos"] < MIN_TESTIGOS).groupby(t["zona_id"]).any()
+
+
+def _marcar(g: gpd.GeoDataFrame, pocos: pd.Series) -> gpd.GeoDataFrame:
+    """Columna `pocos` (solo en las zonas con valor: las sin dato ya van en gris)."""
+    marca = g["zona_id"].isin(pocos.index[pocos])
+    return g.assign(pocos=marca & g["valor"].notna())
+
+
+def _contorno(ax: plt.Axes, g: gpd.GeoDataFrame) -> None:
+    """Borde negro grueso, sin relleno, en las zonas con `pocos`."""
+    if g["pocos"].any():
+        g[g["pocos"]].plot(ax=ax, facecolor="none", edgecolor="black", linewidth=1.3)
+
+
+def _rangos(cortes: list[float]) -> list[str]:
+    return [f"{es(100 * a)} a {es(100 * b)}" for a, b in pairwise(cortes)]
+
+
 def _mapa(
     zonas: gpd.GeoDataFrame,
     cortes: list[float],
     paleta: str,
-    titulo: str,
+    textos: tuple[str, list[str], str],
     ruta: Path,
 ) -> None:
-    """Coropleta por clases (`cortes` en fracción, se rotulan en %) con recuadro ampliado de Madrid."""
+    """Coropleta por clases (`cortes` en fracción) con recuadro ampliado de Madrid.
+
+    `textos`: título de la leyenda, rótulo de cada clase y línea extra del pie. Las zonas con
+    `pocos` van con borde negro grueso encima del color.
+    """
+    titulo, etiquetas, nota = textos
     n = len(cortes) - 1
     colores = plt.get_cmap(paleta)(np.linspace(0.1, 0.9, n))
     estilo = {
@@ -77,10 +102,12 @@ def _mapa(
         raise ValueError("La geometría no trae los distritos de Madrid (28079)")
     fig, ax = plt.subplots(figsize=(8, 7.4))
     zonas.plot(ax=ax, **estilo)
+    _contorno(ax, zonas)
     ax.set_axis_off()
     # los distritos son diminutos frente a los municipios rurales: recuadro ampliado
     zoom = ax.inset_axes([0.0, 0.64, 0.36, 0.36])
     madrid.plot(ax=zoom, **estilo)
+    _contorno(zoom, madrid)
     x0, y0, x1, y1 = madrid.total_bounds
     zoom.set(
         xlim=(x0, x1),
@@ -95,7 +122,6 @@ def _mapa(
     marca = ax.indicate_inset_zoom(zoom, edgecolor="#444444")
     for c in marca.connectors:  # sin líneas de unión: cruzan el mapa
         c.set_visible(False)
-    etiquetas = [f"{_es(100 * a)} a {_es(100 * b)}" for a, b in pairwise(cortes)]
     leyenda = [
         Patch(facecolor=c, label=e) for c, e in zip(colores, etiquetas, strict=True)
     ]
@@ -108,33 +134,67 @@ def _mapa(
                 label=f"sin dato (n = {sin})",
             )
         )
+    leyenda.append(
+        Patch(
+            facecolor="none",
+            edgecolor="black",
+            linewidth=1.3,
+            label=f"pocos contratos (< {MIN_TESTIGOS}): impreciso (n = {int(zonas['pocos'].sum())})",
+        )
+    )
     ax.legend(
-        handles=leyenda, title=titulo, loc="lower left", bbox_to_anchor=(0.0, -0.1), frameon=False,
+        handles=leyenda, title=titulo, loc="lower left", bbox_to_anchor=(0.0, -0.17), frameon=False,
         fontsize=9, title_fontsize=9, alignment="left",
     )  # fmt: skip
-    fig.text(0.02, 0.015, FUENTE_MAPAS, fontsize=8, color="#444444")
+    ax.text(
+        0.0,
+        -0.2,
+        f"{nota}{FUENTE_MAPAS}",
+        transform=ax.transAxes,
+        va="top",
+        fontsize=8,
+        color="#444444",
+    )
     fig.savefig(ruta, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
-def mapa_esfuerzo(tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> int:
-    """Esfuerzo del último año en quintiles; devuelve las zonas sin dato. Madrid entero no se pinta."""
+def mapa_esfuerzo(
+    tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path
+) -> tuple[int, int]:
+    """Esfuerzo del último año en quintiles (`tabla` con `testigos`); devuelve zonas sin dato y con pocos contratos."""
     anio = int(tabla["anio"].max())
     ultimo = tabla[(tabla["anio"] == anio) & (tabla["zona_id"] != MADRID)]
-    g = _unir(zonas, ultimo.set_index("zona_id")["esfuerzo"])
+    g = _marcar(
+        _unir(zonas, ultimo.set_index("zona_id")["esfuerzo"]), _pocos(ultimo, [anio])
+    )
     cortes = np.nanquantile(g["valor"], np.linspace(0, 1, 6)).tolist()
-    titulo = f"Esfuerzo del alquiler en {anio}\n(% de la renta neta mensual del hogar; quintiles)"
-    _mapa(g, cortes, "YlOrRd", titulo, ruta)
-    return int(g["valor"].isna().sum())
+    titulo = f"Esfuerzo del alquiler en {anio}\n(% de la renta neta media\nmensual del hogar; quintiles)"
+    _mapa(g, cortes, "YlOrRd", (titulo, _rangos(cortes), ""), ruta)
+    return int(g["valor"].isna().sum()), int(g["pocos"].sum())
 
 
-def mapa_cambio(tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> int:
-    """Cambio del esfuerzo entre el primer y el último año, en 6 clases simétricas en torno a 0."""
-    g = _unir(zonas, esf.cambio(tabla).drop(MADRID, errors="ignore"))
+def mapa_cambio(
+    tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path
+) -> tuple[int, int]:
+    """Cambio del esfuerzo entre el primer y el último año (`tabla` con `testigos`) en 6 clases simétricas en torno a 0."""
     desde, hasta = int(tabla["anio"].min()), int(tabla["anio"].max())
-    titulo = f"Cambio del esfuerzo {desde}-{hasta}\n(puntos porcentuales;\ncortes simétricos en torno a 0)"
-    _mapa(g, cortes_simetricos(g["valor"]), "RdBu_r", titulo, ruta)
-    return int(g["valor"].isna().sum())
+    g = _unir(zonas, esf.cambio(tabla).drop(MADRID, errors="ignore"))
+    g = _marcar(g, _pocos(tabla, [desde, hasta]))
+    cortes = cortes_simetricos(g["valor"])
+    etiquetas = _rangos(cortes)
+    # las clases de los extremos llegan hasta el mínimo y el máximo reales: se rotulan abiertas
+    etiquetas[0], etiquetas[-1] = (
+        f"< {es(100 * cortes[1])}",
+        f"> {es(100 * cortes[-2])}",
+    )
+    titulo = (
+        f"Cambio del esfuerzo {desde}-{hasta} (p. p.)\n"
+        "cortes simétricos en torno a 0:\nterciles de |cambio|"
+    )
+    pie = f"Extremos: mínimo {es(100 * g['valor'].min())} y máximo +{es(100 * g['valor'].max())} p. p.\n"
+    _mapa(g, cortes, "RdBu_r", (titulo, etiquetas, pie), ruta)
+    return int(g["valor"].isna().sum()), int(g["pocos"].sum())
 
 
 def dispersion_bono(bono: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> None:

@@ -10,6 +10,7 @@ from datetime import date
 import pandas as pd
 
 from mesobra import alquiler, api_estatica, bono, esfuerzo, figuras, renta
+from mesobra.figuras import es
 from mesobra.pipeline_euros import APP_DATOS, MADRID, ORIGEN_SERPAVI, SERPAVI
 
 LOG = logging.getLogger(__name__)
@@ -46,11 +47,8 @@ NOTA = (
 )
 
 
-_es = figuras._es
-
-
 def _pct(x: float) -> str:
-    return _es(100 * x) + " %"
+    return es(100 * x) + " %"
 
 
 def titulares(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> list[dict]:
@@ -59,7 +57,7 @@ def titulares(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> list[dict]:
     cambio = esfuerzo.cambio(tabla).drop(MADRID, errors="ignore").dropna()
     desde, hasta = int(tabla["anio"].min()), int(tabla["anio"].max())
     tasa = solicitudes["aceptadas"].sum() / solicitudes["solicitudes"].sum()
-    otro = _es(bono.TOTALES[2], 0)
+    otro = es(bono.TOTALES[2], 0)
     return [
         {
             "texto": f"El alquiler mediano de Madrid pesa el {_pct(madrid[hasta])} de la renta neta media mensual de sus hogares en "
@@ -69,7 +67,7 @@ def titulares(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> list[dict]:
         {
             "texto": f"Entre {desde} y {hasta} el esfuerzo sube en {(cambio > 0).sum()} de las {len(cambio)} zonas con dato "
             f"en ambos años (sin Madrid entero, que va por sus distritos); la mediana del cambio es "
-            f"{_es(100 * cambio.median(), 2)} puntos porcentuales.",
+            f"{es(100 * cambio.median(), 2)} puntos porcentuales.",
             "fuente": FUENTE_ESFUERZO,
         },
         {
@@ -88,6 +86,13 @@ def _registros(df: pd.DataFrame, columnas: dict) -> list[dict]:
 def analisis_json(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> dict:
     """Contrato `analisis.json`: quita las filas sin renta (secreto del INE) y los NaN pasan a `None`."""
     sin_secreto = tabla[tabla["renta_hogar_mes"].notna()]
+    quitadas = tabla[
+        tabla["renta_hogar_mes"].isna() & tabla["alquiler_mes_p50"].notna()
+    ]
+    if not quitadas.empty:
+        raise ValueError(
+            f"Filas con alquiler y sin renta que se perderían:\n{quitadas}"
+        )
     bloques = {
         nombre: _registros(df, api_estatica.BLOQUES[nombre][0])
         for nombre, df in (("esfuerzo", sin_secreto), ("bono", solicitudes))
@@ -101,27 +106,74 @@ def analisis_json(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> dict:
     return {"meta": meta, **bloques, "titulares": titulares(tabla, solicitudes)}
 
 
+def _controlar(
+    crudo: pd.DataFrame, solicitudes: pd.DataFrame, tabla: pd.DataFrame
+) -> None:
+    """Los mismos controles que `bono.main` y `esfuerzo.main`: totales del CSV, 159 municipios, 200 zonas por año."""
+    otro = crudo[crudo["municipio_id"].isna()]
+    totales = (
+        int(crudo["solicitudes"].sum()),
+        int(crudo["aceptadas"].sum()),
+        int(otro["solicitudes"].sum()),
+    )
+    if totales != bono.TOTALES or otro["aceptadas"].sum() != 0:
+        raise ValueError(
+            f"Totales {totales} distintos de {bono.TOTALES} (solicitudes, aceptadas, «Otro»)"
+        )
+    if len(solicitudes) != 159:
+        raise ValueError(f"Se esperaban 159 municipios y hay {len(solicitudes)}")
+    por_anio = tabla.groupby("anio").size()
+    if (por_anio != 200).any():
+        raise ValueError(f"No hay 200 zonas por año:\n{por_anio}")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    tabla = esfuerzo.esfuerzo(
-        alquiler.alquiler_zona(alquiler.leer_serpavi()), renta.renta()
-    )
+    zona = alquiler.alquiler_zona(alquiler.leer_serpavi())
+    tabla = esfuerzo.esfuerzo(zona, renta.renta())
+    crudo = bono.leer_bono()
     solicitudes = bono._por_anio(
-        bono.leer_bono(), bono.poblacion_joven(bono._edades()), tabla, bono.ANIO
+        crudo, bono.poblacion_joven(bono._edades()), tabla, bono.ANIO
     )
+    _controlar(crudo, solicitudes, tabla)
     objeto = analisis_json(tabla, solicitudes)
+    LOG.info(
+        "Filas de esfuerzo sin renta (secreto del INE) quitadas: %d",
+        tabla["renta_hogar_mes"].isna().sum(),
+    )
     for t in objeto["titulares"]:
         LOG.info("Titular: %s", t["texto"])
     api_estatica.escribir("analisis.json", objeto, APP_DATOS)
     zonas = figuras.leer_zonas()
     APP_IMG.mkdir(exist_ok=True)
-    sin_dato = figuras.mapa_esfuerzo(tabla, zonas, APP_IMG / "esfuerzo_ultimo.png")
-    figuras.mapa_cambio(tabla, zonas, APP_IMG / "esfuerzo_cambio.png")
+    con_testigos = tabla.merge(
+        zona[["zona_id", "anio", "testigos"]],
+        on=["zona_id", "anio"],
+        how="left",
+        validate="one_to_one",
+    )
+    sin1, pocos1 = figuras.mapa_esfuerzo(
+        con_testigos, zonas, APP_IMG / "esfuerzo_ultimo.png"
+    )
+    sin2, pocos2 = figuras.mapa_cambio(
+        con_testigos, zonas, APP_IMG / "esfuerzo_cambio.png"
+    )
     figuras.dispersion_bono(solicitudes, zonas, APP_IMG / "bono_dispersion.png")
     grupos = solicitudes["grupo"].value_counts()
     LOG.info(
-        "Mapa 1 sin dato: %d; Bono con esfuerzo: %d, sin dato: %d, necesidad alta y ayuda baja: %d",
-        sin_dato,
+        "Mapa 1: sin dato %d, pocos contratos (< %d) %d",
+        sin1,
+        figuras.MIN_TESTIGOS,
+        pocos1,
+    )
+    LOG.info(
+        "Mapa 2: sin dato %d, pocos contratos (< %d) %d",
+        sin2,
+        figuras.MIN_TESTIGOS,
+        pocos2,
+    )
+    LOG.info(
+        "Bono con esfuerzo: %d, sin dato: %d, necesidad alta y ayuda baja: %d",
         (solicitudes["grupo"] != "sin_dato").sum(),
         grupos.get("sin_dato", 0),
         grupos.get("necesidad_alta_ayuda_baja", 0),

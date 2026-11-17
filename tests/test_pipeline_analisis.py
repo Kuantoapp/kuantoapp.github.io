@@ -16,7 +16,7 @@ def _esfuerzo() -> pd.DataFrame:
         ("28079", 2024, 1100.0, 5000.0, 0.22),
         ("28001", 2015, 500.0, 2500.0, 0.20),
         ("28001", 2024, 600.0, 2500.0, 0.24),
-        ("28002", 2015, 400.0, np.nan, np.nan),  # renta secreta: no entra en el JSON
+        ("28002", 2015, np.nan, np.nan, np.nan),  # renta secreta: no entra en el JSON
         ("28002", 2024, np.nan, 2000.0, np.nan),  # sin alquiler: entra con null
     ]
     return pd.DataFrame(
@@ -76,7 +76,28 @@ def test_mapa_escribe_png(tmp_path):
         crs=figuras.CRS,
     )
     g = figuras._unir(zonas, pd.Series({"2807901": 0.2, "28001": 0.3}))
-    figuras._mapa(g, [0.1, 0.25, 0.4], "YlOrRd", "Prueba", tmp_path / "m.png")
+    g = figuras._marcar(g, pd.Series({"2807901": True}))
+    textos = ("Prueba", figuras._rangos([0.1, 0.25, 0.4]), "")
+    figuras._mapa(g, [0.1, 0.25, 0.4], "YlOrRd", textos, tmp_path / "m.png")
     assert (tmp_path / "m.png").stat().st_size > 0
     with pytest.raises(ValueError, match="sin geometría"):
         figuras._unir(zonas, pd.Series({"28999": 0.1}))
+
+
+def test_analisis_json_falla_si_la_renta_nula_tiene_alquiler():
+    tabla = _esfuerzo()
+    tabla.loc[tabla["renta_hogar_mes"].isna(), "alquiler_mes_p50"] = 400.0
+    with pytest.raises(ValueError, match="se perderían"):
+        pipeline_analisis.analisis_json(tabla, _bono())
+
+
+def test_pocos_contratos():
+    t = pd.DataFrame(
+        {
+            "zona_id": ["a", "a", "b", "b"],
+            "anio": [2015, 2024, 2015, 2024],
+            "testigos": [100, 49, 80, np.nan],
+        }
+    )
+    assert figuras._pocos(t, [2015, 2024]).to_dict() == {"a": True, "b": False}
+    assert figuras._pocos(t, [2015]).to_dict() == {"a": False, "b": False}
