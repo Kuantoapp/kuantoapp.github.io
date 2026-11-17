@@ -52,7 +52,7 @@ def test_resumen_a_mano():
     # precios 5, 10, -2, 20 (ordenados −2, 5, 10, 20): mediana 7,5; Q1 = 3,25; Q3 = 12,5
     assert (r["n"], r["mediana"], r["q1"], r["q3"]) == (4, 7.5, 3.25, 12.5)
     assert (r["n_mismo_tiempo"], r["n_negativos"]) == (1, 1)
-    assert (r["n_encima"], r["pct_encima"]) == (2, 50.0)  # 10 y 20 > 8
+    assert (r["n_encima"], r["pct_encima"]) == (2, 50.0)  # 10 y 20 ≥ 8
     # B1: mediana 7,5 con n = 4 (todos los precios); A y C2 sin precios
     assert r["coronas"] == {"B1": (7.5, 4)} and r["coronas_encima"] == []
     assert r["veredicto"] == "tesis"
@@ -80,8 +80,29 @@ def test_filas_con_el_smi():
 
 def test_titulares_validan_y_son_estimados():
     api = _api()
-    res = titulares.titulares(api)
+    res = titulares.titulares(titulares.resumenes(api))
     assert len(res) == 2 * len(titulares.PERFILES)
     obj = pipeline_analisis.analisis_json(_esfuerzo(), _bono())
     api_estatica.validar("analisis.json", {**obj, "titulares": obj["titulares"] + res})
     assert all("estimado" in t["texto"] and t["fuente"] for t in res)
+
+
+def test_sin_precios_falla():
+    df = pd.DataFrame({"precio_hora": [None], "corona": ["A"], "sobra": [1.0]})
+    with pytest.raises(ValueError, match="sin precio_hora"):
+        titulares.resumen(df, neto_hora=8.0)
+
+
+def test_neto_hora_smi_y_pareja():
+    api = _api()
+    horas = api["tarifas"]["semanas_mes"] * 40  # 151,33 h/mes
+    smi, _, pareja, _ = (r for _, r in titulares.resumenes(api))
+    solo = {**api["hogares"]["perfiles"]["solo"], "perfil": "solo"}
+    assert smi["neto_hora"] == pytest.approx(
+        calculo.neto_mes(api["netos"], 17094, solo) / horas
+    )
+    par = {**api["hogares"]["perfiles"]["pareja"], "perfil": "pareja"}
+    # dos sueldos iguales: el neto del hogar entre 2 × horas = el neto de uno entre horas
+    assert pareja["neto_hora"] == pytest.approx(
+        calculo.neto_mes(api["netos"], titulares.EAES, par) / horas
+    )

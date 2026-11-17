@@ -8,7 +8,10 @@ Tesis 2: con sueldos típicos, en muchas zonas no sobra nada. Todo sale de `meso
 
 Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
 1. Horas trabajadas al mes = `semanas_mes` × 5 × 8 (jornada de 40 h, ET art. 34.1, BOE-A-2015-11430),
-   igual para todos. Con jornada real menor el neto/hora real es mayor: favorece la tesis 1.
+   igual para todos: 151,3 h/mes efectivas (227 días × 8 h ÷ 12). Con las horas pagadas (40 × 52 ÷ 12 =
+   173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €), lo que favorecería la tesis 1;
+   con jornada real menor (parcial, convenio) sube, en contra de la tesis 1. La ganancia de la EAES
+   incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
    y neto/hora más bajo (contra la tesis 1).
@@ -36,12 +39,15 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
 
 import pandas as pd
 
-from mesobra import calculo
+from mesobra import calculo, parametros_2026
 from mesobra.figuras import es
 
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
-FUENTE_CALCULO = "elaboración propia con mesobra.calculo (SERPAVI, EPF, CRTM, r5py)"
+FUENTE_CALCULO = (
+    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF, tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
+    "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
+)
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"
 FUENTE_EAES = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28191: mediana de la ganancia anual "
@@ -51,7 +57,8 @@ FUENTE_OFICINA = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28186, serie EAES2540: ganancia media anual "
     "de las mujeres empleadas de oficina que no atienden al público, total nacional, 28.264,34 € (de 2024)"
 )
-SMI, EAES, OFICINA = 17094, 28037.75, 28264.34
+SMI = float(parametros_2026.SMI_ANUAL)
+EAES, OFICINA = 28037.75, 28264.34
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra). La enfermera de 26 años
 # no entra: el grupo más fino de la EAES (salud y enseñanza, tabla 28186) mezcla medicina y docencia.
 # `sueldos`: (bruto €/año, días a la semana en el destino).
@@ -78,7 +85,7 @@ PERFILES = [
         "fuente": FUENTE_EAES,
     },
     {
-        "nombre": "Madre sola de 34 años con un hijo y sueldo de administrativa",
+        "nombre": "Madre sola de 34 años con un hijo y el sueldo medio en España de una empleada de oficina",
         "perfil": "monoparental",
         "edad": 34,
         "sueldos": [(OFICINA, 5)],
@@ -130,6 +137,10 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
 def resumen(df: pd.DataFrame, neto_hora: float) -> dict:
     """Cifras de las dos tesis a partir de `filas`; función pura."""
     p = df["precio_hora"].dropna()
+    if p.empty:
+        raise ValueError(
+            "sin precio_hora: ningún par con ruta, alquiler y horas distintas"
+        )
     por_corona = p.groupby(df["corona"]).agg(mediana="median", n="size")
     por_encima = por_corona.index[por_corona["mediana"] >= neto_hora].tolist()
     zona = (
@@ -145,8 +156,8 @@ def resumen(df: pd.DataFrame, neto_hora: float) -> dict:
         "q3": p.quantile(0.75),
         "n_mismo_tiempo": int((df["etiqueta"] == calculo.MISMO_TIEMPO).sum()),
         "n_negativos": int((p < 0).sum()),
-        "n_encima": int((p > neto_hora).sum()),
-        "pct_encima": 100 * (p > neto_hora).mean(),
+        "n_encima": int((p >= neto_hora).sum()),
+        "pct_encima": 100 * (p >= neto_hora).mean(),
         "coronas": {c: (r["mediana"], int(r["n"])) for c, r in por_corona.iterrows()},
         "coronas_encima": por_encima,
         "veredicto": "plan B" if por_encima else "tesis",
@@ -174,10 +185,10 @@ def resumenes(api: dict) -> list[tuple[dict, dict]]:
     return salida
 
 
-def titulares(api: dict, res: list[tuple[dict, dict]] | None = None) -> list[dict]:
+def titulares(res: list[tuple[dict, dict]]) -> list[dict]:
     """Dos entradas `{"texto", "fuente"}` por perfil; descriptivas, con n y banda, todo «estimado»."""
     salida = []
-    for perfil, r in res or resumenes(api):
+    for perfil, r in res:
         fuente = f"{FUENTE_CALCULO}; sueldo: {perfil['fuente']}"
         coronas = ", ".join(
             f"{c} {es(m, 2)} € (n = {es(n, 0)})" for c, (m, n) in r["coronas"].items()
@@ -186,9 +197,9 @@ def titulares(api: dict, res: list[tuple[dict, dict]] | None = None) -> list[dic
         salida.append(
             {
                 "texto": f"{perfil['nombre']}: neto estimado de {es(r['neto_hora'], 2)} € por hora trabajada. "
-                f"En {es(r['n'], 0)} pares origen-destino con ruta, vivir lejos de un destino rinde una mediana estimada "
+                f"En {es(r['n'], 0)} pares origen-destino con ruta, alquiler y más horas que la zona de referencia, vivir lejos de un destino rinde una mediana estimada "
                 f"de {es(r['mediana'], 2)} € por hora extra de viaje (cuartiles {es(r['q1'], 2)} a {es(r['q3'], 2)}); "
-                f"supera el neto por hora en {es(r['n_encima'], 0)} pares ({es(r['pct_encima'])} %), "
+                f"iguala o supera el neto por hora en {es(r['n_encima'], 0)} pares ({es(r['pct_encima'])} %), "
                 f"{es(r['n_negativos'], 0)} salen negativos y otros {es(r['n_mismo_tiempo'], 0)} (mismo tiempo) quedan aparte. "
                 f"Mediana por corona de origen: {coronas}. Veredicto: {r['veredicto']}.",
                 "fuente": fuente,
@@ -198,7 +209,7 @@ def titulares(api: dict, res: list[tuple[dict, dict]] | None = None) -> list[dic
             {
                 "texto": f"{perfil['nombre']}: el sobrante mensual estimado, mediana entre los destinos a los que "
                 f"llega cada zona, es negativo en {r['n_zonas_negativas']} de {r['n_zonas']} zonas con alquiler "
-                f"(entre {alto} y {bajo} según el alquiler baje al P25 o suba al P75).",
+                f"(entre {alto} y {bajo} con el alquiler en su banda: P25 a P75, o el intervalo si la zona es estimada).",
                 "fuente": fuente,
             }
         )

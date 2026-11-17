@@ -18,7 +18,7 @@ from mesobra import (
     figuras,
     renta,
 )
-from mesobra import titulares as sueldos
+from mesobra import titulares as titulares_sueldos
 from mesobra.figuras import es
 from mesobra.pipeline_euros import APP_DATOS, MADRID, ORIGEN_SERPAVI, SERPAVI
 
@@ -153,8 +153,8 @@ def main() -> None:
     for t in objeto["titulares"]:
         LOG.info("Titular: %s", t["texto"])
     api = calculo.leer_api(APP_DATOS)
-    res = sueldos.resumenes(api)
-    objeto["titulares"] += sueldos.titulares(api, res)
+    res = titulares_sueldos.resumenes(api)
+    objeto["titulares"] += titulares_sueldos.titulares(res)
     for perfil, r in res:
         LOG.info("Resumen %s: %s", perfil["nombre"], r)
     api_estatica.escribir("analisis.json", objeto, APP_DATOS)
