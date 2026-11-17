@@ -111,16 +111,26 @@ def _c(beta, p):
     return {"beta": beta, "p": p}
 
 
-def test_concluir_sem_het_con_k5_y_k8():
-    assert bi.concluir(_c(80, 0.03), _c(70, 0.04)) == "robusta"
-    assert bi.concluir(_c(80, 0.03), _c(70, 0.2)) == "no concluyente"  # k = 8 no
-    assert bi.concluir(_c(80, 0.2), _c(70, 0.01)) == "no concluyente"  # k = 5 no
-    assert bi.concluir(_c(80, 0.01), _c(-70, 0.01)) == "no concluyente"  # signos
+def test_concluir_sem_het_con_k5_y_k8_y_hac():
+    hac_si, hac_no = _c(60, 0.01), _c(60, 0.17)
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.04), hac_si) == "robusta"
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.04), hac_no) == "indicio"
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.04), _c(-60, 0.01)) == "indicio"
+    assert bi.concluir(_c(80, 0.03), _c(70, 0.04), _c(60, float("nan"))) == "indicio"
     assert (
-        bi.concluir(_c(-80, 0.01), _c(-70, 0.01)) == "no concluyente"
+        bi.concluir(_c(80, 0.03), _c(70, 0.2), hac_si) == "no concluyente"
+    )  # k = 8 no
+    assert (
+        bi.concluir(_c(80, 0.2), _c(70, 0.01), hac_si) == "no concluyente"
+    )  # k = 5 no
+    assert (
+        bi.concluir(_c(80, 0.01), _c(-70, 0.01), hac_si) == "no concluyente"
+    )  # signos
+    assert (
+        bi.concluir(_c(-80, 0.01), _c(-70, 0.01), hac_si) == "no concluyente"
     )  # signo teórico
-    assert bi.concluir(_c(80, float("nan")), _c(70, 0.01)) == "no concluyente"
-    assert bi.concluir(_c(80, 0.01), _c(70, float("nan"))) == "no concluyente"
+    assert bi.concluir(_c(80, float("nan")), _c(70, 0.01), hac_si) == "no concluyente"
+    assert bi.concluir(_c(80, 0.01), _c(70, float("nan")), hac_si) == "no concluyente"
 
 
 def test_sem_het_recupera_beta_y_lambda_con_heterocedasticidad_y_hac_finito():
@@ -230,7 +240,7 @@ def test_robustez_vivienda_alquilada_denominador_perdidos_y_regla():
     assert r["n"] == 22 and esperado["r"] > 0.9
     e = sal["alquiler"]["espacial"]
     assert sal["alquiler"]["conclusion"] == bi.concluir(
-        e["k5"]["sem_het"], e["k8"]["sem_het"]
+        e["k5"]["sem_het"], e["k8"]["sem_het"], e["k5"]["ols_hac"]
     )
     assert sal["alquiler"]["conclusion"] == "robusta"
     assert set(sal["alquiler"]["espacial"]) == {"k5", "k8"}
