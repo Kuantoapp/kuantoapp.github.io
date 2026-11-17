@@ -11,13 +11,85 @@
 <body>
   <main>
     <aside>
-      <!-- Contenedores vacíos: los rellenan F1-09 (formulario), F2-01 (ficha) y F2-02 (escenarios). -->
-      <form id="formulario"></form>
+      <form id="formulario" novalidate autocomplete="off">
+        <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
+
+        <fieldset>
+          <legend>Sueldo</legend>
+          <div class="opciones">
+            <label><input type="radio" name="fuente" value="bruto" checked> Doy el bruto</label>
+            <label><input type="radio" name="fuente" value="neto"> Doy el neto</label>
+          </div>
+          <label>Bruto anual (€) <input name="bruto" inputmode="decimal" value="24000"></label>
+          <label>Neto mensual medio (€) <input name="neto" inputmode="decimal"></label>
+          <p class="ayuda">Neto anual dividido entre doce. Si das el bruto, se calcula solo (estimado con la normativa de IRPF y cotizaciones; fuente: BOE, ver la nota metodológica); puedes corregirlo a mano.</p>
+          <label>Pagas
+            <select name="pagas">
+              <option value="12">Doce pagas</option>
+              <option value="14">Catorce pagas</option>
+            </select>
+          </label>
+          <p class="ayuda">Las pagas no cambian el cálculo: el neto anual es el mismo con doce o con catorce. Con catorce, suma las nóminas del año y divide entre doce.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Hogar</legend>
+          <label>Perfil
+            <select name="perfil">
+              <option value="solo">Vivo solo en un piso entero</option>
+              <option value="comparte">Comparto piso</option>
+              <option value="pareja">Pareja con dos sueldos</option>
+              <option value="monoparental">Familia monoparental</option>
+            </select>
+          </label>
+          <p class="ayuda">El perfil rellena los datos siguientes; ajústalos si no son los tuyos.</p>
+          <label>Adultos
+            <select name="adultos"><option value="1">Uno</option><option value="2">Dos</option></select>
+          </label>
+          <label>Hijos <span id="max-hijos">(hasta 2 hijos)</span>
+            <select name="hijos"><option value="0">Ninguno</option><option value="1">Uno</option><option value="2">Dos</option></select>
+          </label>
+          <label>Edad (decide el Abono Joven) <input name="edad" type="number" inputmode="numeric" value="30"></label>
+          <label>Vivienda (m²) <input name="m2" type="number" inputmode="decimal"></label>
+          <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
+          <label>Personas con las que compartes el alquiler <input name="personas" type="number" inputmode="numeric"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Trabajo</legend>
+          <label>Lugar de trabajo <input name="destino" list="destinos" value="Getafe"></label>
+          <datalist id="destinos"></datalist>
+          <label>Días presenciales a la semana
+            <select name="dias">
+              <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
+              <option value="4">Cuatro</option><option value="5" selected>Cinco</option>
+            </select>
+          </label>
+          <label>Viajes al día
+            <select name="viajes">
+              <option value="2">Dos: ida y vuelta directa</option>
+              <option value="4">Cuatro: cambias de operador en cada sentido (p. ej. autobús interurbano y Metro)</option>
+            </select>
+          </label>
+          <p class="ayuda">En el modelo de tarifas, cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
+          <label>Modo
+            <select name="modo"><option value="tp">Solo transporte público (por ahora)</option></select>
+          </label>
+        </fieldset>
+
+        <fieldset id="metricas">
+          <legend>Qué pinta el mapa</legend>
+        </fieldset>
+      </form>
+      <!-- Contenedores vacíos: los rellenan F2-01 (ficha completa) y F2-02 (escenarios). -->
       <section id="ficha" aria-live="polite"></section>
       <section id="escenarios"></section>
+      <footer>
+        <p id="pie">Powered by <a href="https://www.crtm.es/" rel="noopener noreferrer">CRTM</a>. Tiempos calculados el <span id="fecha-datos"></span>. Este proyecto no está patrocinado ni avalado por el CRTM.</p>
+      </footer>
     </aside>
     <section id="mapa-contenedor">
-      <div id="mapa" role="img" aria-label="Mapa de las zonas coloreadas por alquiler"></div>
+      <div id="mapa" role="img" aria-label="Mapa de las zonas coloreadas por la métrica elegida"></div>
       <div id="leyenda"></div>
       <div id="tooltip" hidden></div>
       <p id="estado" role="status"></p>
