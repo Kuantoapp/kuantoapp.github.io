@@ -55,10 +55,10 @@ La misma cuenta, agregada por hogares, sirve a la **Administración** para tres 
 
 - **El alquiler se compara sin su coste asociado.** El precio de un piso no incluye el abono, el tiempo de viaje ni la diferencia de gastos según el tipo de hogar.
 - **Las ayudas miden solo la renta.** El Bono Alquiler Joven fija requisitos de renta y de alquiler máximo, pero no mira cuánto cuesta desplazarse desde ese piso hasta el trabajo.
-- **Solo se acepta una parte de las solicitudes de ayuda.** En la convocatoria de 2022 del Bono Alquiler Joven en la Comunidad hubo 51.735 solicitudes y 11.477 aceptadas, un 22 % (catálogo regional, `spacm_bono_alquiler_joven_2022`).
+- **Solo se acepta una parte de las solicitudes de ayuda.** En la convocatoria de 2022 del Bono Alquiler Joven en la Comunidad hubo 51.735 solicitudes y 11.477 aceptadas, un 22,2 % (catálogo regional, `spacm_bono_alquiler_joven_2022`: 40.258 rechazadas; [verificación](../../../docs/verificaciones/renta-vivienda.md), fila 1a).
   - El dato es de 2022 y cuenta solicitudes, no personas.
-  - **No sabemos por qué se rechazó el resto:** falta de presupuesto o incumplimiento de requisitos. Hay que **verificarlo** antes de usar la cifra para decir que la demanda supera a la ayuda.
-- **El precio del transporte depende de una ayuda temporal.** En 2026 los abonos tienen un descuento que depende de que sigan las ayudas estatales. Está confirmado en prensa un 50 % para el Abono Joven; para el abono normal la prensa da cifras distintas (**verificar** en el BOCM de 31 de diciembre de 2025).
+  - **El dato no dice por qué se rechazó el resto.** Las bases excluyen por no cumplir requisitos o porque se agotó el crédito (Orden de 6-11-2023), sin recuento por motivo. No se puede decir que la demanda supera a la ayuda ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 1c y 1d).
+- **El precio del transporte depende de una ayuda temporal.** En 2026 los abonos tienen un descuento que depende de que sigan las ayudas estatales. El descuento es del 50 % en el Abono Joven y del 40 % en el abono normal según el CRTM (41,8 % sobre la tarifa oficial de 2026), con la ayuda estatal del RDL 17/2025, art. 8 ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §1.1).
 - **Madrid no limita el alquiler por ley.** Ningún municipio de la Comunidad figura como zona tensionada en el BOE (septiembre de 2026), y la Comunidad no aplica el mecanismo aunque el Tribunal Constitucional avaló la ley en febrero de 2026. Por eso se habla de **esfuerzo**, no de alquileres «ilegales» ni de «precio de referencia».
 
 ## 3. Para quién y qué decisión cambia
@@ -77,7 +77,7 @@ La herramienta es el **gancho** de la demo. El análisis es donde está el **imp
 **Eje regional:** el transporte (coste y tiempo) es un componente principal de la cuenta, no contexto. Así los datos de la Comunidad y del Consorcio están en el núcleo.
 
 ### Qué la hace distinta de un mapa de alquiler
-- **Precedente:** el *H+T Affordability Index* del Center for Neighborhood Technology (EE. UU.) suma vivienda y transporte por zona (**verificar** la referencia). Se cita para dejar claro qué es nuevo.
+- **Precedente:** el *H+T Affordability Index* del Center for Neighborhood Technology (EE. UU.) suma vivienda y transporte por zona (fuente: [htaindex.cnt.org](https://htaindex.cnt.org/about/), actualización de 2025; [verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), fila 6). Se cita para dejar claro qué es nuevo.
 - **Lo nuevo de esta idea:**
   - el resultado es **individual** y depende de dónde trabaja cada persona, no es una media por zona;
   - el **tiempo** es la métrica central, con el precio de la hora de viaje, no un coste más;
@@ -93,7 +93,7 @@ La herramienta es el **gancho** de la demo. El análisis es donde está el **imp
 ## 4. Unidad territorial
 
 - **Base:** los 178 municipios de la Comunidad distintos de Madrid capital + los 21 distritos de la capital = 199 zonas.
-  - Supuesto a verificar: que los distritos censales de Madrid capital coinciden con los 21 distritos municipales.
+  - Comprobado: los distritos censales de Madrid capital tienen los mismos 21 códigos y las mismas secciones que los distritos municipales. Los límites difieren en menos del 4 % del área de cada distrito ([verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), fila 2, #68).
 - **Zoom en Madrid capital:** barrios, con el alquiler por código postal del catálogo regional llevado a barrio con una tabla de paso (sección 12).
 - **Análisis de sobrecarga:** sección censal, porque es el nivel al que publican el ADRH y el SERPAVI. Se agrega a municipio y distrito para mostrarlo.
 - **Clave de cruce común:** código INE de municipio + código de distrito (y de sección cuando aplique) + año.
@@ -136,7 +136,7 @@ precio_hora(z) = (sobra(z) − sobra(ref)) ÷ (horas(z) − horas(ref))
 esfuerzo(z)    = alquiler(z) ÷ neto
 ```
 
-- **Por qué el precio de la hora es la métrica central.** En transporte público, el coste en euros varía poco entre zonas: según la prensa de 2026, el abono normal va de unos 32,70 € en la zona A a 49,20 € en la C2, y el Abono Joven cuesta lo mismo en todas (**verificar** en el BOCM). La cesta básica es igual en todas las zonas. Por tanto, el mapa del sobrante en euros se parece mucho al del alquiler con el signo cambiado. Lo que de verdad cambia entre zonas es el tiempo.
+- **Por qué el precio de la hora es la métrica central.** En transporte público, el coste en euros varía poco entre zonas: según el BOCM de 31-12-2025, el abono normal con bonificación va de 32,70 € en la zona A a 49,20 € en la C2, y el Abono Joven cuesta 10 € en todas ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §1.2). La cesta básica es igual en todas las zonas. Por tanto, el mapa del sobrante en euros se parece mucho al del alquiler con el signo cambiado. Lo que de verdad cambia entre zonas es el tiempo.
 - **Qué mide.** Cuántos euros al mes ganas por cada hora extra de viaje al mes al vivir en *z* en lugar de en la zona de referencia.
   - **Zona de referencia:** la que el usuario elija (por ejemplo, donde vive ahora); por defecto, la zona con menos horas de viaje a su trabajo.
   - **Lectura:** se compara con su **salario neto por hora**. Si vivir lejos te paga menos por hora que tu trabajo, estás vendiendo tu tiempo barato.
@@ -162,7 +162,7 @@ esfuerzo(z)    = alquiler(z) ÷ neto
 **Fuente base: alquiler de contratos declarados**, no precios de anuncios.
 - **Municipios, distritos y secciones:** SERPAVI del Ministerio de Vivienda. Da €/m², cuantía y superficie, con mediana, P25 y P75, separando vivienda colectiva y unifamiliar.
 - **Madrid capital por barrio:** alquiler medio mensual por código postal del catálogo regional (`1934258`, 2023 y 2024, solo códigos con más de 200 viviendas alquiladas), llevado a barrio con una tabla de paso.
-- **Actualización a hoy:** variación del IPC de alquiler del catálogo regional. El identificador está por aclarar: `1927681` en el plan de Izan, `1934665` en la ficha de Yeray.
+- **Actualización a hoy:** variación del IPC de vivienda en alquiler de la Comunidad de Madrid, serie INE `IPC297196` (base 2025, mensual). El catálogo regional `1934665` queda como control; en él, la fila de Madrid es la segunda de cada año ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 5a y 5b).
 - **Cálculo:** alquiler(z) = €/m²(z, colectiva, último año) × factor del IPC de alquiler × m² ÷ personas. Se calcula con la mediana, el P25 y el P75.
 - **Por hogar:**
   - **compartido:** el alquiler del piso se divide entre las personas, como supuesto declarado. No hay dato oficial abierto del precio de una habitación. Si aparece una fuente legal de oferta de habitaciones, se calibra un recargo por habitación.
@@ -178,8 +178,8 @@ esfuerzo(z)    = alquiler(z) ÷ neto
 - **Tarifas 2026 por zona** (A, B1, B2, B3, C1, C2), del BOCM de 31 de diciembre de 2025. El conjunto de tarifas del catálogo regional (`1919188`, 2007–2024) **no sirve**: solo trae la Corona Mínima y la Máxima y no llega a 2025–26.
 - **Zona necesaria:** la más exterior entre la del origen y la del destino.
 - **Título más barato** según los días presenciales: abono mensual, billetes de 10 viajes o sencillos.
-- **Abono Joven:** tarifa plana para jóvenes. El límite de edad está por **verificar** en el BOCM: la prensa dice tanto «de 15 a 25 años» como «menores de 26», y la ficha de Yeray hablaba de perderlo al cumplir 27.
-- **Precios de prensa a confirmar:** joven 10 € con descuento y 20 € sin él; A 32,70 €; B1 38,20 €; B2 43,20 €; B3, C1 y C2 49,20 €.
+- **Abono Joven:** tarifa plana para jóvenes. Se tiene desde los 15 años hasta cumplir 26 (ficha del CRTM; [referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §1.2).
+- **Precios 2026 (BOCM-20251231-2):** joven 10 € con descuento y 20 € sin él; A 32,70 €; B1 38,20 €; B2 43,20 €; B3, C1 y C2 49,20 €.
 - **Consecuencia:** para quien usa transporte público, el coste apenas diferencia zonas; para los jóvenes con Abono Joven no las diferencia nada. Se dice así, no se esconde (6, 7.4).
 
 **Coche:**
@@ -201,7 +201,7 @@ esfuerzo(z)    = alquiler(z) ÷ neto
   - **Destino libre:** la matriz de tiempos se precalcula desde cada zona hacia una rejilla fina (o hacia todas las secciones censales). El punto que marca el usuario se resuelve con la celda más cercana, sin servidor y sin depender de un servicio en vivo.
 - **Horas al mes** = tiempo de ida y vuelta × días presenciales × 4,33.
 - **Precio de la hora de viaje:** es la métrica central y se explica en la sección 6. No necesita fijar un valor del tiempo.
-- **Valor del tiempo (opcional):** deslizador apagado por defecto. Al activarlo, resta horas × valor de la hora, con un 50 % del salario por hora como propuesta inicial, según la convención de las guías de evaluación de proyectos de transporte, que valoran el tiempo no laboral entre el 40 % y el 50 % del salario (**verificar** la cita exacta). Lleva un aviso visible de que poner precio al tiempo es una convención discutible.
+- **Valor del tiempo (opcional):** deslizador apagado por defecto. Al activarlo, resta horas × valor de la hora, con un 50 % del salario por hora como supuesto de partida, no como dato. La guía de la Comisión Europea (2014, pág. 90) valora el tiempo no laboral entre el 25 % y el 40 % del valor del tiempo de trabajo, que es el coste laboral por hora y no el salario ([verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), fila 7; [referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §3.1). Lleva un aviso visible de que poner precio al tiempo es una convención discutible.
 
 ### 6.6 Asequibilidad
 - **Alquiler máximo asumible** y **m² que puedes pagar** en cada zona.
@@ -239,7 +239,7 @@ Va en un **informe aparte**: un notebook o un Quarto publicado como página est�
 
 ### 7.2 Hogares en sobrecarga
 - **Definición:** un hogar está sobrecargado si sus gastos de vivienda (alquiler + suministros) superan el 40 % de su renta (Eurostat). Como indicador complementario, se da el porcentaje de hogares con un alquiler por encima del 30 %.
-- **Renta:** ADRH 2024 del INE, publicado el 19 de octubre de 2026, por municipio, distrito y sección censal.
+- **Renta:** ADRH 2024 del INE, publicado el 19 de octubre de 2026, por municipio, distrito y sección censal. El Gini del INE se calcula con las colas recortadas (1,5 % por lado), y el Gini y el P80/P20 solo se publican en unidades de 100 residentes o más ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 2b y 2d).
 - **Unidad coherente:** en el ADRH, el Gini y el P80/P20 se calculan sobre la **renta por unidad de consumo** (de personas), no sobre la renta por hogar. Todo el cálculo se hace en esa escala: la media por unidad de consumo y el alquiler pasado a unidad de consumo con la escala de equivalencia de la OCDE modificada, con el tamaño medio del hogar de cada sección. El reescalado se declara.
 - **Método:**
   - El INE publica la media, pero no la distribución completa. Por cada sección se ajusta una **distribución log-normal** de la renta por unidad de consumo.
@@ -247,13 +247,13 @@ Va en un **informe aparte**: un notebook o un Quarto publicado como página est�
   - El alquiler **no es único**: se integra sobre la distribución de alquileres de la sección (entre P25 y P75 del SERPAVI), no se aplica la mediana a todos los hogares.
   - Con las dos distribuciones se calcula qué porcentaje de hogares inquilinos supera cada umbral.
 - **Corrección por inquilinos:**
-  - Proporción de hogares en alquiler por zona: preferentemente el Censo de edificios y viviendas de la Comunidad (serie `19155xx`, régimen de tenencia), porque es dato regional. Alternativa: Censo 2021 del INE (**verificar** el nivel territorial).
+  - Proporción de hogares en alquiler por zona: por municipio, el catálogo regional `censo_2021_viviendas_familiares_por_tenencia` (Censo 2021 del INE); por sección, el INE `C2021_Indicadores.csv`, variable `t20_2` (viviendas en alquiler, provisional). El identificador `19155xx` no existe ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 4a y 4b).
   - Diferencia de renta entre inquilinos y propietarios: cociente de la Encuesta de Condiciones de Vida del INE. Es un **supuesto declarado**: el cociente es regional y se aplica igual en todas las secciones.
 
   Sin esa corrección, la sobrecarga saldría infravalorada.
 - **Validación (externa, no circular):**
   - El porcentaje bajo el 60 % de la mediana depende del mismo σ, así que no valida nada y no se usa para eso.
-  - Se agrega la sobrecarga estimada a toda la Comunidad y se compara con la tasa de sobrecarga de los inquilinos de la ECV para la Comunidad de Madrid, dentro de su margen de error.
+  - Se agrega la sobrecarga estimada a toda la Comunidad y se compara con la tasa de sobrecarga de la población de Madrid en la ECV (9,9 % en 2025, Eurostat `ilc_lvho07_r`). La tasa de los inquilinos de Madrid no está publicada ni tiene margen de error ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 3a, 3b y 3c). La validación queda pendiente de la fase S3.
 - El resultado se presenta **como rango**, con la metodología explícita.
 - **Relación con la herramienta:** la herramienta trabaja con el sueldo de una persona; el análisis, con la renta de los hogares. Son dos lecturas de la misma cuenta, una individual y otra agregada.
 
@@ -271,7 +271,7 @@ Va en un **informe aparte**: un notebook o un Quarto publicado como página est�
   - Se simulan **perfiles tipo**: los personajes y los deciles de salario del INE por edad, en cada municipio y hacia los polos de empleo.
   - **Resultado:** qué perfiles cambian de grupo y dónde. Si se da un orden de magnitud de personas o de coste, se escala con la población joven y la proporción de inquilinos, y se marca como **estimado**.
 - **Resultado esperado y válido:** como el Abono Joven cuesta lo mismo en todas las zonas, puede que el criterio con transporte apenas cambie nada en euros. Si sale así, es un hallazgo: «el Abono Joven ya iguala el coste del transporte; lo que no iguala es el tiempo». Se puede probar también un criterio que cuente las horas de viaje.
-- **Reglas de referencia** (Real Decreto 42/2022): de 18 a 35 años, ingresos de hasta 3 veces el IPREM, alquiler máximo de 600 € o 300 € por habitación (ampliable por la comunidad) y ayuda de 250 € al mes. Se **verifican** contra la convocatoria vigente en la Comunidad antes de usarlas.
+- **Reglas de referencia** (Real Decreto 42/2022): de 18 a 35 años, ingresos de hasta 3 veces el IPREM, alquiler máximo de 600 € o 300 € por habitación (ampliable por la comunidad) y ayuda de 250 € al mes. La convocatoria de Madrid de la ronda «2024» (BOCM-20250110-20) usa las mismas reglas, con 900 € / 450 € en 54 municipios ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/ayudas-vivienda.md), §1 y §2.2). El umbral de 3 × IPREM se calcula con el IPREM de 14 pagas (8.400 € al año en 2023); su vigencia en 2026 no está verificada en una norma de 2026.
 
 ### 7.5 Fin del descuento del abono
 Para cada municipio: euros al mes que se pierden y hogares que pasan a estar sobrecargados si el descuento del 50 % desaparece.
@@ -280,7 +280,7 @@ Para cada municipio: euros al mes que se pierden y hogares que pasan a estar sob
 - Coste y tiempo desde cada zona hacia los polos de la 6.5.
 - **Hallazgos buscados:**
   - **déficit de transporte:** zonas donde el coche gana con mucha diferencia al transporte público, declarando que el tiempo en coche no tiene en cuenta el tráfico;
-  - **efecto del Abono Joven de tarifa plana:** con él, vivir lejos se paga en tiempo y no en dinero (**verificar**).
+  - **efecto del Abono Joven de tarifa plana:** con él, vivir lejos se paga en tiempo y no en dinero (hipótesis que el análisis tiene que contrastar).
 
 ### 7.7 Rentabilidad implícita
 - **Fórmula:** alquiler anual (SERPAVI) ÷ precio de compraventa (Notariado), por zona.
@@ -304,7 +304,7 @@ Apunta a la primera tesis, pero no es un resultado: falta repetirlo con un mes c
 
 **Sueldos de referencia:**
 - **Deciles de salario del INE por edad** (Encuesta de Estructura Salarial y EPA): permiten decir «el joven mediano de 25 a 34 años».
-- **IRPF por municipio** de la Agencia Tributaria: el sueldo de quien ya vive en cada sitio, para el análisis (**verificar** el último año).
+- **IRPF por municipio** de la Agencia Tributaria: el sueldo de quien ya vive en cada sitio, para el análisis (**verificar** el último año; sin verificar en F0-04/F0-05, porque ninguna fila de `docs/verificaciones/` lo cubre).
 - **Salarios por ocupación del INE:** dan cifras reconocibles para los personajes.
 
 ## 9. Escenarios «¿y si…?»
@@ -399,10 +399,10 @@ Hay que leer los metadatos de cada fuente antes de usarla: estado del dato, unid
 | `1934258`, `1934261` | Alquiler medio mensual y días alquilados por código postal | Solo Madrid capital, 2023–2024, códigos con más de 200 viviendas |
 | `1934246` | Alquiler, m², rentabilidad y valor de referencia | Solo el total de la Comunidad |
 | `valor_referencia_viviendas_arrendadas_…_mas_20000` | Valor catastral de referencia (no es alquiler) | 38 municipios con valor en 2024 |
-| `1927681` / `1934665` y anteriores | IPC de alquiler | Índice, no nivel de precio; identificador por aclarar |
+| `1934665` (base 2025) | IPC de vivienda en alquiler, control | Índice, no nivel de precio; la fila de Madrid es la segunda de cada año. El factor usa `IPC297196` del INE |
 | `1919188` | Tarifas 2007–2024 | Solo Corona Mínima y Máxima: no sirve para las zonas |
-| `1916304` | Renta neta media (Base 2013) | Nivel territorial por confirmar |
-| `19155xx` | Censo de edificios y viviendas: régimen de tenencia por municipio | Comprobar la serie exacta |
+| `1916304` | Renta neta media de la ECV (Base 2013) | Solo la Comunidad entera: sirve como contraste regional, no por zona |
+| `censo_2021_viviendas_familiares_por_tenencia` | Viviendas principales por régimen de tenencia, por municipio (Censo 2021 del INE) | Sin distrito; por sección, INE `C2021_Indicadores.csv` (`t20_2`) |
 | `afiliados_por_residencia_*` | Afiliados por municipio de residencia (edad, contrato, jornada) | Por residencia, no por lugar de trabajo |
 | Paro registrado por municipio | Contexto e indicadores | — |
 | `zt84`, `resultados-edm2018` | Zonificación de transporte y Encuesta Domiciliaria de Movilidad 2018 | Datos de 2018 |
@@ -424,14 +424,14 @@ Hay que leer los metadatos de cada fuente antes de usarla: estado del dato, unid
 | Fuente | Qué aporta | Estado |
 |---|---|---|
 | **SERPAVI (Ministerio de Vivienda)** | Alquiler de contratos por municipio, distrito y sección: €/m², cuantía, superficie, mediana, P25 y P75, colectiva y unifamiliar | Excel completo localizado; descarga manual pendiente (ver abajo) |
-| **INE ADRH 2024** | Renta por hogar y persona, Gini, P80/P20, % por debajo del 60 % de la mediana, % de renta salarial; por municipio, distrito y sección | Publicado el 19 de octubre de 2026 |
+| **INE ADRH 2024** | Renta por hogar y persona, Gini, P80/P20, % por debajo del 60 % de la mediana **nacional** por unidad de consumo, % de salarios sobre la renta **bruta**; por municipio, distrito y sección | Publicado el 19 de octubre de 2026. Gini y P80/P20 solo en unidades de 100 residentes o más ([verificación](../../../docs/verificaciones/renta-vivienda.md), fila 2a) |
 | **INE IPVA** | Índice de alquiler por municipio y por distrito de las capitales | Último año 2024 |
-| **INE EPF** | Gasto en alimentación y suministros por tipo de hogar | Por descargar |
-| **INE ECV y Censo 2021** | Renta de inquilinos frente a propietarios; tenencia de la vivienda | Verificar el nivel territorial del Censo |
+| **INE EPF** | Gasto en alimentación y suministros por unidad de consumo (catálogo `gasto_por_subgrupo_gasto_3_digitos_coicop_epf_base_2006`); no hay cruce con el tipo de hogar | Catálogo regional ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 6a y 6c) |
+| **INE ECV y Censo 2021** | Renta de inquilinos frente a propietarios; tenencia de la vivienda | Tenencia por sección (`t20_2`, provisional) y por municipio en el catálogo regional ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 4a y 4b) |
 | **INE, salarios** | Deciles por edad y salarios por ocupación | Por descargar |
 | **MITMA, movilidad con telefonía** | Viajes diarios de casa al trabajo por municipio y distrito, con distancia, tramo de renta del origen (<10, 10–15, >15 mil €), edad y sexo | CC BY 4.0. Ficheros diarios hasta octubre de 2025 como mínimo |
 | **CRTM** | GTFS de las seis redes | **Licencia sin confirmar** (su página de licencia devolvió error 500); revisar la cláusula sobre redistribuir con la misma licencia |
-| **BOCM 31/12/2025** | Tarifas 2026 por zona | Pendiente de leer la tabla |
+| **BOCM 31/12/2025** | Tarifas 2026 por zona | Leído: BOCM-20251231-2, pág. 66 ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §1.2) |
 | **Agencia Tributaria** | IRPF por municipio | Verificar el último año |
 | **Notariado** | Precio de compraventa por municipio y código postal | El equipo tiene acceso a la API; **licencia, enlace y cobertura municipal pendientes** |
 | **OpenStreetMap** | Red peatonal y viaria para el enrutado | ODbL: citar «© OpenStreetMap contributors» |
@@ -535,22 +535,22 @@ La ficha describe el alcance completo. La prioridad entre piezas se fija al plan
 ### Verificaciones pendientes
 - [x] Abrir el Excel del SERPAVI: años, cobertura en Madrid y huecos. Trae los años 2011 a 2024 y tiene los 21 distritos de Madrid. En 2024 tienen dato 157 de las 199 zonas. Las 42 sin dato son municipios pequeños con menos de 10 testigos, y su lista está en el PR #151. En 2024, los testigos de vivienda colectiva de la Comunidad suman 474.935 (fuente: SERPAVI, MIVAU).
 - [ ] Probar r5py (transporte público y coche) con 3–5 pares origen-destino.
-- [ ] Tarifas 2026 por zona en el BOCM y condiciones del Abono Joven (límite de edad).
-- [ ] Reglas vigentes del Bono Alquiler Joven en la Comunidad.
+- [x] Tarifas 2026 por zona en el BOCM y condiciones del Abono Joven (límite de edad): resuelto con BOCM-20251231-2 y la ficha del CRTM (15 a 26 años).
+- [ ] Reglas vigentes del Bono Alquiler Joven en la Comunidad. Quedan **abiertas** en parte: las reglas de la ronda «2024» están comprobadas; no se encontró convocatoria con crédito de 2025 o 2026 ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/ayudas-vivienda.md), §2.3).
 - [x] Coincidencia entre distritos censales y municipales en Madrid capital. Tienen los mismos 21 códigos y las mismas secciones. Los límites difieren en menos del 4 % del área de cada distrito, porque las cartografías son de fechas distintas: [verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), #68.
 - [x] Identificador correcto del IPC de alquiler regional (`1927681` o `1934665`). El factor se calcula con la serie del INE `IPC297196` (Comunidad de Madrid, mensual), y `1934665` se cita como control: [decisión del 2026-11-14](../../../docs/decisiones.md), #67.
-- [ ] Régimen de tenencia en el Censo de edificios y viviendas de la Comunidad (`19155xx`) y nivel territorial del Censo 2021.
-- [ ] Nivel territorial de la renta del catálogo regional (`1916304`).
+- [x] Régimen de tenencia en el Censo de edificios y viviendas de la Comunidad (`19155xx`) y nivel territorial del Censo 2021: `19155xx` no existe; se usa `censo_2021_viviendas_familiares_por_tenencia` (municipio) y el Censo 2021 por sección ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 4a y 4b).
+- [x] Nivel territorial de la renta del catálogo regional (`1916304`): solo la Comunidad entera ([verificación](../../../docs/verificaciones/renta-vivienda.md), fila 7).
 - [ ] Licencia de los GTFS del CRTM.
 - [ ] Enlace, licencia y cobertura de la API del Notariado, por escrito.
 - [ ] Dataset de afiliación por lugar de trabajo a nivel municipal, o la matriz origen-destino de la EDM2018.
 - [ ] Mes completo del MITMA por distrito, para confirmar o descartar el indicio de la sección 8.
-- [ ] Cita del valor del tiempo en las guías de evaluación de transporte.
-- [ ] Descuento del abono (50 % en el joven; cifra del normal) y su dependencia de las ayudas estatales.
-- [ ] Motivo de los rechazos del Bono Alquiler Joven 2022: falta de presupuesto o incumplimiento de requisitos.
-- [ ] Unidad de la renta del ADRH (por hogar o por unidad de consumo) en cada indicador que se use.
-- [ ] Tasa de sobrecarga de los inquilinos de la ECV para la Comunidad de Madrid, para validar.
-- [ ] Referencia del *H+T Affordability Index* (CNT).
+- [x] Cita del valor del tiempo en las guías de evaluación de transporte: la CE (2014, pág. 90) da 25–40 %, no 40–50 % ([verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), fila 7).
+- [x] Descuento del abono (50 % en el joven; cifra del normal) y su dependencia de las ayudas estatales: 50 % joven y 40 % normal según el CRTM, con la ayuda del RDL 17/2025 ([referencia](../../../.claude/skills/dm-calculos-normativos/referencia/transporte-tiempo-y-otros.md), §1.1).
+- [x] Motivo de los rechazos del Bono Alquiler Joven 2022: resuelto como «no publicado». Las bases excluyen por requisitos o por crédito agotado, sin recuento por motivo ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 1c y 1d).
+- [x] Unidad de la renta del ADRH (por hogar o por unidad de consumo) en cada indicador que se use ([verificación](../../../docs/verificaciones/renta-vivienda.md), fila 2a).
+- [x] Tasa de sobrecarga de los inquilinos de la ECV para la Comunidad de Madrid: resultado, **no publicada**. Se valida contra la población total de Madrid (9,9 % en 2025) ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 3a–3c).
+- [x] Referencia del *H+T Affordability Index* (CNT): verificada en htaindex.cnt.org ([verificación](../../../docs/verificaciones/movilidad-interoperabilidad.md), fila 6).
 - [ ] Modelos aplicables en `pysmartdatamodels/` del repositorio de la organización.
 - [ ] Confirmar con la organización los pesos de los criterios, el formato de entrega, la duración de la presentación y la criba de 100 palabras.
 
@@ -566,7 +566,7 @@ La ficha describe el alcance completo. La prioridad entre piezas se fija al plan
 ## 18. Guion de 5 minutos (borrador)
 
 Combina abrir con un dato y contar el resto con un personaje. Las cifras y los titulares se sustituirán por los que salgan del análisis:
-- **0:00** De 51.735 solicitudes del Bono Alquiler Joven en 2022, solo se aceptó el 22 %. Y a quien vive de alquiler, ¿cuánto le queda a fin de mes? (La apertura depende de que se confirme el motivo de los rechazos; si no se confirma, se abre con el precio de la hora.)
+- **0:00** De 51.735 solicitudes del Bono Alquiler Joven en 2022, solo se aceptó el 22 %. Y a quien vive de alquiler, ¿cuánto le queda a fin de mes?
 - **0:20** La enfermera de 26 años mete su sueldo en directo y aparece el mapa: euros, horas y a cuánto le pagan cada hora de viaje.
 - **1:10** Cambia los días de teletrabajo; después se acaba el descuento del abono. El mapa se mueve.
 - **2:00** Titulares: a cuánto paga vivir lejos cada hora de viaje y dónde, y en cuántos municipios no llega un sueldo típico.
