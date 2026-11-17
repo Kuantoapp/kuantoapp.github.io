@@ -161,6 +161,8 @@ const M2 = [10, 300]; // rango que acepta el contrato de hogares.json
 const PERSONAS = [1, 20];
 const sinEspacios = (t) => String(t ?? "").trim();
 const numero = (t) => (/^-?\d+([.,]\d+)?$/.test(sinEspacios(t)) ? Number(sinEspacios(t).replace(",", ".")) : null);
+// Un importe en euros admite el punto de miles a la española: «24.000» y «1.800,50» son 24000 y 1800,5, no 24 y 1,8.
+const importe = (t) => numero(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(sinEspacios(t)) ? sinEspacios(t).replaceAll(".", "") : t);
 const entero = (t) => (/^-?\d+$/.test(sinEspacios(t)) ? Number(sinEspacios(t)) : null);
 const miles = formateador(0);
 
@@ -176,7 +178,7 @@ export function resolverDestino(texto, destinos) {
 /**
  * Valida los textos del formulario. Devuelve `{entrada}` para `calcular` o `{errores: [{campo, mensaje}]}`;
  * nunca lanza por lo que escriba la persona y nunca devuelve entrada si hay un error.
- * `v`: fuente ("bruto"|"neto"), bruto, neto (por nómina), pagas, perfil, adultos, hijos, edad, m2, personas,
+ * `v`: fuente ("bruto"|"neto"), bruto, neto (mensual medio), pagas (se valida, no entra en la cuenta), perfil, adultos, hijos, edad, m2, personas,
  * destino, dias, viajes, modo. `api`: {hogares, netos, tarifas, tiempos}.
  */
 export function validar(v, api) {
@@ -195,17 +197,19 @@ export function validar(v, api) {
   if (![12, 14].includes(pagas)) falla("pagas", "Las pagas son 12 o 14");
   const sueldo = {};
   if (v.fuente === "bruto") {
-    const bruto = numero(v.bruto);
+    const bruto = importe(v.bruto);
     if (bruto === null) falla("bruto", "El sueldo bruto anual debe ser un número, sin letras ni signos");
     else if (bruto < brutoMin || bruto > brutoMax) {
-      falla("bruto", `Para sueldos fuera de ${miles.format(brutoMin)}–${miles.format(brutoMax)} € brutos al año, introduce tu neto mensual`);
+      falla("bruto", `Para sueldos fuera de ${miles.format(brutoMin)}–${miles.format(brutoMax)} € brutos al año, introduce tu neto mensual medio`);
     } else sueldo.bruto = bruto;
   } else if (v.fuente === "neto") {
-    const neto = numero(v.neto);
+    // Neto mensual medio = neto anual ÷ 12 (supuesto 4 de calculo.py). No se convierte desde la nómina: con 14 pagas
+    // la paga extra ya cotiza prorrateada, así que nómina × 14 ÷ 12 no da el neto anual.
+    const neto = importe(v.neto);
     const tope = brutoMax / 12; // el neto medio mensual no puede pasar del bruto mensual máximo
-    if (neto === null || neto <= 0 || (pagas !== null && (neto * pagas) / 12 > tope)) {
-      falla("neto", `El neto por nómina debe ser un número mayor que 0 y de como máximo ${miles.format(tope)} € al mes de media`);
-    } else if (pagas !== null) sueldo.neto_mes = (neto * pagas) / 12;
+    if (neto === null || neto <= 0 || neto > tope) {
+      falla("neto", `El neto mensual medio debe ser un número mayor que 0 y de como máximo ${miles.format(tope)} €`);
+    } else sueldo.neto_mes = neto;
   } else falla("fuente", "Elige si das el bruto anual o el neto");
 
   if (typeof v.perfil !== "string" || !Object.hasOwn(api.hogares.perfiles, v.perfil)) falla("perfil", "Elige uno de los perfiles de hogar");

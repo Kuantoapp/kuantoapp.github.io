@@ -21,14 +21,15 @@
             <label><input type="radio" name="fuente" value="neto"> Doy el neto</label>
           </div>
           <label>Bruto anual (€) <input name="bruto" inputmode="decimal" value="24000"></label>
-          <label>Neto por nómina (€) <input name="neto" inputmode="decimal"></label>
-          <p class="ayuda">Si das el bruto, el neto se calcula solo; puedes corregirlo a mano.</p>
+          <label>Neto mensual medio (€) <input name="neto" inputmode="decimal"></label>
+          <p class="ayuda">Neto anual dividido entre doce. Si das el bruto, se calcula solo; puedes corregirlo a mano.</p>
           <label>Pagas
             <select name="pagas">
               <option value="12">Doce pagas</option>
               <option value="14">Catorce pagas</option>
             </select>
           </label>
+          <p class="ayuda">Las pagas no cambian el cálculo: el neto anual es el mismo con doce o con catorce. Con catorce, suma las nóminas del año y divide entre doce.</p>
         </fieldset>
 
         <fieldset>
@@ -70,7 +71,7 @@
               <option value="4">Cuatro: cambias de operador en cada sentido (p. ej. autobús interurbano y Metro)</option>
             </select>
           </label>
-          <p class="ayuda">Cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
+          <p class="ayuda">En el modelo de tarifas, cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
           <label>Modo
             <select name="modo"><option value="tp">Solo transporte público (por ahora)</option></select>
           </label>

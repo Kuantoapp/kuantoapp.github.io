@@ -162,13 +162,41 @@ test("0 o 6 días, o días que no son un entero, devuelven un aviso", () => {
   for (const dias of ["1", "5"]) assert.equal(campos({ dias }), undefined);
 });
 
-test("el neto por nómina se pasa a neto mensual medio con las pagas", () => {
-  const res = validar({ ...BASE, fuente: "neto", neto: "1.800".replace(".", ""), pagas: "14" }, real);
-  assert.equal(res.errores, undefined);
-  assert.equal(res.entrada.sueldos[0].neto_mes, (1800 * 14) / 12);
-  assert.equal(res.entrada.sueldos[0].bruto, undefined);
-  for (const neto of ["0", "-3", "x", "20000"]) assert.deepEqual(campos({ fuente: "neto", neto }), ["neto"], neto);
+test("el neto es el mensual medio tal cual: las pagas no lo cambian (con 14 la paga extra ya cotiza prorrateada)", () => {
+  for (const pagas of ["12", "14"]) {
+    const res = validar({ ...BASE, fuente: "neto", neto: "1800", pagas }, real);
+    assert.equal(res.errores, undefined);
+    assert.equal(res.entrada.sueldos[0].neto_mes, 1800);
+    assert.equal(res.entrada.sueldos[0].bruto, undefined);
+  }
+  for (const neto of ["0", "-3", "x", "", "10001"]) assert.deepEqual(campos({ fuente: "neto", neto }), ["neto"], neto);
   assert.deepEqual(campos({ pagas: "13" }), ["pagas"]);
+});
+
+test("el punto de miles a la española no se lee como decimal: «1.800» son 1800 y «1.800,50», 1800,5", () => {
+  const neto = (t) => validar({ ...BASE, fuente: "neto", neto: t }, real).entrada?.sueldos[0].neto_mes;
+  assert.equal(neto("1.800"), 1800);
+  assert.equal(neto("1.800,50"), 1800.5);
+  assert.equal(neto("1800,5"), 1800.5);
+  assert.equal(neto("1.5"), 1.5); // no es un grupo de tres cifras: es un decimal
+  assert.equal(validar({ ...BASE, bruto: "24.000" }, real).entrada.sueldos[0].bruto, 24000);
+  assert.deepEqual(campos({ bruto: "1.2.3" }), ["bruto"]);
+});
+
+test("los límites exactos se aceptan y un paso fuera se rechaza", () => {
+  const ok = (cambios) => assert.equal(campos(cambios), undefined, JSON.stringify(cambios));
+  const mal = (cambios, campo) => assert.deepEqual(campos(cambios), [campo], JSON.stringify(cambios));
+  for (const edad of ["16", "64"]) ok({ edad });
+  for (const bruto of ["12000", "120000"]) ok({ bruto });
+  mal({ bruto: "11999,99" }, "bruto");
+  mal({ bruto: "120000,01" }, "bruto");
+  ok({ fuente: "neto", neto: "10000" });
+  mal({ fuente: "neto", neto: "10000,01" }, "neto");
+  for (const m2 of ["10", "300"]) ok({ m2 });
+  mal({ m2: "9,99" }, "m2");
+  mal({ m2: "300,01" }, "m2");
+  for (const personas of ["1", "20"]) ok({ personas });
+  mal({ personas: "21" }, "personas");
 });
 
 test("hijos solo de 0 a 2, edad de 16 a 64, y el resto de campos con su rango", () => {

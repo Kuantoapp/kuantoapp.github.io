@@ -175,7 +175,7 @@ async function main() {
     $("estado").textContent = "";
     estado.metrica = v.metrica;
     const algunaZona = Object.values(estado.resultado.zonas)[0];
-    if (v.fuente === "bruto") formulario().elements.neto.value = String(Math.round((algunaZona.neto * 12) / Number(v.pagas)));
+    if (v.fuente === "bruto") formulario().elements.neto.value = String(Math.round(algunaZona.neto));
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
