@@ -1,0 +1,8 @@
+{
+  "name": "mesobra-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"app/*.test.js\""
+  }
+}
