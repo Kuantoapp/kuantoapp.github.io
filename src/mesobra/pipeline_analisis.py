@@ -9,7 +9,16 @@ from datetime import date
 
 import pandas as pd
 
-from mesobra import alquiler, api_estatica, bono, esfuerzo, figuras, renta
+from mesobra import (
+    alquiler,
+    api_estatica,
+    bono,
+    calculo,
+    esfuerzo,
+    figuras,
+    renta,
+)
+from mesobra import titulares as titulares_sueldos
 from mesobra.figuras import es
 from mesobra.pipeline_euros import APP_DATOS, MADRID, ORIGEN_SERPAVI, SERPAVI
 
@@ -143,6 +152,11 @@ def main() -> None:
     )
     for t in objeto["titulares"]:
         LOG.info("Titular: %s", t["texto"])
+    api = calculo.leer_api(APP_DATOS)
+    res = titulares_sueldos.resumenes(api)
+    objeto["titulares"] += titulares_sueldos.titulares(res)
+    for perfil, r in res:
+        LOG.info("Resumen %s: %s", perfil["nombre"], r)
     api_estatica.escribir("analisis.json", objeto, APP_DATOS)
     zonas = figuras.leer_zonas()
     APP_IMG.mkdir(exist_ok=True)
