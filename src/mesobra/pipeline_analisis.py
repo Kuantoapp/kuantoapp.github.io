@@ -46,8 +46,7 @@ NOTA = (
 )
 
 
-def _es(x: float, decimales: int = 1) -> str:
-    return f"{x:,.{decimales}f}".translate(str.maketrans(",.-", ".,−"))
+_es = figuras._es
 
 
 def _pct(x: float) -> str:
@@ -63,7 +62,7 @@ def titulares(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> list[dict]:
     otro = _es(bono.TOTALES[2], 0)
     return [
         {
-            "texto": f"El alquiler mediano de Madrid pesa el {_pct(madrid[hasta])} de la renta neta mensual de un hogar en "
+            "texto": f"El alquiler mediano de Madrid pesa el {_pct(madrid[hasta])} de la renta neta media mensual de sus hogares en "
             f"{hasta}, frente al {_pct(madrid[desde])} en {desde} y el {_pct(madrid[2020])} en 2020.",
             "fuente": FUENTE_ESFUERZO,
         },

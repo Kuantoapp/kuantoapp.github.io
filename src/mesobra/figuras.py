@@ -36,8 +36,8 @@ def leer_zonas(ruta: Path = ZONAS) -> gpd.GeoDataFrame:
 
 
 def _es(x: float, decimales: int = 1) -> str:
-    """Número con coma decimal y signo menos tipográfico."""
-    return f"{x:.{decimales}f}".replace(".", ",").replace("-", "−")
+    """Número en formato español: punto de miles, coma decimal y signo menos tipográfico."""
+    return f"{x:,.{decimales}f}".translate(str.maketrans(",.-", ".,−"))
 
 
 def cortes_simetricos(valores: pd.Series) -> list[float]:
@@ -162,6 +162,7 @@ def dispersion_bono(bono: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> 
     for v in d["y"].quantile([1 / 3, 2 / 3]):
         ax.axhline(v, color="#999999", ls="--", lw=0.7)
     rotulados = d[foco | (d["municipio_id"] == MADRID)].sort_values("x")
+    # shortcut: desplazamientos a mano para estos 8 rótulos; si cambian los datos, zip(strict) falla y hay que recolocarlos
     separados = (
         (-95, 14),
         (-100, 0),
@@ -172,10 +173,10 @@ def dispersion_bono(bono: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> 
         (6, 16),
         (-20, -25),
     )
-    for i, (_, f) in enumerate(rotulados.iterrows()):
+    for (_, f), desplazamiento in zip(rotulados.iterrows(), separados, strict=True):
         ax.annotate(
             nombres[f["municipio_id"]], (f["x"], f["y"]), fontsize=8,
-            xytext=separados[i], textcoords="offset points",
+            xytext=desplazamiento, textcoords="offset points",
             arrowprops={"arrowstyle": "-", "lw": 0.4, "color": "#555555"},
         )  # fmt: skip
     ax.set(
