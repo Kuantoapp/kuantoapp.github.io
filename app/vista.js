@@ -1,6 +1,6 @@
 // Lógica de la interfaz sin DOM ni MapLibre: validación del formulario, escalas de color, leyenda y textos.
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
-import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS } from "./calculo.js";
+import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona } from "./calculo.js";
 
 // Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
 export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
@@ -17,7 +17,7 @@ export const CATEGORIAS = {
   ruta: { texto: `Sin ruta en ${TOPE_RUTA_MIN} min`, color: "#8a8a8a" },
   ambos: { texto: `Sin dato de alquiler y sin ruta en ${TOPE_RUTA_MIN} min`, color: "#5c5c5c" },
   [MISMO_TIEMPO]: { texto: `Mismo tiempo de viaje que la referencia (menos de ${UMBRAL_HORAS} h/mes de diferencia)`, color: "#e0e0e0" },
-  [REFERENCIA]: { texto: "Zona de referencia (la de menos horas de viaje)", color: "#ffffff" },
+  [REFERENCIA]: { texto: "Zona de referencia: con ella se compara el resto", color: "#ffffff" },
 };
 
 export const METRICAS = {
@@ -27,7 +27,7 @@ export const METRICAS = {
     corta: "€ por hora extra",
     decimales: 1,
     divergente: true,
-    nota: "Estimado. Negativo: vivir ahí te deja menos dinero y además viajas más.",
+    nota: "Estimado. En una zona con más horas que la de referencia, positivo es lo que ganas por cada hora de más y negativo, que pierdes dinero y tiempo a la vez. Con menos horas, el signo se invierte.",
   },
   sobra: {
     titulo: "Lo que sobra al mes",
@@ -146,14 +146,126 @@ export function leyenda(clases, categorias, metrica) {
   return [...entradas, ...categorias];
 }
 
-/** «12,3 €/mes» o el motivo de que falte, con el nombre de la zona delante. */
-export function lineasFicha(nombre, zona, anio, metrica) {
+// Supuesto: jornada completa de 40 h a la semana (máximo de la ordinaria, ET art. 34.1, BOE-A-2015-11430) durante las
+// semanas que de verdad se trabajan (`tarifas.semanas_mes`, sin vacaciones ni fiestas), las mismas que cuentan los viajes.
+const JORNADA_SEMANA = 40;
+const ESFUERZO_RECOMENDADO = 0.3; // 30 % del neto en alquiler: recomendación de la herramienta (ficha §6.6)
+const MEJORES = 10;
+const euros = formateador(0);
+const unDecimal = formateador(1);
+const conCentimos = formateador(2);
+
+/** Lo que la ficha necesita además de la zona: año del alquiler, zona de referencia, hogar, títulos y salario por hora. */
+export function contextoFicha(api, entrada, resultado, id) {
+  const hogar = { ...api.hogares.perfiles[entrada.hogar.perfil], ...entrada.hogar };
+  const { escenario } = resultado;
+  const edad = escenario.edad <= api.tarifas.edad_max_joven ? "joven" : "general";
+  const titulo = (s) => {
+    if (s.modo === "coche") return "coche";
+    // shortcut: el 2 repite el `viajes_dia` por defecto de calculo.js; el formulario siempre lo da.
+    const tabla = api.tarifas.escenarios[escenario.tarifas][edad][String(s.viajes_dia ?? 2)];
+    return tabla[corona(api, id, s.destino)][s.dias - 1].titulo;
+  };
+  const zona = resultado.zonas[id];
+  const dato = api.alquiler.zonas[id];
+  const n = entrada.sueldos.length;
+  return {
+    anio: dato.anio,
+    // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
+    ic: dato.ic?.length && zona.alquiler !== null ? dato.ic.map((v) => (v * zona.alquiler) / dato.p50) : null,
+    ref: resultado.ref === null ? null : resultado.zonas[resultado.ref],
+    m2: hogar.m2,
+    personas: hogar.personas_comparten,
+    titulos: zona.transporte === null ? [] : entrada.sueldos.map(titulo),
+    sueldos: n,
+    netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
+    salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
+  };
+}
+
+function frasePrecio(zona, ref) {
+  const p = unDecimal.format(Math.abs(zona.precio_hora));
+  const masHoras = zona.horas > ref.horas;
+  if (masHoras && zona.precio_hora >= 0) return `Vivir aquí te paga ${p} € por cada hora de viaje de más (estimado)`;
+  if (masHoras) return `Aquí viajas más y te sobra menos: pierdes ${p} € por cada hora de viaje de más (estimado)`;
+  if (zona.precio_hora < 0) return "Aquí te sobra más y viajas menos que en la zona de referencia (estimado)";
+  return `Vivir aquí te cuesta ${p} € por cada hora de viaje que te ahorras (estimado)`;
+}
+
+function fraseBanda([bajo, alto]) {
+  const e = (v) => `${euros.format(Math.abs(v))} €`;
+  // Se decide con lo redondeado que se muestra: −0,3 € no es «te falten 0 €».
+  if (Math.round(bajo) >= 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
+  if (Math.round(alto) <= 0) return `Te faltan entre ${e(alto)} y ${e(bajo)} al mes (estimado)`;
+  return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
+}
+
+function fraseAlquiler(zona, { anio, ic }) {
+  const rango = `entre ${euros.format(zona.alquiler_p25)} y ${euros.format(zona.alquiler_p75)} € al mes`;
+  // shortcut: «contratos de {anio}» vale con factor_ipc 1,0 (hoy en todas); al aplicar el IPC (#94), decir «actualizado con el IPC» y «estimado».
+  if (zona.origen !== "estimado") return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
+  const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
+  return `Alquiler estimado: ${rango} (año ${anio}; ${intervalo})`;
+}
+
+/**
+ * Texto de la ficha de una zona: nombre, valor de la métrica activa (o por qué falta) y, si hay sobrante, el desglose.
+ * Sin sobrante solo dice el motivo («sin dato de alquiler», «sin ruta…» o los dos), sin ninguna cifra calculada.
+ * `ctx` sale de `contextoFicha`. Las dos primeras líneas son las del tooltip.
+ */
+export function lineasFicha(nombre, zona, metrica, ctx) {
   const f = formateador(METRICAS[metrica].decimales);
   const clave = categoria(zona, metrica);
   const lineas = [nombre, clave === null ? `${f.format(zona[metrica])} ${METRICAS[metrica].corta} (estimado)` : CATEGORIAS[clave].texto];
-  if (anio !== null && anio !== undefined) lineas.push(`Alquiler de ${anio}${zona.origen === "estimado" ? " (estimado)" : ""}`);
-  if (esNumero(zona.cesta)) lineas.push(`Cesta básica: ${formateador(0).format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`);
-  return lineas;
+  const sinSobra = categoria(zona, "sobra");
+  if (sinSobra !== null) return [...new Set([...lineas, CATEGORIAS[sinSobra].texto])];
+  const quien = ctx.sueldos > 1 ? "Cada sueldo del hogar cobra de media" : "Tu trabajo te paga";
+  const piso = (ESFUERZO_RECOMENDADO * zona.neto * ctx.m2) / zona.alquiler;
+  lineas.push(
+    fraseBanda(zona.sobra_banda),
+    `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
+    fraseAlquiler(zona, ctx),
+    `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")})`,
+    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`,
+    `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
+    zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
+    `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
+    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}`,
+    `Con el ${ESFUERZO_RECOMENDADO * 100} % del neto alcanza para un piso de ${euros.format(piso)} m²${ctx.personas > 1 ? ` compartido entre ${ctx.personas}` : ""} (estimado)`,
+  );
+  return [...new Set(lineas)];
+}
+
+/**
+ * Las diez mejores zonas según la métrica: más € por hora, más sobrante o menos horas. En el precio de la hora solo
+ * entran las zonas con más horas que la referencia: con menos, el signo se invierte y no se pueden ordenar juntas.
+ */
+export function mejores(resultado, metrica, nombres) {
+  const ref = resultado.ref === null ? null : resultado.zonas[resultado.ref];
+  const f = formateador(METRICAS[metrica].decimales);
+  const signo = metrica === "horas" ? 1 : -1;
+  return Object.entries(resultado.zonas)
+    .filter(([, z]) => esNumero(z[metrica]) && (metrica !== "precio_hora" || z.horas > ref.horas))
+    .sort(([, a], [, b]) => signo * (a[metrica] - b[metrica]))
+    .slice(0, MEJORES)
+    .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}` }));
+}
+
+/** Avisos del dato de alquiler: es un suelo, año, zonas estimadas y zonas sin dato. La última línea es la fuente. */
+export function avisos(alquiler) {
+  const zonas = Object.values(alquiler.zonas);
+  const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;
+  const anterior = zonas.some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
+  const lineas = [
+    "El alquiler sale de contratos ya firmados y declarados, no de anuncios, así que va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.",
+    `El dato de alquiler es de ${alquiler.meta.anio_dato}${anterior ? "; en alguna zona, de un año anterior, y lo dice su ficha" : ""}.`,
+  ];
+  const estimadas = cuantas("estimado");
+  const zonasN = (n) => `${n} ${n === 1 ? "zona" : "zonas"}`;
+  if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
+  const sinDato = cuantas("sin_dato");
+  if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
+  return [...lineas, `${fuentes(alquiler.meta)}.`];
 }
 
 // --- Validación del formulario -----------------------------------------------------------------
@@ -181,7 +293,7 @@ export function resolverDestino(texto, destinos) {
  * Valida los textos del formulario. Devuelve `{entrada}` para `calcular` o `{errores: [{campo, mensaje}]}`;
  * nunca lanza por lo que escriba la persona y nunca devuelve entrada si hay un error.
  * `v`: fuente ("bruto"|"neto"), bruto, neto (mensual medio), pagas (se valida, no entra en la cuenta), perfil, adultos, hijos, edad, m2, personas,
- * destino, dias, viajes, modo. `api`: {hogares, netos, tarifas, tiempos}.
+ * destino, dias, viajes, modo y ref (zona de referencia; vacía, la de menos horas). `api`: {alquiler, hogares, netos, tarifas, tiempos}.
  */
 export function validar(v, api) {
   const errores = [];
@@ -228,10 +340,13 @@ export function validar(v, api) {
   const viajes = entero(v.viajes);
   if (!api.tarifas.viajes_dia.includes(viajes)) falla("viajes", `Los viajes al día son ${api.tarifas.viajes_dia.join(" o ")}`);
   if (v.modo !== "tp") falla("modo", "Por ahora solo hay transporte público");
+  const ref = sinEspacios(v.ref);
+  if (ref !== "" && !Object.hasOwn(api.alquiler.zonas, ref)) falla("ref", "Elige una zona de referencia de la lista");
 
   if (errores.length > 0) return { errores };
   const hogar = { perfil: v.perfil, adultos, hijos, edad, personas_comparten: personas, m2 };
-  return { entrada: { hogar, sueldos: [{ ...sueldo, destino, dias, modo: "tp", viajes_dia: viajes }] } };
+  const sueldos = [{ ...sueldo, destino, dias, modo: "tp", viajes_dia: viajes }];
+  return { entrada: { hogar, sueldos, ...(ref === "" ? {} : { ref }) } };
 }
 
 /** Licencias de los `meta.fuentes` sin repetir, separadas por «; ». */

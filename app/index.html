@@ -11,8 +11,17 @@
 <body>
   <main>
     <aside>
-      <!-- Arriba y fija (sticky) para que se vea al pinchar una zona sin hacer scroll; F2-01 amplía su contenido. -->
+      <!-- Arriba y fija (sticky) para que se vea al pinchar una zona en el mapa o en la lista sin hacer scroll. -->
       <section id="ficha" aria-live="polite"></section>
+      <section id="mejores">
+        <h2 id="mejores-titulo">Las diez mejores zonas</h2>
+        <ol id="mejores-lista"></ol>
+        <p class="ayuda">Pincha una para verla en el mapa y abrir su ficha.</p>
+      </section>
+      <section id="avisos-dato">
+        <h2>Antes de leer el mapa</h2>
+        <ul id="avisos"></ul>
+      </section>
       <form id="formulario" novalidate autocomplete="off">
         <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
 
@@ -81,6 +90,14 @@
 
         <fieldset id="metricas">
           <legend>Qué pinta el mapa</legend>
+        </fieldset>
+
+        <fieldset>
+          <legend>Zona de referencia</legend>
+          <label>Comparar con
+            <select name="ref"><option value="">La de menos horas de viaje</option></select>
+          </label>
+          <p class="ayuda">Puede ser donde vives ahora. El precio de la hora compara cada zona con esta.</p>
         </fieldset>
       </form>
       <!-- Contenedor vacío: lo rellena F2-02 (escenarios). -->

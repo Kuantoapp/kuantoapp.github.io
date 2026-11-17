@@ -2,7 +2,7 @@
 // La validación, el color y los textos están en vista.js y el cálculo en calculo.js; aquí solo hay DOM.
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
-import { METRICAS, fuentes, leyenda, licencias, lineasFicha, pintar, validar } from "./vista.js";
+import { METRICAS, avisos, contextoFicha, fuentes, leyenda, licencias, lineasFicha, mejores, pintar, validar } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 const formulario = () => $("formulario");
@@ -62,6 +62,9 @@ function prepararFormulario(api) {
     etiqueta.append(radio, m.titulo);
     metricas.append(etiqueta);
   }
+  const refs = formulario().elements.ref;
+  const porNombre = [...api.zonas.features].sort((a, b) => a.properties.nombre.localeCompare(b.properties.nombre, "es"));
+  for (const f of porNombre) refs.append(new Option(f.properties.nombre, f.properties.zona_id));
   rellenarPerfil(api);
   formulario().elements.edad.value = String(EDAD_POR_DEFECTO);
 }
@@ -91,7 +94,6 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const { alquiler, hogares, netos, tarifas, tiempos, zonas } = api;
   const metas = [zonas.meta, alquiler.meta, tiempos.meta, hogares.meta, netos.meta, tarifas.meta];
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
-  const anterior = Object.values(alquiler.zonas).some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
   cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)`, "titulo"));
@@ -102,13 +104,12 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     fila.append(muestra, elemento("span", texto));
     cont.append(fila);
   }
-  if (hayEstimadas) cont.append(elemento("p", "Borde discontinuo: alquiler estimado."));
-  const bordes = `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`;
+  cont.append(elemento("p", `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
   const detalle = document.createElement("details");
   const notas = [
     `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
-    `${fuentes(...metas)}. ${bordes}`,
-    `Alquiler: dato de ${alquiler.meta.anio_dato}${anterior ? " (alguna zona, de un año anterior)" : ""}. ${alquiler.meta.nota}`,
+    `${fuentes(...metas)}.`,
+    `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
     `Neto y tarifas: ${netos.meta.nota ?? "estimados con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
@@ -116,6 +117,16 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   ];
   detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
   cont.append(detalle);
+}
+
+/** Caja que envuelve las zonas dadas (Polygon y MultiPolygon). */
+function limitesDe(features) {
+  const limites = new maplibregl.LngLatBounds();
+  for (const f of features) {
+    const c = f.geometry.coordinates.flat(Infinity);
+    for (let i = 0; i < c.length; i += 2) limites.extend([c[i], c[i + 1]]);
+  }
+  return limites;
 }
 
 function crearMapa(zonas) {
@@ -127,11 +138,7 @@ function crearMapa(zonas) {
     attributionControl: false,
     maxZoom: 13, // los polígonos están simplificados y no casan con un mapa base a nivel de calle
   });
-  const limites = new maplibregl.LngLatBounds();
-  for (const f of zonas.features) {
-    const c = f.geometry.coordinates.flat(Infinity); // Polygon y MultiPolygon
-    for (let i = 0; i < c.length; i += 2) limites.extend([c[i], c[i + 1]]);
-  }
+  const limites = limitesDe(zonas.features);
   // En pantalla estrecha la leyenda ocupa parte del contenedor cuando se pinta, después de crear el mapa:
   // hay que recalcular su tamaño y encuadrarlo de nuevo, o se corta por abajo.
   const encuadrar = () => {
@@ -168,13 +175,31 @@ async function main() {
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
-  const estado = { resultado: null, metrica: "precio_hora", zona: null };
-  const lineas = (id) => {
-    const z = estado.resultado.zonas[id];
-    return lineasFicha(api.zonas.features.find((f) => f.properties.zona_id === id).properties.nombre, z, api.alquiler.zonas[id].anio, estado.metrica);
-  };
+  $("avisos").replaceChildren(...avisos(api.alquiler).map((t) => elemento("li", t)));
+  const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));
+  const estado = { entrada: null, resultado: null, metrica: "precio_hora", zona: null };
+  const lineas = (id) => lineasFicha(nombres[id], estado.resultado.zonas[id], estado.metrica, contextoFicha(api, estado.entrada, estado.resultado, id));
   // La ficha de la zona pinchada se mantiene, actualizada, al cambiar de métrica o de entradas.
   const pintarFicha = () => $("ficha").replaceChildren(...(estado.zona ? lineas(estado.zona).map((t) => elemento("p", t)) : []));
+  const elegir = (id) => {
+    estado.zona = id;
+    pintarFicha();
+  };
+  function pintarMejores() {
+    $("mejores-titulo").textContent = `Las diez mejores zonas: ${METRICAS[estado.metrica].titulo.toLowerCase()} (estimado)`;
+    const items = mejores(estado.resultado, estado.metrica, nombres).map(({ zona_id, texto }) => {
+      const boton = elemento("button", texto);
+      boton.type = "button";
+      boton.addEventListener("click", () => {
+        mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 10 });
+        elegir(zona_id);
+      });
+      const li = document.createElement("li");
+      li.append(boton);
+      return li;
+    });
+    $("mejores-lista").replaceChildren(...(items.length ? items : [elemento("li", "Ninguna zona tiene cifra con estas entradas.")]));
+  }
 
   function recalcular() {
     const v = valoresFormulario();
@@ -187,9 +212,13 @@ async function main() {
     try {
       estado.resultado = calcular(api, entrada);
     } catch (error) {
-      $("estado").textContent = `No se pudo calcular: ${error.message}`;
+      const porRef = entrada.ref && error.message.startsWith("zona de referencia");
+      $("estado").textContent = porRef
+        ? "La zona de referencia que elegiste no tiene alquiler o ruta con estas entradas: elige otra o deja «la de menos horas»."
+        : `No se pudo calcular: ${error.message}`;
       return;
     }
+    estado.entrada = entrada;
     $("estado").textContent = "";
     estado.metrica = v.metrica;
     const algunaZona = Object.values(estado.resultado.zonas)[0];
@@ -198,6 +227,7 @@ async function main() {
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
     pintarFicha();
+    pintarMejores();
   }
 
   formulario().addEventListener("input", (e) => {
@@ -222,9 +252,7 @@ async function main() {
     mapa.getCanvas().style.cursor = "";
   });
   mapa.on("click", "zonas-relleno", (e) => {
-    if (!estado.resultado) return;
-    estado.zona = e.features[0].properties.zona_id;
-    pintarFicha();
+    if (estado.resultado) elegir(e.features[0].properties.zona_id);
   });
   recalcular(); // pinta la leyenda por primera vez: el mapa ya tiene su tamaño final
   encuadrar();
