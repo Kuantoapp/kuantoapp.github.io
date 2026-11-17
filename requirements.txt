@@ -2,6 +2,7 @@
 # shortcut: solo directas fijadas, bloquear transitivas (uv pip compile) si la CI y local divergen
 esda==2.10.0
 geopandas==1.2.0
+jsonschema==4.26.0
 libpysal==4.15.1
 lightgbm==4.7.0
 matplotlib==3.11.2
