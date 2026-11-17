@@ -77,7 +77,7 @@ function celda(tiempos, matriz, origen, destino) {
   return tiempos[matriz][i][j] ?? null;
 }
 
-function corona(api, origen, destino) {
+export function corona(api, origen, destino) {
   const orden = api.tarifas.orden_coronas;
   const coronas = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.corona]));
   const par = [coronas[origen], coronas[destino]];

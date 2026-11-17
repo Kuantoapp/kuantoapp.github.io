@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, PALETA, SIN_DATO, categoria, colorPara, cortesCuantiles, escalaDivergente, escalaSecuencial, fuentes,
-  leyenda, licencias, lineasFicha, pintar, resolverDestino, validar,
+  CATEGORIAS, PALETA, SIN_DATO, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
+  fuentes, leyenda, licencias, lineasFicha, mejores, pintar, resolverDestino, validar,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -131,11 +131,106 @@ test("la leyenda tiene una entrada por clase más una por cada motivo de «sin c
   assert.equal(entradas.at(-1).texto, categorias.at(-1).texto);
 });
 
-test("la ficha dice el valor con su unidad, el año del alquiler y que la cesta es estimada", () => {
-  const lineas = lineasFicha("Getafe", { sobra: 123.4, cesta: 356.4, origen: "observado" }, 2024, "sobra");
-  assert.deepEqual(lineas, ["Getafe", "123 €/mes (estimado)", "Alquiler de 2024", "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)"]);
-  assert.equal(lineasFicha("X", { horas: null, alquiler: 1 }, null, "horas")[1], CATEGORIAS.ruta.texto);
-  assert.match(lineasFicha("X", { sobra: 1, origen: "estimado" }, 2023, "sobra")[2], /\(estimado\)/);
+// --- Ficha de zona, diez mejores y avisos --------------------------------------------------------
+
+const { casos } = leer("tests/fixtures/casos_referencia.json");
+const fichaDe = (caso, id, metrica = "precio_hora") => lineasFicha("Zona", caso.salida.zonas[id], metrica, contextoFicha(ejemplo, caso.entrada, caso.salida, id));
+// Una cifra calculada: un número seguido de su unidad (los motivos como «120 min» o «5 h/mes de diferencia» no lo son).
+const CIFRA = /\d+(,\d+)? ?(€|h al|%|m²)/;
+
+test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
+  const f = (d) => new Intl.NumberFormat("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+  for (const caso of casos.filter((c) => !("error" in c))) {
+    for (const [id, z] of Object.entries(caso.salida.zonas)) {
+      const texto = fichaDe(caso, id).join("\n");
+      if (z.sobra === null) {
+        assert.doesNotMatch(texto, CIFRA, `${caso.nombre} ${id}`);
+        continue;
+      }
+      const esperadas = [
+        f(0).format(z.neto), f(0).format(z.alquiler_p25), f(0).format(z.alquiler_p75), f(2).format(z.transporte),
+        f(0).format(z.cesta), f(1).format(z.horas), `${f(0).format(z.esfuerzo * 100)} %`,
+        ...z.sobra_banda.map((v) => `${f(0).format(Math.abs(v))} €`),
+      ];
+      if (z.precio_hora !== null) esperadas.push(`${f(1).format(Math.abs(z.precio_hora))} €`);
+      for (const e of esperadas) assert.ok(texto.includes(e), `${caso.nombre} ${id}: falta «${e}» en\n${texto}`);
+    }
+  }
+});
+
+test("ficha completa de una zona: banda del sobrante, título, precio de la hora frente al salario y m²", () => {
+  assert.deepEqual(fichaDe(casos[0], "28065"), [
+    "Zona",
+    "24,4 € por hora extra (estimado)",
+    "Te sobran entre 479 € y 632 € al mes (estimado)",
+    "Neto del hogar: 1523 € al mes (estimado)",
+    "Alquiler: entre 512 y 666 € al mes (contratos de 2024, tómalo como un suelo)",
+    "Transporte: 21,90 € al mes (10 viajes)",
+    "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)",
+    "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
+    "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
+    "Tu trabajo te paga 10,1 € netos la hora (estimado, jornada de 40 h a la semana)",
+    "El alquiler se lleva el 39 % del neto, más del 30 % recomendado",
+    "Con el 30 % del neto alcanza para un piso de 35 m² (estimado)",
+  ]);
+  // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 69 m² ÷ 586,84 €.
+  assert.ok(Math.abs(contextoFicha(ejemplo, casos[0].entrada, casos[0].salida, "28065").salarioHora - 10.064) < 0.001);
+  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven)"));
+});
+
+test("con una referencia elegida, la ficha lee bien el signo del precio de la hora", () => {
+  const caso = casos.find((c) => c.entrada.ref === "28065");
+  assert.ok(fichaDe(caso, "2807901").includes("Vivir aquí te cuesta 10,8 € por cada hora de viaje que te ahorras (estimado)"));
+  const gana = { ...caso.salida.zonas["2807901"], precio_hora: -3, sobra: 900 };
+  const ctx = contextoFicha(ejemplo, caso.entrada, caso.salida, "2807901");
+  assert.ok(lineasFicha("Zona", gana, "sobra", ctx).includes("Aquí te sobra más y viajas menos que en la zona de referencia (estimado)"));
+  const pierde = { ...caso.salida.zonas["2807913"], horas: 30, precio_hora: -2 };
+  assert.ok(lineasFicha("Zona", pierde, "sobra", ctx).includes("Aquí viajas más y te sobra menos: pierdes 2,0 € por cada hora de viaje de más (estimado)"));
+});
+
+test("sin cifra, la ficha dice el motivo concreto y ningún número; «mismo tiempo» es otro aviso", () => {
+  const caso = casos.find((c) => c.nombre.startsWith("coche"));
+  assert.deepEqual(fichaDe(caso, "28001", "sobra"), ["Zona", CATEGORIAS.alquiler.texto]);
+  const sinRuta = { ...caso.salida.zonas["2807901"], horas: null, sobra: null, sobra_banda: null, precio_hora: null, etiqueta: null };
+  const ctx = contextoFicha(ejemplo, caso.entrada, caso.salida, "2807901");
+  assert.deepEqual(lineasFicha("Zona", sinRuta, "sobra", ctx), ["Zona", CATEGORIAS.ruta.texto]);
+  const ambos = { ...sinRuta, alquiler: null };
+  const lineas = lineasFicha("Zona", ambos, "precio_hora", ctx);
+  assert.deepEqual(lineas, ["Zona", CATEGORIAS.ambos.texto]);
+  assert.doesNotMatch(lineas.join(" "), CIFRA);
+  const mismo = fichaDe(casos.find((c) => c.nombre.startsWith("1 día")), "28065", "precio_hora");
+  assert.equal(mismo[1], CATEGORIAS["mismo tiempo"].texto);
+  assert.notEqual(CATEGORIAS["mismo tiempo"].texto, CATEGORIAS.ruta.texto);
+});
+
+test("la zona estimada da su intervalo de la estimación en euros", () => {
+  const caso = casos.find((c) => c.nombre.startsWith("coche"));
+  // ic de 10,3 a 13,4 €/m² (fixture) con la escala que lleva el P50 de 11,8 €/m² al alquiler de la zona.
+  assert.ok(fichaDe(caso, "28092").includes("Alquiler estimado: entre 459 y 608 € al mes (año 2024; intervalo de la estimación, de 464 a 603 €)"));
+});
+
+test("las diez mejores: orden por métrica, sin las zonas sin cifra ni, en el precio, las de menos horas", () => {
+  const z = (precio_hora, sobra, horas) => ({ precio_hora, sobra, horas });
+  const resultado = { ref: "r", zonas: { r: z(null, 100, 2), a: z(5, 200, 30), b: z(9, 300, 20), c: z(-4, 500, 1), d: z(null, null, null) } };
+  const nombres = { r: "R", a: "A", b: "B", c: "C", d: "D" };
+  assert.deepEqual(mejores(resultado, "precio_hora", nombres).map((m) => m.zona_id), ["b", "a"]);
+  assert.deepEqual(mejores(resultado, "sobra", nombres).map((m) => m.zona_id), ["c", "b", "a", "r"]);
+  assert.deepEqual(mejores(resultado, "horas", nombres).map((m) => m.zona_id), ["c", "r", "b", "a"]);
+  assert.equal(mejores(resultado, "precio_hora", nombres)[0].texto, "B: 9,0 € por hora extra");
+  const muchas = { ref: "r", zonas: Object.fromEntries(Array.from({ length: 15 }, (_, i) => [`z${i}`, z(i, i, i)])) };
+  assert.equal(mejores(muchas, "sobra", {}).length, 10);
+});
+
+test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", () => {
+  const lineas = avisos(ejemplo.alquiler);
+  assert.match(lineas[0], /suelo/);
+  assert.equal(lineas[1], "El dato de alquiler es de 2024.");
+  assert.ok(lineas.includes("1 zona con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación."));
+  assert.ok(lineas.some((l) => l.startsWith("1 zona sin dato de alquiler")));
+  assert.match(lineas.at(-1), /^fuente: /);
+  const reales = avisos(real.alquiler);
+  assert.ok(reales.some((l) => l.startsWith("41 zonas sin dato")));
+  assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
 });
 
 // --- Validación de entradas ---------------------------------------------------------------------
@@ -225,6 +320,13 @@ test("el destino se resuelve por nombre o id y se rechaza lo que no está en la 
   assert.equal(resolverDestino("", destinos), null);
   assert.equal(resolverDestino(undefined, destinos), null);
   assert.deepEqual(campos({ destino: "Mordor" }), ["destino"]);
+});
+
+test("la zona de referencia es opcional y solo se acepta una de la lista", () => {
+  assert.equal(validar(BASE, real).entrada.ref, undefined);
+  assert.equal(validar({ ...BASE, ref: "28065" }, real).entrada.ref, "28065");
+  assert.deepEqual(campos({ ref: "<script>" }), ["ref"]);
+  assert.deepEqual(campos({ ref: "__proto__" }), ["ref"]);
 });
 
 test("varios errores se devuelven juntos, cada uno con su campo", () => {
