@@ -9,9 +9,10 @@ Tesis 2: con sueldos típicos, en muchas zonas no sobra nada. Todo sale de `meso
 Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
 1. Horas trabajadas al mes = `semanas_mes` × 5 × 8 (jornada de 40 h, ET art. 34.1, BOE-A-2015-11430),
    igual para todos: 151,3 h/mes efectivas (227 días × 8 h ÷ 12). Con las horas pagadas (40 × 52 ÷ 12 =
-   173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €), lo que favorecería la tesis 1;
-   con jornada real menor (parcial, convenio) sube, en contra de la tesis 1. La ganancia de la EAES
-   incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo.
+   173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €) y más pares lo alcanzarían, en
+   contra de la tesis 1 (SMI: 1.544 pares, 14,9 %, frente a 1.316, 12,7 %), sin cambiar el veredicto;
+   con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
+   incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo, en contra.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
    y neto/hora más bajo (contra la tesis 1).
@@ -209,7 +210,7 @@ def titulares(res: list[tuple[dict, dict]]) -> list[dict]:
             {
                 "texto": f"{perfil['nombre']}: el sobrante mensual estimado, mediana entre los destinos a los que "
                 f"llega cada zona, es negativo en {r['n_zonas_negativas']} de {r['n_zonas']} zonas con alquiler "
-                f"(entre {alto} y {bajo} con el alquiler en su banda: P25 a P75, o el intervalo si la zona es estimada).",
+                f"(entre {alto} y {bajo} con el alquiler en su banda: P25 a P75, ampliado al intervalo si la zona es estimada).",
                 "fuente": fuente,
             }
         )
