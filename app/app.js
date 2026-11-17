@@ -93,7 +93,8 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
   const anterior = Object.values(alquiler.zonas).some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
-  cont.replaceChildren(elemento("p", `${m.titulo} (${m.unidad})`, "titulo"), elemento("p", `${metodo}. ${m.nota}`));
+  // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
+  cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
@@ -101,17 +102,19 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     fila.append(muestra, elemento("span", texto));
     cont.append(fila);
   }
+  if (hayEstimadas) cont.append(elemento("p", "Borde discontinuo: alquiler estimado."));
   const bordes = `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`;
-  cont.append(elemento("p", `${fuentes(...metas)}. ${bordes}`));
   const detalle = document.createElement("details");
   const notas = [
+    `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
+    `${fuentes(...metas)}. ${bordes}`,
     `Alquiler: dato de ${alquiler.meta.anio_dato}${anterior ? " (alguna zona, de un año anterior)" : ""}. ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
     `Neto y tarifas: ${netos.meta.nota ?? "estimados con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
     `Licencias: ${licencias(...metas)}.`,
   ];
-  detalle.append(elemento("summary", "Nota metodológica y licencias"), ...notas.map((n) => elemento("p", n)));
+  detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
   cont.append(detalle);
 }
 
@@ -129,7 +132,13 @@ function crearMapa(zonas) {
     const c = f.geometry.coordinates.flat(Infinity); // Polygon y MultiPolygon
     for (let i = 0; i < c.length; i += 2) limites.extend([c[i], c[i + 1]]);
   }
-  mapa.fitBounds(limites, { padding: 24, animate: false });
+  // En pantalla estrecha la leyenda ocupa parte del contenedor cuando se pinta, después de crear el mapa:
+  // hay que recalcular su tamaño y encuadrarlo de nuevo, o se corta por abajo.
+  const encuadrar = () => {
+    mapa.resize();
+    mapa.fitBounds(limites, { padding: 24, animate: false });
+  };
+  encuadrar();
   let pendiente = null;
   mapa.on("load", () => {
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
@@ -141,6 +150,7 @@ function crearMapa(zonas) {
   });
   return {
     mapa,
+    encuadrar,
     actualizar(datos) {
       const fuente = mapa.getSource("zonas");
       if (fuente) fuente.setData(datos);
@@ -157,12 +167,14 @@ async function main() {
   const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
-  const { mapa, actualizar } = crearMapa(api.zonas);
-  const estado = { resultado: null, metrica: "precio_hora" };
+  const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
+  const estado = { resultado: null, metrica: "precio_hora", zona: null };
   const lineas = (id) => {
     const z = estado.resultado.zonas[id];
     return lineasFicha(api.zonas.features.find((f) => f.properties.zona_id === id).properties.nombre, z, api.alquiler.zonas[id].anio, estado.metrica);
   };
+  // La ficha de la zona pinchada se mantiene, actualizada, al cambiar de métrica o de entradas.
+  const pintarFicha = () => $("ficha").replaceChildren(...(estado.zona ? lineas(estado.zona).map((t) => elemento("p", t)) : []));
 
   function recalcular() {
     const v = valoresFormulario();
@@ -185,7 +197,7 @@ async function main() {
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
-    $("ficha").replaceChildren();
+    pintarFicha();
   }
 
   formulario().addEventListener("input", (e) => {
@@ -210,9 +222,12 @@ async function main() {
     mapa.getCanvas().style.cursor = "";
   });
   mapa.on("click", "zonas-relleno", (e) => {
-    if (estado.resultado) $("ficha").replaceChildren(...lineas(e.features[0].properties.zona_id).map((t) => elemento("p", t)));
+    if (!estado.resultado) return;
+    estado.zona = e.features[0].properties.zona_id;
+    pintarFicha();
   });
-  recalcular();
+  recalcular(); // pinta la leyenda por primera vez: el mapa ya tiene su tamaño final
+  encuadrar();
 }
 
 main().catch((error) => {
