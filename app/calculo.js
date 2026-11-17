@@ -1,0 +1,210 @@
+// Cálculo de «¿Me sobra?» en el navegador: port de src/mesobra/calculo.py (supuestos en su docstring).
+// Funciones puras, sin DOM ni imports; solo interpola y consulta lo precalculado en `api`
+// ({alquiler, hogares, netos, tarifas, tiempos, zonas}). Sin dato o sin ruta sale `null`, nunca 0.
+// Contraste con Python: tests/fixtures/casos_referencia.json (app/calculo.test.js).
+
+export const UMBRAL_HORAS = 5;
+export const MISMO_TIEMPO = "mismo tiempo";
+export const REFERENCIA = "referencia";
+const EDAD_MIN = 16;
+const EDAD_MAX = 64;
+const MODOS = ["tp", "coche"];
+const ESCENARIO = ["tarifas", "subida_alquiler", "edad"];
+
+const falta = (v) => v === null || v === undefined;
+const tiene = (obj, clave) => obj !== null && typeof obj === "object" && Object.hasOwn(obj, clave);
+
+function entero(nombre, valor, minimo, maximo) {
+  if (!Number.isInteger(valor) || valor < minimo || valor > maximo) {
+    throw new Error(`${nombre} = ${JSON.stringify(valor)}: debe ser un entero de ${minimo} a ${maximo}`);
+  }
+}
+
+function numero(nombre, valor, minimo) {
+  if (typeof valor !== "number" || !Number.isFinite(valor) || !(valor > minimo)) {
+    throw new Error(`${nombre} = ${JSON.stringify(valor)}: debe ser un número mayor que ${minimo}`);
+  }
+}
+
+export function precioHora(sobra, horas, sobraRef, horasRef) {
+  if ([sobra, horas, sobraRef, horasRef].some(falta)) return [null, null];
+  const dif = horas - horasRef;
+  if (Math.abs(dif) < UMBRAL_HORAS) return [null, MISMO_TIEMPO];
+  return [(sobra - sobraRef) / dif, null];
+}
+
+export function netoMes(netos, bruto, hogar) {
+  if (typeof bruto !== "number") throw new Error(`bruto = ${JSON.stringify(bruto)}: debe ser un número`);
+  const { brutos, configuraciones } = netos;
+  const maximo = Math.max(...configuraciones.map((c) => c.hijos));
+  if (!(hogar.hijos >= 0 && hogar.hijos <= maximo)) {
+    throw new Error(`hijos = ${hogar.hijos}: la tabla de netos llega a ${maximo}`);
+  }
+  if (!(bruto >= brutos[0] && bruto <= brutos.at(-1))) {
+    throw new Error(`bruto ${bruto} €/año fuera de la tabla de netos (${brutos[0]}–${brutos.at(-1)}): pide el neto mensual`);
+  }
+  const monoparental = hogar.adultos === 1 && hogar.hijos >= 1;
+  const j = configuraciones.findIndex((c) => c.hijos === hogar.hijos && c.monoparental === monoparental);
+  if (j < 0) throw new Error(`netos.json no tiene la configuración hijos=${hogar.hijos}, monoparental=${monoparental}`);
+  const i = Math.max(Math.min(brutos.filter((b) => b <= bruto).length, brutos.length - 1), 1);
+  const y0 = netos.neto_anual[i - 1][j];
+  const y1 = netos.neto_anual[i][j];
+  const t = (bruto - brutos[i - 1]) / (brutos[i] - brutos[i - 1]);
+  return (y0 + t * (y1 - y0)) / 12;
+}
+
+export function cesta(cestaUc, hogar) {
+  const uc = 1 + 0.5 * (hogar.adultos - 1) + 0.3 * hogar.hijos;
+  const p = hogar.personas_comparten;
+  return cestaUc.alimentacion * uc + (cestaUc.suministros * (uc + 0.5 * (p - 1))) / p;
+}
+
+export function alquiler(zona, hogar, subida) {
+  if (zona.origen === "sin_dato") return null;
+  const k = (zona.factor_ipc * (1 + subida / 100) * hogar.m2) / hogar.personas_comparten;
+  let [bajo, alto] = [zona.p25, zona.p75];
+  if (zona.ic?.length) [bajo, alto] = [Math.min(bajo, zona.ic[0]), Math.max(alto, zona.ic[1])];
+  return { p25: zona.p25 * k, p50: zona.p50 * k, p75: zona.p75 * k, min: bajo * k, max: alto * k };
+}
+
+function celda(tiempos, matriz, origen, destino) {
+  const i = tiempos.origenes.indexOf(origen);
+  const j = tiempos.destinos.findIndex((d) => d.destino_id === destino);
+  if (!tiene(tiempos, matriz) || i < 0 || j < 0) {
+    throw new Error(`tiempos.json no tiene ${matriz} de ${origen} a ${destino}`);
+  }
+  return tiempos[matriz][i][j] ?? null;
+}
+
+function corona(api, origen, destino) {
+  const orden = api.tarifas.orden_coronas;
+  const coronas = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.corona]));
+  const par = [coronas[origen], coronas[destino]];
+  if (par.some((c) => !orden.includes(c))) {
+    throw new Error(`${origen} → ${destino}: coronas ${JSON.stringify(par)} sin tarifa (orden_coronas ${JSON.stringify(orden)})`);
+  }
+  return par.reduce((a, b) => (orden.indexOf(b) > orden.indexOf(a) ? b : a));
+}
+
+// [horas al mes, coste €/mes] del viaje de un sueldo; [null, null] si no hay ruta.
+export function viaje(api, sueldo, origen, escenario) {
+  const { tarifas, tiempos } = api;
+  const { dias, destino } = sueldo;
+  const minutos = celda(tiempos, sueldo.modo, origen, destino);
+  if (minutos === null) return [null, null];
+  let coste;
+  if (sueldo.modo === "coche") {
+    const km = celda(tiempos, "km_coche", origen, destino);
+    coste = km === null ? null : 2 * km * dias * tarifas.semanas_mes * tiempos.coste_coche.eur_km;
+  } else {
+    const edad = escenario.edad <= tarifas.edad_max_joven ? "joven" : "general";
+    const tabla = tarifas.escenarios[escenario.tarifas][edad][String(sueldo.viajes_dia)];
+    coste = tabla[corona(api, origen, destino)][dias - 1].coste_mes;
+  }
+  return [(minutos * 2 * dias * tarifas.semanas_mes) / 60, coste];
+}
+
+const suma = (valores) => (valores.some(falta) ? null : valores.reduce((a, b) => a + b, 0));
+
+function calcularZona(api, hogar, sueldos, zona, escenario) {
+  const neto = suma(sueldos.map((s) => s.neto_mes));
+  const alq = alquiler(api.alquiler.zonas[zona], hogar, escenario.subida_alquiler);
+  const viajes = sueldos.map((s) => viaje(api, s, zona, escenario));
+  const transporte = suma(viajes.map((v) => v[1]));
+  const cestaMes = cesta(api.hogares.cesta_uc, hogar);
+  const fijo = alq === null || transporte === null ? null : neto - transporte - cestaMes;
+  return {
+    origen: api.alquiler.zonas[zona].origen,
+    neto,
+    alquiler: alq === null ? null : alq.p50,
+    alquiler_p25: alq === null ? null : alq.p25,
+    alquiler_p75: alq === null ? null : alq.p75,
+    transporte,
+    cesta: cestaMes,
+    sobra: fijo === null ? null : fijo - alq.p50,
+    sobra_banda: fijo === null ? null : [fijo - alq.max, fijo - alq.min],
+    horas: suma(viajes.map((v) => v[0])),
+    esfuerzo: alq === null ? null : alq.p50 / neto,
+  };
+}
+
+function estructura(entrada) {
+  const objeto = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+  if (!objeto(entrada) || !("hogar" in entrada) || !("sueldos" in entrada)) {
+    throw new Error("entrada sin hogar o sueldos (debe ser un objeto con ambos)");
+  }
+  const tipos = { hogar: objeto, sueldos: Array.isArray, escenario: objeto, zonas: Array.isArray };
+  for (const [clave, esTipo] of Object.entries(tipos)) {
+    if (clave in entrada && !esTipo(entrada[clave])) throw new Error(`${clave}: tipo no válido`);
+  }
+  const ids = [...(entrada.zonas ?? []), entrada.ref];
+  if (!entrada.sueldos.every(objeto) || !ids.every((i) => falta(i) || typeof i === "string")) {
+    throw new Error("cada sueldo debe ser un objeto, y zonas y ref, textos");
+  }
+}
+
+function prepararHogar(api, entrada) {
+  const h = entrada.hogar;
+  if (typeof h.perfil !== "string" || !tiene(api.hogares.perfiles, h.perfil)) {
+    throw new Error(`perfil desconocido: ${JSON.stringify(h.perfil)}`);
+  }
+  const hogar = { ...api.hogares.perfiles[h.perfil], ...h };
+  const pedido = entrada.escenario ?? {};
+  const extra = Object.keys(pedido).filter((k) => !ESCENARIO.includes(k));
+  if (extra.length) throw new Error(`escenario con claves desconocidas: ${JSON.stringify(extra.sort())}`);
+  entero("edad", hogar.edad, EDAD_MIN, EDAD_MAX);
+  const esc = { tarifas: "vigente_2026", subida_alquiler: 0, edad: hogar.edad };
+  for (const [k, v] of Object.entries(pedido)) if (!falta(v)) esc[k] = v;
+  numero("subida_alquiler", esc.subida_alquiler, -100);
+  entero("edad", esc.edad, EDAD_MIN, EDAD_MAX);
+  entero("adultos", hogar.adultos, 1, 2);
+  entero("hijos", hogar.hijos, 0, Math.max(...api.netos.configuraciones.map((c) => c.hijos)));
+  entero("personas_comparten", hogar.personas_comparten, 1, 20);
+  numero("m2", hogar.m2, 0);
+  if (typeof esc.tarifas !== "string" || !tiene(api.tarifas.escenarios, esc.tarifas)) {
+    throw new Error(`escenario ${JSON.stringify(esc.tarifas)} inválido`);
+  }
+  return [hogar, esc];
+}
+
+function prepararSueldos(api, entrada, hogar) {
+  const { sueldos } = entrada;
+  if (sueldos.length < 1 || sueldos.length > hogar.adultos) {
+    throw new Error(`${sueldos.length} sueldos para ${hogar.adultos} adultos`);
+  }
+  return sueldos.map((original) => {
+    const faltan = ["destino", "dias", "modo"].filter((k) => !(k in original));
+    if (faltan.length) throw new Error(`sueldo sin ${JSON.stringify(faltan)}`);
+    const s = { viajes_dia: 2, ...original };
+    entero("dias", s.dias, 1, 5);
+    if (!MODOS.includes(s.modo) || !api.tarifas.viajes_dia.includes(s.viajes_dia)) {
+      throw new Error(`modo ${JSON.stringify(s.modo)} o viajes_dia ${JSON.stringify(s.viajes_dia)} inválido`);
+    }
+    if ("bruto" in s === "neto_mes" in s) throw new Error("cada sueldo lleva bruto o neto_mes, uno de los dos");
+    if ("bruto" in s) s.neto_mes = netoMes(api.netos, s.bruto, hogar);
+    else numero("neto_mes", s.neto_mes, 0);
+    return s;
+  });
+}
+
+export function calcular(api, entrada) {
+  estructura(entrada);
+  const [hogar, escenario] = prepararHogar(api, entrada);
+  const sueldos = prepararSueldos(api, entrada, hogar);
+  let ref = entrada.ref ?? null;
+  // Se recorre el array, no un objeto: los ids numéricos («28079») reordenarían las claves.
+  const ids = [...new Set([...(entrada.zonas ?? api.tiempos.origenes), ...(ref === null ? [] : [ref])])];
+  const desconocidas = ids.filter((z) => !tiene(api.alquiler.zonas, z));
+  if (desconocidas.length) throw new Error(`zonas sin entrada en alquiler.json: ${JSON.stringify(desconocidas)}`);
+  const res = new Map(ids.map((z) => [z, calcularZona(api, hogar, sueldos, z, escenario)]));
+  const completa = (z) => res.get(z).sobra !== null && res.get(z).horas !== null;
+  if (ref === null) {
+    ref = ids.filter(completa).reduce((mejor, z) => (mejor === null || res.get(z).horas < res.get(mejor).horas ? z : mejor), null);
+  } else if (!completa(ref)) {
+    throw new Error(`zona de referencia ${ref} sin sobrante u horas`);
+  }
+  const r = ref === null ? { sobra: null, horas: null } : res.get(ref);
+  for (const z of res.values()) [z.precio_hora, z.etiqueta] = precioHora(z.sobra, z.horas, r.sobra, r.horas);
+  if (ref !== null) res.get(ref).etiqueta = REFERENCIA;
+  return { ref, escenario, zonas: Object.fromEntries(res) };
+}
