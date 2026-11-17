@@ -133,7 +133,7 @@ test("la leyenda tiene una entrada por clase más una por cada motivo de «sin c
 
 test("la ficha dice el valor con su unidad, el año del alquiler y que la cesta es estimada", () => {
   const lineas = lineasFicha("Getafe", { sobra: 123.4, cesta: 356.4, origen: "observado" }, 2024, "sobra");
-  assert.deepEqual(lineas, ["Getafe", "123 €/mes", "Alquiler de 2024", "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)"]);
+  assert.deepEqual(lineas, ["Getafe", "123 €/mes (estimado)", "Alquiler de 2024", "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)"]);
   assert.equal(lineasFicha("X", { horas: null, alquiler: 1 }, null, "horas")[1], CATEGORIAS.ruta.texto);
   assert.match(lineasFicha("X", { sobra: 1, origen: "estimado" }, 2023, "sobra")[2], /\(estimado\)/);
 });

@@ -88,7 +88,9 @@ function mostrarErrores(errores) {
 function pintarLeyenda(api, resultadoPintado, metrica) {
   const m = METRICAS[metrica];
   const cont = $("leyenda");
-  const { alquiler, hogares, tiempos, zonas } = api;
+  const { alquiler, hogares, netos, tarifas, tiempos, zonas } = api;
+  const metas = [zonas.meta, alquiler.meta, tiempos.meta, hogares.meta, netos.meta, tarifas.meta];
+  const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
   const anterior = Object.values(alquiler.zonas).some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   cont.replaceChildren(elemento("p", `${m.titulo} (${m.unidad})`, "titulo"), elemento("p", `${metodo}. ${m.nota}`));
@@ -99,13 +101,15 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     fila.append(muestra, elemento("span", texto));
     cont.append(fila);
   }
-  cont.append(elemento("p", `${fuentes(zonas.meta, alquiler.meta, tiempos.meta, hogares.meta)}. Borde discontinuo: valor estimado. Borde grueso: zona de referencia.`));
+  const bordes = `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`;
+  cont.append(elemento("p", `${fuentes(...metas)}. ${bordes}`));
   const detalle = document.createElement("details");
   const notas = [
     `Alquiler: dato de ${alquiler.meta.anio_dato}${anterior ? " (alguna zona, de un año anterior)" : ""}. ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
-    `Licencias: ${licencias(zonas.meta, alquiler.meta, tiempos.meta, hogares.meta)}.`,
+    `Neto y tarifas: ${netos.meta.nota ?? "estimados con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
+    `Licencias: ${licencias(...metas)}.`,
   ];
   detalle.append(elemento("summary", "Nota metodológica y licencias"), ...notas.map((n) => elemento("p", n)));
   cont.append(detalle);
@@ -150,6 +154,8 @@ function crearMapa(zonas) {
 async function main() {
   const api = await cargarApi(carpetaDatos());
   $("fecha-datos").textContent = api.tiempos.meta.generado;
+  const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
+  $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
   const { mapa, actualizar } = crearMapa(api.zonas);
   const estado = { resultado: null, metrica: "precio_hora" };

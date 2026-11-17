@@ -8,12 +8,14 @@ export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
 const NEGATIVOS = ["#b35806", "#f1a340"]; // del más negativo al más cercano a 0
 const POSITIVOS = ["#998ec3", "#542788"]; // del más cercano a 0 al más alto
 export const SIN_DATO = "#bdbdbd";
+// Tope de tiempos.json (contrato de api_estatica): más minutos, o sin ruta, es null (ver tiempos.meta.nota).
+const TOPE_RUTA_MIN = 120;
 
 // Una categoría por motivo de que falte la cifra: nunca se pinta como cero ni con un color de clase.
 export const CATEGORIAS = {
   alquiler: { texto: "Sin dato de alquiler", color: SIN_DATO },
-  ruta: { texto: "Sin ruta en 120 min", color: "#8a8a8a" },
-  ambos: { texto: "Sin dato de alquiler y sin ruta en 120 min", color: "#5c5c5c" },
+  ruta: { texto: `Sin ruta en ${TOPE_RUTA_MIN} min`, color: "#8a8a8a" },
+  ambos: { texto: `Sin dato de alquiler y sin ruta en ${TOPE_RUTA_MIN} min`, color: "#5c5c5c" },
   [MISMO_TIEMPO]: { texto: `Mismo tiempo de viaje que la referencia (menos de ${UMBRAL_HORAS} h/mes de diferencia)`, color: "#e0e0e0" },
   [REFERENCIA]: { texto: "Zona de referencia (la de menos horas de viaje)", color: "#ffffff" },
 };
@@ -25,7 +27,7 @@ export const METRICAS = {
     corta: "€ por hora extra",
     decimales: 1,
     divergente: true,
-    nota: "Negativo: vivir ahí te deja menos dinero y además viajas más.",
+    nota: "Estimado. Negativo: vivir ahí te deja menos dinero y además viajas más.",
   },
   sobra: {
     titulo: "Lo que sobra al mes",
@@ -41,7 +43,7 @@ export const METRICAS = {
     corta: "h/mes",
     decimales: 1,
     divergente: false,
-    nota: "Solo transporte público; más de 120 min por trayecto cuenta como sin ruta.",
+    nota: `Estimado. Solo transporte público; más de ${TOPE_RUTA_MIN} min por trayecto cuenta como sin ruta.`,
   },
 };
 
@@ -148,7 +150,7 @@ export function leyenda(clases, categorias, metrica) {
 export function lineasFicha(nombre, zona, anio, metrica) {
   const f = formateador(METRICAS[metrica].decimales);
   const clave = categoria(zona, metrica);
-  const lineas = [nombre, clave === null ? `${f.format(zona[metrica])} ${METRICAS[metrica].corta}` : CATEGORIAS[clave].texto];
+  const lineas = [nombre, clave === null ? `${f.format(zona[metrica])} ${METRICAS[metrica].corta} (estimado)` : CATEGORIAS[clave].texto];
   if (anio !== null && anio !== undefined) lineas.push(`Alquiler de ${anio}${zona.origen === "estimado" ? " (estimado)" : ""}`);
   if (esNumero(zona.cesta)) lineas.push(`Cesta básica: ${formateador(0).format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`);
   return lineas;
