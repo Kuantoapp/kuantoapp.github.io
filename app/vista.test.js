@@ -180,7 +180,9 @@ test("el punto de miles a la española no se lee como decimal: «1.800» son 180
   assert.equal(neto("1800,5"), 1800.5);
   assert.equal(neto("1.5"), 1.5); // no es un grupo de tres cifras: es un decimal
   assert.equal(validar({ ...BASE, bruto: "24.000" }, real).entrada.sueldos[0].bruto, 24000);
-  assert.deepEqual(campos({ bruto: "1.2.3" }), ["bruto"]);
+  for (const malo of ["1.2.3", "1.800.", ".800", "1.800,", "1,800.50"]) assert.deepEqual(campos({ bruto: malo }), ["bruto"], malo);
+  for (const malo of ["1.800.", ".800", "10.000,01"]) assert.deepEqual(campos({ fuente: "neto", neto: malo }), ["neto"], malo);
+  assert.equal(neto("10.000"), 10000);
 });
 
 test("los límites exactos se aceptan y un paso fuera se rechaza", () => {

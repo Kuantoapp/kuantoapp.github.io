@@ -205,7 +205,7 @@ export function validar(v, api) {
       falla("bruto", `Para sueldos fuera de ${miles.format(brutoMin)}–${miles.format(brutoMax)} € brutos al año, introduce tu neto mensual medio`);
     } else sueldo.bruto = bruto;
   } else if (v.fuente === "neto") {
-    // Neto mensual medio = neto anual ÷ 12 (supuesto 4 de calculo.py). No se convierte desde la nómina: con 14 pagas
+    // Neto mensual medio = neto anual ÷ 12 (`neto_mes` en la entrada de `calcular`). No se convierte desde la nómina: con 14 pagas
     // la paga extra ya cotiza prorrateada, así que nómina × 14 ÷ 12 no da el neto anual.
     const neto = importe(v.neto);
     const tope = brutoMax / 12; // el neto medio mensual no puede pasar del bruto mensual máximo
