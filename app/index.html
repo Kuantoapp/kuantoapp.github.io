@@ -11,6 +11,8 @@
 <body>
   <main>
     <aside>
+      <!-- Arriba y fija (sticky) para que se vea al pinchar una zona sin hacer scroll; F2-01 amplía su contenido. -->
+      <section id="ficha" aria-live="polite"></section>
       <form id="formulario" novalidate autocomplete="off">
         <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
 
@@ -81,8 +83,7 @@
           <legend>Qué pinta el mapa</legend>
         </fieldset>
       </form>
-      <!-- Contenedores vacíos: los rellenan F2-01 (ficha completa) y F2-02 (escenarios). -->
-      <section id="ficha" aria-live="polite"></section>
+      <!-- Contenedor vacío: lo rellena F2-02 (escenarios). -->
       <section id="escenarios"></section>
       <footer>
         <p id="pie">Powered by <a href="https://www.crtm.es/" rel="noopener noreferrer">CRTM</a>. Tiempos calculados el <span id="fecha-datos"></span>. Este proyecto no está patrocinado ni avalado por el CRTM.</p>
