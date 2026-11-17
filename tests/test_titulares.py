@@ -106,3 +106,20 @@ def test_neto_hora_smi_y_pareja():
     assert pareja["neto_hora"] == pytest.approx(
         calculo.neto_mes(api["netos"], titulares.EAES, par) / horas
     )
+
+
+def test_umbral_exacto_cuenta_como_encima():
+    df = pd.DataFrame(
+        {
+            "precio_hora": [8.0, 7.99, 8.01],
+            "corona": ["A", "A", "A"],
+            "origen": ["a", "b", "c"],
+            "sobra": [1.0, 1.0, 1.0],
+            "sobra_bajo": [0.0, 0.0, 0.0],
+            "sobra_alto": [2.0, 2.0, 2.0],
+            "etiqueta": [None, None, None],
+        }
+    )
+    r = titulares.resumen(df, neto_hora=8.0)  # mediana de A = 8,0 = neto/hora
+    assert r["n_encima"] == 2 and r["coronas_encima"] == ["A"]
+    assert r["veredicto"] == "plan B"
