@@ -194,13 +194,15 @@ function frasePrecio(zona, ref) {
 
 function fraseBanda([bajo, alto]) {
   const e = (v) => `${euros.format(Math.abs(v))} €`;
-  if (bajo >= 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
-  if (alto < 0) return `Te faltan entre ${e(alto)} y ${e(bajo)} al mes (estimado)`;
+  // Se decide con lo redondeado que se muestra: −0,3 € no es «te falten 0 €».
+  if (Math.round(bajo) >= 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
+  if (Math.round(alto) <= 0) return `Te faltan entre ${e(alto)} y ${e(bajo)} al mes (estimado)`;
   return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
 }
 
 function fraseAlquiler(zona, { anio, ic }) {
   const rango = `entre ${euros.format(zona.alquiler_p25)} y ${euros.format(zona.alquiler_p75)} € al mes`;
+  // shortcut: «contratos de {anio}» vale con factor_ipc 1,0 (hoy en todas); al aplicar el IPC (#94), decir «actualizado con el IPC» y «estimado».
   if (zona.origen !== "estimado") return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
   const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
   return `Alquiler estimado: ${rango} (año ${anio}; ${intervalo})`;
@@ -223,12 +225,12 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseBanda(zona.sobra_banda),
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
-    `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${ctx.titulos.join(" y ")})`,
+    `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")})`,
     `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`,
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
-    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${zona.esfuerzo > ESFUERZO_RECOMENDADO ? `, más del ${ESFUERZO_RECOMENDADO * 100} % recomendado` : ""}`,
+    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}`,
     `Con el ${ESFUERZO_RECOMENDADO * 100} % del neto alcanza para un piso de ${euros.format(piso)} m²${ctx.personas > 1 ? ` compartido entre ${ctx.personas}` : ""} (estimado)`,
   );
   return [...new Set(lineas)];
@@ -255,14 +257,14 @@ export function avisos(alquiler) {
   const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;
   const anterior = zonas.some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
   const lineas = [
-    "El alquiler sale de contratos ya firmados y declarados, no de anuncios, así que va por debajo de lo que piden hoy: tómalo como un suelo. Lo que te sobre será, como mucho, lo que ves aquí.",
+    "El alquiler sale de contratos ya firmados y declarados, no de anuncios, así que va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.",
     `El dato de alquiler es de ${alquiler.meta.anio_dato}${anterior ? "; en alguna zona, de un año anterior, y lo dice su ficha" : ""}.`,
   ];
   const estimadas = cuantas("estimado");
   const zonasN = (n) => `${n} ${n === 1 ? "zona" : "zonas"}`;
   if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
   const sinDato = cuantas("sin_dato");
-  if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato de alquiler ni una estimación fiable: en gris y sin cifra.`);
+  if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
   return [...lineas, `${fuentes(alquiler.meta)}.`];
 }
 

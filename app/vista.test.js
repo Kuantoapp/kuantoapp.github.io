@@ -170,12 +170,48 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
     "Tu trabajo te paga 10,1 € netos la hora (estimado, jornada de 40 h a la semana)",
-    "El alquiler se lleva el 39 % del neto, más del 30 % recomendado",
+    "El alquiler se lleva el 39 % del neto, más del 30 % que esta herramienta toma como referencia",
     "Con el 30 % del neto alcanza para un piso de 35 m² (estimado)",
   ]);
-  // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 69 m² ÷ 586,84 €.
+  // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
   assert.ok(Math.abs(contextoFicha(ejemplo, casos[0].entrada, casos[0].salida, "28065").salarioHora - 10.064) < 0.001);
   assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven)"));
+});
+
+test("el título de la ficha es el de la celda que paga el cálculo: borde de 25/26 años y 4 viajes al día", () => {
+  const conEdad = (edad, viajes_dia) => {
+    const entrada = structuredClone(casos[0].entrada);
+    entrada.hogar.edad = edad;
+    if (viajes_dia) entrada.sueldos[0].viajes_dia = viajes_dia;
+    const resultado = calcular(ejemplo, structuredClone(entrada));
+    return lineasFicha("Zona", resultado.zonas["28065"], "sobra", contextoFicha(ejemplo, entrada, resultado, "28065"));
+  };
+  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven)"));
+  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes)"));
+  const tabla = ejemplo.tarifas.escenarios.vigente_2026.general["4"];
+  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo})`));
+  assert.ok(celda, "con 4 viajes al día el título y el coste salen de la misma celda");
+});
+
+test("dos sueldos con el mismo título no lo repiten", () => {
+  const caso = casos.find((c) => c.nombre.startsWith("pareja con un hijo"));
+  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes)"));
+});
+
+test("el borde del 30 % y el de la banda se deciden con lo que se muestra redondeado", () => {
+  const caso = casos[0];
+  const ctx = contextoFicha(ejemplo, caso.entrada, caso.salida, "28065");
+  const con = (cambios) => lineasFicha("Zona", { ...caso.salida.zonas["28065"], ...cambios }, "sobra", ctx);
+  assert.ok(con({ esfuerzo: 0.3004 }).includes("El alquiler se lleva el 30 % del neto"));
+  assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia"));
+  assert.ok(con({ sobra_banda: [-0.3, 120] }).includes("Te sobran entre 0 € y 120 € al mes (estimado)"));
+  assert.ok(con({ sobra_banda: [-80, 0.2] }).includes("Te faltan entre 0 € y 80 € al mes (estimado)"));
+  assert.ok(con({ sobra_banda: [-80, 120] }).includes("Entre que te falten 80 € y te sobren 120 € al mes (estimado)"));
+});
+
+test("una referencia sin sobrante u horas falla con el mensaje que app.js reconoce", () => {
+  const entrada = { ...structuredClone(casos.find((c) => c.nombre.startsWith("coche")).entrada), ref: "28001" };
+  assert.throws(() => calcular(ejemplo, entrada), /^Error: zona de referencia /);
 });
 
 test("con una referencia elegida, la ficha lee bien el signo del precio de la hora", () => {
@@ -226,10 +262,10 @@ test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", 
   assert.match(lineas[0], /suelo/);
   assert.equal(lineas[1], "El dato de alquiler es de 2024.");
   assert.ok(lineas.includes("1 zona con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación."));
-  assert.ok(lineas.some((l) => l.startsWith("1 zona sin dato de alquiler")));
+  assert.ok(lineas.includes("1 zona sin dato publicado de alquiler: en gris y sin cifra."));
   assert.match(lineas.at(-1), /^fuente: /);
   const reales = avisos(real.alquiler);
-  assert.ok(reales.some((l) => l.startsWith("41 zonas sin dato")));
+  assert.ok(reales.includes("41 zonas sin dato publicado de alquiler: en gris y sin cifra."));
   assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
 });
 
