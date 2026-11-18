@@ -106,7 +106,285 @@ Aplica la regla de `docs/decisiones.md` del 14-11: si el catálogo regional (dat
     Solo a precio de mercado, en 2025: 37,5 % (459 hogares con gasto de 468); a precio inferior: 27,9 % (103 de 112). Descontar las ayudas a la vivienda apenas cambia la tasa (35,5 % en 2025). Se toma 2025 porque su renta es la de 2024, el mismo año que el ADRH 2024 de F3-06.
   - **Margen de error (supuesto).** Sin estrato ni sección en el fichero, el error estándar se calcula por linealización tomando el hogar como unidad, y sale igual que el binomial con el tamaño efectivo de Kish. No recoge el efecto de conglomerado, así que se multiplica por √2 (efecto de diseño 2). Con 580 inquilinos en 408 secciones (metodología de la ECV, cuadro II), hay 1,4 por sección y el efecto es 1 + 1,4ρ: el factor 2 equivale a ρ ≈ 0,7, muy por encima de lo habitual. Agrupar 2023 a 2025 no da hogares independientes, porque la ECV es un panel rotatorio y `DB030` no identifica al hogar entre años; por eso no se usa como control.
   - **Tolerancia propuesta para S3, fijada antes de que F3-06 tenga resultado:** 36,0 ± 1,96 × 2,66 × √2 (y 41,4 ± 1,96 × 2,73 × √2 para el alquiler). **F3-06 pasa si el rango de su sobrecarga agregada a la Comunidad (alquiler y suministros por encima del 40 %, σ del Gini a σ del P80/P20) toca el intervalo [28,6 %; 43,4 %]**, y el del alquiler por encima del 30 % toca [33,9 %; 49,0 %]. Antes de #260 eran [28,5; 43,3] y [33,8; 48,9]; se movieron 0,1 puntos por la regla de la renta ≤ 0, no por ningún resultado de F3-06. Con ±7,4 puntos, el intervalo solo detecta errores gruesos. Si no lo toca, se aplica la señal de corte de [#100](https://github.com/yeraybc/DataMad-hackaton-2026/issues/100): no se publica y el Bono usa el esfuerzo.
-  - **Lo que la tolerancia no cubre**, y que hay que decir junto al resultado: la renta es la declarada en la encuesta (`HY020`), no la de registros fiscales del ADRH; el gasto es el que declara el hogar (`HH070`, que incluye la comunidad), no el SERPAVI P25–P75 más la cesta de la EPF; el gasto es de 2025 y el SERPAVI, de 2024; y quedan fuera 18 de los 580 hogares, por no tener gasto declarado.
+  - **Lo que la tolerancia no cubre**, y que hay que decir junto al resultado: la renta es la declarada en la encuesta (`HY020`), no la de registros fiscales del ADRH; el gasto es el que declara el hogar (`HH070`, que incluye la comunidad), no el SERPAVI P25–P75 más la cesta de la EPF; el gasto es de 2025 y el SERPAVI, de 2024; y quedan fuera 18 de los 580 hogares, por no tener gasto declarado. Esas diferencias están medidas en la viñeta siguiente.
+  - **Entradas de F3-06 frente a la ECV ([#193](https://github.com/yeraybc/DataMad-hackaton-2026/issues/193), 2026-11-18, estimado).** Medidas antes de que F3-06 tenga resultado, para saber hacia dónde se desviará. ECV 2025, inquilinos de ES30 (`HH021` 3 o 4, ponderados con `DB090`); para el alquiler, solo los de mercado (`HH021` = 3, 459 hogares con dato), porque F3-06 aplica el SERPAVI solo a ellos. Diferencia = (F3-06 − ECV) / ECV. El efecto es el cambio de la cifra de control (36,0 %) si se multiplica esa entrada de cada hogar de la ECV por el cociente F3-06/ECV.
+
+    | Entrada | ECV 2025 | Lo que usa F3-06 | Diferencia | Efecto en la sobrecarga |
+    |---|---|---|---|---|
+    | Renta por hogar, media | 36.624 € (`HY020`) | 36.416 € (ADRH: 51.976 € × 0,701) | −0,6 % | ruido (ver abajo) |
+    | Renta por hogar, mediana | 31.379 € | 36.416 € (la misma media) | +16,1 % | no aplica (ver abajo) |
+    | Renta por unidad de consumo, media de las personas | 19.781 € (`HY020/HX240`) | 20.425 € (ADRH: 29.153 € × 0,701) | +3,3 % | −0,8 puntos |
+    | Alquiler de mercado, P25 | 600 €/mes (`HH060`) | 679 €/mes | +13,1 % | +6,5 puntos |
+    | Alquiler de mercado, mediana | 775 €/mes | 789 €/mes | +1,8 % | +2,1 puntos |
+    | Alquiler de mercado, P75 | 1.029 €/mes | 992 €/mes | −3,7 % | −0,7 puntos |
+    | Alquiler de mercado, media | 862 €/mes | 879 €/mes | +2,0 % | — |
+    | Suministros, mediana por hogar | 151 €/mes (`HH070 − HH060`) | 122 €/mes (cesta: 81,08 €/UC·mes × `HX240`) | −19,5 % | −1,2 puntos |
+
+    Fuentes. ECV: microdatos de la ECV 2025 del INE (`ine_ecv_microdatos_2025_2026-11-18.zip`, `mesobra.sobrecarga_ecv.hogares`). Renta de F3-06: ADRH 2024 del INE (`mesobra.renta.renta`). Alquiler: SERPAVI 2024 del MIVAU, cuantía mensual (`mesobra.alquiler.alquiler_seccion`), con los inquilinos del Censo 2021 del INE por sección (`t20_2`, `ine_c2021_indicadores_seccion_2026-11-18.csv`). Suministros: cesta de la EPF 2025 (`mesobra.hogares.cesta_uc`: electricidad, gas, otros combustibles y agua).
+
+    F3-06 todavía no existe, así que su lado de la tabla se construye con estos supuestos:
+    - **Renta.** El ADRH no trae la Comunidad: es la media de los 179 municipios ponderada por hogares (población ÷ tamaño medio del hogar) y, por unidad de consumo, por población. Se ajusta a los inquilinos con `r / (p·r + 1 − p)` = 0,701, donde `r` = 0,650 es el cociente de renta por unidad de consumo entre inquilinos y propietarios de la ECV (19.781,17 € frente a 30.432,15 €) y `p` = 0,2065 es la parte de viviendas principales en alquiler del Censo 2021 (`t20_2 / t19_1`).
+    - **Alquiler.** En cada sección, F3-06 integra el alquiler entre el P25 y el P75 del SERPAVI. Aquí se toma uniforme en ese tramo y se mezclan las secciones con el peso de sus inquilinos del Censo 2021, del mismo seccionado (4.416 secciones; el 2,0 % de los inquilinos cae en secciones sin dato y queda fuera). Los cuantiles de la tabla son los de esa mezcla. Promediar los percentiles de las secciones da otra cosa: 716, 861 y 1.041 €/mes, es decir, +19,4 %, +11,1 % y +1,1 % frente a la ECV.
+    - **Efecto.** Es un orden de magnitud: un factor único para todos los hogares no reproduce el cambio de forma de la distribución. Además, la tasa da saltos cerca del 40 %: cinco hogares tienen un gasto entre el 39,97 % y el 39,998 % de su renta y pesan cerca del 1 % del total. Con factores a menos del 1 % de la unidad, el efecto es ruido: la renta media (−0,6 %) mueve la tasa +1,6 puntos solo por ese escalón.
+
+    Lectura:
+    - **Renta: casa.** Por unidad de consumo, que es como trabaja F3-06, el ADRH ajustado queda un 3,3 % por encima de la ECV y bajaría la sobrecarga en torno a 1 punto. Por hogar casa al 0,6 %, pero por compensación: el ADRH de todos los hogares supera a la ECV un 9,7 % (51.976 € frente a 47.375 €; registro fiscal frente a encuesta), y el ajuste a inquilinos, con la `p` del Censo 2021 (20,7 %) y un cociente de unidad de consumo aplicado al hogar, lo baja más de lo que dice la ECV.
+    - **La mediana pasa del 15 % (+16,1 %), pero no es una diferencia de entradas.** Compara la media del ADRH con la mediana de la ECV; en la ECV, la media es 1,17 veces la mediana. Es un aviso para F3-06: la log-normal tiene que fijar la **media** con el ADRH. Si tomara esa media como renta típica, la sobrecarga bajaría unos 7,7 puntos (al 28,3 %), en el borde de la tolerancia.
+    - **Alquiler: el centro casa y la parte barata no.** La mediana y la media de lo que integra F3-06 quedan a un 2 % de la ECV; el P25, un 13,1 % por encima, y el P75, un 3,7 % por debajo. Integrar solo entre el P25 y el P75 de cada sección deja fuera los alquileres baratos que sí declara la ECV. Dirección: **más sobrecarga**, de +2 puntos (mediana) a +6,5 puntos (si todo se moviera como el P25). No es por el año: con el IPC de alquiler de Madrid (media de 2025 ÷ media de 2024 = 1,030), el SERPAVI de 2024 se alejaría más. Causas posibles, sin cuantificar: el SERPAVI solo recoge vivienda colectiva y contratos declarados en el IRPF; la ECV, cualquier alquiler declarado en la entrevista.
+    - **Suministros: pasa del 15 % (−19,5 %).** `HH070` incluye la comunidad y la cesta de F3-06 no. Si se le suman los gastos comunitarios de la EPF (04.4, 600,38 €/UC·año), la cesta pasa a 197 €/mes (+30,2 %); la ECV queda entre las dos. Dirección: **menos sobrecarga**, unos −1,2 puntos.
+    - **Todo junto:** con la media de lo que integra F3-06 (+2,0 %), la renta y los suministros, la sobrecarga baja de 0,8 a 1,5 puntos (35,1 % con la renta por hogar; 34,5 % por unidad de consumo). Con los extremos del alquiler va de −1,9 puntos (factor del P75) a +6,9 (factor del P25). Todo queda dentro de [28,6 %; 43,4 %]: las entradas, por sí solas, no sacan a F3-06 de la tolerancia. El riesgo está en la cola barata del alquiler, que empuja hacia arriba, y en usar la media como mediana, que empuja hacia abajo.
+
+    Segunda vía:
+    - El script reproduce primero la cifra de control: `control_f306` da 36,0 %, y la tasa con todos los factores a 1, también.
+    - El cociente `r` sale de los microdatos: la renta por unidad de consumo de inquilinos, propiedad con hipoteca, sin hipoteca y total coincide al céntimo con el IECM `175_000004` (19.781,17; 31.108,81; 29.941,95 y 27.136,20 €).
+    - El ADRH agregado desde las 4.518 secciones da 51.142 € por hogar y 28.834 € por unidad de consumo (−1,6 % y −1,1 % frente a los municipios).
+    - El SERPAVI agregado desde los municipios (pesos `t20_2` por municipio) da P25 664, mediana 814 y P75 1.048 €/mes. Dentro de un municipio el reparto es más ancho que dentro de una sección, así que su P25 es más bajo; queda entre la ECV y la media de los percentiles de sección.
+    - El Censo 2021 suma 525.755 inquilinos en la provincia y 317.766 en Madrid, igual que en #98.
+  - **Periodicidad de `HH060`: VERIFICADO, es mensual** (`dm-verificador-fuentes` y relectura en bruto del PDF, 2026-11-18). INE, [Cuestionario de Hogar de la ECV 2025](https://www.ine.es/metodologia/t25/ecv_hog25.pdf), p. 5, pregunta HC2, de la que salen `HH060` y `HH070`: «¿Cuál ha sido el importe del alquiler de esta vivienda en el último mes?», con la casilla «Importe mensual del alquiler». Segunda vía: la mediana de `HH060` de mercado (775 €) es del orden del SERPAVI mensual (789 €), no doce veces mayor. Así que el alquiler por encima del 30 % (`HH060·12`) está bien construido. Matiz: HC2 pide incluir las ayudas al alquiler aunque se paguen directamente al arrendador, y excluir, si se puede, la comunidad y el agua; `HH060` es el alquiler antes de ayudas.
+  - **Script de #193** (desde la raíz del repo, con `PYTHONPATH=src` y los microdatos descomprimidos como dice `data/README.md`):
+    <details><summary>entradas_f306.py</summary>
+
+    ```python
+    # ruff: noqa: T201, C408, RUF015 -- script de un solo uso fuera del repo (#193), su salida es el resultado
+    """#193: entradas de F3-06 frente a la ECV 2025 de los inquilinos de Madrid (ES30). Estimado."""
+
+    import numpy as np
+    import pandas as pd
+
+    from mesobra import alquiler, hogares, renta
+    from mesobra import sobrecarga_ecv as ecv
+
+    RAW = ecv.RAIZ / "data/raw"
+
+
+    def wq(x, w, q):
+        """Cuantil ponderado (interpolación sobre el peso acumulado en el punto medio)."""
+        o = np.argsort(x.to_numpy())
+        x, w = x.to_numpy()[o], w.to_numpy()[o]
+        c = (np.cumsum(w) - w / 2) / w.sum()
+        return np.interp(q, c, x)
+
+
+    def pct(f3, e):
+        return 100 * (f3 - e) / e
+
+
+    h = ecv.hogares()
+    print("control", ecv.control_f306(h).tasa.round(2).to_dict())
+    m = h[h.DB040 == ecv.MADRID]
+    inq = m[m.HH021.isin(ecv.INQUILINOS)]
+    mer = inq[
+        (inq.HH021 == 3) & inq.HH060.notna()
+    ]  # HH060 y HH070 faltan juntos en 18 hogares
+
+    # --- Censo 2021: inquilinos (t20_2) y viviendas principales (t19_1) por sección, provincia 28
+    c = pd.read_csv(RAW / "ine_c2021_indicadores_seccion_2026-11-18.csv", dtype=str)
+    c = c[c.cpro.astype(int) == 28]
+    c["seccion_id"] = (
+        c.cpro.str.zfill(2)
+        + c.cmun.str.zfill(3)
+        + c.dist.str.zfill(2)
+        + c.secc.str.zfill(3)
+    )
+    for k in ("t19_1", "t20_2"):
+        c[k] = pd.to_numeric(c[k])
+    print(
+        "censo t20_2 prov 28",
+        c.t20_2.sum(),
+        "Madrid",
+        c[c.seccion_id.str[:5] == "28079"].t20_2.sum(),
+    )
+    ok = c.t20_2.notna() & c.t19_1.notna()
+    p = c[ok].t20_2.sum() / c[ok].t19_1.sum()
+    print(f"p (alquiler/principales, Censo 2021) {p:.4f}")
+
+    # --- 1. Renta
+    r_uc = lambda d: np.average(d.HY020 / d.HX240, weights=d.peso_personas)
+    prop = m[m.HH021.isin((1, 2))]
+    print(
+        "IECM UC inq/hip/sin/total",
+        round(r_uc(inq), 2),
+        round(r_uc(m[m.HH021 == 2]), 2),
+        round(r_uc(m[m.HH021 == 1]), 2),
+        round(r_uc(m), 2),
+    )
+    r = r_uc(inq) / r_uc(prop)
+    print(f"r (UC inquilinos/propietarios) {r:.4f}  propietarios UC {r_uc(prop):.2f}")
+    aj = r / (p * r + 1 - p)
+
+    t = renta.renta()
+    t = t[t.anio == 2024]
+    mun = t[(t.nivel == "zona") & (t.unidad_id.str.len() == 5)].dropna(
+        subset=["renta_hogar", "tam_hogar"]
+    )
+    sec = t[t.nivel == "seccion"].dropna(subset=["renta_hogar", "tam_hogar", "poblacion"])
+    for nom, d in (("municipios", mun), ("secciones", sec)):
+        hog = d.poblacion / d.tam_hogar
+        print(
+            f"ADRH Comunidad desde {nom} ({len(d)}): hogar {np.average(d.renta_hogar, weights=hog):.0f}"
+            f"  uc {np.average(d.renta_uc.fillna(0), weights=d.poblacion * d.renta_uc.notna()):.0f}"
+        )
+    hog = mun.poblacion / mun.tam_hogar
+    adrh_h = np.average(mun.renta_hogar, weights=hog)
+    mu = mun.dropna(subset=["renta_uc"])
+    adrh_uc = np.average(mu.renta_uc, weights=mu.poblacion)
+
+    e_media = np.average(inq.HY020, weights=inq.DB090)
+    e_med = wq(inq.HY020, inq.DB090, 0.5)
+    e_todos = np.average(m.HY020, weights=m.DB090)
+    sin_neg = inq[inq.HY020 > 0]
+    print(
+        f"ECV inquilinos HY020 media {e_media:.0f} mediana {e_med:.0f} (sin renta<=0: media "
+        f"{np.average(sin_neg.HY020, weights=sin_neg.DB090):.0f}); todos ES30 media {e_todos:.0f}"
+    )
+    print(
+        f"ADRH hogar {adrh_h:.0f} vs ECV todos {e_todos:.0f}: {pct(adrh_h, e_todos):+.1f} %"
+    )
+    f3_h = adrh_h * aj
+    print(
+        f"F3-06 renta hogar inquilinos {f3_h:.0f} (ajuste {aj:.4f}) vs media {pct(f3_h, e_media):+.1f} %"
+        f" vs mediana {pct(f3_h, e_med):+.1f} %"
+    )
+    e_uc = r_uc(inq)
+    e_uc_todos = r_uc(m)
+    f3_uc = adrh_uc * aj
+    print(
+        f"ADRH uc {adrh_uc:.0f} vs ECV uc todos {e_uc_todos:.0f}: {pct(adrh_uc, e_uc_todos):+.1f} %"
+    )
+    print(
+        f"F3-06 renta UC inquilinos {f3_uc:.0f} vs ECV {e_uc:.0f}: {pct(f3_uc, e_uc):+.1f} %"
+    )
+
+    # --- 2. Alquiler (mercado, HH021 = 3)
+    e_alq = {q: wq(mer.HH060, mer.DB090, q) for q in (0.25, 0.5, 0.75)}
+    print(
+        "ECV HH060 mercado P25/P50/P75",
+        {k: round(v) for k, v in e_alq.items()},
+        "media",
+        round(np.average(mer.HH060, weights=mer.DB090)),
+        "n",
+        mer.HH060.notna().sum(),
+    )
+    hojas = alquiler.leer_serpavi()
+    s = alquiler.alquiler_seccion(hojas)
+    s = s[s.anio == 2024].merge(c[["seccion_id", "t20_2"]], on="seccion_id", how="left")
+    print("secciones SERPAVI 2024", len(s), "sin censo", s.t20_2.isna().sum())
+    con = s.dropna(subset=["cuantia_p50", "t20_2"])
+    fuera = 1 - con.t20_2.sum() / c.t20_2.sum()
+    print(f"inquilinos del Censo fuera del agregado {100 * fuera:.1f} %")
+    z = alquiler.alquiler_zona(hojas)
+    z = z[(z.anio == 2024) & (z.zona_id.str.len() == 5)]
+    cm = c.groupby(c.seccion_id.str[:5]).t20_2.sum().rename("t20_2")
+    z = z.merge(cm, left_on="zona_id", right_index=True).dropna(subset=["cuantia_p50"])
+    ipc = alquiler.leer_ipc()
+    anual = ipc.groupby(ipc.index.str[:4]).mean()
+    k_ipc = anual["2025"] / anual["2024"]
+    print(f"IPC alquiler Madrid media 2025/2024 {k_ipc:.4f}")
+    f3_alq = {}
+    for q, col in ((0.25, "cuantia_p25"), (0.5, "cuantia_p50"), (0.75, "cuantia_p75")):
+        sec_m = np.average(con[col], weights=con.t20_2)
+        mun_m = np.average(z[col], weights=z.t20_2)
+        sec_med = wq(con[col], con.t20_2, 0.5)
+        f3_alq[q] = sec_m
+        print(
+            f"SERPAVI {col}: secciones {sec_m:.0f} (mediana ponderada {sec_med:.0f}), municipios {mun_m:.0f}"
+            f" | vs ECV P{int(q * 100)} {pct(sec_m, e_alq[q]):+.1f} %, con IPC 2025 "
+            f"{pct(sec_m * k_ipc, e_alq[q]):+.1f} %"
+        )
+    # Lo que integra F3-06: en cada sección, alquiler uniforme entre P25 y P75, mezclado con t20_2
+    u = np.linspace(0, 1, 101)
+    mezcla = pd.Series(
+        (
+            con.cuantia_p25.to_numpy()[:, None]
+            + np.outer(con.cuantia_p75 - con.cuantia_p25, u)
+        ).ravel()
+    )
+    w_mezcla = pd.Series(np.repeat(con.t20_2.to_numpy() / len(u), len(u)))
+    f3_mez = {q: wq(mezcla, w_mezcla, q) for q in (0.25, 0.5, 0.75)}
+    for q, v in f3_mez.items():
+        print(
+            f"mezcla F3-06 P{int(q * 100)} {v:.0f} vs ECV {e_alq[q]:.0f}: {pct(v, e_alq[q]):+.1f} %"
+        )
+    print(
+        f"mezcla media {np.average(mezcla, weights=w_mezcla):.0f} vs ECV media "
+        f"{np.average(mer.HH060, weights=mer.DB090):.0f}"
+    )
+
+    # --- 3. Suministros
+    s_ecv = inq.HH070 - inq.HH060
+    okk = s_ecv.notna()
+    e_sum = wq(s_ecv[okk], inq.DB090[okk], 0.5)
+    cesta = hogares.cesta_uc()
+    f3_sum_h = cesta["suministros"] * inq.HX240[okk]
+    f3_sum = wq(f3_sum_h, inq.DB090[okk], 0.5)
+    comunidad = 600.38 / 12  # EPF 2025, 04.4 gastos comunitarios, €/UC·año (hogares.py)
+    f3_sum_com = wq(f3_sum_h + comunidad * inq.HX240[okk], inq.DB090[okk], 0.5)
+    print(f"cesta suministros €/UC·mes {cesta['suministros']:.2f}")
+    print(
+        f"suministros mediana ECV {e_sum:.0f} (n {okk.sum()}, mercado {wq((mer.HH070 - mer.HH060).dropna(), mer.DB090[mer.HH070.notna()], 0.5):.0f})"
+        f" vs EPF {f3_sum:.0f}: {pct(f3_sum, e_sum):+.1f} %; con comunidad {f3_sum_com:.0f}: {pct(f3_sum_com, e_sum):+.1f} %"
+    )
+    print(
+        "ECV HH070-HH060 P25/P75",
+        round(wq(s_ecv[okk], inq.DB090[okk], 0.25)),
+        round(wq(s_ecv[okk], inq.DB090[okk], 0.75)),
+        "ceros",
+        round(100 * np.average(s_ecv[okk] <= 0, weights=inq.DB090[okk]), 1),
+        "%",
+    )
+
+
+    # --- 4. Sensibilidad de la sobrecarga (> 40 %) a cada factor, orden de magnitud
+    def tasa(k_renta=1.0, k_alq=1.0, k_sum=1.0):
+        y = ecv._supera(
+            (
+                inq.HH060 * np.where(inq.HH021 == 3, k_alq, 1)
+                + (inq.HH070 - inq.HH060) * k_sum
+            )
+            * 12,
+            inq.HY020 * k_renta,
+            0.40,
+        )
+        return ecv.tasa(y, inq.DB090)[0]
+
+
+    base = tasa()
+    print(f"base {base:.2f}")
+    k_alq = {q: f3_alq[q] / e_alq[q] for q in f3_alq}
+    fac = {
+        "renta (media)": dict(k_renta=f3_h / e_media),
+        "renta (mediana)": dict(k_renta=f3_h / e_med),
+        "renta UC": dict(k_renta=f3_uc / e_uc),
+        "alquiler P25": dict(k_alq=k_alq[0.25]),
+        "alquiler P50": dict(k_alq=k_alq[0.5]),
+        "alquiler P75": dict(k_alq=k_alq[0.75]),
+        "suministros": dict(k_sum=f3_sum / e_sum),
+        "suministros+comunidad": dict(k_sum=f3_sum_com / e_sum),
+    }
+    for nom, kw in fac.items():
+        print(
+            f"  {nom:22s} k={list(kw.values())[0]:.3f} -> {tasa(**kw):.1f} ({tasa(**kw) - base:+.1f} pp)"
+        )
+    for kr, nom in ((f3_h / e_media, "media"), (f3_uc / e_uc, "UC")):
+        for q in (0.25, 0.75):
+            v = tasa(k_renta=kr, k_alq=k_alq[q], k_sum=f3_sum / e_sum)
+            print(
+                f"  todo junto (renta {nom}, alquiler P{int(q * 100)}) -> {v:.1f} ({v - base:+.1f} pp)"
+            )
+    for q in (0.25, 0.5, 0.75):
+        v = tasa(k_alq=f3_mez[q] / e_alq[q])
+        print(
+            f"  alquiler mezcla P{int(q * 100)} k={f3_mez[q] / e_alq[q]:.3f} -> {v:.1f} ({v - base:+.1f} pp)"
+        )
+    k_mez = np.average(mezcla, weights=w_mezcla) / np.average(mer.HH060, weights=mer.DB090)
+    for kr, nom in ((f3_h / e_media, "media"), (f3_uc / e_uc, "UC")):
+        v = tasa(k_renta=kr, k_alq=k_mez, k_sum=f3_sum / e_sum)
+        print(
+            f"  todo junto (renta {nom}, alquiler media mezcla k={k_mez:.3f}) -> {v:.1f} ({v - base:+.1f} pp)"
+        )
+    ```
+
+    </details>
   - **Hecho:** la fórmula y la cifra de control están en `src/mesobra/sobrecarga_ecv.py` con tests ([#260](https://github.com/yeraybc/DataMad-hackaton-2026/issues/260)). Los tests comprueban además el reparto por tenencia de ES30 frente al catálogo `1912645` y la renta por unidad de consumo frente al IECM `175_000004`, que coincide al céntimo con `HY020/HX240`: la renta del IECM es la renta disponible **neta** de la ECV.
 - **Fallos de metadatos del catálogo:** `1934665`, el dataset de la EPF y `1912645` dicen «Toda España» y sus filas no llevan territorio. La propuesta de corrección al catálogo (N2, plan §1) **se descartó el 2026-11-18** ([#130](https://github.com/yeraybc/DataMad-hackaton-2026/issues/130), cerrada sin hacer; ver `docs/decisiones.md`). El ámbito real de los tres ya está comprobado contra el INE en esta página, así que el proyecto no se fía de esos metadatos.
 - **Año de la cesta y del alquiler:** el alquiler se actualiza a octubre de 2026 y la cesta se queda en euros de 2025. Hay que decirlo, o actualizar la cesta con el IPC por grupos. **Lo lleva F1-14 ([#82](https://github.com/yeraybc/DataMad-hackaton-2026/issues/82)), que ya tiene la nota en su cuerpo.**
