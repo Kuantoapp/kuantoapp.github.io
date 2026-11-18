@@ -12,8 +12,8 @@ Entrada de `calcular` (un dict):
 - `hogar`: `perfil` y `edad`; opcionales `adultos`, `hijos`, `personas_comparten` y `m2` (por
   defecto, los del perfil de `hogares.json`).
 - `sueldos`: 1 o 2, cada uno con `destino` (`destino_id`), `dias` (1 a 5), `modo` (`tp` o `coche`),
-  `bruto` (€/año) o `neto_mes` (€/mes, neto anual ÷ 12: con 14 pagas, nómina × 14 ÷ 12), y opcional
-  `viajes_dia` (2 o 4; por defecto 2).
+  `bruto` (€/año) o `neto_mes` (€/mes, neto anual ÷ 12; con 14 pagas, suma de las nóminas del año ÷ 12), y
+  opcional `viajes_dia` (2 o 4; por defecto 2).
 - Opcionales: `escenario` (`tarifas`: `vigente_2026` o `sin_descuento`; `subida_alquiler` en %;
   `edad`, que sustituye a la del hogar), `zonas` (por defecto, los orígenes de `tiempos.json`) y
   `ref` (zona de referencia).
