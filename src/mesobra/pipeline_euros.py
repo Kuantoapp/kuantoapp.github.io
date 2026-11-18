@@ -7,11 +7,13 @@ No calcula nada nuevo: solo da forma al contrato de `api_estatica`. Ejecutar con
 from datetime import date
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 
-from mesobra import alquiler, api_estatica, hogares, neto, transporte
+from mesobra import alquiler, api_estatica, hogares, neto, transporte, zonas
 
 APP_DATOS = Path(__file__).resolve().parents[2] / "app/datos"
+PROCESSED = Path(__file__).resolve().parents[2] / "data/processed"
 MADRID = "28079"
 SERPAVI = {
     "nombre": "SERPAVI, Ministerio de Vivienda y Agenda Urbana. Origen de los datos: Ministerio de Vivienda y Agenda Urbana",
@@ -66,33 +68,63 @@ FUENTES_NETOS = [
         "https://www.boe.es/buscar/act.php?id=BOCM-m-2010-90068",
     ),
 ]
-FUENTES_TARIFAS = [
-    {"nombre": nombre, "url": url, "licencia": LICENCIA_BOCM}
-    for nombre, url in (
-        (
-            "BOCM nº 311 de 31-12-2025, BOCM-20251231-2: precios del transporte público en 2026 (copia del CRTM)",
-            "https://www.crtm.es/media/s1qi0nmo/bocm-20251231-precios_transporte.pdf",
+FUENTES_TARIFAS = (
+    [
+        {"nombre": nombre, "url": url, "licencia": LICENCIA_BOCM}
+        for nombre, url in (
+            (
+                "BOCM nº 311 de 31-12-2025, BOCM-20251231-2: precios del transporte público en 2026 (copia del CRTM)",
+                "https://www.crtm.es/media/s1qi0nmo/bocm-20251231-precios_transporte.pdf",
+            ),
+            (
+                "BOCM nº 311 de 31-12-2025, BOCM-20251231-3: tarifas oficiales del transporte público (copia del CRTM)",
+                "https://www.crtm.es/media/sjqj4ggj/bocm-20251231-tarifas_transporte.pdf",
+            ),
+            (
+                "Decreto 75/2025, BOCM nº 229 de 25-09-2025, BOCM-20250925-16: fiestas laborales de 2026 en la Comunidad de Madrid",
+                "https://www.bocm.es/bocm-20250925-16",
+            ),
+        )
+    ]
+    + [
+        _boe(
+            "Estatuto de los Trabajadores (BOE-A-2015-11430), arts. 37.2 (fiestas) y 38.1 (vacaciones)",
+            "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11430",
         ),
-        (
-            "BOCM nº 311 de 31-12-2025, BOCM-20251231-3: tarifas oficiales del transporte público (copia del CRTM)",
-            "https://www.crtm.es/media/sjqj4ggj/bocm-20251231-tarifas_transporte.pdf",
-        ),
-        (
-            "Decreto 75/2025, BOCM nº 229 de 25-09-2025, BOCM-20250925-16: fiestas laborales de 2026 en la Comunidad de Madrid",
-            "https://www.bocm.es/bocm-20250925-16",
-        ),
-    )
-] + [
-    _boe(
-        "Estatuto de los Trabajadores (BOE-A-2015-11430), arts. 37.2 (fiestas) y 38.1 (vacaciones)",
-        "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11430",
-    ),
-    {
-        "nombre": "Ficha del Abono Joven, Consorcio Regional de Transportes de Madrid",
-        "url": "https://www.crtm.es/billetes-y-tarifas/buscador/abono-joven/",
-        "licencia": "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)",
-    },
-]
+    ]
+    + [
+        {
+            "nombre": nombre,
+            "url": url,
+            "licencia": "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)",
+        }
+        for nombre, url in (
+            (
+                "Ficha del Abono Joven, Consorcio Regional de Transportes de Madrid",
+                "https://www.crtm.es/billetes-y-tarifas/buscador/abono-joven/",
+            ),
+            (
+                "Ficha de sencillos y 10 viajes (validez del 10 viajes), Consorcio Regional de Transportes de Madrid",
+                "https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/",
+            ),
+            (
+                "Ficha del Abono +65, Consorcio Regional de Transportes de Madrid",
+                "https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/",
+            ),
+            (
+                "CoronasTarifarias Vigentes CRTM (capa de coronas, abril de 2025)",
+                "https://datos.crtm.es/datasets/crtm::coronastarifarias-vigentes-crtm",
+            ),
+        )
+    ]
+    + [
+        {
+            "nombre": "Abonos bonificados de Renfe 2026, preguntas frecuentes (Abono mensual de Cercanías)",
+            "url": "https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes",
+            "licencia": "Licencia no comprobada (verificar); solo se cita el precio del título",
+        },
+    ]
+)
 EPF_IDS = {
     3: "39d6f25b-e043-428f-b8f6-4a46214bf34e/resource/83b08257-b457-4fe4-a11b-0fd37a2c33f7",
     4: "87b3102d-79f3-44ab-8b33-3f347bbe048b/resource/88ed4858-b94e-40e5-aae5-8a2d786546b4",
@@ -197,40 +229,103 @@ def netos_json(rejilla: pd.DataFrame) -> dict:
     }
 
 
-def tarifas_json(tabla: pd.DataFrame) -> dict:
+def _filas(g: pd.DataFrame) -> list[dict]:
+    return [
+        {"titulo": t, "coste_mes": float(c)}
+        for t, c in g.sort_values("dias")[["titulo", "coste_mes"]].itertuples(
+            index=False
+        )
+    ]
+
+
+def _matriz_claves(
+    claves: pd.DataFrame, ids: list[str], lista: list[str]
+) -> list[list[int | None]]:
+    """Posición en `lista` de la clave de cada origen (filas) × destino (columnas), en el orden de `ids`."""
+    if claves.duplicated(["zona_id", "destino_id"]).any():
+        raise ValueError("pares origen-destino repetidos en las claves de tarifa")
+    m = claves.pivot(index="zona_id", columns="destino_id", values="clave_tarifa")
+    m = m.reindex(index=ids, columns=ids)
+    pos = {c: i for i, c in enumerate(lista)}
+    return [[None if pd.isna(c) else pos[c] for c in fila] for fila in m.to_numpy()]
+
+
+def tarifas_json(
+    v1: pd.DataFrame, v2: pd.DataFrame, claves: pd.DataFrame, ids: list[str]
+) -> dict:
+    """`tarifas.json`: la forma v1 de #80 (`escenarios`) y la v2 por ruta (`clave_tarifa`, `tarifas_ruta`).
+
+    `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `estimado`; `ids`, en el orden de `tiempos.json`.
+    """
     escenarios = {}
-    claves = ["escenario", "joven", "viajes_dia", "corona"]
-    for (esc, joven, viajes, corona), g in tabla.groupby(claves):
+    for (esc, joven, viajes, corona), g in v1.groupby(
+        ["escenario", "joven", "viajes_dia", "corona"]
+    ):
         edad = "joven" if joven else "general"
         por_viajes = escenarios.setdefault(esc, {}).setdefault(edad, {})
-        por_viajes.setdefault(str(viajes), {})[corona] = [
-            {"titulo": t, "coste_mes": float(c)}
-            for t, c in g.sort_values("dias")[["titulo", "coste_mes"]].itertuples(
-                index=False
-            )
-        ]
+        por_viajes.setdefault(str(viajes), {})[corona] = _filas(g)
+    ruta = {}
+    for (esc, edad, clave, nl), g in v2.groupby(
+        ["escenario", "edad", "clave_tarifa", "no_laborables"]
+    ):
+        ruta.setdefault(esc, {}).setdefault(edad, {}).setdefault(clave, {})[str(nl)] = (
+            _filas(g)
+        )
+    lista = sorted(v2["clave_tarifa"].unique())
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
         "lleva el descuento del RDL 17/2025, que solo vale para 2026; sin_descuento, los precios "
         "oficiales. coste_mes es la media mensual del año (1/12), estimada con supuestos: 227 días de "
         "trabajo al año (calendario laboral de 2026 de la Comunidad de Madrid, Decreto 75/2025; supuestos: "
         "2 festivos locales en laborable y 22 laborables de vacaciones en un bloque); el Abono 30 días y "
-        "el Abono Joven se compran 335/30 veces al año; solo viajes al trabajo; el viaje pasa por la zona A; "
-        "sin abono anual (venta a particulares suspendida desde 2023); el 10 viajes se compra en paquetes "
-        "enteros cada mes sobre los viajes medios; el billete sencillo de la zona A, a 1,50 € (EMT o Metro "
-        "de hasta 5 estaciones). viajes_dia 2: "
-        "ida y vuelta directa; 4: cambio de operador en cada sentido (interurbano↔Metro, Metro↔EMT), "
-        "con los 2 viajes extra a precio de la zona A. "
+        "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida "
+        "desde 2023); el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
+        "el billete sencillo de la zona A, a 1,50 € (EMT o Metro de hasta 5 estaciones). "
+        "tarifas_ruta (#162): clave_tarifa da, para cada par origen × destino, la posición en claves de su clave, que junta el rango de coronas que "
+        "atraviesa la ruta y un producto por validación; se compara el abono que cubre el rango (normal "
+        "con A, interzonal sin A) con el sencillo o el 10 viajes de cada producto, el Abono Joven y el "
+        "Abono +65 (gratuito; desde los 65 años, edad por verificar). Cercanías: abono del CRTM o Abono "
+        "mensual de Renfe (20 €, solo con descuento). no_laborables: viajes de ocio al mes, cobrados en el "
+        "producto principal de la ruta. "
+        + (
+            "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
+            "una validación (heurística de #161 hasta tener la ruta de r5py). "
+            if claves["estimado"].any()
+            else ""
+        )
+        + "escenarios (forma v1 de #80, hasta #164): viajes_dia 2, ida y vuelta pasando por la zona A; "
+        "4, con cambio a Metro de la zona A en cada sentido. "
         f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
     )
     return {
         "meta": _meta(2026, FUENTES_TARIFAS, nota),
-        "orden_coronas": [c for c in api_estatica.CORONAS if c in set(tabla["corona"])],
+        "orden_coronas": [c for c in api_estatica.CORONAS if c in set(v1["corona"])],
         "edad_max_joven": transporte.EDAD_MAX_JOVEN,
         "viajes_dia": list(api_estatica.VIAJES_DIA),
         "semanas_mes": float(transporte.SEMANAS_MES),
         "escenarios": escenarios,
+        "clave_estimada": bool(claves["estimado"].any()),
+        "origenes": ids,
+        "destinos": ids,
+        "claves": lista,
+        "edades": list(api_estatica.EDADES),
+        "no_laborables": list(api_estatica.NO_LABORABLES),
+        "clave_tarifa": _matriz_claves(claves, ids, lista),
+        "tarifas_ruta": ruta,
     }
+
+
+def rutas() -> tuple[pd.DataFrame, list[str]]:
+    """Clave de tarifa de cada par de zonas: con las columnas de #161 si `tiempos` ya las trae; si no, la heurística."""
+    z = gpd.read_parquet(PROCESSED / "zonas.parquet").sort_values("zona_id")
+    tiempos = PROCESSED / "tiempos.parquet"
+    tp = pd.read_parquet(tiempos).query("modo == 'tp'") if tiempos.exists() else None
+    if tp is None or "corona_min" not in tp:
+        tp = transporte.rango_coronas(z, zonas.leer_coronas())
+        tp["estimado"] = True
+    tp = tp.reset_index(drop=True)
+    tp["clave_tarifa"] = transporte.claves(tp)
+    return tp, z["zona_id"].tolist()
 
 
 def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
@@ -255,13 +350,19 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
 
 
 def main() -> None:
+    claves, ids = rutas()
     zona = alquiler.actualizar_ipc(
         alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
     )
     salidas = {
         "alquiler.json": alquiler_json(zona),
         "netos.json": netos_json(neto.rejilla()),
-        "tarifas.json": tarifas_json(transporte.tabla()),
+        "tarifas.json": tarifas_json(
+            transporte.tabla_v1(),
+            transporte.tabla(claves["clave_tarifa"].dropna().unique().tolist()),
+            claves,
+            ids,
+        ),
         "hogares.json": hogares_json(
             hogares.hogares(), hogares.cesta_uc(), m2_por_defecto(zona)
         ),

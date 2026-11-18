@@ -13,6 +13,8 @@ from pathlib import Path
 
 CORONAS = ["A", "B1", "B2", "B3", "C1", "C2"]
 VIAJES_DIA = [2, 4]
+EDADES = ["joven", "general", "mayor_65"]
+NO_LABORABLES = [0, 8, 16]  # viajes de ocio y fin de semana al mes
 MAX_PROBLEMAS = 20
 # Caja de la Comunidad de Madrid en EPSG:4326: un 25830 sin reproyectar o lon/lat al revés caen fuera.
 LON, LAT = (-4.7, -2.9), (39.8, 41.3)
@@ -338,13 +340,53 @@ def _dias(ruta, filas):
     return p
 
 
+def _tarifas_ruta(o):
+    """Bloques v2: `clave_tarifa` por par origen × destino y su tabla por clave (#162)."""
+    p = _lista("origenes", o.get("origenes"), "zona")
+    p += _lista("destinos", o.get("destinos"), "texto")  # zona_id o polo:<slug>
+    p += _lista("claves", o.get("claves"), "texto")
+    p += _campo("clave_estimada", o.get("clave_estimada"), "booleano")
+    p += _campo("edades", o.get("edades"), [EDADES])
+    p += _campo("no_laborables", o.get("no_laborables"), [NO_LABORABLES])
+    filas, cols = len(_items(o, "origenes")), len(_items(o, "destinos"))
+    if p:
+        return p
+    claves, nl = o["claves"], [str(n) for n in NO_LABORABLES]
+    posicion = ("entero?", 0, len(claves) - 1)  # posición en `claves`
+    p += _matriz("clave_tarifa", o.get("clave_tarifa"), filas, cols, posicion)
+
+    def por_clave(ruta, t):
+        return _mapa(ruta, t, claves, lambda r, c: _mapa(r, c, nl, _dias))
+
+    return p + _mapa(
+        "tarifas_ruta",
+        o.get("tarifas_ruta"),
+        ["vigente_2026", "sin_descuento"],
+        lambda r, e: _mapa(r, e, EDADES, por_clave),
+    )
+
+
 def _tarifas(o):
     campos = {
         "orden_coronas": None,
         "edad_max_joven": ("entero", 0, 100),
         "semanas_mes": ("decimal", 1, 5),
     }
-    p = _raiz(o, {**campos, "viajes_dia": None, "escenarios": None})
+    v2 = dict.fromkeys(
+        [
+            "clave_estimada",
+            "origenes",
+            "destinos",
+            "claves",
+            "edades",
+            "no_laborables",
+            "clave_tarifa",
+            "tarifas_ruta",
+        ]
+    )
+    # shortcut: los bloques v2 son opcionales hasta que #164 regenere app/datos/tarifas.json; si
+    # viene uno, se exigen todos
+    p = _raiz(o, {**campos, **v2, "viajes_dia": None, "escenarios": None}, tuple(v2))
     p += _campo("viajes_dia", o.get("viajes_dia"), [VIAJES_DIA])
     ordenadas = _lista("orden_coronas", o.get("orden_coronas"), CORONAS)
     if ordenadas:
@@ -357,11 +399,18 @@ def _tarifas(o):
     def coronas(ruta, t):
         return _mapa(ruta, t, o["orden_coronas"], _dias)
 
-    return p + _mapa(
-        "escenarios",
-        o.get("escenarios"),
-        ["vigente_2026", "sin_descuento"],
-        lambda r, e: _mapa(r, e, edades, lambda r2, t: _mapa(r2, t, viajes, coronas)),
+    # escenarios: forma v1 de #80, la que lee calculo.py hasta #164
+    return (
+        p
+        + (_tarifas_ruta(o) if any(k in o for k in v2) else [])
+        + _mapa(
+            "escenarios",
+            o.get("escenarios"),
+            ["vigente_2026", "sin_descuento"],
+            lambda r, e: _mapa(
+                r, e, edades, lambda r2, t: _mapa(r2, t, viajes, coronas)
+            ),
+        )
     )
 
 
@@ -432,6 +481,11 @@ def _referencias(nombre, o):
         ]
     if nombre == "alquiler.json":
         return list(o["zonas"])
+    if nombre == "tarifas.json":
+        destinos = o.get("destinos", [])
+        return o.get("origenes", []) + [
+            d for d in destinos if not d.startswith("polo:")
+        ]
     return [f[c] for b, c in REFERENCIAS_ANALISIS.items() for f in o.get(b, [])]
 
 

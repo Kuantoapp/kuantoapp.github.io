@@ -1,17 +1,19 @@
-escenario,joven,corona,dias,viajes_dia,titulo,coste_mes
-vigente_2026,False,A,1,2,10 viajes,7.30
-vigente_2026,False,A,5,2,Abono 30 días,32.70
-vigente_2026,False,B1,1,2,10 viajes,7.30
-vigente_2026,False,B1,5,2,10 viajes,36.50
-vigente_2026,True,A,1,2,10 viajes,7.30
-vigente_2026,True,A,5,2,Abono Joven,10.00
-vigente_2026,True,B1,1,2,10 viajes,7.30
-vigente_2026,True,B1,5,2,Abono Joven,10.00
-sin_descuento,False,A,1,2,10 viajes,12.50
-sin_descuento,False,A,5,2,Abono 30 días,56.20
-sin_descuento,False,B1,1,2,10 viajes,12.50
-sin_descuento,False,B1,5,2,10 viajes,62.50
-sin_descuento,True,A,1,2,10 viajes,12.50
-sin_descuento,True,A,5,2,Abono Joven,20.00
-sin_descuento,True,B1,1,2,10 viajes,12.50
-sin_descuento,True,B1,5,2,Abono Joven,20.00
+escenario,edad,clave_tarifa,dias,no_laborables,titulo,coste_mes
+vigente_2026,joven,A-A|metro_a,1,0,10 viajes,7.30
+vigente_2026,joven,A-A|metro_a,5,0,Abono Joven,9.31
+vigente_2026,joven,B2-C1|interurbano,1,0,Abono Joven,9.31
+vigente_2026,joven,B2-C1|interurbano,5,0,Abono Joven,9.31
+vigente_2026,joven,A-C2|interurbano+metro_a,1,0,Abono Joven,9.31
+vigente_2026,joven,A-C2|interurbano+metro_a,5,0,Abono Joven,9.31
+vigente_2026,general,A-A|metro_a,1,0,10 viajes,7.30
+vigente_2026,general,A-A|metro_a,1,8,10 viajes,14.60
+vigente_2026,general,A-A|metro_a,5,0,10 viajes,29.20
+vigente_2026,general,A-A|metro_a,5,8,Abono 30 días,30.43
+vigente_2026,general,B2-C1|interurbano,1,0,10 viajes,9.60
+vigente_2026,general,B2-C1|interurbano,1,8,10 viajes,19.20
+vigente_2026,general,B2-C1|interurbano,5,0,Abono 30 días B2-C1,26.71
+vigente_2026,general,B2-C1|interurbano,5,8,Abono 30 días B2-C1,26.71
+vigente_2026,general,A-C2|interurbano+metro_a,1,0,10 viajes,29.70
+vigente_2026,general,A-C2|interurbano+metro_a,1,8,Abono 30 días,45.78
+vigente_2026,general,A-C2|interurbano+metro_a,5,0,Abono 30 días,45.78
+vigente_2026,general,A-C2|interurbano+metro_a,5,8,Abono 30 días,45.78
