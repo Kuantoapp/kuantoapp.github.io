@@ -98,8 +98,9 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
   cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
-  // Con otra carpeta de datos (?datos=) los ficheros pueden ser de ejemplo: se dice a la vista y no se atribuyen a nadie.
-  if (new URLSearchParams(location.search).has("datos") && zonas.meta.nota) cont.append(elemento("p", `Datos de prueba: ${zonas.meta.nota}`, "aviso"));
+  // shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
+  const prueba = metas.find((x) => /^Ejemplo/.test(x?.nota ?? ""));
+  if (prueba) cont.append(elemento("p", `Datos de prueba, no son datos reales: ${prueba.nota}`, "aviso"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
@@ -112,7 +113,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const notas = [
     `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
     `Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`,
-    `Zonas y coronas: ${fuentes(zonas.meta)}.`,
+    `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`,
     `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
@@ -246,7 +247,7 @@ async function main() {
   mapa.on("mousemove", "zonas-relleno", (e) => {
     if (!estado.resultado) return;
     const id = e.features[0].properties.zona_id;
-    tooltip.textContent = lineaTooltip(lineas(id), api.alquiler.zonas[id], api.alquiler.meta);
+    tooltip.textContent = lineaTooltip(lineas(id), METRICAS[estado.metrica].datos.includes("alquiler") ? api.alquiler.zonas[id] : undefined, api.alquiler.meta);
     tooltip.style.left = `${e.point.x + 12}px`;
     tooltip.style.top = `${e.point.y + 12}px`;
     tooltip.hidden = false;
