@@ -162,7 +162,7 @@ esfuerzo(z)    = alquiler(z) ÷ neto
 **Fuente base: alquiler de contratos declarados**, no precios de anuncios.
 - **Municipios, distritos y secciones:** SERPAVI del Ministerio de Vivienda. Da €/m², cuantía y superficie, con mediana, P25 y P75, separando vivienda colectiva y unifamiliar.
 - **Madrid capital por barrio:** alquiler medio mensual por código postal del catálogo regional (`1934258`, 2023 y 2024, solo códigos con más de 200 viviendas alquiladas), llevado a barrio con una tabla de paso.
-- **Actualización a hoy:** variación del IPC de vivienda en alquiler de la Comunidad de Madrid, serie INE `IPC297196` (base 2025, mensual). El catálogo regional `1934665` queda como control; en él, la fila de Madrid es la segunda de cada año ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 5a y 5b).
+- **Actualización a hoy:** variación del IPC de vivienda en alquiler de la Comunidad de Madrid, serie INE `IPC297196` (base 2025, mensual). El catálogo regional `1934665` queda como control; en él, cada año trae dos filas, Madrid y Nacional, en orden variable, y la de Madrid se identifica comparando con `IPC297196` ([verificación](../../../docs/verificaciones/renta-vivienda.md), filas 5a y 5b).
 - **Cálculo:** alquiler(z) = €/m²(z, colectiva, último año) × factor del IPC de alquiler × m² ÷ personas. Se calcula con la mediana, el P25 y el P75.
 - **Por hogar:**
   - **compartido:** el alquiler del piso se divide entre las personas, como supuesto declarado. No hay dato oficial abierto del precio de una habitación. Si aparece una fuente legal de oferta de habitaciones, se calibra un recargo por habitación.
@@ -399,7 +399,7 @@ Hay que leer los metadatos de cada fuente antes de usarla: estado del dato, unid
 | `1934258`, `1934261` | Alquiler medio mensual y días alquilados por código postal | Solo Madrid capital, 2023–2024, códigos con más de 200 viviendas |
 | `1934246` | Alquiler, m², rentabilidad y valor de referencia | Solo el total de la Comunidad |
 | `valor_referencia_viviendas_arrendadas_…_mas_20000` | Valor catastral de referencia (no es alquiler) | 38 municipios con valor en 2024 |
-| `1934665` (base 2025) | IPC de vivienda en alquiler, control | Índice, no nivel de precio; la fila de Madrid es la segunda de cada año. El factor usa `IPC297196` del INE |
+| `1934665` (base 2025) | IPC de vivienda en alquiler, control | Índice, no nivel de precio; cada año trae Madrid y Nacional en orden variable (se identifican comparando con el INE). El factor usa `IPC297196` del INE |
 | `1919188` | Tarifas 2007–2024 | Solo Corona Mínima y Máxima: no sirve para las zonas |
 | `1916304` | Renta neta media de la ECV (Base 2013) | Solo la Comunidad entera: sirve como contraste regional, no por zona |
 | `censo_2021_viviendas_familiares_por_tenencia` | Viviendas principales por régimen de tenencia, por municipio (Censo 2021 del INE) | Sin distrito; por sección, INE `C2021_Indicadores.csv` (`t20_2`) |
