@@ -3,57 +3,57 @@
 
 - Filas: 71398 · Columnas: 46 · Tamano: 8.8 MB
 - Separador: coma · perfilado sobre las 71398 filas · semilla 42
-- Origen: INE, Encuesta de Condiciones de Vida 2025, microdatos transversales base 2013, datos basicos de la persona (ECV_Tr), version CSV con comas; dentro de `ine_ecv_microdatos_2025_2026-11-18/` (descomprimido de `ine_ecv_microdatos_2025_2026-11-18.zip`). Significado de cada variable: disenos de registro `disreg_ecv25/dr_ECV_CM_*_2025.xlsx` y `dr_ECV_SM_*_2025.json` de la misma carpeta (no se copian aqui)
+- Origen: INE, Encuesta de Condiciones de Vida 2025, microdatos transversales base 2013, datos basicos de la persona (ECV_Tr), version CSV con comas; dentro de `ine_ecv_microdatos_2025_2026-11-18/` (descomprimido de `ine_ecv_microdatos_2025_2026-11-18.zip`). Significado de cada variable: disenos de registro `disreg_ecv25/dr_ECV_CM_*_2025.xlsx` y `dr_ECV_SM_*_2025.json` de la misma carpeta; la columna «Descripcion» copia la de la hoja «Diseño» del xlsx (entre paréntesis, el módulo donde empieza un bloque); los códigos de cada variable están en sus hojas «Tablas*»
 
 ## Columnas
 | Columna | Tipo | Nulos % | Distintos | Rango / valores | Descripcion |
 |---|---|---|---|---|---|
-| RB010 | int | 0.0 | 1 | 2025..2025 (media 2025) | POR COMPLETAR |
-| RB020 | str | 0.0 | 1 | top: ES (100%) | POR COMPLETAR |
-| RB030 | int | 0.0 | >=50 | 101..3.75001e+06 (media 1.76251e+06) | POR COMPLETAR |
-| RB050 | float | 0.0 | >=50 | 13.1006..10103.1 (media 682.123) | POR COMPLETAR |
-| RB050_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB080 | int | 0.0 | >=50 | 1939..2025 (media 1979.54) | POR COMPLETAR |
-| RB080_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB081 | int | 0.0 | >=50 | -1..85 (media 44.4626) | POR COMPLETAR |
-| RB081_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB082 | int | 0.0 | >=50 | -1..86 (media 44.7802) | POR COMPLETAR |
-| RB082_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB090 | int | 0.0 | 2 | 1..2 (media 1.51597) | POR COMPLETAR |
-| RB090_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB200 | mixto | 0.0 | 3 | top: 1 (98%), 2 (2%),   (0%) | POR COMPLETAR |
-| RB200_F | int | 0.0 | 2 | -1..1 (media 0.994426) | POR COMPLETAR |
-| RB211 | mixto | 0.0 | 8 | top: 1 (43%), 5 (22%), 3 (18%) | POR COMPLETAR |
-| RB211_F | int | 0.0 | 2 | -1..1 (media 0.99563) | POR COMPLETAR |
-| RB220 | mixto | 0.0 | >=50 | alta cardinalidad | POR COMPLETAR |
-| RB220_F | int | 0.0 | 2 | -2..1 (media -1.24893) | POR COMPLETAR |
-| RB230 | mixto | 0.0 | >=50 | alta cardinalidad | POR COMPLETAR |
-| RB230_F | int | 0.0 | 2 | -2..1 (media -1.07527) | POR COMPLETAR |
-| RB240 | mixto | 0.0 | >=50 | alta cardinalidad | POR COMPLETAR |
-| RB240_F | int | 0.0 | 2 | -2..1 (media -0.530799) | POR COMPLETAR |
-| RB280 | int | 0.0 | 3 | 1..3 (media 1.20027) | POR COMPLETAR |
-| RB280_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RB290 | int | 0.0 | 3 | 1..3 (media 1.11205) | POR COMPLETAR |
-| RB290_F | int | 0.0 | 1 | 1..1 (media 1) | POR COMPLETAR |
-| RL010 | mixto | 0.0 | 47 | top:   (96%), 25 (1%), 0 (1%) | POR COMPLETAR |
-| RL010_F | int | 0.0 | 2 | -2..1 (media -1.87605) | POR COMPLETAR |
-| RL020 | mixto | 0.0 | 37 | top:   (93%), 25 (2%), 30 (1%) | POR COMPLETAR |
-| RL020_F | int | 0.0 | 2 | -2..1 (media -1.79483) | POR COMPLETAR |
-| RL030 | mixto | 0.0 | 23 | top:   (90%), 0 (9%), 5 (0%) | POR COMPLETAR |
-| RL030_F | int | 0.0 | 2 | -2..1 (media -1.69071) | POR COMPLETAR |
-| RL040 | mixto | 0.0 | 18 | top:   (89%), 0 (11%), 2 (0%) | POR COMPLETAR |
-| RL040_F | int | 0.0 | 2 | -2..1 (media -1.67087) | POR COMPLETAR |
-| RL050 | mixto | 0.0 | 19 | top:   (89%), 0 (11%), 1 (0%) | POR COMPLETAR |
-| RL050_F | int | 0.0 | 2 | -2..1 (media -1.67087) | POR COMPLETAR |
-| RL060 | mixto | 0.0 | 38 | top:   (89%), 0 (10%), 10 (0%) | POR COMPLETAR |
-| RL060_F | int | 0.0 | 2 | -2..1 (media -1.67087) | POR COMPLETAR |
-| RL070 | mixto | 0.0 | >=50 | alta cardinalidad | POR COMPLETAR |
-| RL070_F | int | 0.0 | 2 | -2..1 (media -1.67087) | POR COMPLETAR |
-| vrLOWJOB | int | 0.0 | 3 | 0..9 (media 2.68495) | POR COMPLETAR |
-| vrEU2020 | int | 0.0 | 2 | 0..1 (media 0.219782) | POR COMPLETAR |
-| vrMATSOCDEP | mixto | 0.0 | 3 | top: 0 (92%), 1 (7%),   (1%) | POR COMPLETAR |
-| vrLOWJOB_nuevo | int | 0.0 | 3 | 0..9 (media 2.15793) | POR COMPLETAR |
-| vrEU2030_nuevo | int | 0.0 | 2 | 0..1 (media 0.221547) | POR COMPLETAR |
+| RB010 | int | 0.0 | 1 | 2025..2025 (media 2025) | Año de la encuesta (INFORMACIÓN BÁSICA) |
+| RB020 | str | 0.0 | 1 | top: ES (100%) | País |
+| RB030 | int | 0.0 | >=50 | 101..3.75001e+06 (media 1.76251e+06) | Identificador transversal de la persona Se compone del identificador del hogar, DB030, y el nº de orden, a dos dígitos, de la persona dentro del hogar |
+| RB050 | float | 0.0 | >=50 | 13.1006..10103.1 (media 682.123) | Factor de ponderación transversal |
+| RB050_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB050 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB080 | int | 0.0 | >=50 | 1939..2025 (media 1979.54) | Año de nacimiento |
+| RB080_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB080 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB081 | int | 0.0 | >=50 | -1..85 (media 44.4626) | Edad a 31 de diciembre del año anterior al de la encuesta |
+| RB081_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB081 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB082 | int | 0.0 | >=50 | -1..86 (media 44.7802) | Edad en la fecha de la entrevista |
+| RB082_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB082 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB090 | int | 0.0 | 2 | 1..2 (media 1.51597) | Sexo |
+| RB090_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB090 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB200 | mixto | 0.0 | 3 | top: 1 (98%), 2 (2%),   (0%) | Situación respecto a la residencia en el hogar |
+| RB200_F | int | 0.0 | 2 | -1..1 (media 0.994426) | Variable que indica si RB200 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB211 | mixto | 0.0 | 8 | top: 1 (43%), 5 (22%), 3 (18%) | ¿Cuál de las siguientes fue su situación en la actividad en la actualidad? |
+| RB211_F | int | 0.0 | 2 | -1..1 (media 0.99563) | Variable que indica si RB211 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB220 | mixto | 0.0 | >=50 | alta cardinalidad | Identificador del padre |
+| RB220_F | int | 0.0 | 2 | -2..1 (media -1.24893) | Variable que indica si RB220 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB230 | mixto | 0.0 | >=50 | alta cardinalidad | Identificador de la madre |
+| RB230_F | int | 0.0 | 2 | -2..1 (media -1.07527) | Variable que indica si RB230 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB240 | mixto | 0.0 | >=50 | alta cardinalidad | Identificador del cónyuge o pareja |
+| RB240_F | int | 0.0 | 2 | -2..1 (media -0.530799) | Variable que indica si RB240 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB280 | int | 0.0 | 3 | 1..3 (media 1.20027) | Pais de nacimiento |
+| RB280_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB280 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RB290 | int | 0.0 | 3 | 1..3 (media 1.11205) | Nacionalidad |
+| RB290_F | int | 0.0 | 1 | 1..1 (media 1) | Variable que indica si RB290 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL010 | mixto | 0.0 | 47 | top:   (96%), 25 (1%), 0 (1%) | Número de horas en una semana normal que ha sido cuidado o ha asistido a centros de educación preescolar o infantil (CUIDADO DE NIÑOS) |
+| RL010_F | int | 0.0 | 2 | -2..1 (media -1.87605) | Variable que indica si RL010 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL020 | mixto | 0.0 | 37 | top:   (93%), 25 (2%), 30 (1%) | Número de horas en una semana normal que ha sido cuidado en centros de educación obligatoria (primaria o secundaria) |
+| RL020_F | int | 0.0 | 2 | -2..1 (media -1.79483) | Variable que indica si RL020 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL030 | mixto | 0.0 | 23 | top:   (90%), 0 (9%), 5 (0%) | Número de horas en una semana normal que ha sido cuidado en centros de cuidado de niños fuera del horario escolar (antes o después del horario escolar aunque sea dentro del mismo centro) |
+| RL030_F | int | 0.0 | 2 | -2..1 (media -1.69071) | Variable que indica si RL030 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL040 | mixto | 0.0 | 18 | top:   (89%), 0 (11%), 2 (0%) | Número de horas en una semana normal que ha sido cuidado en otros centros de cuidado de niños |
+| RL040_F | int | 0.0 | 2 | -2..1 (media -1.67087) | Variable que indica si RL040 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL050 | mixto | 0.0 | 19 | top:   (89%), 0 (11%), 1 (0%) | Número de horas en una semana normal que ha sido cuidado por cuidadores profesionales remunerados en casa del niño o del cuidador (niñeras, asistentas, etc.) |
+| RL050_F | int | 0.0 | 2 | -2..1 (media -1.67087) | Variable que indica si RL050 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL060 | mixto | 0.0 | 38 | top:   (89%), 0 (10%), 10 (0%) | Número de horas en una semana normal que ha sido sido cuidado por otras personas sin remunerar (abuelos, otros miembros que no sean los padres, otros parientes, amigos, vecinos etc.) |
+| RL060_F | int | 0.0 | 2 | -2..1 (media -1.67087) | Variable que indica si RL060 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| RL070 | mixto | 0.0 | >=50 | alta cardinalidad | Peso transversal para los niños (para el cuidado de niños) |
+| RL070_F | int | 0.0 | 2 | -2..1 (media -1.67087) | Variable que indica si RL070 está completa, falta o simplemente no es aplicable en el registro en cuestión |
+| vrLOWJOB | int | 0.0 | 3 | 0..9 (media 2.68495) | Personas en hogares sin empleo o con baja intensidad en el empleo (estrategia Europa 2020) (1) (VARIABLES DERIVADAS) |
+| vrEU2020 | int | 0.0 | 2 | 0..1 (media 0.219782) | Personas en riesgo de pobreza o exclusión social (estrategia Europa 2020). (2) |
+| vrMATSOCDEP | mixto | 0.0 | 3 | top: 0 (92%), 1 (7%),   (1%) | Personas en carencia material y social severa (3) |
+| vrLOWJOB_nuevo | int | 0.0 | 3 | 0..9 (media 2.15793) | Personas en hogares sin empleo o con baja intensidad en el empleo (objetivo Europa 2030) (4) |
+| vrEU2030_nuevo | int | 0.0 | 2 | 0..1 (media 0.221547) | Personas en riesgo de pobreza o exclusión social (objetivo Europa 2030). (5) |
 
 ## Primeras filas (primeras 15 de 46 columnas)
 | RB010 | RB020 | RB030 | RB050 | RB050_F | RB080 | RB080_F | RB081 | RB081_F | RB082 | RB082_F | RB090 | RB090_F | RB200 | RB200_F |
