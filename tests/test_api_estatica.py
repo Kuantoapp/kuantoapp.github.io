@@ -99,6 +99,7 @@ MADRID = {
 # nombre, fichero, ruta del cambio (sin valor: se quita la clave), valor, mensaje esperado
 FALLOS = [
     ("ipc_hasta con formato del INE", "alquiler.json", "meta.ipc_hasta", "2026M10", "meta.ipc_hasta: se esperaba mes"),
+    ("ejemplo que no es booleano", "alquiler.json", "meta.ejemplo", "sí", "meta.ejemplo: se esperaba booleano"),
     ("zona_id desconocido", "tiempos.json", "origenes.0", "28999", "desconocidos"),
     ("NaN", "tiempos.json", "km_coche.0.0", float("nan"), "km_coche.*NaN, usa null"),
     ("sin fuentes", "netos.json", "meta.fuentes", [], "meta.fuentes: se esperaba una lista no vacía"),
@@ -195,4 +196,7 @@ def test_app_datos_cumple_el_contrato():
             "app/datos/ sin zonas.geojson: no se comprueban los zona_id", stacklevel=1
         )
     for fichero in ficheros:
-        validar(fichero.name, _leer(fichero.name, APP_DATOS), zonas)
+        datos = _leer(fichero.name, APP_DATOS)
+        validar(fichero.name, datos, zonas)
+        # La marca es solo de las fixtures: en datos reales quitaría las fuentes de la leyenda sin avisar.
+        assert "ejemplo" not in datos["meta"], fichero.name

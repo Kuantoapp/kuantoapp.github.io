@@ -138,6 +138,7 @@ META = {
     "fuentes": None,
     "nota": "texto",
     "ipc_hasta": "mes",
+    "ejemplo": "booleano",  # solo en las fixtures de tests/: la app avisa de que no son datos reales
 }
 FUENTE = {"nombre": "texto", "url": "url", "licencia": "texto"}
 
@@ -148,7 +149,7 @@ def _raiz(o, campos, opcionales=()):
         return p
     meta = o["meta"]
     fuentes = meta.get("fuentes") if isinstance(meta, dict) else None
-    p += _registro("meta", meta, META, ("nota", "ipc_hasta"))
+    p += _registro("meta", meta, META, ("nota", "ipc_hasta", "ejemplo"))
     return p + _tabla("meta.fuentes", fuentes, FUENTE, ("nombre",))
 
 

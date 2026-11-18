@@ -1,6 +1,7 @@
 {
   "type": "FeatureCollection",
   "meta": {
+    "ejemplo": true,
     "generado": "2026-11-15",
     "anio_dato": 2024,
     "fuentes": [{"nombre":"INE","url":"https://www.ine.es/","licencia":"Reutilización con cita de la fuente (INE)"},{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"}],

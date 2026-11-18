@@ -107,15 +107,15 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   }
   cont.append(elemento("p", `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
   const detalle = document.createElement("details");
+  const ejemplo = avisoPrueba(metas) !== null; // datos inventados: no se atribuyen a ninguna fuente
   const notas = [
     `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
-    `Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`,
-    `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`,
+    ...(ejemplo ? [] : [`Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`, `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`]),
     `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
     `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
-    `Licencias: ${licencias(...metas)}.`,
+    ...(ejemplo ? [] : [`Licencias: ${licencias(...metas)}.`]),
   ];
   detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
   cont.append(detalle);
@@ -179,6 +179,7 @@ async function main() {
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
   const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
+  $("pie").hidden = prueba !== null; // el pie atribuye los tiempos al CRTM: con datos de ejemplo no
   const lineasAviso = [...(prueba ? [prueba] : []), ...avisos(api.alquiler)];
   $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));

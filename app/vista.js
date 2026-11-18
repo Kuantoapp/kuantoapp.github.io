@@ -257,10 +257,9 @@ export function mejores(resultado, metrica, nombres) {
     .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}` }));
 }
 
-/** Aviso de que los ficheros cargados son de ejemplo (`null` si son datos reales). */
-// shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
+/** Aviso de que los ficheros cargados son de ejemplo, según `meta.ejemplo` (`null` si son datos reales). */
 export function avisoPrueba(metas) {
-  const prueba = metas.find((m) => /^Ejemplo/.test(m?.nota ?? ""));
+  const prueba = metas.find((m) => m?.ejemplo === true);
   return prueba ? `Datos de prueba, no son datos reales: ${prueba.nota}` : null;
 }
 
@@ -278,7 +277,8 @@ export function avisos(alquiler) {
   if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
   const sinDato = cuantas("sin_dato");
   if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
-  return [...lineas, `${fuentes(alquiler.meta)}.`];
+  // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.
+  return alquiler.meta.ejemplo === true ? lineas : [...lineas, `${fuentes(alquiler.meta)}.`];
 }
 
 // --- Validación del formulario -----------------------------------------------------------------
