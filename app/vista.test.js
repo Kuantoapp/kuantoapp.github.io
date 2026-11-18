@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, METRICAS, PALETA, SIN_DATO, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
+  CATEGORIAS, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
   fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, resolverDestino, validar,
 } from "./vista.js";
 
@@ -267,6 +267,12 @@ test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", 
   const reales = avisos(real.alquiler);
   assert.ok(reales.includes("41 zonas sin dato publicado de alquiler: en gris y sin cifra."));
   assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
+});
+
+test("el aviso de prueba sale con los fixtures y no con los datos reales", () => {
+  const metasDe = (api) => [api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta);
+  assert.match(avisoPrueba(metasDe(ejemplo)), /^Datos de prueba, no son datos reales: Ejemplo/);
+  assert.equal(avisoPrueba(metasDe(real)), null);
 });
 
 test("el tooltip añade el año solo si el alquiler de la zona es anterior al del fichero", () => {

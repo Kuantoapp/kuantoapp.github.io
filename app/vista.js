@@ -258,6 +258,12 @@ export function mejores(resultado, metrica, nombres) {
 }
 
 /** Avisos del dato de alquiler: es un suelo, año, zonas estimadas y zonas sin dato. La última línea es la fuente. */
+// shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
+export function avisoPrueba(metas) {
+  const prueba = metas.find((m) => /^Ejemplo/.test(m?.nota ?? ""));
+  return prueba ? `Datos de prueba, no son datos reales: ${prueba.nota}` : null;
+}
+
 export function avisos(alquiler) {
   const zonas = Object.values(alquiler.zonas);
   const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;

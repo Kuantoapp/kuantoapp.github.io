@@ -2,7 +2,7 @@
 // La validación, el color y los textos están en vista.js y el cálculo en calculo.js; aquí solo hay DOM.
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
-import { METRICAS, avisos, contextoFicha, fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, validar } from "./vista.js";
+import { METRICAS, avisoPrueba, avisos, contextoFicha, fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, validar } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 const formulario = () => $("formulario");
@@ -178,9 +178,8 @@ async function main() {
   prepararFormulario(api);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
-  // shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
-  const prueba = [api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta).find((m) => /^Ejemplo/.test(m?.nota ?? ""));
-  const lineasAviso = [...(prueba ? [`Datos de prueba, no son datos reales: ${prueba.nota}`] : []), ...avisos(api.alquiler)];
+  const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
+  const lineasAviso = [...(prueba ? [prueba] : []), ...avisos(api.alquiler)];
   $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));
   const estado = { entrada: null, resultado: null, metrica: "precio_hora", zona: null };
