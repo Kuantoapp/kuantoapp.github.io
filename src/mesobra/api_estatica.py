@@ -440,7 +440,8 @@ BONO = {
     "indicador_necesidad": ["esfuerzo", "sobrecarga"],
 }
 SOBRECARGA = {"zona_id": "zona", "anio": ANIO, "dif_sigma": "decimal?"}
-SOBRECARGA |= {f"pct_{n}_{lado}": PCT for n in (40, 30) for lado in ("inf", "sup")}
+SOBRECARGA |= {f"pct_{n}_{lado}": PCT for n in (50, 40, 30) for lado in ("inf", "sup")}
+SOBRECARGA |= {f"esfuerzo_mediano_{lado}": PCT for lado in ("inf", "sup")}
 SIMULACION = {
     "perfil": PERFILES, "municipio_id": "municipio", "criterio": "texto",
     "elegible": "booleano", "eur_mes": POS, "estimado": "booleano",
