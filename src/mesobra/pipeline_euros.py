@@ -267,12 +267,11 @@ def tarifas_json(
         por_viajes = escenarios.setdefault(esc, {}).setdefault(edad, {})
         por_viajes.setdefault(str(viajes), {})[corona] = _filas(g)
     ruta = {}
-    for (esc, edad, clave, nl), g in v2.groupby(
-        ["escenario", "edad", "clave_tarifa", "no_laborables"]
+    for (esc, col, edad, clave, nl), g in v2.groupby(
+        ["escenario", "colectivo", "edad", "clave_tarifa", "no_laborables"]
     ):
-        ruta.setdefault(esc, {}).setdefault(edad, {}).setdefault(clave, {})[str(nl)] = (
-            _filas(g)
-        )
+        por_edad = ruta.setdefault(esc, {}).setdefault(col, {}).setdefault(edad, {})
+        por_edad.setdefault(clave, {})[str(nl)] = _filas(g)
     lista = sorted(v2["clave_tarifa"].unique())
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
@@ -288,7 +287,9 @@ def tarifas_json(
         "con A, interzonal sin A) con el sencillo o el 10 viajes de cada producto, el Abono Joven y el "
         "Abono +65 (gratuito; desde los 65 años, edad por verificar). Cercanías: abono del CRTM o Abono "
         "mensual de Renfe (20 €, solo con descuento). no_laborables: viajes de ocio al mes, cobrados en el "
-        "producto principal de la ruta. "
+        "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "
+        "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); el Abono de "
+        "Renfe, igual para todos. "
         + (
             "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
             "una validación (heurística de #161 hasta tener la ruta de r5py). Subestima el coste entre "
@@ -312,6 +313,7 @@ def tarifas_json(
         "origenes": ids,
         "destinos": ids,
         "claves": lista,
+        "colectivos": list(api_estatica.COLECTIVOS),
         "edades": list(api_estatica.EDADES),
         "no_laborables": list(api_estatica.NO_LABORABLES),
         "clave_tarifa": _matriz_claves(claves, ids, lista),

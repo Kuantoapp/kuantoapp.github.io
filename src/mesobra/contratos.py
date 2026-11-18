@@ -97,9 +97,17 @@ CONTRATOS: dict[str, dict] = {
         },
     },
     "tarifas": {
-        "clave": ("escenario", "edad", "clave_tarifa", "dias", "no_laborables"),
+        "clave": (
+            "escenario",
+            "colectivo",
+            "edad",
+            "clave_tarifa",
+            "dias",
+            "no_laborables",
+        ),
         "columnas": {
             "escenario": "texto",  # {vigente_2026, sin_descuento}
+            "colectivo": "texto",  # api_estatica.COLECTIVOS: ordinario, discapacidad, fn_general…
             "edad": "texto",  # {joven, general, mayor_65}
             "clave_tarifa": "texto",  # rango de coronas y productos, p. ej. A-C2|interurbano+metro_a
             "dias": "entero",  # 1–5 días de trabajo por semana
