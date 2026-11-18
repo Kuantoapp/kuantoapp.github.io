@@ -157,6 +157,7 @@ CONTRATOS: dict[str, dict] = {
             "esfuerzo_mediano_inf": "decimal",  # % de la renta
             "esfuerzo_mediano_sup": "decimal",  # % de la renta
             "dif_sigma": "decimal",
+            "cobertura": "decimal",  # fracción 0-1 de los inquilinos de la zona con sección válida
         },
     },
     "simulacion": {
