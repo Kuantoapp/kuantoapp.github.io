@@ -8,12 +8,16 @@ ordinario, discapacidad igual o superior al 65 %, familia numerosa general o esp
 discapacidad; se toma la columna del BOCM, no un porcentaje, porque el BOCM redondea a 0,10 € (sencillo
 de 1,50 € para FN especial: 0,70 €). La discapacidad del 33 al 64 % no tiene columna y no se modela.
 Familia monoparental: sin descuento del CRTM en 2026 (no figura en el BOCM y el decreto de Madrid de 2020
-se archivó); el RDL 35/2026 (BOE-A-2026-23604) la equipara a familia numerosa desde el 1-1-2027. Con 2
-hijos, la familia es numerosa (general) si un hijo tiene discapacidad, si los dos progenitores la tienen
-(o uno de al menos el 65 %), si falleció el otro progenitor o si son hermanos huérfanos (Ley 40/2003,
-arts. 2.2 y 4.1, versión vigente en 2026); quién pertenece a qué colectivo lo decide quien usa la tabla.
+se archivó); desde el 1-1-2027 el RDL 35/2026 (BOE-A-2026-23604) hace numerosa a la familia con una sola
+persona progenitora y dos hijos (nuevo art. 2.2.c de la Ley 40/2003). Con 2 hijos, en 2026 la familia es
+numerosa si un hijo tiene discapacidad o incapacidad para trabajar, si los dos progenitores la tienen (o
+uno con al menos el 65 %), si falleció el otro progenitor o si son hermanos huérfanos (Ley 40/2003, art.
+2.2); es general salvo que los dos hijos tengan discapacidad, que cuentan como 4 (art. 4.3) y la hacen
+especial con renta por miembro de hasta el 75 % del SMI (art. 4.2). Quién pertenece a qué colectivo lo
+decide quien usa la tabla.
 Los precios con descuento (`vigente_2026`) dependen del RDL 17/2025, que es temporal (solo 2026); el 10
-viajes se prorratea (viajes ÷ 10 × precio), porque no caduca: la ficha del CRTM dice «Validez: Ilimitada» (https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/,
+viajes se prorratea (viajes ÷ 10 × precio), porque no caduca: la ficha
+del CRTM dice «Validez: Ilimitada» (https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/,
 consultada el 18-11-2026; #162 sustituye a los paquetes enteros de #80).
 Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (20 €, todos los núcleos,
 solo 2026); sin descuento no hay precio publicado de Renfe y solo cuenta el abono del CRTM. Los 20 €
@@ -133,9 +137,8 @@ ABONOS = {("A", c): p for c, p in ABONO_30.items()} | ABONO_INTERZONAL
 ABONO_JOVEN = _p("10.00 8.00 8.00 5.00 6.00 3.00", "20.00 16.00 16.00 10.00 12.00 6.00")
 # gratuito, 365 días (BOCM-20251231-2 pág. 66; -3 pág. 70); «hasta la zona C2», que cubre todas las coronas
 # de las zonas: https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/ (consultada el 18-11-2026)
-ABONO_65 = _p(
-    *["0 0 0 0 0 0"] * 2
-)  # «Tercera edad: Gratuita» en BOCM-20251231-3 pág. 70
+# «Tercera edad: Gratuita» en BOCM-20251231-3 pág. 70
+ABONO_65 = _p("0 0 0 0 0 0", "0 0 0 0 0 0")
 # BOCM-20251231-2 pág. 67 y BOCM-20251231-3 pág. 72
 UNA_ZONA = _p("5.10 4.00 4.00 2.50 3.00 1.50", "8.70 6.90 6.90 4.30 5.20 2.60")
 DIEZ_VIAJES = {
@@ -253,7 +256,9 @@ def _redondea(x: D) -> D:
     return x.quantize(CENTIMO, rounding=ROUND_HALF_UP)
 
 
-def _diez_viajes(producto: str, cmin: str, cmax: str) -> dict[str, D] | None:
+def _diez_viajes(
+    producto: str, cmin: str, cmax: str
+) -> dict[tuple[str, str], D] | None:
     if producto == "interurbano":
         return DIEZ_VIAJES_INTERURBANO[_i(cmax) - _i(cmin)]
     return DIEZ_VIAJES.get(producto)
