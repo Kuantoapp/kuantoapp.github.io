@@ -82,8 +82,9 @@ def test_control_dentro_de_una_corona():
     # B1-B2 (28,70 → 26,71 €/mes) frente al 10 viajes de zona única: 37,83 × 0,51 = 19,30
     assert t.clave_tarifa("B1", "B1") == "B1-B1|interurbano"
     assert coste("B1-B1|interurbano", 5) == ("10 viajes", D("19.30"))
-    # con 16 viajes de ocio: 53,83 × 0,51 = 27,45 pasa del abono B1-B2
-    assert coste("B1-B1|interurbano", 5, 16) == ("Abono 30 días B1-B2", D("26.71"))
+    # con 16 viajes de ocio: 53,83 × 0,51 = 27,45 pasa del abono B1-B2 más el ocio del mes de
+    # vacaciones (26,71 + 16 × 0,51 / 12 = 27,39)
+    assert coste("B1-B1|interurbano", 5, 16) == ("Abono 30 días B1-B2", D("27.39"))
 
 
 def test_control_de_transbordo():
@@ -102,6 +103,18 @@ def test_umbral_del_abono_en_zona_a_con_8_viajes_de_ocio():
 def test_ocio_en_el_producto_principal():
     # 8 viajes de ocio al interurbano A-C2: (7,57 + 8) × 2,24 + 7,57 × 0,73 = 40,39 (al Metro saldría 28,31)
     assert coste("A-C2|interurbano+metro_a", 1, 8) == ("10 viajes", D("40.39"))
+
+
+def test_el_abono_paga_el_ocio_del_mes_de_vacaciones():
+    # sin cobrarlo ganaba el abono (45,78); con 16 × 1,78 / 12 = 2,37 más, gana el 10 viajes
+    assert coste("A-C1|interurbano+metro_a", 1, 16) == ("10 viajes", D("47.47"))
+    # zona A, 5 días y 8 de ocio: 30,43 + 8 × 0,73 / 12 = 30,92
+    assert coste("A-A|metro_a", 5, 8) == ("Abono 30 días", D("30.92"))
+
+
+def test_interzonal_de_32_70_y_empate_del_mas_estrecho():
+    assert coste("B1-C2|interurbano", 5) == ("Abono 30 días B1-C2", D("30.43"))
+    assert coste("C2-C2|interurbano", 5, 16) == ("Abono 30 días C1-C2", D("27.39"))
 
 
 def test_producto_sin_precio_falla():
@@ -125,7 +138,8 @@ def test_edades():
 
 
 def test_cercanias():
-    assert coste("A-C2|cercanias", 5) == ("Abono Renfe", D("18.61"))
+    # mes natural: 11 al año con las vacaciones en bloque, 20 × 11 / 12
+    assert coste("A-C2|cercanias", 5) == ("Abono Renfe", D("18.33"))
     # sin descuento no hay precio de Renfe: solo el abono del CRTM
     assert coste("A-C2|cercanias", 5, esc=S) == ("Abono 30 días", D("78.54"))
 

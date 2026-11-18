@@ -15,7 +15,8 @@ Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna nor
 cumplidos (verificar).
 Viajes al mes por producto = 2 × días × semanas al mes por cada validación; los viajes no laborables
 (ocio y fin de semana: 0, 8 o 16 al mes, #162) se suman al producto principal de la ruta (el interurbano
-si lo hay). Cada producto se paga con su sencillo o su 10 viajes, el más barato; el abono o el Abono
+si lo hay): se supone que el ocio sigue la ruta del trabajo, lo que encarece los títulos por viaje en las
+rutas largas y favorece al abono. En el mes de vacaciones sin abono, ese ocio se paga por viaje. Cada producto se paga con su sencillo o su 10 viajes, el más barato; el abono o el Abono
 Joven, frente a la suma.
 Calendario: 227 días de trabajo al año (261 laborables de 2026, menos 10 festivos en laborable, 2
 locales y 22 laborables de vacaciones), es decir 3,7833 semanas al mes. El abono de 30 días se compra
@@ -109,7 +110,8 @@ ABONO_INTERZONAL = {
 ABONOS = {("A", c): p for c, p in ABONO_30.items()} | ABONO_INTERZONAL
 # mismas páginas, todas las zonas
 ABONO_JOVEN = _p("10.00", "20.00")
-# ficha del CRTM: gratuito «hasta la zona C2», que cubre todas las coronas de las zonas
+# gratuito, 365 días (BOCM-20251231-2 pág. 66; -3 pág. 70); «hasta la zona C2», que cubre todas las coronas
+# de las zonas: https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/ (consultada el 18-11-2026)
 ABONO_65 = _p("0.00", "0.00")
 # BOCM-20251231-2 pág. 67 y BOCM-20251231-3 pág. 72
 DIEZ_VIAJES = {
@@ -142,8 +144,9 @@ SENCILLO = {
     "urbano": _p("1.50", "1.50"),
 }
 # Abono mensual de Renfe Cercanías en 2026 (todos los núcleos, hasta el 31-1-2027), solo con descuento
-# https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes
+# https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes (18-11-2026)
 ABONO_RENFE = {"vigente_2026": D("20.00")}
+ABONOS_RENFE_ANIO = 11  # vale un mes natural desde su inicio: 11 al año con 30 días de vacaciones en bloque
 
 
 def _i(corona: str) -> int:
@@ -227,6 +230,18 @@ def _diez_viajes(producto: str, cmin: str, cmax: str) -> dict[str, D] | None:
     return DIEZ_VIAJES.get(producto)
 
 
+def _opciones(
+    producto: str, viajes: D, cmin: str, cmax: str, escenario: str
+) -> dict[str, D]:
+    """Coste de `viajes` de un producto con su sencillo y con su 10 viajes (prorrateado)."""
+    opciones = {}
+    if producto in SENCILLO:
+        opciones["Billete sencillo"] = viajes * SENCILLO[producto][escenario]
+    if diez := _diez_viajes(producto, cmin, cmax):
+        opciones["10 viajes"] = viajes / 10 * diez[escenario]
+    return opciones
+
+
 def _por_viaje(
     escenario: str, clave: str, dias: int, no_laborables: int
 ) -> tuple[str, D]:
@@ -238,13 +253,9 @@ def _por_viaje(
     viajes[productos[0]] += no_laborables
     titulos, total = set(), D(0)
     for p, v in viajes.items():
-        opciones: dict[str, D] = {}
-        if p in SENCILLO:
-            opciones["Billete sencillo"] = v * SENCILLO[p][escenario]
-        if diez := _diez_viajes(p, cmin, cmax):
-            opciones["10 viajes"] = v / 10 * diez[escenario]
+        opciones = _opciones(p, v, cmin, cmax, escenario)
         if p == "cercanias" and escenario in ABONO_RENFE:
-            opciones["Abono Renfe"] = ABONO_RENFE[escenario] * ABONOS_ANIO / 12
+            opciones["Abono Renfe"] = ABONO_RENFE[escenario] * ABONOS_RENFE_ANIO / 12
         if not opciones:
             if p != "cercanias":
                 raise ValueError(f"producto sin precio por viaje: {p!r} en {clave!r}")
@@ -278,12 +289,19 @@ def coste_mes(
     if escenario not in ESCENARIOS or edad not in EDADES:
         raise ValueError(f"escenario {escenario!r} o edad {edad!r} desconocidos")
     titulo, precio = _abono(clave)
+    cmin, cmax, productos = _partes(clave)
+    # el mes sin abono (vacaciones) el ocio se paga por viaje en el producto principal
+    # shortcut: con Cercanías de principal no hay precio por viaje y ese ocio no se cobra
+    ocio = _opciones(productos[0], D(no_laborables), cmin, cmax, escenario)
+    ocio_vacaciones = min(ocio.values(), default=D(0)) / 12
     candidatos = {
         **dict([_por_viaje(escenario, clave, dias, no_laborables)]),
-        titulo: precio[escenario] * ABONOS_ANIO / 12,
+        titulo: precio[escenario] * ABONOS_ANIO / 12 + ocio_vacaciones,
     }
     if edad == "joven":
-        candidatos["Abono Joven"] = ABONO_JOVEN[escenario] * ABONOS_ANIO / 12
+        candidatos["Abono Joven"] = (
+            ABONO_JOVEN[escenario] * ABONOS_ANIO / 12 + ocio_vacaciones
+        )
     if edad == "mayor_65":
         candidatos["Abono +65"] = ABONO_65[escenario]
     titulo = min(candidatos, key=candidatos.get)
