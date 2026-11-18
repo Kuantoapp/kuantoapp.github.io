@@ -2,6 +2,7 @@
 
 Fichero de uso público, renta de 2024. Fuente: INE, www.ine.es; cálculos propios.
 Fórmula de Eurostat (ilc_lvho07c, ilc_lvho07_r): `(HH070·12 − HY070N) / (HY020 − HY070N) > 0,40`.
+Eurostat la escribe con HY070G; en la ECV 2025 HY070G = HY070N en los 29.369 hogares.
 - HH070 son gastos de vivienda MENSUALES: se multiplican por 12.
 - El «reducido» de Eurostat es HH021 4 o 5 (alquiler inferior al de mercado o cesión gratuita).
 - Denominador ≤ 0 cuenta como sobrecargado, también en la cifra de control: por eso sale 36,0 % y
@@ -59,6 +60,7 @@ def hogares(carpeta: Path = RAW) -> pd.DataFrame:
 
 def _supera(num: pd.Series, den: pd.Series, umbral: float) -> pd.Series:
     """1.0 si num/den > umbral o den <= 0; 0.0 si no; NaN si falta num o den."""
+    # Eurostat: num <= 0 → 0 sale de la división (con den > 0); con den <= 0 manda la regla de den
     y = ((num / den > umbral) | (den <= 0)).astype(float)
     return y.where(num.notna() & den.notna())
 

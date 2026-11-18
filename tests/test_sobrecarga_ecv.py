@@ -84,6 +84,18 @@ def test_reglas_a_mano(carpeta):
     assert alquiler_30(h).fillna(-1).tolist() == [1, 0, -1, 0, 1]
 
 
+def test_reglas_casos_limite():
+    # Eurostat §5: denominador 0 → sobrecargado; numerador ≤ 0 → no; 0,40 exacto no supera
+    h = pd.DataFrame(
+        {
+            "HH070": [100, 100, 600, 600.01],
+            "HY020": [1200, 20000, 18000, 18000],
+            "HY070N": [1200, 1500, 0, 0],
+        }
+    )
+    assert sobrecarga_eurostat(h).tolist() == [1, 0, 0, 1]
+
+
 def test_tasa_a_mano():
     # p = 0,5; w·(y−p) = 0,5, −1, 0,5; ee = sqrt(3/2 · 1,5) / 4 = 0,375
     t, ee, n = tasa(pd.Series([1.0, 0.0, 1.0, np.nan]), pd.Series([1, 2, 1, 9]))
