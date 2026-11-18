@@ -20,11 +20,15 @@ export const CATEGORIAS = {
   [REFERENCIA]: { texto: "Zona de referencia: con ella se compara el resto", color: "#ffffff" },
 };
 
+// Ficheros de la API cuyos números llegan al color de cada métrica (la geometría, `zonas`, se cita aparte).
+const TODOS = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
+
 export const METRICAS = {
   precio_hora: {
     titulo: "Precio de la hora de viaje",
     unidad: "€ al mes por cada hora de viaje extra al mes frente a la zona de referencia",
     corta: "€ por hora extra",
+    datos: TODOS,
     decimales: 1,
     divergente: true,
     nota: "Estimado. En una zona con más horas que la de referencia, positivo es lo que ganas por cada hora de más y negativo, que pierdes dinero y tiempo a la vez. Con menos horas, el signo se invierte.",
@@ -33,6 +37,7 @@ export const METRICAS = {
     titulo: "Lo que sobra al mes",
     unidad: "€/mes del hogar tras alquiler, transporte y cesta básica",
     corta: "€/mes",
+    datos: TODOS,
     decimales: 0,
     divergente: true,
     nota: "Negativo: no llega a fin de mes. Estimado con el alquiler mediano (P50).",
@@ -41,6 +46,7 @@ export const METRICAS = {
     titulo: "Horas de viaje al mes",
     unidad: "h/mes de ida y vuelta al trabajo",
     corta: "h/mes",
+    datos: ["tiempos", "tarifas"], // horas = minutos de ruta × días × semanas_mes: no entran ni el alquiler ni los netos
     decimales: 1,
     divergente: false,
     nota: `Estimado. Solo transporte público; más de ${TOPE_RUTA_MIN} min por trayecto cuenta como sin ruta.`,
@@ -359,4 +365,10 @@ export function licencias(...metas) {
 export function fuentes(...metas) {
   const nombres = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.nombre)));
   return `fuente: ${[...nombres].join(", ")}`;
+}
+
+/** Tooltip de una zona: sus dos primeras líneas y, si su alquiler es de un año anterior al del fichero, el año. */
+export function lineaTooltip(lineas, dato, meta) {
+  const anterior = dato?.anio != null && dato.anio < meta.anio_dato;
+  return `${lineas.slice(0, 2).join(" · ")}${anterior ? ` · alquiler de ${dato.anio}` : ""}`;
 }
