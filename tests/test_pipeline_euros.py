@@ -65,6 +65,7 @@ def test_m2_por_defecto_es_la_mediana_ponderada():
 
 def test_alquiler_del_fixture_cumple_el_contrato():
     zona = pd.read_csv(PROCESSED / "alquiler_zona.csv", dtype={"zona_id": str})
+    zona.attrs["ipc_hasta"] = "2026-10"  # el fixture trae un factor_ipc de 1,035
     validar("alquiler.json", alquiler_json(zona.query("origen != 'estimado'")))
     # alquiler_zona aún no produce estimados
     with pytest.raises(ValueError, match=r"\.ic:"):

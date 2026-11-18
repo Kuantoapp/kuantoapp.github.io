@@ -18,6 +18,16 @@ SERPAVI = {
     "url": "https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx",
     "licencia": "Condiciones generales para la reutilización de información del MIVAU (RD 1495/2011)",
 }
+IPC_INE = {
+    "nombre": "INE, IPC base 2025 por comunidades autónomas y subgrupos ECOICOP (tabla 76137), serie IPC297196 «Madrid, Comunidad de. Alquiler de vivienda. Índice». Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+    "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/76137.csv",
+    "licencia": "CC BY 4.0",
+}
+IPC_CM = {
+    "nombre": "IPC de la vivienda en alquiler, base 2025 (catálogo de datos abiertos de la Comunidad de Madrid, 1934665), usado como control. Fuente de los datos: Comunidad de Madrid",
+    "url": "https://datos.comunidad.madrid/dataset/fc22e79d-c04b-4537-8b4b-fe92516b989e/resource/3d1f3acc-98cc-4356-b9e1-4b9e5d999787/download/indice-de-precios-de-consumo.-vivienda-en-alquiler-base-2025.csv",
+    "licencia": "CC BY 4.0",
+}
 LICENCIA_BOE = (
     "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
     "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
@@ -134,15 +144,40 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "ic": None,  # alquiler_zona no produce estimados; si llegan, el validador falla
         }
     anio = int(zona["anio"].max())
-    nota = (
+    mes = zona.attrs.get("ipc_hasta")
+    if mes is None and (zona["factor_ipc"] != 1).any():
+        raise ValueError(
+            "factor_ipc distinto de 1 sin attrs['ipc_hasta']: falta el mes del IPC"
+        )
+    base = (
         "€/m² al mes de vivienda colectiva (sin unifamiliar), de contratos declarados a la Agencia "
         "Tributaria (Modelo 100 cruzado con el Catastro), no de anuncios: es un suelo del precio actual. "
-        "Cada zona lleva el último año con dato en euros de ese año, sin actualizar con el IPC "
-        "(factor_ipc 1,0) hasta que se aplique el IPC de alquiler; las zonas cuyo último dato es anterior a "
-        f"{anio} llevan su año en anio. Las zonas sin dato publicado van como sin_dato. "
-        + ORIGEN_SERPAVI
+        "Cada zona lleva el último año con dato y p25, p50 y p75 en euros de ese año"
     )
-    return {"meta": _meta(anio, [SERPAVI], nota), "zonas": zonas}
+    cola = (
+        f"las zonas cuyo último dato es anterior a {anio} llevan su año en anio. "
+        "Las zonas sin dato publicado van como sin_dato. "
+    )
+    if mes is None:
+        nota = (
+            base
+            + ", sin actualizar con el IPC (factor_ipc 1,0) hasta que se aplique el IPC de alquiler; "
+            + cola
+            + ORIGEN_SERPAVI
+        )
+        return {"meta": _meta(anio, [SERPAVI], nota), "zonas": zonas}
+    nota = (
+        base
+        + f"; factor_ipc los actualiza a {mes} con el IPC de alquiler de la Comunidad de Madrid "
+        f"(INE, serie IPC297196, índice de {mes} entre la media del año de la zona), una estimación; "
+        + cola
+        + "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 76137 "
+        "actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
+        "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
+        "usado como control). " + ORIGEN_SERPAVI
+    )
+    meta = _meta(anio, [SERPAVI, IPC_INE, IPC_CM], nota) | {"ipc_hasta": mes}
+    return {"meta": meta, "zonas": zonas}
 
 
 def m2_por_defecto(zona: pd.DataFrame) -> int:
@@ -236,7 +271,9 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
 
 
 def main() -> None:
-    zona = alquiler.alquiler_zona(alquiler.leer_serpavi())
+    zona = alquiler.actualizar_ipc(
+        alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
+    )
     salidas = {
         "alquiler.json": alquiler_json(zona),
         "netos.json": netos_json(neto.rejilla()),

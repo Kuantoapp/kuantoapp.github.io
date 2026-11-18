@@ -98,6 +98,7 @@ MADRID = {
 # fmt: off
 # nombre, fichero, ruta del cambio (sin valor: se quita la clave), valor, mensaje esperado
 FALLOS = [
+    ("ipc_hasta con formato del INE", "alquiler.json", "meta.ipc_hasta", "2026M10", "meta.ipc_hasta: se esperaba mes"),
     ("zona_id desconocido", "tiempos.json", "origenes.0", "28999", "desconocidos"),
     ("NaN", "tiempos.json", "km_coche.0.0", float("nan"), "km_coche.*NaN, usa null"),
     ("sin fuentes", "netos.json", "meta.fuentes", [], "meta.fuentes: se esperaba una lista no vacía"),
