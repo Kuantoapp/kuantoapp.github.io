@@ -58,8 +58,17 @@ FUENTE_OFICINA = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28186, serie EAES2540: ganancia media anual "
     "de las mujeres empleadas de oficina que no atienden al público, total nacional, 28.264,34 € (de 2024)"
 )
+FUENTE_JOVEN = (
+    "INE, Encuesta de Estructura Salarial 2022, tabla 36850: mediana (P50) de la ganancia anual de 25 a 34 años "
+    "en la Comunidad de Madrid, 22.676,37 € (de 2022), llevada a 2024 con la media de ese tramo en Madrid de la "
+    "Encuesta Anual de Estructura Salarial, tabla 28201 (26.411,63 € en 2022 y 29.361,99 € en 2024, +11,2 %): "
+    "25.209,48 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
+)
 SMI = float(parametros_2026.SMI_ANUAL)
 EAES, OFICINA = 28037.75, 28264.34
+JOVEN = (
+    22676.37 * 29361.99 / 26411.63
+)  # P50 2022 (t=36850) × media 2024 / 2022 (t=28201)
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra). La enfermera de 26 años
 # no entra: el grupo más fino de la EAES (salud y enseñanza, tabla 28186) mezcla medicina y docencia.
 # `sueldos`: (bruto €/año, días a la semana en el destino).
@@ -91,6 +100,13 @@ PERFILES = [
         "edad": 34,
         "sueldos": [(OFICINA, 5)],
         "fuente": FUENTE_OFICINA,
+    },
+    {
+        "nombre": "Persona sola de 29 años con el sueldo mediano de su edad en Madrid",
+        "perfil": "solo",
+        "edad": 29,
+        "sueldos": [(JOVEN, 5)],
+        "fuente": FUENTE_JOVEN,
     },
 ]
 
