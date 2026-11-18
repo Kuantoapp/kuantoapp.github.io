@@ -78,7 +78,13 @@ Precios en €. **VERIFICADO** en BOCM-20251231-2, pág. 66 (con descuento) y BO
 
 ### 1.3 Descuentos por familia numerosa y discapacidad
 
-VERIFICADO en las tablas del BOCM. Los porcentajes se deducen de los precios: por ejemplo, zona A 26,10/32,70 = 0,798 y 16,30/32,70 = 0,498. Valen para el abono 30 días, el abono joven, el billete de 10 viajes y el sencillo.
+VERIFICADO en las tablas del BOCM (-2 págs. 66-68 y -3 págs. 70-72). Las dos resoluciones traen **una columna por colectivo**: el abono 30 días (normal e interzonales), el abono joven, el billete de 10 viajes y el sencillo, incluida la tarifa oficial. Comprobado el 18/11/2026 en #163: evidencia en `docs/verificaciones/transporte-colectivos.md`.
+
+**Usa el precio de la columna, nunca el factor.** Los factores de la tabla de abajo se deducen de los precios, porque el BOCM no los publica. Ningún redondeo sencillo del factor reproduce las tablas: «a la baja a 0,10 €» falla en 14 de 340 celdas (abono A, FN especial + discapacidad: 9,70, no 9,80). Lo que sí se cumple siempre:
+- cada precio está entre factor × ordinario − 0,11 € y factor × ordinario;
+- el orden es ordinario > discapacidad = FN general > FN general + discapacidad > FN especial > FN especial + discapacidad.
+
+Sirve para comprobar una transcripción, no para calcular.
 
 | Colectivo | Factor sobre el precio ordinario | Abono zona A con bonificación | Abono joven |
 |---|---|---|---|
@@ -89,7 +95,19 @@ VERIFICADO en las tablas del BOCM. Los porcentajes se deducen de los precios: po
 | FN general + discapacidad ≥ 65 % | 0,60 (−40 %) | 19,60 | 6,00 |
 | FN especial + discapacidad ≥ 65 % | 0,30 (−70 %) | 9,70 | 3,00 |
 
-Los factores combinados (0,60 y 0,30) están calculados a partir de las tablas. En los títulos de importe bajo el BOCM redondea a 0,10 €, así que hay que usar el precio de la tabla y no recalcularlo.
+Los factores combinados (0,60 y 0,30) están calculados a partir de las tablas. En los títulos de importe bajo el BOCM redondea a 0,10 €, así que hay que usar el precio de la tabla y no recalcularlo: el sencillo de 1,50 € para FN especial cuesta 0,70 €, no 0,75 €.
+
+Otros colectivos, comprobados el 18/11/2026 (#163):
+- **Discapacidad del 33 al 64 %:** no tiene columna; paga el precio ordinario.
+- **Familia monoparental:** sin descuento del CRTM en 2026. Desde el 1-1-2027, el RDL 35/2026 (BOE-A-2026-23604) hace numerosa a la familia de una sola persona progenitora con dos hijos.
+- **Familia con 2 hijos:** solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003:
+  - un hijo con discapacidad o incapacidad para trabajar;
+  - los dos ascendientes con discapacidad o incapacidad para trabajar, o uno con ≥ 65 %;
+  - viudedad;
+  - hermanos huérfanos.
+
+  Es general, salvo que los dos hijos tengan discapacidad (cuentan como 4, art. 4.3): entonces es especial si la renta por miembro no pasa del 75 % del SMI (art. 4.2).
+- **Abono mensual de Renfe:** 20 € para todos. Admite el descuento de familia numerosa, pero su importe no se publica, y no tiene descuento por discapacidad.
 
 ### 1.4 Billete de 10 viajes y billete sencillo
 
@@ -113,7 +131,7 @@ Los factores combinados (0,60 y 0,30) están calculados a partir de las tablas. 
 | A-C2 | 22,40 | 38,50 |
 | Dentro de una sola zona (B1, B2, B3, C1, C2) y Tranvía de Parla | 5,10 | 8,70 |
 
-**Billete sencillo 2026.** No tiene bonificación: el precio con y sin descuento es el mismo (BOCM-20251231-2, pág. 68 = BOCM-20251231-3, pág. 71).
+**Billete sencillo 2026.** No tiene la bonificación del RDL 17/2025: el precio con y sin descuento es el mismo (BOCM-20251231-2, pág. 68 = BOCM-20251231-3, pág. 71). Sí tiene precio por colectivo (§1.3).
 - Metro zona A y ML1: escala de 1,50 a 2,00 € en siete tramos (1,50; 1,50; 1,60; 1,70; 1,80; 1,90; 2,00). El BOCM no dice el criterio de cada tramo; se entiende que es el número de estaciones (**criterio NO VERIFICADO**).
 - EMT: 1,50 €.
 - MetroEste, MetroNorte y MetroSur: 1,50 €.

@@ -235,21 +235,56 @@ def test_precio_de_la_columna_y_no_del_factor():
     )
 
 
-def test_cada_colectivo_paga_menos_o_igual():
-    precios = [
-        *t.ABONOS.values(),
-        t.ABONO_JOVEN,
-        *t.DIEZ_VIAJES.values(),
-        *t.DIEZ_VIAJES_INTERURBANO,
-        *t.SENCILLO.values(),
+# factores deducidos de las tablas del BOCM (no los publica); solo para comprobar la transcripción, nunca
+# para calcular un precio (docs/verificaciones/transporte-colectivos.md, fila 1)
+FACTOR = dict(zip(t.COLECTIVOS, map(D, ("1", "0.8", "0.8", "0.5", "0.6", "0.3"))))
+# orden estricto de cada fila del BOCM; discapacidad y FN general valen lo mismo
+ORDEN = (
+    "ordinario",
+    "fn_general",
+    "fn_general_discapacidad",
+    "fn_especial",
+    "fn_especial_discapacidad",
+)
+PRECIOS = [
+    *t.ABONOS.values(),
+    t.ABONO_JOVEN,
+    *t.DIEZ_VIAJES.values(),
+    *t.DIEZ_VIAJES_INTERURBANO,
+    *t.SENCILLO.values(),
+]
+
+
+def _fuera_de_banda_o_de_orden(fila: dict[str, D]) -> list[str]:
+    """Columnas que no están entre factor × ordinario − 0,11 € y factor × ordinario, o que rompen el orden."""
+    banda = [
+        c
+        for c, f in FACTOR.items()
+        if not D(0) <= fila["ordinario"] * f - fila[c] <= D("0.11")
     ]
-    for p, esc in product(precios, t.ESCENARIOS):
+    orden = [a for a, b in pairwise(ORDEN) if not fila[a] > fila[b]]
+    return (
+        banda + orden + ["discapacidad"] * (fila["discapacidad"] != fila["fn_general"])
+    )
+
+
+def test_colectivos_en_banda_y_en_orden():
+    # detecta columnas intercambiadas y erratas sin volver a copiar las tablas del BOCM
+    for p, esc in product(PRECIOS, t.ESCENARIOS):
         assert len(p) == len(t.ESCENARIOS) * len(t.COLECTIVOS)
-        col = {c: p[esc, c] for c in t.COLECTIVOS}
-        assert col["discapacidad"] == col["fn_general"] < col["ordinario"]
-        assert col["fn_especial"] < col["fn_general"]
-        assert col["fn_general_discapacidad"] < col["fn_general"]
-        assert col["fn_especial_discapacidad"] < col["fn_especial"]
+        assert _fuera_de_banda_o_de_orden({c: p[esc, c] for c in t.COLECTIVOS}) == [], p
+    sencillo = {c: t.SENCILLO["metro_a"][V[0], c] for c in t.COLECTIVOS}
+    cambiada = sencillo | {
+        "fn_especial": sencillo["fn_general_discapacidad"],
+        "fn_general_discapacidad": sencillo["fn_especial"],
+    }
+    assert _fuera_de_banda_o_de_orden(cambiada)
+    assert _fuera_de_banda_o_de_orden(
+        sencillo | {"fn_especial": D("0.60")}
+    )  # errata de 0,10 €
+
+
+def test_cada_colectivo_paga_menos_o_igual():
     for clave, d in product(["A-A|metro_a", "B2-C2|interurbano"], t.DIAS):
         costes = [coste(clave, d, esc=(V[0], c))[1] for c in t.COLECTIVOS]
         assert max(costes) == costes[0]
