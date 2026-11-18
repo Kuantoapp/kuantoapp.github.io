@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob:; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>¿Me sobra? · Mapa de zonas</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
@@ -33,7 +34,7 @@
           </div>
           <label>Bruto anual (€) <input name="bruto" inputmode="decimal" value="24000"></label>
           <label>Neto mensual medio (€) <input name="neto" inputmode="decimal"></label>
-          <p class="ayuda">Neto anual dividido entre doce. Si das el bruto, se calcula solo (estimado con la normativa de IRPF y cotizaciones; fuente: BOE, ver la nota metodológica); puedes corregirlo a mano.</p>
+          <p class="ayuda">Neto anual dividido entre doce. Si das el bruto, se calcula solo (estimado con la normativa de IRPF y cotizaciones; fuente: BOE y BOCM, ver la nota metodológica); puedes corregirlo a mano.</p>
           <label>Pagas
             <select name="pagas">
               <option value="12">Doce pagas</option>
