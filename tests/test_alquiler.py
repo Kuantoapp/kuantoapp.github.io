@@ -228,6 +228,14 @@ def test_leer_ipc_catalogo_no_casa(tmp_path):
         alquiler.leer_ipc(*_csv_ipc(tmp_path, (90.0, 91.0)))
 
 
+def test_leer_ipc_mes_vacio(tmp_path):
+    ine, cm = _csv_ipc(tmp_path, (100.5, 50.5))
+    texto = ine.read_text(encoding="utf-8-sig").replace("2024M12;100,5", "2024M12;")
+    ine.write_text(texto, encoding="utf-8-sig")
+    with pytest.raises(ValueError, match="huecos"):
+        alquiler.leer_ipc(ine, cm)
+
+
 def test_alquiler_json_con_ipc():
     obj = pipeline_euros.alquiler_json(alquiler.actualizar_ipc(_zona(), _ipc()))
     api_estatica.validar("alquiler.json", obj)

@@ -148,7 +148,7 @@ def alquiler_zona(hojas: dict[str, pd.DataFrame]) -> pd.DataFrame:
 def leer_ipc(ruta: Path = RAW_IPC, ruta_cm: Path = RAW_IPC_CM) -> pd.Series:
     """Índice mensual del IPC de alquiler de Madrid (INE, IPC297196) por periodo `AAAAMmm`, contrastado con el catálogo regional."""
     df = pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
-    df = df[(df.iloc[:, :3] == SERIE_IPC).all(axis=1)]
+    df = df[(df.iloc[:, :3] == list(SERIE_IPC)).all(axis=1)]
     ipc = pd.Series(_numero(df["Total"]).to_numpy(), index=df["Periodo"]).sort_index()
     if ipc.empty or ipc.isna().any() or ipc.index.has_duplicates:
         raise ValueError(
