@@ -26,7 +26,7 @@ Reglas preregistradas: se fijan antes de ejecutar con los datos reales y no se c
   típica de log p50 de los vecinos más la mediana de esa desviación en train. El cuantil que se aplica a las objetivo
   sale de los pequeños, con nivel `NIVEL`. La cobertura se mide como transferencia: cuantil de las zonas con dato
   mayores que las objetivo, comprobado en los pequeños, con su IC de Wilson; no se promete.
-  Corrección posterior al preregistro (3d8aaf7): este punto medía la cobertura con LOO sobre los propios pequeños, y eso
+  Corrección posterior al preregistro (21832b5): este punto medía la cobertura con LOO sobre los propios pequeños, y eso
   da ⌈NIVEL·n⌉/n por construcción (salió 60/66 en todos los modelos y variantes). La regla de corte no cambia; quita
   también la variante de semilla, que estaba vacía (el LOO no tiene azar).
 - Corte (plan B de la issue): si la cobertura sobre los pequeños queda más de `CORTE` por debajo de `NIVEL`, no se imputa.
