@@ -196,4 +196,7 @@ def test_app_datos_cumple_el_contrato():
             "app/datos/ sin zonas.geojson: no se comprueban los zona_id", stacklevel=1
         )
     for fichero in ficheros:
-        validar(fichero.name, _leer(fichero.name, APP_DATOS), zonas)
+        datos = _leer(fichero.name, APP_DATOS)
+        validar(fichero.name, datos, zonas)
+        # La marca es solo de las fixtures: en datos reales quitaría las fuentes de la leyenda sin avisar.
+        assert "ejemplo" not in datos["meta"], fichero.name
