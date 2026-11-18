@@ -2,7 +2,7 @@
 // La validación, el color y los textos están en vista.js y el cálculo en calculo.js; aquí solo hay DOM.
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
-import { METRICAS, avisos, contextoFicha, fuentes, leyenda, licencias, lineasFicha, mejores, pintar, validar } from "./vista.js";
+import { METRICAS, avisoPrueba, avisos, contextoFicha, fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, validar } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 const formulario = () => $("formulario");
@@ -94,9 +94,10 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const { alquiler, hogares, netos, tarifas, tiempos, zonas } = api;
   const metas = [zonas.meta, alquiler.meta, tiempos.meta, hogares.meta, netos.meta, tarifas.meta];
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
+  const usaAlquiler = m.datos.includes("alquiler");
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
-  cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)`, "titulo"));
+  cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
@@ -108,7 +109,8 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const detalle = document.createElement("details");
   const notas = [
     `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
-    `${fuentes(...metas)}.`,
+    `Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`,
+    `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`,
     `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
@@ -175,7 +177,10 @@ async function main() {
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
-  $("avisos").replaceChildren(...avisos(api.alquiler).map((t) => elemento("li", t)));
+  // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
+  const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
+  const lineasAviso = [...(prueba ? [prueba] : []), ...avisos(api.alquiler)];
+  $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));
   const estado = { entrada: null, resultado: null, metrica: "precio_hora", zona: null };
   const lineas = (id) => lineasFicha(nombres[id], estado.resultado.zonas[id], estado.metrica, contextoFicha(api, estado.entrada, estado.resultado, id));
@@ -241,7 +246,8 @@ async function main() {
   const tooltip = $("tooltip");
   mapa.on("mousemove", "zonas-relleno", (e) => {
     if (!estado.resultado) return;
-    tooltip.textContent = lineas(e.features[0].properties.zona_id).slice(0, 2).join(" · ");
+    const id = e.features[0].properties.zona_id;
+    tooltip.textContent = lineaTooltip(lineas(id), METRICAS[estado.metrica].datos.includes("alquiler") ? api.alquiler.zonas[id] : undefined, api.alquiler.meta);
     tooltip.style.left = `${e.point.x + 12}px`;
     tooltip.style.top = `${e.point.y + 12}px`;
     tooltip.hidden = false;

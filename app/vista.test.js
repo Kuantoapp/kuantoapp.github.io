@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, PALETA, SIN_DATO, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
-  fuentes, leyenda, licencias, lineasFicha, mejores, pintar, resolverDestino, validar,
+  CATEGORIAS, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
+  fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, resolverDestino, validar,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -267,6 +267,31 @@ test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", 
   const reales = avisos(real.alquiler);
   assert.ok(reales.includes("41 zonas sin dato publicado de alquiler: en gris y sin cifra."));
   assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
+});
+
+test("el aviso de prueba sale con los fixtures y no con los datos reales", () => {
+  const metasDe = (api) => [api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta);
+  assert.match(avisoPrueba(metasDe(ejemplo)), /^Datos de prueba, no son datos reales: Ejemplo/);
+  assert.equal(avisoPrueba(metasDe(real)), null);
+});
+
+test("el tooltip añade el año solo si el alquiler de la zona es anterior al del fichero", () => {
+  const meta = { anio_dato: 2024 };
+  assert.equal(lineaTooltip(["Titulcia", "5 €/mes", "otra"], { anio: 2023 }, meta), "Titulcia · 5 €/mes · alquiler de 2023");
+  assert.equal(lineaTooltip(["Getafe", "6 €/mes"], { anio: 2024 }, meta), "Getafe · 6 €/mes");
+  assert.equal(lineaTooltip(["Getafe", "6 €/mes"], undefined, meta), "Getafe · 6 €/mes");
+  assert.ok(Object.values(real.alquiler.zonas).some((z) => z.anio < real.alquiler.meta.anio_dato), "Titulcia sigue siendo de un año anterior");
+});
+
+test("la fuente del color de las horas no incluye el alquiler y la de las otras métricas sí", () => {
+  assert.ok(!METRICAS.horas.datos.includes("alquiler"));
+  for (const k of ["precio_hora", "sobra"]) assert.ok(METRICAS[k].datos.includes("alquiler"));
+  for (const m of Object.values(METRICAS)) for (const n of m.datos) assert.ok(real[n].meta.fuentes.length > 0, n);
+});
+
+test("la atribución real lleva la cita del INE, la fecha del MIVAU y que el Ministerio no patrocina", () => {
+  assert.match(licencias(real.zonas.meta), /Elaboración propia con datos extraídos del sitio web del INE: www\.ine\.es/);
+  assert.match(real.alquiler.meta.nota, /actualizado el \d{4}-\d{2}-\d{2}; el Ministerio no participa ni patrocina/);
 });
 
 // --- Validación de entradas ---------------------------------------------------------------------
