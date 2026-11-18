@@ -12,10 +12,13 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €) y más pares lo alcanzarían, en
    contra de la tesis 1 (SMI: 1.544 pares, 14,9 %, frente a 1.316, 12,7 %), sin cambiar el veredicto;
    con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
-   incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo, en contra.
+   (y de la EES) incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo,
+   en contra.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
-   y neto/hora más bajo (contra la tesis 1).
+   y neto/hora más bajo (contra la tesis 1). El joven mediano es la P50 de la EES 2022 llevada a 2024
+   con la media de su tramo (EAES): si el crecimiento se concentró en los sueldos altos, su bruto queda
+   sobrevalorado, con neto/hora más alto (a favor de la tesis 1) y menos zonas negativas (contra la 2).
 4. Alquiler en euros de 2024 sin IPC, de contratos declarados (suelo del precio): sobrante
    sobrevalorado (contra la tesis 2); diferencias de alquiler menores, precio de la hora más bajo
    (favorece la tesis 1).
@@ -66,9 +69,8 @@ FUENTE_JOVEN = (
 )
 SMI = float(parametros_2026.SMI_ANUAL)
 EAES, OFICINA = 28037.75, 28264.34
-JOVEN = (
-    22676.37 * 29361.99 / 26411.63
-)  # P50 2022 (t=36850) × media 2024 / 2022 (t=28201)
+# P50 2022 (t=36850) × media 2024 / 2022 (t=28201), al céntimo como la cifra citada
+JOVEN = round(22676.37 * 29361.99 / 26411.63, 2)
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra). La enfermera de 26 años
 # no entra: el grupo más fino de la EAES (salud y enseñanza, tabla 28186) mezcla medicina y docencia.
 # `sueldos`: (bruto €/año, días a la semana en el destino).

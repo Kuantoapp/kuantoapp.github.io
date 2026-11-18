@@ -43,6 +43,19 @@ FUENTES = [
         "url": "https://datos.comunidad.madrid/dataset/ff697366-36f4-41a1-a966-f5ccf3b6db7c/resource/6fbda6ce-b479-4319-83c6-0b977d3fa8d5/download/spacm_bono_alquiler_joven_2022.csv",
         "licencia": "CC BY 4.0",
     },
+    *(
+        {
+            "nombre": f"INE, {nombre}, tabla {t} (sueldos de los titulares)",
+            "url": f"https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/{t}.csv",
+            "licencia": "CC BY 4.0",
+        }
+        for t, nombre in (
+            (28191, "Encuesta Anual de Estructura Salarial"),
+            (28186, "Encuesta Anual de Estructura Salarial"),
+            (28201, "Encuesta Anual de Estructura Salarial"),
+            (36850, "Encuesta de Estructura Salarial 2022"),
+        )
+    ),
 ]
 NOTA = (
     "Esfuerzo: cuantía mediana mensual del alquiler de vivienda colectiva del SERPAVI entre la renta neta "
@@ -50,7 +63,9 @@ NOTA = (
     "convocatoria 2022 frente al esfuerzo de 2023 y los jóvenes de 18 a 35 años a 1-1-2023. "
     + ORIGEN_SERPAVI
     + " Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 31097 actualizada "
-    "el 2026-10-15; tabla 68542 actualizada el 2025-12-02); el INE no participa ni patrocina este proyecto. "
+    "el 2026-10-15; tabla 68542 actualizada el 2025-12-02; tabla 28191 actualizada el 2026-05-28; tabla "
+    "28186 actualizada el 2026-05-28; tabla 28201 actualizada el 2026-05-28; tabla 36850 actualizada el "
+    "2024-09-23); el INE no participa ni patrocina este proyecto. "
     "Fuente de los datos: Comunidad de Madrid (Bono Alquiler Joven 2022, actualizado el 2026-02-03); la "
     "Comunidad de Madrid no participa ni patrocina este proyecto."
 )

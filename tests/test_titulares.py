@@ -127,11 +127,18 @@ def test_umbral_exacto_cuenta_como_encima():
 
 def test_joven_mediano_desde_las_tablas_del_ine():
     # P50 de 25-34 en Madrid 2022 (t=36850) × media del tramo 2024 / 2022 (t=28201), redondeado al céntimo
-    assert round(titulares.JOVEN, 2) == 25209.48
-    joven = titulares.PERFILES[-1]
+    assert titulares.JOVEN == 25209.48
+    i, joven = next(
+        (i, p)
+        for i, p in enumerate(titulares.PERFILES)
+        if p["fuente"] is titulares.FUENTE_JOVEN
+    )
     assert joven["sueldos"] == [(titulares.JOVEN, 5)]
-    assert (
-        "estimado" in joven["fuente"]
-        and "36850" in joven["fuente"]
-        and "28201" in joven["fuente"]
+    assert all(s in joven["fuente"] for s in ("estimado", "36850", "28201"))
+    api = _api()
+    horas = api["tarifas"]["semanas_mes"] * 40
+    r = list(titulares.resumenes(api))[i][1]
+    solo = {**api["hogares"]["perfiles"]["solo"], "perfil": "solo"}
+    assert r["neto_hora"] == pytest.approx(
+        calculo.neto_mes(api["netos"], titulares.JOVEN, solo) / horas
     )
