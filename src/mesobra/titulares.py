@@ -12,10 +12,13 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €) y más pares lo alcanzarían, en
    contra de la tesis 1 (SMI: 1.544 pares, 14,9 %, frente a 1.316, 12,7 %), sin cambiar el veredicto;
    con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
-   incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo, en contra.
+   (y de la EES) incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo,
+   en contra.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
-   y neto/hora más bajo (contra la tesis 1).
+   y neto/hora más bajo (contra la tesis 1). El joven mediano es la P50 de la EES 2022 llevada a 2024
+   con la media de su tramo (EAES): si el crecimiento se concentró en los sueldos altos, su bruto queda
+   sobrevalorado, con neto/hora más alto (a favor de la tesis 1) y menos zonas negativas (contra la 2).
 4. Alquiler en euros de 2024 sin IPC, de contratos declarados (suelo del precio): sobrante
    sobrevalorado (contra la tesis 2); diferencias de alquiler menores, precio de la hora más bajo
    (favorece la tesis 1).
@@ -58,8 +61,16 @@ FUENTE_OFICINA = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28186, serie EAES2540: ganancia media anual "
     "de las mujeres empleadas de oficina que no atienden al público, total nacional, 28.264,34 € (de 2024)"
 )
+FUENTE_JOVEN = (
+    "INE, Encuesta de Estructura Salarial 2022, tabla 36850: mediana (P50) de la ganancia anual de 25 a 34 años "
+    "en la Comunidad de Madrid, 22.676,37 € (de 2022), llevada a 2024 con la media de ese tramo en Madrid de la "
+    "Encuesta Anual de Estructura Salarial, tabla 28201 (26.411,63 € en 2022 y 29.361,99 € en 2024, +11,2 %): "
+    "25.209,48 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
+)
 SMI = float(parametros_2026.SMI_ANUAL)
 EAES, OFICINA = 28037.75, 28264.34
+# P50 2022 (t=36850) × media 2024 / 2022 (t=28201), al céntimo como la cifra citada
+JOVEN = round(22676.37 * 29361.99 / 26411.63, 2)
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra). La enfermera de 26 años
 # no entra: el grupo más fino de la EAES (salud y enseñanza, tabla 28186) mezcla medicina y docencia.
 # `sueldos`: (bruto €/año, días a la semana en el destino).
@@ -91,6 +102,13 @@ PERFILES = [
         "edad": 34,
         "sueldos": [(OFICINA, 5)],
         "fuente": FUENTE_OFICINA,
+    },
+    {
+        "nombre": "Persona sola de 29 años con el sueldo mediano de su edad en Madrid",
+        "perfil": "solo",
+        "edad": 29,
+        "sueldos": [(JOVEN, 5)],
+        "fuente": FUENTE_JOVEN,
     },
 ]
 
