@@ -199,6 +199,16 @@ def test_imputar_rellena_solo_2024_con_intervalo_y_cuantia_nula():
     ).all()
     assert (est["ic_sup"] - est["ic_inf"] <= 0.5 * est["eur_m2_p50"]).all()
     assert out[out["anio"] == 2023]["origen"].isin(["observado", "sin_dato"]).all()
+    np.testing.assert_allclose(est["eur_m2_p25"], est["eur_m2_p50"] * 0.8)
+    np.testing.assert_allclose(est["eur_m2_p75"], est["eur_m2_p50"] * 1.2)
+    resto = out["origen"] != "estimado"
+    pd.testing.assert_frame_equal(out[resto], zona[resto])
+
+
+def test_sin_zonas_objetivo_no_imputa():
+    zona, *resto = _escenario()
+    out = imputacion.imputar(zona[zona["eur_m2_p50"].notna()], *resto)
+    assert out.attrs["imputacion"] == {"imputar": False, "motivo": "sin zonas objetivo"}
 
 
 def test_no_imputa_si_la_validacion_no_imita_la_distancia():

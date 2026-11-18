@@ -74,9 +74,8 @@ CORTE = 0.10  # issue: cobertura más de 10 puntos bajo la nominal → no se imp
 MARGEN = 0.10  # supuesto: mejora mínima del MAE para elegir un modelo más complejo
 UMBRAL_ANCHO = 0.5  # issue (supuesto declarado): ancho del intervalo ≤ 0,5 · p50
 MIN_PEQUENOS = 20  # supuesto: con menos, la cobertura medida tiene ±13 puntos y no sirve para el corte
-KS_MAX = (
-    0.3  # supuesto: por encima, la validación no imita la distancia de las objetivo
-)
+# supuesto: por encima, la validación no imita la distancia de las objetivo
+KS_MAX = 0.3
 REJILLA_B = np.arange(0, 15_001, 500)  # metros
 VARIABLES = [
     "log_pob",
@@ -93,8 +92,11 @@ LGBM = {
     "learning_rate": 0.05,
     "num_leaves": 7,
     "min_child_samples": 10,
+    "deterministic": True,
+    "force_row_wise": True,
+    "num_threads": 1,
+    "verbose": -1,
 }
-LGBM |= {"deterministic": True, "force_row_wise": True, "num_threads": 1, "verbose": -1}
 
 
 def coordenadas(zonas: gpd.GeoDataFrame) -> pd.DataFrame:
@@ -408,9 +410,12 @@ def imputar(
     """
     x = variables(zonas, rentas, tiempos)
     obs, objetivo, d_obj = _preparar(zona, zonas, x)
+    out = zona.copy()
+    if not objetivo:
+        out.attrs["imputacion"] = {"imputar": False, "motivo": "sin zonas objetivo"}
+        return out
     pob = zonas.set_index("zona_id")["poblacion"]
     inf = _validacion(obs, pob, float(pob.loc[objetivo].max()), d_obj)
-    out = zona.copy()
     out.attrs["imputacion"] = inf
     if not inf["imputar"]:
         LOG.warning("No se imputa: %s", inf["motivo"])

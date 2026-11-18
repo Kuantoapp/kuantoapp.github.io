@@ -209,7 +209,7 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "estimado con un modelo espacial (mesobra.imputacion, #99) a partir de las zonas vecinas, la "
             "renta media por hogar del ADRH (tabla 31097 actualizada el 2026-10-15), la población y los "
             "tiempos en transporte público de tiempos.json; ic es el intervalo de predicción conformal "
-            "al 90 % del p50 (cobertura medida, no garantizada) y p25 y p75 salen de los cocientes "
+            f"al {imputacion.NIVEL:.0%} del p50 (cobertura medida, no garantizada) y p25 y p75 salen de los cocientes "
             "medianos observados. Sin cuantía mensual, así que esas zonas no tienen esfuerzo."
         )
         fuentes.append(imputacion.FUENTE_ADRH)
