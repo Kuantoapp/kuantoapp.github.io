@@ -263,8 +263,9 @@ test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", 
   assert.equal(lineas[1], "El dato de alquiler es de 2024.");
   assert.ok(lineas.includes("1 zona con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación."));
   assert.ok(lineas.includes("1 zona sin dato publicado de alquiler: en gris y sin cifra."));
-  assert.match(lineas.at(-1), /^fuente: /);
+  assert.ok(!lineas.some((l) => l.startsWith("fuente:")), "con datos de ejemplo no se atribuye ninguna fuente");
   const reales = avisos(real.alquiler);
+  assert.match(reales.at(-1), /^fuente: /);
   assert.ok(reales.includes("41 zonas sin dato publicado de alquiler: en gris y sin cifra."));
   assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
 });

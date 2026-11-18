@@ -179,6 +179,7 @@ async function main() {
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
   const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
+  $("pie").hidden = prueba !== null; // el pie atribuye los tiempos al CRTM: con datos de ejemplo no
   const lineasAviso = [...(prueba ? [prueba] : []), ...avisos(api.alquiler)];
   $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));

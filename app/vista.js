@@ -277,7 +277,8 @@ export function avisos(alquiler) {
   if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
   const sinDato = cuantas("sin_dato");
   if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
-  return [...lineas, `${fuentes(alquiler.meta)}.`];
+  // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.
+  return alquiler.meta.ejemplo === true ? lineas : [...lineas, `${fuentes(alquiler.meta)}.`];
 }
 
 // --- Validación del formulario -----------------------------------------------------------------
