@@ -233,8 +233,9 @@ def test_avisa_al_crear_un_worktree(tmp_path):
     assert esperada in aviso(
         "git worktree add ../x -b u/t origin/main", tmp_path / "repo"
     )
-    assert "path: /abs/x)" in aviso("git worktree add -q /abs/x", tmp_path)
-    assert "path: /abs/x)" in aviso(
+    abs_x = Path("/abs/x").resolve()  # en Windows añade la unidad: C:\abs\x
+    assert f"path: {abs_x})" in aviso("git worktree add -q /abs/x", tmp_path)
+    assert f"path: {abs_x})" in aviso(
         "cd r && git worktree add -b u/t /abs/x main && ls y", tmp_path
     )
     orden = 'gh pr create --title t --body "Tras git worktree add, entra"'

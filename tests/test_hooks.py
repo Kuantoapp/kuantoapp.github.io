@@ -8,6 +8,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).parents[1]
 HOOK_RAW = RAIZ / ".claude/hooks/raw_inmutable.py"
+HOOK_RAW_WINDOWS = RAIZ / ".claude/hooks/raw_inmutable_windows.py"
 CIFRAS = RAIZ / ".github/scripts/cifras_con_fuente.py"
 
 
@@ -161,8 +162,10 @@ def test_raw_en_worktree_usa_el_cwd_del_evento(principal_y_worktree, monkeypatch
         "tool_input": {"file_path": str(wt / "data/raw/ine.csv")},
         "cwd": str(wt / "src"),  # la sesión puede estar en un subdirectorio
     }
+    # En Windows el enlace es una unión de directorio, que solo crea la versión Windows del hook
+    hook = HOOK_RAW_WINDOWS if sys.platform == "win32" else HOOK_RAW
     r = subprocess.run(
-        [sys.executable, HOOK_RAW, "pre"],
+        [sys.executable, hook, "pre"],
         input=json.dumps(evento),
         capture_output=True,
         check=False,
