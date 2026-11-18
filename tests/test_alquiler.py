@@ -4,7 +4,7 @@ import openpyxl
 import pandas as pd
 import pytest
 
-from mesobra import alquiler
+from mesobra import alquiler, api_estatica, pipeline_euros, sdm
 
 VARIABLES = [*alquiler.TESTIGOS, *alquiler.EUR_M2, *alquiler.CUANTIA, *alquiler.M2]
 MEDIDAS = [f"{v}_{aa}" for aa in (23, 24) for v in VARIABLES]
@@ -170,3 +170,79 @@ def test_cache(xlsx, tmp_path):
     xlsx.unlink()
     segunda = alquiler.leer_serpavi(xlsx, carpeta)
     pd.testing.assert_frame_equal(primera["secciones"], segunda["secciones"])
+
+
+def _zona(anio=2024, factor=1.0):
+    return pd.DataFrame(
+        {
+            "zona_id": ["28001"], "anio": [anio], "eur_m2_p25": [10.0], "eur_m2_p50": [12.0],
+            "eur_m2_p75": [14.0], "m2_p50": [70.0], "cuantia_p25": [700.0], "cuantia_p50": [800.0],
+            "cuantia_p75": [900.0], "testigos": [20], "origen": ["observado"],
+            "ic_inf": [float("nan")], "ic_sup": [float("nan")], "factor_ipc": [factor],
+        }
+    )  # fmt: skip
+
+
+def _ipc():
+    meses = [f"{a}M{m:02d}" for a in (2023, 2024) for m in range(1, 13)] + ["2025M01"]
+    return pd.Series([95.0] * 12 + [100.0] * 12 + [105.0], index=meses)
+
+
+def test_actualizar_ipc():
+    zona = pd.concat([_zona(), _zona(2023).assign(zona_id="28002")], ignore_index=True)
+    z = alquiler.actualizar_ipc(zona, _ipc())
+    # factor por zona con su año (Titulcia lleva 2023, nota del 15-11 de #94), no uno único
+    assert z["factor_ipc"].tolist() == pytest.approx([1.05, 105 / 95])
+    assert z.attrs["ipc_hasta"] == "2025-01"
+    assert z["eur_m2_p50"].iloc[0] == 12.0
+    with pytest.raises(ValueError, match="2025"):
+        alquiler.actualizar_ipc(_zona(2025), _ipc())
+
+
+def _csv_ipc(tmp_path, cm_valores):
+    filas = ["Comunidades;Subgrupos;Tipo;Periodo;Total"]
+    for ccaa, base in (("13 Madrid, Comunidad de", "100"), ("Nacional", "50")):
+        for m in range(1, 13):
+            filas.append(
+                f"{ccaa};04.1 Alquiler de vivienda;Índice;2024M{m:02d};{base},5"
+            )
+    ine = tmp_path / "ine.csv"
+    ine.write_text("\n".join(filas), encoding="utf-8-sig")
+    cm = tmp_path / "cm.csv"
+    cm.write_text(
+        "Año;Concepto;Valor\n" + "\n".join(f"2024;x;{v}" for v in cm_valores),
+        encoding="utf-8-sig",
+    )
+    return ine, cm
+
+
+@pytest.mark.parametrize("orden", [(100.5, 50.5), (50.5, 100.5)])
+def test_leer_ipc(tmp_path, orden):
+    ipc = alquiler.leer_ipc(*_csv_ipc(tmp_path, orden))
+    assert len(ipc) == 12 and (ipc == 100.5).all()
+    assert ipc.index[-1] == "2024M12"
+
+
+def test_leer_ipc_catalogo_no_casa(tmp_path):
+    with pytest.raises(ValueError, match="2024"):
+        alquiler.leer_ipc(*_csv_ipc(tmp_path, (90.0, 91.0)))
+
+
+def test_leer_ipc_mes_vacio(tmp_path):
+    ine, cm = _csv_ipc(tmp_path, (100.5, 50.5))
+    texto = ine.read_text(encoding="utf-8-sig").replace("2024M12;100,5", "2024M12;")
+    ine.write_text(texto, encoding="utf-8-sig")
+    with pytest.raises(ValueError, match="huecos"):
+        alquiler.leer_ipc(ine, cm)
+
+
+def test_alquiler_json_con_ipc():
+    obj = pipeline_euros.alquiler_json(alquiler.actualizar_ipc(_zona(), _ipc()))
+    api_estatica.validar("alquiler.json", obj)
+    assert obj["meta"]["ipc_hasta"] == "2025-01"
+    assert sdm._citas_que_faltan(obj["meta"]) == []
+
+
+def test_alquiler_json_sin_mes_falla():
+    with pytest.raises(ValueError, match="ipc_hasta"):
+        pipeline_euros.alquiler_json(_zona(factor=1.05))

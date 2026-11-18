@@ -40,6 +40,7 @@ _TIPOS = {
     "decimal": lambda v: type(v) in (int, float) and math.isfinite(v),
     "booleano": lambda v: type(v) is bool,
     "fecha": _es_fecha,
+    "mes": _regex(r"\d{4}-(0[1-9]|1[0-2])"),
     "url": _regex(r"https?://\S+"),
     "zona": _regex(ZONA),
     "municipio": _regex(MUN),
@@ -131,7 +132,13 @@ def _mapa(ruta, obj, claves, validar_valor):
 ENT, POS = ("entero", 0, None), ("decimal", 0, None)
 POS_N, PCT = ("decimal?", 0, None), ("decimal?", 0, 100)
 ANIO = ("entero", 2000, 2100)
-META = {"generado": "fecha", "anio_dato": ANIO, "fuentes": None, "nota": "texto"}
+META = {
+    "generado": "fecha",
+    "anio_dato": ANIO,
+    "fuentes": None,
+    "nota": "texto",
+    "ipc_hasta": "mes",
+}
 FUENTE = {"nombre": "texto", "url": "url", "licencia": "texto"}
 
 
@@ -141,7 +148,7 @@ def _raiz(o, campos, opcionales=()):
         return p
     meta = o["meta"]
     fuentes = meta.get("fuentes") if isinstance(meta, dict) else None
-    p += _registro("meta", meta, META, ("nota",))
+    p += _registro("meta", meta, META, ("nota", "ipc_hasta"))
     return p + _tabla("meta.fuentes", fuentes, FUENTE, ("nombre",))
 
 

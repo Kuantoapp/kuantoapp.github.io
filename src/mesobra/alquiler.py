@@ -14,6 +14,13 @@ from mesobra import contratos
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw/serpavi_bd_2011_2024_2026-11-15.xlsx"
 PROCESSED = RAIZ / "data/processed"
+RAW_IPC = RAIZ / "data/raw/ine_ipc_ccaa_subgrupos_2026-11-15.csv"
+RAW_IPC_CM = RAIZ / "data/raw/cm_ipc_alquiler_base2025_2026-11-15.csv"
+SERIE_IPC = (
+    "13 Madrid, Comunidad de",
+    "04.1 Alquiler de vivienda",
+    "Índice",
+)  # IPC297196
 
 # clave -> (hoja, columna de código, ancho del código INE)
 HOJAS = {
@@ -138,6 +145,42 @@ def alquiler_zona(hojas: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return _tipado(zonas, "alquiler_zona")
 
 
+def leer_ipc(ruta: Path = RAW_IPC, ruta_cm: Path = RAW_IPC_CM) -> pd.Series:
+    """Índice mensual del IPC de alquiler de Madrid (INE, IPC297196) por periodo `AAAAMmm`, contrastado con el catálogo regional."""
+    df = pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
+    df = df[(df.iloc[:, :3] == list(SERIE_IPC)).all(axis=1)]
+    ipc = pd.Series(_numero(df["Total"]).to_numpy(), index=df["Periodo"]).sort_index()
+    if ipc.empty or ipc.isna().any() or ipc.index.has_duplicates:
+        raise ValueError(
+            f"La serie {SERIE_IPC} está vacía, tiene huecos o repite periodos"
+        )
+    cm = pd.read_csv(ruta_cm, sep=";", encoding="utf-8-sig", dtype={"Año": str})
+    medias = ipc.groupby(ipc.index.str[:4]).mean()
+    # las dos filas de cada año (Madrid y Nacional) vienen en orden variable: basta con que una case
+    casa = (
+        (cm["Valor"] - cm["Año"].map(medias)).abs().le(0.0015).groupby(cm["Año"]).any()
+    )
+    if not casa.all():
+        raise ValueError(
+            f"El catálogo de la CM no casa con el INE en {list(casa.index[~casa])}"
+        )
+    return ipc
+
+
+def actualizar_ipc(zona: pd.DataFrame, ipc: pd.Series) -> pd.DataFrame:
+    """`factor_ipc` = índice del último mes ÷ media anual del año de cada fila (ficha §6.2, #94); p25/p50/p75 no cambian."""
+    anios = ipc.index.str[:4].astype(int)
+    medias = ipc.groupby(anios).agg(["mean", "size"])
+    medias = medias.loc[medias["size"] == 12, "mean"]
+    if falta := sorted(set(zona["anio"]) - set(medias.index)):
+        raise ValueError(f"Sin media anual del IPC (12 meses) para {falta}")
+    df = zona.copy()
+    df["factor_ipc"] = ipc.iloc[-1] / df["anio"].map(medias)
+    df.attrs["ipc_hasta"] = f"{ipc.index[-1][:4]}-{ipc.index[-1][5:]}"
+    contratos.validar(df, "alquiler_zona")
+    return df
+
+
 def alquiler_seccion(hojas: dict[str, pd.DataFrame]) -> pd.DataFrame:
     """Secciones censales (Censo 2021) de la Comunidad de Madrid, por año."""
     secciones = _largo(hojas["secciones"], "CUSEC", {**TESTIGOS, **EUR_M2, **CUANTIA})
@@ -148,7 +191,8 @@ def alquiler_seccion(hojas: dict[str, pd.DataFrame]) -> pd.DataFrame:
 
 def main() -> None:
     hojas = leer_serpavi()
-    zona, seccion = alquiler_zona(hojas), alquiler_seccion(hojas)
+    zona = actualizar_ipc(alquiler_zona(hojas), leer_ipc())
+    seccion = alquiler_seccion(hojas)
     por_anio = zona.groupby("anio").size()
     if (por_anio != 200).any():
         raise ValueError(f"No hay 200 zonas por año:\n{por_anio}")
