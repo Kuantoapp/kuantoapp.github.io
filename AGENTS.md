@@ -123,6 +123,7 @@ Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el tr
 - Versionar datos (`csv`, `parquet`, `geojson` grandes…), modelos entrenados o ficheros de más de 5 MB. Van en `data/` (ignorado) y su origen se documenta en `data/README.md`.
 - Secretos, `.env`, tokens o claves. Usa `.env.example` con los nombres de las variables.
 - `git push --force` sobre `main`, o saltarse la CI o el check `revision`.
+- Claude como coautor en los commits (`Co-Authored-By: Claude …`): un hook bloquea el commit que lo lleva.
 - Reescribir código que no toca la issue "ya que estaba".
 
 ## Subagentes y skills

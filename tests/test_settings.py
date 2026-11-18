@@ -14,6 +14,7 @@ ESPERADO = {
     # Herramienta PowerShell de Claude Code en Windows (Bash no la cubre)
     ('raw_inmutable.py" pre', "PreToolUse", "PowerShell"),
     ('raw_inmutable.py" post', "PostToolUse", "PowerShell"),
+    ('sin_coautor_claude.py"', "PreToolUse", "Bash|PowerShell"),
     ('raw_inmutable.py" enlazar', "SessionStart", None),
     ('entorno.py"', "SessionStart", None),
     ('sincronizar.py"', "PostToolUse", "Bash"),

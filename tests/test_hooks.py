@@ -276,3 +276,41 @@ def test_cifras_solo_en_lo_vigilado(tmp_path):
     otro.write_text("Un 22 %.\n")
     assert not cifras.vigilado(otro, tmp_path)
     assert cifras.vigilado(tmp_path / "app/textos/inicio.md", tmp_path)
+
+
+HOOK_COAUTOR = RAIZ / ".claude/hooks/sin_coautor_claude.py"
+TRAILER = "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
+
+
+def lanzar_coautor(orden: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, HOOK_COAUTOR],
+        input=json.dumps({"tool_input": {"command": orden}}),
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+
+def test_coautor_claude_en_un_commit_se_bloquea():
+    for orden in (
+        f'git commit -m "feat: x\n\n{TRAILER}"',
+        f"git -C ../wt commit -q -m @'\nx\n\n{TRAILER.lower()}\n'@",
+        "git commit -m 'x' -m 'Co-authored-by: Claude <noreply@anthropic.com>'",
+    ):
+        r = lanzar_coautor(orden)
+        assert r.returncode == 2 and "coautor" in r.stderr
+
+
+def test_coautor_claude_deja_pasar_lo_demas():
+    for orden in (
+        'git commit -m "feat: x"',
+        'git commit -m "x\n\nCo-Authored-By: Izan Diaz <izan@example.com>"',
+        f"echo '{TRAILER}'",  # no es un commit
+        "git status",
+    ):
+        assert lanzar_coautor(orden).returncode == 0
+    r = subprocess.run(
+        [sys.executable, HOOK_COAUTOR], input="no es json", check=False, text=True
+    )
+    assert r.returncode == 0
