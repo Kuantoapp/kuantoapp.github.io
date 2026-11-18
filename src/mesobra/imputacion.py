@@ -20,11 +20,14 @@ Reglas preregistradas: se fijan antes de ejecutar con los datos reales y no se c
   con Wy y las variables, y LightGBM con las mismas más la distancia media a esos vecinos. El Wy de cada fila de train
   sale con la misma exclusión, así que tiene la misma distribución que en test.
 - Elección: MAE en log sobre los pequeños. Se queda el más simple salvo que otro lo baje al menos un `MARGEN` en todas
-  las variantes de robustez (`K` en {5, 8}, `b` × {0,5; 1; 2} y dos semillas de LightGBM).
+  las variantes de robustez (`K` en {5, 8} y `b` × {0,5; 1; 2}).
 - Intervalo: conformal normalizado CV+ (Barber et al., 2021; garantía ≥ 1 − 2α), score |r| / σ̂, con σ̂ = desviación
-  típica de log p50 de los vecinos más la mediana de esa desviación en train. Calibración con los pequeños, nivel
-  `NIVEL`. La cobertura se mide fuera de muestra (cada pequeño, con el cuantil de los demás) y se informa con su IC de
-  Wilson; no se promete.
+  típica de log p50 de los vecinos más la mediana de esa desviación en train. El cuantil que se aplica a las objetivo
+  sale de los pequeños, con nivel `NIVEL`. La cobertura se mide como transferencia: cuantil de las zonas con dato
+  mayores que las objetivo, comprobado en los pequeños, con su IC de Wilson; no se promete.
+  Corrección posterior al preregistro (3d8aaf7): este punto medía la cobertura con LOO sobre los propios pequeños, y eso
+  da ⌈NIVEL·n⌉/n por construcción (salió 60/66 en todos los modelos y variantes). La regla de corte no cambia; quita
+  también la variante de semilla, que estaba vacía (el LOO no tiene azar).
 - Corte (plan B de la issue): si la cobertura sobre los pequeños queda más de `CORTE` por debajo de `NIVEL`, no se imputa.
 - Zona a zona: «estimado» si el ancho del intervalo no pasa de `UMBRAL_ANCHO` · p50 (supuesto de la issue) y la zona
   está en el área de aplicabilidad (distancia al dato no mayor que la máxima validada y, si el modelo usa variables,
@@ -82,6 +85,7 @@ VARIABLES = [
     "tp_polo",
     "sin_ruta_polo",
 ]
+COLS_MCO = ["wy", *VARIABLES]
 MODELOS = ("wy", "mco", "lgbm")  # de más simple a más complejo
 LGBM = {
     "n_estimators": 200,
@@ -162,6 +166,19 @@ def _locales(y_vec: np.ndarray, d_vec: np.ndarray) -> pd.DataFrame:
     )
 
 
+def _beta(train: pd.DataFrame) -> np.ndarray:
+    """Coeficientes del MCO (constante y `COLS_MCO`) de `y` en `train`."""
+    a = np.c_[np.ones(len(train)), train[COLS_MCO].to_numpy()]
+    return np.linalg.lstsq(a, train["y"].to_numpy(), rcond=None)[0]
+
+
+def coeficientes_mco(obs: dict, b: float) -> dict[str, float]:
+    """Coeficientes del MCO con todas las zonas con dato (Wy con la exclusión `b`), para contrastar los signos."""
+    train = _con_vecinos(obs["x"], obs["y"], obs["d"], vecinos(obs["d"], K, b))
+    train["y"] = obs["y"]
+    return dict(zip(["constante", *COLS_MCO], _beta(train).tolist(), strict=True))
+
+
 def _ajustar_predecir(
     modelo: str, train: pd.DataFrame, test: pd.DataFrame, semilla: int
 ) -> np.ndarray:
@@ -169,10 +186,8 @@ def _ajustar_predecir(
     if modelo == "wy":
         return test["wy"].to_numpy()
     if modelo == "mco":
-        cols = ["wy", *VARIABLES]
-        a = np.c_[np.ones(len(train)), train[cols].to_numpy()]
-        beta = np.linalg.lstsq(a, train["y"].to_numpy(), rcond=None)[0]
-        return np.c_[np.ones(len(test)), test[cols].to_numpy()] @ beta
+        beta = _beta(train)
+        return np.c_[np.ones(len(test)), test[COLS_MCO].to_numpy()] @ beta
     cols = ["wy", "dist", *VARIABLES]
     m = lightgbm.LGBMRegressor(**LGBM, random_state=semilla).fit(
         train[cols], train["y"]
@@ -230,11 +245,19 @@ def cuantil_conformal(scores: np.ndarray, nivel: float) -> float:
     return float(np.sort(scores)[r - 1]) if r <= len(scores) else float("inf")
 
 
-def cobertura(oof: pd.DataFrame, nivel: float) -> dict:
-    """Cobertura LOO: cada pequeño con el cuantil de los demás scores; IC de Wilson al 95 %."""
-    s = (np.abs(oof["y"] - oof["pred"]) / oof["sigma"]).to_numpy()
-    cubre = [s[j] <= cuantil_conformal(np.delete(s, j), nivel) for j in range(len(s))]
-    n, p, z = len(s), float(np.mean(cubre)), 1.96
+def scores(oof: pd.DataFrame) -> np.ndarray:
+    """Score conformal normalizado |y − ŷ| / σ̂."""
+    return (np.abs(oof["y"] - oof["pred"]) / oof["sigma"]).to_numpy()
+
+
+def cobertura(evaluadas: pd.DataFrame, calibracion: np.ndarray, nivel: float) -> dict:
+    """Cobertura de `evaluadas` con el cuantil de los scores de `calibracion` (otras zonas); IC de Wilson al 95 %.
+
+    Calibrar y evaluar con LOO sobre el mismo conjunto da siempre ⌈nivel·n⌉/n por construcción (rango de cada
+    score entre los demás), sea cual sea el modelo: por eso se calibra con otras zonas y se mide la transferencia.
+    """
+    cubre = scores(evaluadas) <= cuantil_conformal(calibracion, nivel)
+    n, p, z = len(cubre), float(np.mean(cubre)), 1.96
     centro, radio = (
         (p + z * z / (2 * n)) / (1 + z * z / n),
         z * sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n),
@@ -265,30 +288,37 @@ def _mae(oof: pd.DataFrame) -> float:
     return float(np.mean(np.abs(oof["y"] - oof["pred"])))
 
 
-def evaluar(obs: dict, pequenos: np.ndarray, b: float) -> dict:
-    """MAE en log de cada modelo y variante de robustez, y las predicciones LOO de la variante principal."""
+def evaluar(obs: dict, pequeno: np.ndarray, b: float) -> dict:
+    """Por modelo y variante de robustez: MAE en log de los pequeños (máscara `pequeno`) y su cobertura calibrada
+    con los demás; y las predicciones LOO de todas las zonas en la variante principal.
+
+    Sin variante de semilla: el LOO no tiene azar y LightGBM sin submuestreo es determinista.
+    """
     filas, principal = [], {}
     for k in (K, 8):
         for f in (0.5, 1.0, 2.0):
-            for s in (SEMILLA, SEMILLA + 1):
-                conf = {"k": k, "b": b * f, "semilla": s}
-                oofs = {
-                    m: validar_loo(obs, pequenos, conf | {"modelo": m}) for m in MODELOS
-                }
-                filas.append(conf | {m: _mae(o) for m, o in oofs.items()})
-                if (k, f, s) == (K, 1.0, SEMILLA):
-                    principal = oofs
+            conf = {"k": k, "b": b * f, "semilla": SEMILLA}
+            todas = np.arange(len(obs["y"]))
+            oofs = {m: validar_loo(obs, todas, conf | {"modelo": m}) for m in MODELOS}
+            fila = conf.copy()
+            for m, o in oofs.items():
+                fila[m] = _mae(o[pequeno])
+                cal = scores(o[~pequeno])
+                fila[f"cob_{m}"] = cobertura(o[pequeno], cal, NIVEL)["real"]
+            filas.append(fila)
+            if (k, f) == (K, 1.0):
+                principal = oofs
     return {"mae": pd.DataFrame(filas), "oof": principal}
 
 
-def _por_tramo(oof: pd.DataFrame, pob: pd.Series, nivel: float) -> dict:
+def _por_tramo(oof: pd.DataFrame, pob: np.ndarray, cal: np.ndarray) -> dict:
     """MAE, media del residuo y cobertura por tramo de población (las objetivo son mucho más pequeñas)."""
-    tramo = np.where(pob.to_numpy()[oof["i"]] < 1000, "<1000", ">=1000")
+    tramo = np.where(pob < 1000, "<1000", ">=1000")
     return {
         t: {
             "mae": _mae(g),
             "media_residuo": float((g["y"] - g["pred"]).mean()),
-            "cobertura": cobertura(g, nivel),
+            "cobertura": cobertura(g, cal, NIVEL),
         }
         for t, g in oof.groupby(tramo)
     }
@@ -334,31 +364,33 @@ def _validacion(obs: dict, pob: pd.Series, pob_max: float, d_obj: np.ndarray) ->
     if ks > KS_MAX:
         motivo = f"KS {ks:.3f} > {KS_MAX}: la validación no imita la tarea"
         return inf | {"imputar": False, "motivo": motivo}
-    pob_obs = pob.loc[obs["ids"]]
-    pequenos = np.flatnonzero(pob_obs.to_numpy() <= pob_max)
-    if len(pequenos) < MIN_PEQUENOS:
-        motivo = f"solo {len(pequenos)} zonas con dato tan pequeñas como las objetivo"
+    pob_obs = pob.loc[obs["ids"]].to_numpy()
+    pequeno = pob_obs <= pob_max
+    if min(pequeno.sum(), (~pequeno).sum()) < MIN_PEQUENOS:
+        motivo = f"solo {pequeno.sum()} zonas con dato tan pequeñas como las objetivo y {(~pequeno).sum()} mayores"
         return inf | {"imputar": False, "motivo": motivo}
-    ev = evaluar(obs, pequenos, b)
+    ev = evaluar(obs, pequeno, b)
     modelo = elegir(ev["mae"])
-    oof = ev["oof"][modelo]
-    aleatorio = validar_loo(
-        obs, pequenos, {"k": K, "b": 0.0, "semilla": SEMILLA, "modelo": modelo}
-    )
-    cob = cobertura(oof, NIVEL)
+    oof = ev["oof"][modelo][pequeno]
+    cal = scores(ev["oof"][modelo][~pequeno])
+    conf = {"k": K, "b": 0.0, "semilla": SEMILLA, "modelo": modelo}
+    aleatorio = validar_loo(obs, np.flatnonzero(pequeno), conf)
+    cob = cobertura(oof, cal, NIVEL)
     residuo = (oof["y"] - oof["pred"]).to_numpy()
     inf |= {
-        "n_pequenos": len(pequenos),
+        "n_pequenos": int(pequeno.sum()),
+        "n_calibracion_cobertura": len(cal),
         "pob_max_objetivo": pob_max,
         "modelo": modelo,
         "mae_variantes": ev["mae"].to_dict("records"),
         "mae_aleatorio": _mae(aleatorio),
         "mae_bloques": _mae(oof),
         "cobertura": cob,
-        "por_tramo": _por_tramo(oof, pob_obs, NIVEL),
+        "por_tramo": _por_tramo(oof, pob_obs[oof["i"]], cal),
         "moran_residuos_k5": bono.moran(residuo, obs["xy"][oof["i"]], K),
+        "coeficientes_mco": coeficientes_mco(obs, b),
         "dist_max_validada_m": float(oof["dist_dato"].max()),
-        "scores": (np.abs(residuo) / oof["sigma"]).tolist(),
+        "scores": scores(oof).tolist(),
     }
     if cob["real"] < NIVEL - CORTE:
         motivo = f"cobertura {cob['real']:.3f} < {NIVEL - CORTE:.2f}"

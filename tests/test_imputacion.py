@@ -88,14 +88,24 @@ def test_cuantil_conformal():
     assert cuantil_conformal(s[:5], 0.9) == float("inf")
 
 
-def test_cobertura_cerca_de_la_nominal_con_datos_iid():
-    n = 400
+def _oof(n, escala=1.0):
     sigma = RNG.uniform(0.5, 2, n)
-    oof = pd.DataFrame({"y": RNG.normal(0, sigma), "pred": 0.0, "sigma": sigma})
-    c = cobertura(oof, 0.9)
-    assert c["n"] == n
+    return pd.DataFrame(
+        {"y": RNG.normal(0, sigma * escala), "pred": 0.0, "sigma": sigma}
+    )
+
+
+def test_cobertura_cerca_de_la_nominal_si_calibracion_y_evaluadas_se_parecen():
+    c = cobertura(_oof(400), imputacion.scores(_oof(400)), 0.9)
+    assert c["n"] == 400
     assert 0.86 <= c["real"] <= 0.94
     assert c["wilson95"][0] < c["real"] < c["wilson95"][1]
+
+
+def test_cobertura_detecta_que_no_se_transfiere():
+    # con el LOO sobre el mismo conjunto saldría ⌈0,9·n⌉/n siempre; calibrando con otras zonas, no
+    c = cobertura(_oof(400, escala=3.0), imputacion.scores(_oof(400)), 0.9)
+    assert c["real"] < 0.6
 
 
 def test_elegir_exige_el_margen_en_todas_las_variantes():
@@ -113,14 +123,20 @@ def test_aplicable_nulo_y_distancia():
     assert list(imputacion._aplicable(pred, train, "wy", 500)) == [True, False]
 
 
-def _escenario(n_obs=40, n_obj=12, lejos=0.0):
+def _escenario(n_obs=50, n_obj=12, lejos=0.0):
     """Zonas sintéticas: n_obs con dato y una tendencia suave, n_obj sin dato en ningún año, entre ellas o `lejos` (m)."""
     xy = np.r_[
         RNG.uniform(0, 30_000, (n_obs, 2)),
         RNG.uniform(5_000, 25_000, (n_obj, 2)) + lejos,
     ]
     ids = [CENTRO] + [f"28{i:03d}" for i in range(1, n_obs + n_obj)]
-    pob = np.r_[RNG.integers(300, 9_000, n_obs), RNG.integers(100, 8_000, n_obj)]
+    mitad = (
+        n_obs // 2
+    )  # pequeños (≤ 5.000, como las objetivo) y mayores, para calibrar la cobertura
+    pob = np.r_[
+        RNG.integers(300, 5_000, mitad), RNG.integers(6_000, 30_000, n_obs - mitad)
+    ]
+    pob = np.r_[pob, RNG.integers(100, 4_000, n_obj - 1), 5_000]
     zonas = gpd.GeoDataFrame(
         {"zona_id": ids, "poblacion": pob},
         geometry=[Point(x, y) for x, y in xy],
