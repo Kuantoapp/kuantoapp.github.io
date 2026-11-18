@@ -112,7 +112,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
-    `Neto y tarifas (estimado): ${netos.meta.nota ?? "estimados con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
+    `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
     `Licencias: ${licencias(...metas)}.`,
   ];
   detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
