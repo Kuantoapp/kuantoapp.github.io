@@ -25,6 +25,7 @@ def _zona(filas):
     df["origen"] = df["eur_m2_p50"].notna().map({True: "observado", False: "sin_dato"})
     df["ic_inf"] = df["ic_sup"] = float("nan")
     df["factor_ipc"] = 1.0
+    df.attrs["ipc_hasta"] = "2026-10"
     return df
 
 

@@ -144,34 +144,18 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "ic": None,  # alquiler_zona no produce estimados; si llegan, el validador falla
         }
     anio = int(zona["anio"].max())
-    mes = zona.attrs.get("ipc_hasta")
-    if mes is None and (zona["factor_ipc"] != 1).any():
+    if (mes := zona.attrs.get("ipc_hasta")) is None:
         raise ValueError(
-            "factor_ipc distinto de 1 sin attrs['ipc_hasta']: falta el mes del IPC"
+            "Falta attrs['ipc_hasta']: pasa la zona por alquiler.actualizar_ipc"
         )
-    base = (
+    nota = (
         "€/m² al mes de vivienda colectiva (sin unifamiliar), de contratos declarados a la Agencia "
         "Tributaria (Modelo 100 cruzado con el Catastro), no de anuncios: es un suelo del precio actual. "
-        "Cada zona lleva el último año con dato y p25, p50 y p75 en euros de ese año"
-    )
-    cola = (
-        f"las zonas cuyo último dato es anterior a {anio} llevan su año en anio. "
-        "Las zonas sin dato publicado van como sin_dato. "
-    )
-    if mes is None:
-        nota = (
-            base
-            + ", sin actualizar con el IPC (factor_ipc 1,0) hasta que se aplique el IPC de alquiler; "
-            + cola
-            + ORIGEN_SERPAVI
-        )
-        return {"meta": _meta(anio, [SERPAVI], nota), "zonas": zonas}
-    nota = (
-        base
-        + f"; factor_ipc los actualiza a {mes} con el IPC de alquiler de la Comunidad de Madrid "
-        f"(INE, serie IPC297196, índice de {mes} entre la media del año de la zona), una estimación; "
-        + cola
-        + "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 76137 "
+        "Cada zona lleva el último año con dato y p25, p50 y p75 en euros de ese año; factor_ipc los "
+        f"actualiza a {mes} con el IPC de alquiler de la Comunidad de Madrid (INE, serie IPC297196, "
+        f"índice de {mes} entre la media del año de la zona), una estimación; las zonas cuyo último "
+        f"dato es anterior a {anio} llevan su año en anio. Las zonas sin dato publicado van como "
+        "sin_dato. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 76137 "
         "actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
         "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
         "usado como control). " + ORIGEN_SERPAVI

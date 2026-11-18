@@ -150,8 +150,10 @@ def leer_ipc(ruta: Path = RAW_IPC, ruta_cm: Path = RAW_IPC_CM) -> pd.Series:
     df = pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
     df = df[(df.iloc[:, :3] == SERIE_IPC).all(axis=1)]
     ipc = pd.Series(_numero(df["Total"]).to_numpy(), index=df["Periodo"]).sort_index()
-    if ipc.empty or ipc.index.has_duplicates:
-        raise ValueError(f"La serie {SERIE_IPC} está vacía o repite periodos")
+    if ipc.empty or ipc.isna().any() or ipc.index.has_duplicates:
+        raise ValueError(
+            f"La serie {SERIE_IPC} está vacía, tiene huecos o repite periodos"
+        )
     cm = pd.read_csv(ruta_cm, sep=";", encoding="utf-8-sig", dtype={"Año": str})
     medias = ipc.groupby(ipc.index.str[:4]).mean()
     # las dos filas de cada año (Madrid y Nacional) vienen en orden variable: basta con que una case

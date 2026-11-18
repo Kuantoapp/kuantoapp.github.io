@@ -184,13 +184,15 @@ def _zona(anio=2024, factor=1.0):
 
 
 def _ipc():
-    meses = [f"2024M{m:02d}" for m in range(1, 13)] + ["2025M01"]
-    return pd.Series([100.0] * 12 + [105.0], index=meses)
+    meses = [f"{a}M{m:02d}" for a in (2023, 2024) for m in range(1, 13)] + ["2025M01"]
+    return pd.Series([95.0] * 12 + [100.0] * 12 + [105.0], index=meses)
 
 
 def test_actualizar_ipc():
-    z = alquiler.actualizar_ipc(_zona(), _ipc())
-    assert z["factor_ipc"].iloc[0] == pytest.approx(1.05)
+    zona = pd.concat([_zona(), _zona(2023).assign(zona_id="28002")], ignore_index=True)
+    z = alquiler.actualizar_ipc(zona, _ipc())
+    # factor por zona con su año (Titulcia lleva 2023, nota del 15-11 de #94), no uno único
+    assert z["factor_ipc"].tolist() == pytest.approx([1.05, 105 / 95])
     assert z.attrs["ipc_hasta"] == "2025-01"
     assert z["eur_m2_p50"].iloc[0] == 12.0
     with pytest.raises(ValueError, match="2025"):
@@ -233,6 +235,6 @@ def test_alquiler_json_con_ipc():
     assert sdm._citas_que_faltan(obj["meta"]) == []
 
 
-def test_alquiler_json_factor_sin_mes():
+def test_alquiler_json_sin_mes_falla():
     with pytest.raises(ValueError, match="ipc_hasta"):
         pipeline_euros.alquiler_json(_zona(factor=1.05))
