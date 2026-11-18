@@ -257,13 +257,14 @@ export function mejores(resultado, metrica, nombres) {
     .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}` }));
 }
 
-/** Avisos del dato de alquiler: es un suelo, año, zonas estimadas y zonas sin dato. La última línea es la fuente. */
+/** Aviso de que los ficheros cargados son de ejemplo (`null` si son datos reales). */
 // shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
 export function avisoPrueba(metas) {
   const prueba = metas.find((m) => /^Ejemplo/.test(m?.nota ?? ""));
   return prueba ? `Datos de prueba, no son datos reales: ${prueba.nota}` : null;
 }
 
+/** Avisos del dato de alquiler: es un suelo, año, zonas estimadas y zonas sin dato. La última línea es la fuente. */
 export function avisos(alquiler) {
   const zonas = Object.values(alquiler.zonas);
   const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;
