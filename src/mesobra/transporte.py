@@ -40,8 +40,9 @@ from decimal import Decimal as D
 from itertools import product
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
-from shapely import LineString
+import shapely
 
 from mesobra import contratos
 from mesobra.api_estatica import CORONAS as ORDEN_CORONAS
@@ -245,7 +246,9 @@ def _por_viaje(
         if p == "cercanias" and escenario in ABONO_RENFE:
             opciones["Abono Renfe"] = ABONO_RENFE[escenario] * ABONOS_ANIO / 12
         if not opciones:
-            return "", D("Infinity")
+            if p != "cercanias":
+                raise ValueError(f"producto sin precio por viaje: {p!r} en {clave!r}")
+            return "", D("Infinity")  # Cercanías sin descuento: solo con abono del CRTM
         titulo = min(opciones, key=opciones.get)
         titulos.add(titulo)
         total += opciones[titulo]
@@ -299,14 +302,12 @@ def rango_coronas(zonas: gpd.GeoDataFrame, coronas: gpd.GeoDataFrame) -> pd.Data
     pares = pd.DataFrame(
         product(range(len(zonas)), repeat=2), columns=["o", "d"]
     ).query("o != d")
-    rectas = gpd.GeoDataFrame(
-        pares,
-        geometry=[
-            LineString([xy.iloc[o], xy.iloc[d]]) for o, d in zip(pares.o, pares.d)
-        ],
-        crs=25830,
-    )
+    x, y = xy.x.to_numpy(), xy.y.to_numpy()
+    o, d = pares["o"].to_numpy(), pares["d"].to_numpy()
+    puntas = np.stack([x[o], y[o], x[d], y[d]], axis=1).reshape(-1, 2, 2)
+    rectas = gpd.GeoDataFrame(pares, geometry=shapely.linestrings(puntas), crs=25830)
     cm = coronas[coronas["corona"].isin(ORDEN_CORONAS)]
+    # shortcut: un roce cuenta como cruce (14 pares no dirigidos cambian con 100 m mínimos dentro); vale hasta #161
     cruces = gpd.sjoin(rectas, cm[["corona", "geometry"]], predicate="intersects")
     propias = pd.concat(
         [

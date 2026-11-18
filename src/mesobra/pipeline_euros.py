@@ -245,7 +245,9 @@ def _matriz_claves(
     if claves.duplicated(["zona_id", "destino_id"]).any():
         raise ValueError("pares origen-destino repetidos en las claves de tarifa")
     m = claves.pivot(index="zona_id", columns="destino_id", values="clave_tarifa")
-    m = m.reindex(index=ids, columns=ids)
+    if set(m.index) != set(ids) or set(m.columns) != set(ids):
+        raise ValueError("las claves de tarifa no tienen los mismos ids que las zonas")
+    m = m.loc[ids, ids]
     pos = {c: i for i, c in enumerate(lista)}
     return [[None if pd.isna(c) else pos[c] for c in fila] for fila in m.to_numpy()]
 
@@ -255,7 +257,7 @@ def tarifas_json(
 ) -> dict:
     """`tarifas.json`: la forma v1 de #80 (`escenarios`) y la v2 por ruta (`clave_tarifa`, `tarifas_ruta`).
 
-    `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `estimado`; `ids`, en el orden de `tiempos.json`.
+    `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `clave_estimada`; `ids`, en el orden de `tiempos.json`.
     """
     escenarios = {}
     for (esc, joven, viajes, corona), g in v1.groupby(
@@ -289,8 +291,10 @@ def tarifas_json(
         "producto principal de la ruta. "
         + (
             "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
-            "una validación (heurística de #161 hasta tener la ruta de r5py). "
-            if claves["estimado"].any()
+            "una validación (heurística de #161 hasta tener la ruta de r5py). Subestima el coste entre "
+            "periferias: la recta deja sin zona A el 79 % de esos pares, aunque en la red radial suelen pasar "
+            "por Madrid, y les aplica el abono interzonal. "
+            if claves["clave_estimada"].any()
             else ""
         )
         + "escenarios (forma v1 de #80, hasta #164): viajes_dia 2, ida y vuelta pasando por la zona A; "
@@ -304,7 +308,7 @@ def tarifas_json(
         "viajes_dia": list(api_estatica.VIAJES_DIA),
         "semanas_mes": float(transporte.SEMANAS_MES),
         "escenarios": escenarios,
-        "clave_estimada": bool(claves["estimado"].any()),
+        "clave_estimada": bool(claves["clave_estimada"].any()),
         "origenes": ids,
         "destinos": ids,
         "claves": lista,
@@ -320,11 +324,13 @@ def rutas() -> tuple[pd.DataFrame, list[str]]:
     z = gpd.read_parquet(PROCESSED / "zonas.parquet").sort_values("zona_id")
     tiempos = PROCESSED / "tiempos.parquet"
     tp = pd.read_parquet(tiempos).query("modo == 'tp'") if tiempos.exists() else None
-    if tp is None or "corona_min" not in tp:
+    # la columna `estimado` de tiempos es otra cosa (línea base o líneas reconstruidas, #173)
+    estimada = tp is None or "corona_min" not in tp
+    if estimada:
         tp = transporte.rango_coronas(z, zonas.leer_coronas())
-        tp["estimado"] = True
     tp = tp.reset_index(drop=True)
     tp["clave_tarifa"] = transporte.claves(tp)
+    tp["clave_estimada"] = estimada
     return tp, z["zona_id"].tolist()
 
 

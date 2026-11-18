@@ -99,6 +99,16 @@ def test_umbral_del_abono_en_zona_a_con_8_viajes_de_ocio():
     assert coste("A-A|metro_a", 5, 0) == ("10 viajes", D("27.62"))
 
 
+def test_ocio_en_el_producto_principal():
+    # 8 viajes de ocio al interurbano A-C2: (7,57 + 8) × 2,24 + 7,57 × 0,73 = 40,39 (al Metro saldría 28,31)
+    assert coste("A-C2|interurbano+metro_a", 1, 8) == ("10 viajes", D("40.39"))
+
+
+def test_producto_sin_precio_falla():
+    with pytest.raises(ValueError, match="sin precio"):
+        coste("A-B1|avion", 1)
+
+
 def test_mezcla_de_titulos_por_tramo():
     # sin descuento, por viaje: interurbano A-C2 sencillo 3,00 < 3,85 del 10 viajes; Metro 1,25 < 1,50
     clave = "A-C2|interurbano+metro_a"
@@ -171,10 +181,14 @@ def test_tabla_v1_conserva_la_forma_de_80():
 
 
 def _coronas_concentricas():
-    # anillos cuadrados centrados en 0: A hasta 1 km, B1 hasta 2, ..., C2 hasta 6 (EPSG:25830)
+    # anillos cuadrados centrados en 0: A hasta 1 km, B1 hasta 2, ..., C2 hasta 6 (EPSG:25830), y una
+    # muesca de E1 que corta la franja de C2 por arriba, como un entrante de la Comunidad
     bordes = [box(-k * 1000, -k * 1000, k * 1000, k * 1000) for k in range(1, 7)]
     anillos = [bordes[0]] + [b.difference(a) for a, b in pairwise(bordes)]
-    return gpd.GeoDataFrame({"corona": t.ORDEN_CORONAS}, geometry=anillos, crs=25830)
+    muesca = box(-1000, 5000, 1000, 6000)
+    anillos[-1] = anillos[-1].difference(muesca)
+    nombres = [*t.ORDEN_CORONAS, "E1"]
+    return gpd.GeoDataFrame({"corona": nombres}, geometry=[*anillos, muesca], crs=25830)
 
 
 def test_rango_coronas_por_la_recta_entre_centros():
@@ -182,12 +196,14 @@ def test_rango_coronas_por_la_recta_entre_centros():
         "o_b2": (2500, 0),
         "d_c1": (4500, 500),  # B2 → C1 por fuera de A
         "op_b2": (-2500, 0),  # B2 al otro lado: la recta cruza A
+        "c2_n": (-5500, 5500),  # C2 → C2 por la esquina de E1: E1 no cuenta
+        "c2_e": (5500, 5500),
     }
     xy = gpd.GeoSeries([Point(p) for p in puntos.values()], crs=25830).to_crs(4326)
     zonas = gpd.GeoDataFrame(
         {
             "zona_id": list(puntos),
-            "corona": ["B2", "C1", "B2"],
+            "corona": ["B2", "C1", "B2", "C2", "C2"],
             "lon_centro": xy.x,
             "lat_centro": xy.y,
         }
@@ -198,4 +214,5 @@ def test_rango_coronas_por_la_recta_entre_centros():
     assert tuple(r.loc[("o_b2", "d_c1")]) == ("B2", "C1")
     assert tuple(r.loc[("o_b2", "op_b2")]) == ("A", "B2")
     assert tuple(r.loc[("d_c1", "d_c1")]) == ("C1", "C1")
-    assert len(r) == 9
+    assert tuple(r.loc[("c2_n", "c2_e")]) == ("C2", "C2")
+    assert len(r) == 25

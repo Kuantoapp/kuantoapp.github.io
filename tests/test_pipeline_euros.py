@@ -2,10 +2,12 @@
 
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 import pytest
+from shapely import Point
 
-from mesobra import neto, transporte
+from mesobra import neto, pipeline_euros, transporte
 from mesobra.api_estatica import validar
 from mesobra.pipeline_euros import (
     alquiler_json,
@@ -97,7 +99,7 @@ def _tarifas():
                 "B1-B2|interurbano",
                 None,
             ],
-            "estimado": True,
+            "clave_estimada": True,
         }
     )
     lista = ["B1-B1|interurbano", "B1-B2|interurbano"]
@@ -111,6 +113,34 @@ def test_tarifas_trae_los_dos_viajes_al_dia():
     a = _tarifas()["escenarios"]["vigente_2026"]["general"]
     assert a["2"]["A"][2] == {"titulo": "10 viajes", "coste_mes": 16.57}
     assert a["4"]["A"][2] == {"titulo": "Abono 30 días", "coste_mes": 30.43}
+
+
+def test_rutas_usa_la_ruta_de_161_sin_marcarla_estimada(tmp_path, monkeypatch):
+    ids = ["28065", "28092"]
+    zonas = gpd.GeoDataFrame({"zona_id": ids}, geometry=[Point(0, 0)] * 2, crs=25830)
+    zonas.to_parquet(tmp_path / "zonas.parquet")
+    pd.DataFrame(
+        {
+            "zona_id": ["28065", "28065", "28092", "28092"],
+            "destino_id": ids * 2,
+            "modo": "tp",
+            "corona_min": ["B1", "A", "A", "B2"],
+            "corona_max": ["B1", "B2", "B2", "B2"],
+            "sistemas": ["urbano", "interurbano+metro", "interurbano+metro", None],
+            "validaciones": [1, 2, 2, 1],
+            "estimado": True,  # de los tiempos (#173): no dice nada de la clave
+        }
+    ).to_parquet(tmp_path / "tiempos.parquet")
+    monkeypatch.setattr(pipeline_euros, "PROCESSED", tmp_path)
+    claves, orden = pipeline_euros.rutas()
+    assert orden == ids
+    assert not claves["clave_estimada"].any()
+    assert claves["clave_tarifa"].tolist() == [
+        "B1-B1|urbano",
+        "A-B2|interurbano+metro_a",
+        "A-B2|interurbano+metro_a",
+        "B2-B2|interurbano",
+    ]
 
 
 def test_tarifas_matriz_de_claves():
