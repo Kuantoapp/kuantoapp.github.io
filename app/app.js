@@ -98,9 +98,6 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
   cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
-  // shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
-  const prueba = metas.find((x) => /^Ejemplo/.test(x?.nota ?? ""));
-  if (prueba) cont.append(elemento("p", `Datos de prueba, no son datos reales: ${prueba.nota}`, "aviso"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
@@ -180,7 +177,11 @@ async function main() {
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
-  $("avisos").replaceChildren(...avisos(api.alquiler).map((t) => elemento("li", t)));
+  // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
+  // shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
+  const prueba = [api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta).find((m) => /^Ejemplo/.test(m?.nota ?? ""));
+  const lineasAviso = [...(prueba ? [`Datos de prueba, no son datos reales: ${prueba.nota}`] : []), ...avisos(api.alquiler)];
+  $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));
   const estado = { entrada: null, resultado: null, metrica: "precio_hora", zona: null };
   const lineas = (id) => lineasFicha(nombres[id], estado.resultado.zonas[id], estado.metrica, contextoFicha(api, estado.entrada, estado.resultado, id));
