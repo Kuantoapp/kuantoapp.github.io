@@ -107,15 +107,15 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   }
   cont.append(elemento("p", `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
   const detalle = document.createElement("details");
+  const ejemplo = avisoPrueba(metas) !== null; // datos inventados: no se atribuyen a ninguna fuente
   const notas = [
     `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
-    `Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`,
-    `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`,
+    ...(ejemplo ? [] : [`Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`, `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`]),
     `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
     `Hogar y cesta: ${hogares.meta.nota}`,
     `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
-    `Licencias: ${licencias(...metas)}.`,
+    ...(ejemplo ? [] : [`Licencias: ${licencias(...metas)}.`]),
   ];
   detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
   cont.append(detalle);

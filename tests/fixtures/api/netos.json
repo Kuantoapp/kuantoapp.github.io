@@ -1,5 +1,6 @@
 {
   "meta": {
+    "ejemplo": true,
     "generado": "2026-11-15",
     "anio_dato": 2024,
     "fuentes": [{"nombre":"Agencia Tributaria y BOE","url":"https://www.boe.es/","licencia":"Reutilización con cita de la fuente (BOE)"}],

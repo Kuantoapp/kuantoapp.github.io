@@ -257,10 +257,9 @@ export function mejores(resultado, metrica, nombres) {
     .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}` }));
 }
 
-/** Aviso de que los ficheros cargados son de ejemplo (`null` si son datos reales). */
-// shortcut: los ficheros de ejemplo se reconocen por una `meta.nota` que empieza por «Ejemplo»; cuando los fixtures lleven una marca propia, usarla.
+/** Aviso de que los ficheros cargados son de ejemplo, según `meta.ejemplo` (`null` si son datos reales). */
 export function avisoPrueba(metas) {
-  const prueba = metas.find((m) => /^Ejemplo/.test(m?.nota ?? ""));
+  const prueba = metas.find((m) => m?.ejemplo === true);
   return prueba ? `Datos de prueba, no son datos reales: ${prueba.nota}` : null;
 }
 

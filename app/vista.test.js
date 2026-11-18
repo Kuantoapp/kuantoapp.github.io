@@ -273,6 +273,8 @@ test("el aviso de prueba sale con los fixtures y no con los datos reales", () =>
   const metasDe = (api) => [api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta);
   assert.match(avisoPrueba(metasDe(ejemplo)), /^Datos de prueba, no son datos reales: Ejemplo/);
   assert.equal(avisoPrueba(metasDe(real)), null);
+  assert.equal(avisoPrueba([{ nota: "Ejemplo de otra cosa" }]), null, "la nota no decide: solo la marca");
+  assert.ok(Object.values(ejemplo).every((f) => f.meta.ejemplo === true) && Object.values(real).every((f) => f.meta.ejemplo === undefined));
 });
 
 test("el tooltip añade el año solo si el alquiler de la zona es anterior al del fichero", () => {

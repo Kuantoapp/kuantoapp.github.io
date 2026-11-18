@@ -1,5 +1,6 @@
 {
   "meta": {
+    "ejemplo": true,
     "generado": "2026-11-15",
     "anio_dato": 2024,
     "fuentes": [{"nombre":"Consorcio Regional de Transportes de Madrid","url":"https://datos.crtm.es/","licencia":"CC BY 4.0"},{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"}],
