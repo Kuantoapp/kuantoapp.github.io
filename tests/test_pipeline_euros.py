@@ -2,10 +2,12 @@
 
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 import pytest
+from shapely import Point
 
-from mesobra import neto, transporte
+from mesobra import neto, pipeline_euros, transporte
 from mesobra.api_estatica import validar
 from mesobra.pipeline_euros import (
     alquiler_json,
@@ -77,7 +79,7 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     netos = pd.read_csv(PROCESSED / "netos.csv").query("bruto_anual <= 30000")
     validar("netos.json", netos_json(netos))
     validar("netos.json", netos_json(neto.rejilla()))
-    validar("tarifas.json", tarifas_json(transporte.tabla()))
+    validar("tarifas.json", _tarifas())
     tabla = pd.read_csv(PROCESSED / "hogares.csv")
     tabla.attrs["nota"] = "Estimado"
     cesta = pd.Series({"alimentacion": 275.0, "suministros": 81.0})
@@ -86,7 +88,65 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     assert {p["m2"] for p in obj["perfiles"].values()} == {69}
 
 
+def _tarifas():
+    claves = pd.DataFrame(
+        {
+            "zona_id": ["28065", "28065", "28092", "28092"],
+            "destino_id": ["28065", "28092", "28065", "28092"],
+            "clave_tarifa": [
+                "B1-B1|interurbano",
+                "B1-B2|interurbano",
+                "B1-B2|interurbano",
+                None,
+            ],
+            "clave_estimada": True,
+        }
+    )
+    lista = ["B1-B1|interurbano", "B1-B2|interurbano"]
+    return tarifas_json(
+        transporte.tabla_v1(), transporte.tabla(lista), claves, ["28065", "28092"]
+    )
+
+
 def test_tarifas_trae_los_dos_viajes_al_dia():
-    a = tarifas_json(transporte.tabla())["escenarios"]["vigente_2026"]["general"]
-    assert a["2"]["A"][2] == {"titulo": "10 viajes", "coste_mes": 21.9}
+    # 10 viajes prorrateado (#162): 3 días = 22,7 viajes × 0,73; con 4 viajes al día, 45,4 × 0,73 = 33,14
+    a = _tarifas()["escenarios"]["vigente_2026"]["general"]
+    assert a["2"]["A"][2] == {"titulo": "10 viajes", "coste_mes": 16.57}
     assert a["4"]["A"][2] == {"titulo": "Abono 30 días", "coste_mes": 30.43}
+
+
+def test_rutas_usa_la_ruta_de_161_sin_marcarla_estimada(tmp_path, monkeypatch):
+    ids = ["28065", "28092"]
+    zonas = gpd.GeoDataFrame({"zona_id": ids}, geometry=[Point(0, 0)] * 2, crs=25830)
+    zonas.to_parquet(tmp_path / "zonas.parquet")
+    pd.DataFrame(
+        {
+            "zona_id": ["28065", "28065", "28092", "28092"],
+            "destino_id": ids * 2,
+            "modo": "tp",
+            "corona_min": ["B1", "A", "A", "B2"],
+            "corona_max": ["B1", "B2", "B2", "B2"],
+            "sistemas": ["urbano", "interurbano+metro", "interurbano+metro", None],
+            "validaciones": [1, 2, 2, 1],
+            "estimado": True,  # de los tiempos (#173): no dice nada de la clave
+        }
+    ).to_parquet(tmp_path / "tiempos.parquet")
+    monkeypatch.setattr(pipeline_euros, "PROCESSED", tmp_path)
+    claves, orden = pipeline_euros.rutas()
+    assert orden == ids
+    assert not claves["clave_estimada"].any()
+    assert claves["clave_tarifa"].tolist() == [
+        "B1-B1|urbano",
+        "A-B2|interurbano+metro_a",
+        "A-B2|interurbano+metro_a",
+        "B2-B2|interurbano",
+    ]
+
+
+def test_tarifas_matriz_de_claves():
+    o = _tarifas()
+    assert o["claves"] == ["B1-B1|interurbano", "B1-B2|interurbano"]
+    assert o["clave_tarifa"] == [[0, 1], [1, None]]
+    assert o["clave_estimada"]
+    cinco = o["tarifas_ruta"]["vigente_2026"]["general"]["B1-B2|interurbano"]["0"][4]
+    assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 26.71}
