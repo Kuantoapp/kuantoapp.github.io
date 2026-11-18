@@ -14,6 +14,11 @@ from pathlib import Path
 CORONAS = ["A", "B1", "B2", "B3", "C1", "C2"]
 VIAJES_DIA = [2, 4]
 EDADES = ["joven", "general", "mayor_65"]
+# columnas de precios del BOCM-20251231-2 y -3 (discapacidad: grado igual o superior al 65 %)
+COLECTIVOS = [
+    "ordinario", "discapacidad", "fn_general", "fn_especial",
+    "fn_general_discapacidad", "fn_especial_discapacidad",
+]  # fmt: skip
 NO_LABORABLES = [0, 8, 16]  # viajes de ocio y fin de semana al mes
 MAX_PROBLEMAS = 20
 # Caja de la Comunidad de Madrid en EPSG:4326: un 25830 sin reproyectar o lon/lat al revés caen fuera.
@@ -341,11 +346,12 @@ def _dias(ruta, filas):
 
 
 def _tarifas_ruta(o):
-    """Bloques v2: `clave_tarifa` por par origen × destino y su tabla por clave (#162)."""
+    """Bloques v2: `clave_tarifa` por par origen × destino y su tabla por colectivo y clave (#162, #163)."""
     p = _lista("origenes", o.get("origenes"), "zona")
     p += _lista("destinos", o.get("destinos"), "texto")  # zona_id o polo:<slug>
     p += _lista("claves", o.get("claves"), "texto")
     p += _campo("clave_estimada", o.get("clave_estimada"), "booleano")
+    p += _campo("colectivos", o.get("colectivos"), [COLECTIVOS])
     p += _campo("edades", o.get("edades"), [EDADES])
     p += _campo("no_laborables", o.get("no_laborables"), [NO_LABORABLES])
     filas, cols = len(_items(o, "origenes")), len(_items(o, "destinos"))
@@ -362,7 +368,9 @@ def _tarifas_ruta(o):
         "tarifas_ruta",
         o.get("tarifas_ruta"),
         ["vigente_2026", "sin_descuento"],
-        lambda r, e: _mapa(r, e, EDADES, por_clave),
+        lambda r, e: _mapa(
+            r, e, COLECTIVOS, lambda r2, c: _mapa(r2, c, EDADES, por_clave)
+        ),
     )
 
 
@@ -378,6 +386,7 @@ def _tarifas(o):
             "origenes",
             "destinos",
             "claves",
+            "colectivos",
             "edades",
             "no_laborables",
             "clave_tarifa",

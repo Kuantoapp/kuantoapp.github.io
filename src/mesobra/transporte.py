@@ -3,13 +3,23 @@
 La ruta se resume en una `clave_tarifa`: el rango de coronas que atraviesa y un producto por validación
 («B2-C1|interurbano», «A-C2|interurbano+metro_a»). Con ella se compara el abono que cubre el rango
 (normal si entra en A, interzonal si no) con el sencillo o el 10 viajes de cada producto, más el Abono
-Joven (15 a 25 años) y el Abono +65 (gratuito). Supuestos: sin descuentos de familia numerosa ni
-discapacidad (#163); los precios con descuento (`vigente_2026`) dependen del RDL 17/2025, que es
-temporal (solo 2026); el 10 viajes se prorratea (viajes ÷ 10 × precio), porque no caduca: la ficha
-del CRTM dice «Validez: Ilimitada» (https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/,
+Joven (15 a 25 años) y el Abono +65 (gratuito). Cada título tiene su precio por colectivo (#163):
+ordinario, discapacidad igual o superior al 65 %, familia numerosa general o especial, y las dos con
+discapacidad; se toma la columna del BOCM, no un porcentaje, porque el BOCM redondea a 0,10 € (sencillo
+de 1,50 € para FN especial: 0,70 €). La discapacidad del 33 al 64 % no tiene columna y no se modela.
+Familia monoparental: sin descuento del CRTM en 2026 (no figura en el BOCM y el decreto de Madrid de 2020
+se archivó); el RDL 35/2026 (BOE-A-2026-23604) la equipara a familia numerosa desde el 1-1-2027. Con 2
+hijos, la familia es numerosa (general) si un hijo tiene discapacidad, si los dos progenitores la tienen
+(o uno de al menos el 65 %), si falleció el otro progenitor o si son hermanos huérfanos (Ley 40/2003,
+arts. 2.2 y 4.1, versión vigente en 2026); quién pertenece a qué colectivo lo decide quien usa la tabla.
+Los precios con descuento (`vigente_2026`) dependen del RDL 17/2025, que es temporal (solo 2026); el 10
+viajes se prorratea (viajes ÷ 10 × precio), porque no caduca: la ficha del CRTM dice «Validez: Ilimitada» (https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/,
 consultada el 18-11-2026; #162 sustituye a los paquetes enteros de #80).
 Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (20 €, todos los núcleos,
-solo 2026); sin descuento no hay precio publicado de Renfe y solo cuenta el abono del CRTM. El Bonotren
+solo 2026); sin descuento no hay precio publicado de Renfe y solo cuenta el abono del CRTM. Los 20 €
+valen para todos los colectivos: Renfe admite el descuento de familia numerosa pero no publica su importe
+(cota superior para FN) y no tiene descuento por discapacidad (preguntas frecuentes de los abonos
+bonificados, consultadas el 18-11-2026). El Bonotren
 va por zonas de Renfe, que no son las coronas, y no se modela.
 Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna norma fija si basta con 65
 cumplidos (verificar).
@@ -46,8 +56,8 @@ import pandas as pd
 import shapely
 
 from mesobra import contratos
+from mesobra.api_estatica import COLECTIVOS, EDADES, NO_LABORABLES, VIAJES_DIA
 from mesobra.api_estatica import CORONAS as ORDEN_CORONAS
-from mesobra.api_estatica import EDADES, NO_LABORABLES, VIAJES_DIA
 
 CENTIMO = D("0.01")
 # Decreto 75/2025, BOCM-20250925-16 pág. 103: 12 fiestas, con el 1-nov y el 6-dic trasladados al lunes
@@ -85,67 +95,86 @@ PRODUCTOS = (
 )  # fmt: skip
 
 
-def _p(vigente: str, oficial: str) -> dict[str, D]:
-    return {"vigente_2026": D(vigente), "sin_descuento": D(oficial)}
+def _p(vigente: str, oficial: str) -> dict[tuple[str, str], D]:
+    """Precio por tarifa (escenario, colectivo): las 6 columnas del BOCM en el orden de COLECTIVOS."""
+    columnas = {"vigente_2026": vigente.split(), "sin_descuento": oficial.split()}
+    if any(len(c) != len(COLECTIVOS) for c in columnas.values()):
+        raise ValueError(f"se esperaban {len(COLECTIVOS)} columnas: {columnas}")
+    return {
+        (esc, col): D(x)
+        for esc, fila in columnas.items()
+        for col, x in zip(COLECTIVOS, fila)
+    }
 
 
-# BOCM-20251231-2 pág. 66 y BOCM-20251231-3 pág. 70
+# BOCM-20251231-2 pág. 66 y BOCM-20251231-3 pág. 70; columnas en el orden de COLECTIVOS
 ABONO_30 = {
-    "A": _p("32.70", "56.20"),
-    "B1": _p("38.20", "65.60"),
-    "B2": _p("43.20", "74.10"),
-    "B3": _p("49.20", "84.40"),
-    "C1": _p("49.20", "84.40"),
-    "C2": _p("49.20", "84.40"),
-}
+    "A": _p("32.70 26.10 26.10 16.30 19.60 9.70", "56.20 44.90 44.90 28.10 33.70 16.80"),
+    "B1": _p("38.20 30.50 30.50 19.00 22.90 11.40", "65.60 52.40 52.40 32.80 39.30 19.60"),
+    "B2": _p("43.20 34.50 34.50 21.60 25.90 12.90", "74.10 59.20 59.20 37.00 44.40 22.20"),
+    "B3": _p("49.20 39.30 39.30 24.60 29.50 14.70", "84.40 67.50 67.50 42.20 50.60 25.30"),
+    "C1": _p("49.20 39.30 39.30 24.60 29.50 14.70", "84.40 67.50 67.50 42.20 50.60 25.30"),
+    "C2": _p("49.20 39.30 39.30 24.60 29.50 14.70", "84.40 67.50 67.50 42.20 50.60 25.30"),
+}  # fmt: skip
 # mismas páginas: abonos interzonales, sin pasar por la zona A
 ABONO_INTERZONAL = {
     **dict.fromkeys(
         [("B1", "B2"), ("B2", "B3"), ("B2", "C1"), ("B2", "C2"), ("B3", "C1"), ("B3", "C2"), ("C1", "C2")],
-        _p("28.70", "49.30"),
+        _p("28.70 22.90 22.90 14.30 17.20 8.50", "49.30 39.40 39.40 24.60 29.50 14.70"),
     ),
-    **dict.fromkeys([("B1", "B3"), ("B1", "C1"), ("B1", "C2")], _p("32.70", "56.20")),
+    **dict.fromkeys(
+        [("B1", "B3"), ("B1", "C1"), ("B1", "C2")],
+        _p("32.70 26.10 26.10 16.30 19.60 9.70", "56.20 44.90 44.90 28.10 33.70 16.80"),
+    ),
 }  # fmt: skip
 # abono que cubre de la primera corona a la segunda: el normal de A a c, o el interzonal
 ABONOS = {("A", c): p for c, p in ABONO_30.items()} | ABONO_INTERZONAL
 # mismas páginas, todas las zonas
-ABONO_JOVEN = _p("10.00", "20.00")
+ABONO_JOVEN = _p("10.00 8.00 8.00 5.00 6.00 3.00", "20.00 16.00 16.00 10.00 12.00 6.00")
 # gratuito, 365 días (BOCM-20251231-2 pág. 66; -3 pág. 70); «hasta la zona C2», que cubre todas las coronas
 # de las zonas: https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/ (consultada el 18-11-2026)
-ABONO_65 = _p("0.00", "0.00")
+ABONO_65 = _p(
+    *["0 0 0 0 0 0"] * 2
+)  # «Tercera edad: Gratuita» en BOCM-20251231-3 pág. 70
 # BOCM-20251231-2 pág. 67 y BOCM-20251231-3 pág. 72
+UNA_ZONA = _p("5.10 4.00 4.00 2.50 3.00 1.50", "8.70 6.90 6.90 4.30 5.20 2.60")
 DIEZ_VIAJES = {
-    "metro_a": _p("7.30", "12.50"),  # Metro zona A, EMT y ML1
-    "metro_b": _p("6.70", "11.50"),  # MetroEste, MetroNorte y MetroSur
-    "tfm_mlo": _p("7.30", "12.50"),  # TFM y Metro Ligero Oeste
-    "combinado": _p("10.90", "18.80"),  # Metro de la zona A y de la B
-    "urbano": _p(
-        "5.10", "8.70"
-    ),  # fila de una sola zona; dentro de A vale el de Metro y EMT
-}
+    # Metro zona A, EMT y ML1
+    "metro_a": _p("7.30 5.80 5.80 3.60 4.30 2.10", "12.50 10.00 10.00 6.20 7.50 3.70"),
+    # MetroEste, MetroNorte y MetroSur
+    "metro_b": _p("6.70 5.30 5.30 3.30 4.00 1.90", "11.50 9.20 9.20 5.70 6.90 3.40"),
+    # TFM y Metro Ligero Oeste
+    "tfm_mlo": _p("7.30 5.80 5.80 3.60 4.30 2.10", "12.50 10.00 10.00 6.20 7.50 3.70"),
+    # Metro de la zona A y de la B
+    "combinado": _p("10.90 8.70 8.70 5.40 6.50 3.20", "18.80 15.00 15.00 9.40 11.20 5.60"),
+    "urbano": UNA_ZONA,  # fila de una sola zona; dentro de A vale el de Metro y EMT
+}  # fmt: skip
 # autobús interurbano por par de zonas, según los saltos de corona; 0 = dentro de una zona B1-C2
 DIEZ_VIAJES_INTERURBANO = [
-    _p("5.10", "8.70"),
-    _p("7.30", "12.50"),
-    _p("9.60", "16.50"),
-    _p("13.80", "23.60"),
-    _p("17.80", "30.50"),
-    _p("22.40", "38.50"),
-]
-# BOCM-20251231-2 pág. 68 = BOCM-20251231-3 pág. 71: el sencillo no tiene descuento
+    UNA_ZONA,
+    _p("7.30 5.80 5.80 3.60 4.30 2.10", "12.50 10.00 10.00 6.20 7.50 3.70"),
+    _p("9.60 7.60 7.60 4.80 5.70 2.80", "16.50 13.20 13.20 8.20 9.90 4.90"),
+    _p("13.80 11.00 11.00 6.90 8.20 4.10", "23.60 18.80 18.80 11.80 14.10 7.00"),
+    _p("17.80 14.20 14.20 8.80 10.60 5.30", "30.50 24.40 24.40 15.20 18.30 9.10"),
+    _p("22.40 17.90 17.90 11.20 13.40 6.70", "38.50 30.80 30.80 19.20 23.10 11.50"),
+]  # fmt: skip
+# BOCM-20251231-2 pág. 68 = BOCM-20251231-3 pág. 71: el sencillo no lleva la bonificación del RDL, pero
+# sí tiene precio por colectivo
 # shortcut: el Metro de la zona A va de 1,50 € (hasta 5 estaciones) a 2,00 € (10 o más; ficha del CRTM de
 # sencillos) y se usa el mínimo, el de la EMT; mejorar si `tiempos` da el número de estaciones
+SENCILLO_150 = _p(*["1.50 1.20 1.20 0.70 0.90 0.40"] * 2)
+SENCILLO_300 = _p(*["3.00 2.40 2.40 1.50 1.80 0.90"] * 2)
 SENCILLO = {
-    "metro_a": _p("1.50", "1.50"),
-    "metro_b": _p("1.50", "1.50"),
-    "tfm_mlo": _p("2.00", "2.00"),
-    "combinado": _p("3.00", "3.00"),
-    "interurbano": _p("3.00", "3.00"),
-    "urbano": _p("1.50", "1.50"),
+    "metro_a": SENCILLO_150,
+    "metro_b": SENCILLO_150,
+    "tfm_mlo": _p(*["2.00 1.60 1.60 1.00 1.20 0.60"] * 2),
+    "combinado": SENCILLO_300,
+    "interurbano": SENCILLO_300,
+    "urbano": SENCILLO_150,
 }
 # Abono mensual de Renfe Cercanías en 2026 (todos los núcleos, hasta el 31-1-2027), solo con descuento
 # https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes (18-11-2026)
-ABONO_RENFE = {"vigente_2026": D("20.00")}
+ABONO_RENFE = {("vigente_2026", c): D("20.00") for c in COLECTIVOS}
 ABONOS_RENFE_ANIO = 11  # vale un mes natural desde su inicio: 11 al año con 30 días de vacaciones en bloque
 
 
@@ -231,19 +260,19 @@ def _diez_viajes(producto: str, cmin: str, cmax: str) -> dict[str, D] | None:
 
 
 def _opciones(
-    producto: str, viajes: D, cmin: str, cmax: str, escenario: str
+    producto: str, viajes: D, cmin: str, cmax: str, tarifa: tuple[str, str]
 ) -> dict[str, D]:
     """Coste de `viajes` de un producto con su sencillo y con su 10 viajes (prorrateado)."""
     opciones = {}
     if producto in SENCILLO:
-        opciones["Billete sencillo"] = viajes * SENCILLO[producto][escenario]
+        opciones["Billete sencillo"] = viajes * SENCILLO[producto][tarifa]
     if diez := _diez_viajes(producto, cmin, cmax):
-        opciones["10 viajes"] = viajes / 10 * diez[escenario]
+        opciones["10 viajes"] = viajes / 10 * diez[tarifa]
     return opciones
 
 
 def _por_viaje(
-    escenario: str, clave: str, dias: int, no_laborables: int
+    tarifa: tuple[str, str], clave: str, dias: int, no_laborables: int
 ) -> tuple[str, D]:
     """Título y coste de pagar cada producto con su sencillo o su 10 viajes; infinito si alguno no tiene."""
     cmin, cmax, productos = _partes(clave)
@@ -253,9 +282,9 @@ def _por_viaje(
     viajes[productos[0]] += no_laborables
     titulos, total = set(), D(0)
     for p, v in viajes.items():
-        opciones = _opciones(p, v, cmin, cmax, escenario)
-        if p == "cercanias" and escenario in ABONO_RENFE:
-            opciones["Abono Renfe"] = ABONO_RENFE[escenario] * ABONOS_RENFE_ANIO / 12
+        opciones = _opciones(p, v, cmin, cmax, tarifa)
+        if p == "cercanias" and tarifa in ABONO_RENFE:
+            opciones["Abono Renfe"] = ABONO_RENFE[tarifa] * ABONOS_RENFE_ANIO / 12
         if not opciones:
             if p != "cercanias":
                 raise ValueError(f"producto sin precio por viaje: {p!r} en {clave!r}")
@@ -266,44 +295,50 @@ def _por_viaje(
     return " + ".join(sorted(titulos)), total
 
 
-def _abono(clave: str) -> tuple[str, dict[str, D]]:
-    """El abono más barato (con descuento) que cubre el rango de coronas de la clave."""
+def _abono(tarifa: tuple[str, str], clave: str) -> tuple[str, D]:
+    """El abono más barato que cubre el rango de coronas de la clave."""
     cmin, cmax, _ = _partes(clave)
     cubren = {
         (a, b): p
         for (a, b), p in ABONOS.items()
         if _i(a) <= _i(cmin) and _i(b) >= _i(cmax)
     }
-    a, b = min(cubren, key=lambda k: (cubren[k]["vigente_2026"], _i(k[1]) - _i(k[0])))
-    return ("Abono 30 días" if a == "A" else f"Abono 30 días {a}-{b}"), cubren[a, b]
+    a, b = min(cubren, key=lambda k: (cubren[k][tarifa], _i(k[1]) - _i(k[0])))
+    return ("Abono 30 días" if a == "A" else f"Abono 30 días {a}-{b}"), cubren[a, b][
+        tarifa
+    ]
 
 
 def coste_mes(
-    escenario: str, edad: str, clave: str, dias: int, no_laborables: int
+    tarifa: tuple[str, str], edad: str, clave: str, dias: int, no_laborables: int
 ) -> tuple[str, D]:
-    """Título y coste mensual del más barato; en un empate gana el de menor compromiso."""
+    """Título y coste mensual del más barato para la tarifa (escenario, colectivo); en un empate gana el
+    de menor compromiso."""
     if dias not in DIAS or no_laborables not in NO_LABORABLES:
         raise ValueError(
             f"dias {dias} o no_laborables {no_laborables} fuera de {DIAS} y {NO_LABORABLES}"
         )
-    if escenario not in ESCENARIOS or edad not in EDADES:
-        raise ValueError(f"escenario {escenario!r} o edad {edad!r} desconocidos")
-    titulo, precio = _abono(clave)
+    escenario, colectivo = tarifa
+    if escenario not in ESCENARIOS or colectivo not in COLECTIVOS or edad not in EDADES:
+        raise ValueError(
+            f"escenario {escenario!r}, colectivo {colectivo!r} o edad {edad!r} desconocidos"
+        )
+    titulo, precio = _abono(tarifa, clave)
     cmin, cmax, productos = _partes(clave)
     # el mes sin abono (vacaciones) el ocio se paga por viaje en el producto principal
     # shortcut: con Cercanías de principal no hay precio por viaje y ese ocio no se cobra
-    ocio = _opciones(productos[0], D(no_laborables), cmin, cmax, escenario)
+    ocio = _opciones(productos[0], D(no_laborables), cmin, cmax, tarifa)
     ocio_vacaciones = min(ocio.values(), default=D(0)) / 12
     candidatos = {
-        **dict([_por_viaje(escenario, clave, dias, no_laborables)]),
-        titulo: precio[escenario] * ABONOS_ANIO / 12 + ocio_vacaciones,
+        **dict([_por_viaje(tarifa, clave, dias, no_laborables)]),
+        titulo: precio * ABONOS_ANIO / 12 + ocio_vacaciones,
     }
     if edad == "joven":
         candidatos["Abono Joven"] = (
-            ABONO_JOVEN[escenario] * ABONOS_ANIO / 12 + ocio_vacaciones
+            ABONO_JOVEN[tarifa] * ABONOS_ANIO / 12 + ocio_vacaciones
         )
     if edad == "mayor_65":
-        candidatos["Abono +65"] = ABONO_65[escenario]
+        candidatos["Abono +65"] = ABONO_65[tarifa]
     titulo = min(candidatos, key=candidatos.get)
     return titulo, _redondea(candidatos[titulo])
 
@@ -357,17 +392,18 @@ def rango_coronas(zonas: gpd.GeoDataFrame, coronas: gpd.GeoDataFrame) -> pd.Data
 
 
 def tabla(claves: list[str]) -> pd.DataFrame:
-    """Tabla `tarifas` v2: escenario × edad × clave × días × viajes no laborables, validada."""
+    """Tabla `tarifas` v2: escenario × colectivo × edad × clave × días × viajes no laborables, validada."""
     filas = [
-        (esc, edad, clave, dias, nl, *coste_mes(esc, edad, clave, dias, nl))
-        for esc, edad, clave, dias, nl in product(
-            ESCENARIOS, EDADES, claves, DIAS, NO_LABORABLES
+        (esc, col, edad, clave, dias, nl, *coste_mes((esc, col), edad, clave, dias, nl))
+        for esc, col, edad, clave, dias, nl in product(
+            ESCENARIOS, COLECTIVOS, EDADES, claves, DIAS, NO_LABORABLES
         )
     ]
     df = pd.DataFrame(
         filas,
         columns=[
             "escenario",
+            "colectivo",
             "edad",
             "clave_tarifa",
             "dias",
@@ -388,7 +424,8 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
 
 
 def tabla_v1() -> pd.DataFrame:
-    """Forma v1 de `tarifas` (escenario × joven × corona × días × viajes al día) que lee `calculo.py`.
+    """Forma v1 de `tarifas` (escenario × joven × corona × días × viajes al día) que lee `calculo.py`,
+    con el precio ordinario.
 
     shortcut: se mantiene hasta que #164 lea la v2; entonces se borra.
     """
@@ -400,7 +437,11 @@ def tabla_v1() -> pd.DataFrame:
             dias,
             viajes,
             *coste_mes(
-                esc, "joven" if joven else "general", clave_v1(corona, viajes), dias, 0
+                (esc, "ordinario"),
+                "joven" if joven else "general",
+                clave_v1(corona, viajes),
+                dias,
+                0,
             ),
         )
         for esc, joven, corona, dias, viajes in product(

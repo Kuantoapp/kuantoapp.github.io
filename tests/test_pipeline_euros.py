@@ -8,7 +8,7 @@ import pytest
 from shapely import Point
 
 from mesobra import neto, pipeline_euros, transporte
-from mesobra.api_estatica import validar
+from mesobra.api_estatica import COLECTIVOS, validar
 from mesobra.pipeline_euros import (
     alquiler_json,
     hogares_json,
@@ -148,5 +148,11 @@ def test_tarifas_matriz_de_claves():
     assert o["claves"] == ["B1-B1|interurbano", "B1-B2|interurbano"]
     assert o["clave_tarifa"] == [[0, 1], [1, None]]
     assert o["clave_estimada"]
-    cinco = o["tarifas_ruta"]["vigente_2026"]["general"]["B1-B2|interurbano"]["0"][4]
+    assert o["colectivos"] == COLECTIVOS
+    por_colectivo = o["tarifas_ruta"]["vigente_2026"]
+    assert sorted(por_colectivo) == sorted(COLECTIVOS)
+    cinco = por_colectivo["ordinario"]["general"]["B1-B2|interurbano"]["0"][4]
     assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 26.71}
+    # 14,30 € del interzonal para FN especial (BOCM-20251231-2 pág. 66) × 335/30 / 12
+    cinco = por_colectivo["fn_especial"]["general"]["B1-B2|interurbano"]["0"][4]
+    assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 13.31}
