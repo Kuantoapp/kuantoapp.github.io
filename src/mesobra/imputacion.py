@@ -21,7 +21,8 @@ Reglas preregistradas: se fijan antes de ejecutar con los datos reales y no se c
   sale con la misma exclusión, así que tiene la misma distribución que en test.
 - Elección: MAE en log sobre los pequeños. Se queda el más simple salvo que otro lo baje al menos un `MARGEN` en todas
   las variantes de robustez (`K` en {5, 8} y `b` × {0,5; 1; 2}).
-- Intervalo: conformal normalizado CV+ (Barber et al., 2021; garantía ≥ 1 − 2α), score |r| / σ̂, con σ̂ = desviación
+- Intervalo: conformal normalizado tipo jackknife (predicción del modelo completo ± q·σ̂, scores LOO; sin la garantía
+  ≥ 1 − 2α de CV+, que usaría la predicción de cada pliegue), score |r| / σ̂, con σ̂ = desviación
   típica de log p50 de los vecinos más la mediana de esa desviación en train. El cuantil que se aplica a las objetivo
   sale de los pequeños, con nivel `NIVEL`. La cobertura se mide como transferencia: cuantil de las zonas con dato
   mayores que las objetivo, comprobado en los pequeños, con su IC de Wilson; no se promete.
