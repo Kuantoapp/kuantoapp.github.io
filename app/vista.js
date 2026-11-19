@@ -234,7 +234,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseBanda(zona.sobra_banda),
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
-    `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")})`,
+    `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`,
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,

@@ -175,7 +175,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "Te sobran entre 479 € y 632 € al mes (estimado)",
     "Neto del hogar: 1523 € al mes (estimado)",
     "Alquiler: entre 512 y 666 € al mes (contratos de 2024, tómalo como un suelo)",
-    "Transporte: 21,90 € al mes (10 viajes)",
+    "Transporte: 21,90 € al mes (10 viajes) (estimado)",
     "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)",
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
@@ -185,7 +185,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
   ]);
   // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
   assert.ok(Math.abs(contextoFicha(ejemplo, casos[0].entrada, casos[0].salida, "28065").salarioHora - 10.064) < 0.001);
-  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven)"));
+  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
 });
 
 test("el título de la ficha es el de la celda que paga el cálculo: borde de 25/26 años y 4 viajes al día", () => {
@@ -196,16 +196,16 @@ test("el título de la ficha es el de la celda que paga el cálculo: borde de 25
     const resultado = calcular(ejemplo, structuredClone(entrada));
     return lineasFicha("Zona", resultado.zonas["28065"], "sobra", contextoFicha(ejemplo, entrada, resultado, "28065"));
   };
-  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven)"));
-  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes)"));
+  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
+  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes) (estimado)"));
   const tabla = ejemplo.tarifas.escenarios.vigente_2026.general["4"];
-  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo})`));
+  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo}) (estimado)`));
   assert.ok(celda, "con 4 viajes al día el título y el coste salen de la misma celda");
 });
 
 test("dos sueldos con el mismo título no lo repiten", () => {
   const caso = casos.find((c) => c.nombre.startsWith("pareja con un hijo"));
-  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes)"));
+  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes) (estimado)"));
 });
 
 test("el borde del 30 % y el de la banda se deciden con lo que se muestra redondeado", () => {
