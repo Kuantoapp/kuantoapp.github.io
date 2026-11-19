@@ -35,6 +35,10 @@ Supuestos y límites:
   El 08.3 del IPC incluye «otros servicios», que la partida de telefonía no recoge (< 0,5 €/mes).
 - Misma cesta en todas las zonas (la EPF no baja de la Comunidad). Sin renta, tamaño del piso ni
   comidas fuera de casa (motivos en docs/decisiones.md, #178).
+- Escenario de renta (#312): `factores_tramo` da, para cada tramo de ingresos netos regulares del
+  hogar, la alimentación por UC del tramo entre la media (EPF de España 2025, INE t=73809 y t=73795;
+  Madrid no la publica por tramo). Estimado: se aplica a la alimentación de Madrid; la media sigue
+  siendo la referencia.
 """
 
 from pathlib import Path
@@ -76,6 +80,20 @@ CONCEPTOS = {
             "08.3 Servicios de información y comunicaciones",
         ),
     },
+}
+# EPF de España por tramo de ingresos netos regulares del hogar (INE t=73809 y t=73795).
+EPF_TRAMOS = "ine_epf_grupos_tramo_ingresos_2026-11-20.csv"
+EPF_TRAMOS_UC = "ine_epf_uc_tramo_ingresos_2026-11-20.csv"
+# tramo de la EPF → €/mes en que empieza
+TRAMOS = {
+    "Hasta 499 euros": 0,
+    "De 500 a 999 euros": 500,
+    "De 1.000 a 1.499 euros": 1000,
+    "De 1.500 a 1.999 euros": 1500,
+    "De 2.000 a 2.499 euros": 2000,
+    "De 2.500 a 2.999 euros": 2500,
+    "De 3.000 a 4.999 euros": 3000,
+    "5.000 euros o más": 5000,
 }
 # Perfil → adultos, hijos y personas_comparten.
 PERFILES = {
@@ -192,6 +210,45 @@ def hogares(carpeta: Path = RAW) -> pd.DataFrame:
     df.attrs["nota"] = NOTA
     df.attrs["ipc_hasta"] = gasto.attrs["ipc_hasta"]
     return df
+
+
+def factores_tramo(carpeta: Path = RAW) -> pd.Series:
+    """Alimentación por UC de cada tramo de ingresos ÷ la de todos los hogares, España, EPF 2025 (estimado).
+
+    Índice: euros/mes de ingresos netos regulares del hogar donde empieza el tramo. UC por hogar =
+    gasto total por hogar ÷ gasto total por UC (t=73795), porque t=73809 no da la alimentación por UC.
+    """
+    nivel = "Nivel de ingresos mensuales netos regulares del hogar"
+    g = _leer(carpeta / EPF_TRAMOS).set_axis(
+        [nivel, "medida", "grupo", "anio", "v"], axis=1
+    )
+    g = g[(g["medida"] == "Gasto medio por hogar") & g["grupo"].str.startswith("01 ")]
+    u = _leer(carpeta / EPF_TRAMOS_UC).set_axis(
+        [nivel, "tipo", "medida", "anio", "v"], axis=1
+    )
+    u = u[u["tipo"] == "Dato base"]
+    series = [
+        df[(df["anio"] == str(ANIO)) & (df["medida"] == medida)].set_index(nivel)["v"]
+        for df, medida in [
+            (g, "Gasto medio por hogar"),
+            (u, "Gasto medio por hogar"),
+            (u, "Gasto medio por unidad de consumo"),
+        ]
+    ]
+    for s in series:
+        if falta := [t for t in ["Total", *TRAMOS] if t not in s.index]:
+            raise ValueError(f"EPF por tramo de ingresos {ANIO}: faltan {falta}")
+        if s.index.duplicated().any():
+            raise ValueError(f"EPF por tramo de ingresos {ANIO}: tramos repetidos")
+    alim, gasto_hogar, gasto_uc = (_numero(s) for s in series)
+    por_uc = alim / (gasto_hogar / gasto_uc)
+    # `_numero` deja en nulo una celda vacía: un tramo sin dato no puede dar un factor
+    if vacios := por_uc.index[por_uc.isna()].tolist():
+        raise ValueError(f"EPF por tramo de ingresos {ANIO}: sin valor en {vacios}")
+    return pd.Series(
+        (por_uc[list(TRAMOS)] / por_uc["Total"]).to_numpy(),
+        index=pd.Index(TRAMOS.values(), name="desde"),
+    )
 
 
 def main() -> None:

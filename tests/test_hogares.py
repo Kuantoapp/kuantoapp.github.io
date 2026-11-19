@@ -142,3 +142,66 @@ def test_ipc_con_un_hueco_en_los_ultimos_12_meses(tmp_path):
     _escribir(tmp_path, hueco=("01.1 Alimentos", "2026M05"))
     with pytest.raises(ValueError, match="consecutivos"):
         hogares.factores_ipc(tmp_path)
+
+
+TRAMOS = [
+    "Hasta 499 euros",
+    "De 500 a 999 euros",
+    "De 1.000 a 1.499 euros",
+    "De 1.500 a 1.999 euros",
+    "De 2.000 a 2.499 euros",
+    "De 2.500 a 2.999 euros",
+    "De 3.000 a 4.999 euros",
+    "5.000 euros o más",
+]
+NIVEL = "Nivel de ingresos mensuales netos regulares del hogar"
+
+
+def _tramos(carpeta, omitir=None, vacio=None):
+    """Tramo k (1 a 8): alimentos por hogar 1000·k y 1 + (k − 1)/10 UC; total: 4000 y 2 UC (2000 €/UC)."""
+    grupos = [
+        f"{NIVEL};Gastos medios y distribución porcentual;Grupos de gasto (2 dígitos);Periodo;Total"
+    ]
+    uc = [f"{NIVEL};Tipo de dato;Gastos medios, distribución e índice;Periodo;Total"]
+    for i, t in enumerate(["Total", *TRAMOS]):
+        if t == omitir:
+            continue
+        alim, n = (4000, 2) if t == "Total" else (1000 * i, 1 + (i - 1) / 10)
+        alim_txt = "" if t == vacio else f"{alim:.2f}".replace(".", ",")
+        grupos += [
+            f"{t};Gasto medio por hogar;01 Alimentos y bebidas no alcohólicas;2025;{alim_txt}",
+            f"{t};Gasto medio por hogar;01 Alimentos y bebidas no alcohólicas;2024;1,00",
+            f"{t};Gasto medio por persona;01 Alimentos y bebidas no alcohólicas;2025;1,00",
+            f"{t};Gasto medio por hogar;03 Vestido y calzado;2025;1,00",
+        ]
+        total = 30000.0
+        uc += [
+            f"{t};Dato base;Gasto medio por hogar;2025;"
+            + f"{total:.2f}".replace(".", ","),
+            f"{t};Dato base;Gasto medio por unidad de consumo;2025;"
+            + f"{total / n:.4f}".replace(".", ","),
+            f"{t};Dato base;Gasto medio por unidad de consumo;2024;1,00",
+            f"{t};Variación respecto al año anterior;Gasto medio por hogar;2025;1,00",
+        ]
+    (carpeta / hogares.EPF_TRAMOS).write_text("\n".join(grupos), encoding="utf-8-sig")
+    (carpeta / hogares.EPF_TRAMOS_UC).write_text("\n".join(uc), encoding="utf-8-sig")
+
+
+def test_factores_tramo(tmp_path):
+    _tramos(tmp_path)
+    f = hogares.factores_tramo(tmp_path)
+    assert f.index.tolist() == [0, 500, 1000, 1500, 2000, 2500, 3000, 5000]
+    esperado = [1000 * i / (1 + (i - 1) / 10) / 2000 for i in range(1, 9)]
+    assert f.tolist() == pytest.approx(esperado)
+
+
+def test_factores_tramo_falta_un_tramo(tmp_path):
+    _tramos(tmp_path, omitir="De 2.000 a 2.499 euros")
+    with pytest.raises(ValueError, match="2.000 a 2.499"):
+        hogares.factores_tramo(tmp_path)
+
+
+def test_factores_tramo_con_un_valor_vacio(tmp_path):
+    _tramos(tmp_path, vacio="Hasta 499 euros")
+    with pytest.raises(ValueError, match="Hasta 499"):
+        hogares.factores_tramo(tmp_path)
