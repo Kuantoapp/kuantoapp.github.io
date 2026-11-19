@@ -85,6 +85,27 @@ def test_reglas_a_mano(carpeta):
     assert alquiler_30(h).fillna(-1).tolist() == [1, 0, -1, 0, 1]
 
 
+def test_tramos_sintetico(carpeta):
+    # inquilinos de ES30: 1 (0,40 → 30-40, peso 100), 2 (0,50 exacto → 40-50, 200), 5 (0,54 → >50, 100)
+    t = tramos_control(hogares(carpeta))["tasa"].to_dict()
+    assert t == pytest.approx({"<=30": 0, "30-40": 25, "40-50": 50, ">50": 25})
+
+
+def test_tramos_renta_negativa_y_corte_exacto():
+    # renta ≤ 0 → «>50» (Eurostat); 0,30 exacto no supera → «<=30»
+    h = pd.DataFrame(
+        {
+            "DB040": [MADRID] * 2,
+            "HH021": [3, 3],
+            "DB090": [1.0, 1.0],
+            "HH070": [100, 300],
+            "HY020": [-500, 12000],
+        }
+    )
+    t = tramos_control(h)["tasa"].to_dict()
+    assert t == pytest.approx({"<=30": 50, "30-40": 0, "40-50": 0, ">50": 50})
+
+
 def test_reglas_casos_limite():
     # Eurostat §5: denominador 0 → sobrecargado; numerador ≤ 0 → no; 0,40 exacto no supera
     h = pd.DataFrame(
