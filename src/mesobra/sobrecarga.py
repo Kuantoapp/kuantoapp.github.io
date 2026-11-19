@@ -31,6 +31,10 @@ Supuestos y sentido del sesgo:
   llevados a 2025 con un crecimiento uniforme. Solo 2024.
 - Las secciones de menos de 100 residentes heredan del INE el valor de su municipio o distrito; las que siguen
   sin Gini, P80/P20 o menores se excluyen y se cuentan, y la `cobertura` de la zona lo dice.
+- La `cobertura` no cuenta las 8 secciones del Censo en secreto y, en 28079, solo suma los distritos con alguna
+  sección válida (en 2024 lo son los 21): si eso cambia, la sobrestima.
+- No se calcula la pureza del paso de 2021 a 2025 (283 de 4.299 destinos por debajo de 0,8): la tabla no se
+  publica; si llegara a publicarse, la pureza por zona sería obligatoria (`paso_secciones.pureza`).
 """
 
 import logging
@@ -333,8 +337,11 @@ def sobrecarga(sec: pd.DataFrame, rho: float) -> pd.DataFrame:
         z: {
             **_rango(g, rho),
             "dif_sigma": np.average(g["dif_sigma"], weights=g["inquilinos"]),
-            "cobertura": g["inquilinos"].sum()
-            / g.drop_duplicates("zona_id")["inq_zona"].sum(),
+            # min: dos sumas de los mismos números en distinto orden pueden dar 1 + 2e-16
+            "cobertura": min(
+                g["inquilinos"].sum() / g.drop_duplicates("zona_id")["inq_zona"].sum(),
+                1.0,
+            ),
         }
         for z, g in grupos.items()
     }

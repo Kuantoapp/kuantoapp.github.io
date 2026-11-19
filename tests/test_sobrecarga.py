@@ -216,3 +216,13 @@ def test_secciones_reales():
         525_755, abs=1
     )
     assert s.secciones(paso, s.tenencia_2025_2021(), par).index.is_unique
+
+
+def test_mediana_ponderada_con_pesos_iguales_es_la_mediana():
+    x = pd.Series([5.0, 1.0, 3.0, 9.0, 7.0])
+    assert s._mediana_ponderada(x, pd.Series(np.ones(5))) == 5.0
+
+
+def test_mediana_mezcla_de_una_componente_es_su_mu():
+    m = s._mediana_mezcla(np.array([2.3]), np.array([0.4]), np.array([1.0]))
+    assert m == pytest.approx(2.3, abs=1e-9)
