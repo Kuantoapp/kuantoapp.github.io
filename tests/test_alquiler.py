@@ -1,8 +1,10 @@
 """Tests de `mesobra.alquiler` con un recorte del Excel del SERPAVI."""
 
+import geopandas as gpd
 import openpyxl
 import pandas as pd
 import pytest
+from shapely import Point, box
 
 from mesobra import alquiler, api_estatica, pipeline_euros, sdm
 
@@ -183,6 +185,10 @@ def _zona(anio=2024, factor=1.0):
     )  # fmt: skip
 
 
+def _con_brecha(zona):
+    return zona.assign(factor_brecha=1.2, brecha_ambito="municipio")
+
+
 def _ipc():
     meses = [f"{a}M{m:02d}" for a in (2023, 2024) for m in range(1, 13)] + ["2025M01"]
     return pd.Series([95.0] * 12 + [100.0] * 12 + [105.0], index=meses)
@@ -197,6 +203,26 @@ def test_actualizar_ipc():
     assert z["eur_m2_p50"].iloc[0] == 12.0
     with pytest.raises(ValueError, match="2025"):
         alquiler.actualizar_ipc(_zona(2025), _ipc())
+
+
+def test_actualizar_ipc_cifras_reales_desordenadas():
+    # IPC297196 (INE, tabla 76137 actualizada el 2026-11-13): regresión de las cifras del PR #259
+    meses = {
+        2023: "93.669 93.761 93.971 94.154 94.282 94.364 94.501 94.594 94.739 94.969 95.213 95.375",
+        2024: "95.563 95.739 96.017 96.327 96.722 96.923 97.140 97.397 97.699 98.133 98.440 98.649",
+    }
+    ipc = pd.Series(
+        {
+            f"{a}M{m:02d}": float(v)
+            for a, txt in meses.items()
+            for m, v in enumerate(txt.split(), 1)
+        }
+        | {"2026M10": 103.746}
+    )
+    zona = pd.concat([_zona(), _zona(2023).assign(zona_id="28002")], ignore_index=True)
+    z = alquiler.actualizar_ipc(zona, ipc.iloc[::-1])
+    assert z["factor_ipc"].tolist() == pytest.approx([1.068859, 1.098236], abs=1e-6)
+    assert z.attrs["ipc_hasta"] == "2026-10"
 
 
 def _csv_ipc(tmp_path, cm_valores):
@@ -237,7 +263,9 @@ def test_leer_ipc_mes_vacio(tmp_path):
 
 
 def test_alquiler_json_con_ipc():
-    obj = pipeline_euros.alquiler_json(alquiler.actualizar_ipc(_zona(), _ipc()))
+    obj = pipeline_euros.alquiler_json(
+        _con_brecha(alquiler.actualizar_ipc(_zona(), _ipc()))
+    )
     api_estatica.validar("alquiler.json", obj)
     assert obj["meta"]["ipc_hasta"] == "2025-01"
     assert sdm._citas_que_faltan(obj["meta"]) == []
@@ -245,4 +273,132 @@ def test_alquiler_json_con_ipc():
 
 def test_alquiler_json_sin_mes_falla():
     with pytest.raises(ValueError, match="ipc_hasta"):
-        pipeline_euros.alquiler_json(_zona(factor=1.05))
+        pipeline_euros.alquiler_json(_con_brecha(_zona(factor=1.05)))
+
+
+def test_alquiler_json_lleva_la_brecha():
+    z = pipeline_euros.alquiler_json(
+        _con_brecha(alquiler.actualizar_ipc(_zona(), _ipc()))
+    )["zonas"]
+    assert z["28001"]["factor_brecha"] == 1.2
+    assert z["28001"]["brecha_ambito"] == "municipio"
+
+
+CABECERA = (
+    "Localización de la vivienda", "Alquiler medio mensual",
+    "Alquiler medio mensual (nuevos contratos)", "m2 medios", "m2 medios (nuevos contratos)",
+)  # fmt: skip
+CABECERA_DETALLE = [
+    ("Localización de la vivienda", "Viviendas habituales arrendadas"),
+    ("Número viviendas arrendadas", "Alquiler medio mensual"),
+]
+
+
+def _html(tmp_path, nombre, filas, cabeceras=(CABECERA,)):
+    def tr(celdas):
+        return "<tr>" + "".join(f"<td> {c} </td>" for c in celdas) + "</tr>"
+
+    ruta = tmp_path / f"{nombre}.html"
+    ruta.write_text(
+        "<table>" + "".join(map(tr, [*cabeceras, *filas])) + "</table>",
+        encoding="utf-8",
+    )
+    return ruta
+
+
+def test_leer_aeat_miles_decimales_y_dos_cabeceras(tmp_path):
+    una = alquiler.leer_aeat(
+        _html(tmp_path, "a", [("Madrid-28079", "1.012", "1.167", "71", "68")])
+    )
+    assert una.loc["Madrid-28079", "Alquiler medio mensual (nuevos contratos)"] == 1167
+    # cifras de la AEAT para Madrid capital en 2024: (1167/68)/(1012/71)
+    assert alquiler.factor_nuevos(una).iloc[0] == pytest.approx(1.204037, abs=1e-6)
+    dos = alquiler.leer_aeat(
+        _html(
+            tmp_path,
+            "b",
+            [("28001-Salamanca", "3.509", "21,7")],
+            [("Localización de la vivienda", "Viviendas"), ("Número", "Alquiler m2")],
+        )
+    )
+    assert dos.loc["28001-Salamanca"].tolist() == [3509, 21.7]
+
+
+def test_leer_aeat_formato_inesperado(tmp_path):
+    with pytest.raises(ValueError, match="formato"):
+        alquiler.leer_aeat(_html(tmp_path, "a", [("x", "1")]))
+
+
+def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.000"))):
+    def fila(nombre, nuevos):
+        return (nombre, "1.000", nuevos, "100", "100")
+
+    return {
+        "provincia": _html(tmp_path, "p", [fila("Madrid, Comunidad de", "1.190")]),
+        "municipios": _html(
+            tmp_path, "m", [fila("Getafe-28065", "1.150"), fila("Madrid", "1")]
+        ),
+        "cp": _html(
+            tmp_path, "c", [fila("28001-A", "1.100"), fila("28002-B", "1.300")]
+        ),
+        "cp_viviendas": _html(tmp_path, "v", detalle, CABECERA_DETALLE),
+    }
+
+
+def test_leer_brecha(tmp_path):
+    b = alquiler.leer_brecha(_aeat(tmp_path))
+    assert b["provincia"] == pytest.approx(1.19)
+    assert b["municipio"].to_dict() == pytest.approx({"28065": 1.15})
+    assert b["cp"].loc["28002"].tolist() == pytest.approx([1.3, 300])
+
+
+def test_leer_brecha_cp_distintos(tmp_path):
+    with pytest.raises(ValueError, match="no coinciden"):
+        alquiler.leer_brecha(_aeat(tmp_path, detalle=[("28001-A", "100", "1.000")]))
+
+
+def test_tabla_paso_cp_cuenta_portales_en_madrid():
+    secciones = gpd.GeoDataFrame(
+        {"CUMUN": ["28079", "28079", "28065"], "CDIS": ["01", "02", "01"]},
+        geometry=[box(0, 0, 10, 10), box(10, 0, 20, 10), box(20, 0, 30, 10)],
+        crs=25830,
+    )
+    # 28001: 3 portales en el distrito 01 y 1 en el 02; 28002: 2 en el 02 y 2 fuera de Madrid, que no cuentan
+    xy = [(1, 1), (2, 2), (3, 3), (11, 1), (12, 2), (13, 3), (21, 1), (22, 2)]
+    portales = gpd.GeoDataFrame(
+        {"cp": ["28001"] * 4 + ["28002"] * 4},
+        geometry=[Point(x, y) for x, y in xy],
+        crs=25830,
+    )
+    t = alquiler.tabla_paso_cp(portales, secciones).set_index(["origen", "destino"])
+    assert t["peso"].to_dict() == pytest.approx(
+        {
+            ("28001", "2807901"): 0.75,
+            ("28001", "2807902"): 0.25,
+            ("28002", "2807902"): 1,
+        }
+    )
+    assert t.loc[("28001", "2807902"), "peso_destino"] == pytest.approx(1 / 3)
+
+
+def test_brecha_por_zona_precedencia(tmp_path):
+    b = alquiler.leer_brecha(_aeat(tmp_path))
+    tabla = pd.DataFrame(
+        {
+            "origen": ["28001", "28001", "28002"],
+            "destino": ["2807901", "2807902", "2807902"],
+            "peso": [0.75, 0.25, 1.0],
+            "peso_destino": [1.0, 0.25, 0.75],
+            "metodo": "portales",
+        }
+    )
+    zona = pd.DataFrame({"zona_id": ["2807901", "2807902", "28065", "28147"]})
+    zona.attrs["ipc_hasta"] = "2026-10"
+    z = alquiler.brecha_por_zona(zona, b, tabla)
+    # distrito 02: viviendas × peso = 100 × 0,25 de 28001 (factor 1,1) y 300 de 28002 (1,3)
+    esperado = (25 * 1.1 + 300 * 1.3) / 325
+    assert z["factor_brecha"].tolist() == pytest.approx([1.1, esperado, 1.15, 1.19])
+    assert z["brecha_ambito"].tolist() == [
+        "codigo_postal", "codigo_postal", "municipio", "comunidad",
+    ]  # fmt: skip
+    assert z.attrs["ipc_hasta"] == "2026-10"

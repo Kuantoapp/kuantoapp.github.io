@@ -38,6 +38,20 @@ IPC_CM = {
     "url": "https://datos.comunidad.madrid/dataset/fc22e79d-c04b-4537-8b4b-fe92516b989e/resource/3d1f3acc-98cc-4356-b9e1-4b9e5d999787/download/indice-de-precios-de-consumo.-vivienda-en-alquiler-base-2025.csv",
     "licencia": "CC BY 4.0",
 }
+AEAT_VIVIENDAS = {
+    "nombre": "Estadística de viviendas declaradas en el IRPF 2024, comparativa con los nuevos contratos por "
+    "provincia, municipio y código postal. Fuente: Agencia Tributaria",
+    "url": "https://sede.agenciatributaria.gob.es/AEAT/Contenidos_Comunes/La_Agencia_Tributaria/Estadisticas/"
+    "Publicaciones/sites/irpfvivienda/2024/home.html",
+    "licencia": "Reutilización autorizada citando la fuente y sin desnaturalizar (aviso legal de la sede de la AEAT)",
+}
+# mismo extracto que `pipeline_territorio.OSM`, que importa este módulo
+OSM_PORTALES = {
+    "nombre": "OpenStreetMap, extracto de Geofabrik de la Comunidad de Madrid del 2026-11-13 (portales con "
+    "código postal). © OpenStreetMap contributors",
+    "url": "https://download.geofabrik.de/europe/spain/madrid-261113.osm.pbf",
+    "licencia": "ODbL 1.0 (https://www.openstreetmap.org/copyright)",
+}
 LICENCIA_BOE = (
     "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
     "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
@@ -166,14 +180,20 @@ def _ultimo_anio(zona: pd.DataFrame) -> pd.DataFrame:
 
 def alquiler_json(zona: pd.DataFrame) -> dict:
     ultimo = _ultimo_anio(zona).set_index("zona_id")
+    brecha = zona.drop_duplicates("zona_id").set_index("zona_id")
     zonas = {}
     for zid in sorted(set(zona["zona_id"]) - {MADRID}):
+        b = brecha.loc[zid]
+        zonas[zid] = {
+            "factor_brecha": float(b["factor_brecha"]),
+            "brecha_ambito": b["brecha_ambito"],
+        }
         if zid not in ultimo.index:
-            zonas[zid] = dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
+            zonas[zid] |= dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
             zonas[zid] |= {"factor_ipc": 1.0, "origen": "sin_dato"}
             continue
         f = ultimo.loc[zid]
-        zonas[zid] = {
+        zonas[zid] |= {
             "anio": int(f["anio"]),
             "p25": float(f["eur_m2_p25"]),
             "p50": float(f["eur_m2_p50"]),
@@ -200,9 +220,21 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "sin_dato. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 76137 "
         "actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
         "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
-        "usado como control). " + ORIGEN_SERPAVI
+        "usado como control). "
+        + ORIGEN_SERPAVI
+        + " factor_brecha (estimado) lleva ese precio al de los "
+        "contratos formalizados en 2024: €/m² de los nuevos contratos ÷ €/m² de todos, con las medias de "
+        "alquiler mensual y de m² de la Estadística de viviendas declaradas en el IRPF 2024 (misma base "
+        "fiscal que el SERPAVI, pero medias y no medianas). brecha_ambito dice de dónde sale: municipio "
+        "(los de más de 20.000 habitantes), codigo_postal (los distritos de Madrid, desde sus códigos "
+        "postales ponderados por viviendas arrendadas y repartidos por portales de OpenStreetMap, que "
+        "cruzan límites de distrito) o comunidad (el de la Comunidad de Madrid). p50 × factor_ipc es el "
+        "precio de contrato y × factor_brecha el de contrato nuevo, que sigue siendo un suelo: el IPC de "
+        "alquiler sigue los contratos en vigor, y los nuevos suben más. Fuente: Agencia Tributaria (la "
+        "tabla no publica fecha de actualización; consultada el 2026-11-19). © OpenStreetMap contributors "
+        "(extracto de Geofabrik actualizado el 2026-11-13, ODbL 1.0)."
     )
-    fuentes = [SERPAVI, IPC_INE, IPC_CM]
+    fuentes = [SERPAVI, IPC_INE, IPC_CM, AEAT_VIVIENDAS, OSM_PORTALES]
     if n := int((zona["origen"] == "estimado").sum()):
         nota += (
             f" {n} zonas sin dato publicado llevan origen estimado: €/m² de vivienda colectiva de {anio} "
@@ -384,6 +416,8 @@ def main() -> None:
         alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
     )
     zona = imputacion.imputar(zona, *imputacion.leer_entradas())
+    tabla_cp = alquiler.tabla_paso_cp(alquiler.leer_portales(), zonas.leer_secciones())
+    zona = alquiler.brecha_por_zona(zona, alquiler.leer_brecha(), tabla_cp)
     salidas = {
         "alquiler.json": alquiler_json(zona),
         "netos.json": netos_json(neto.rejilla()),

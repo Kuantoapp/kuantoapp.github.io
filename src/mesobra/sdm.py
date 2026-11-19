@@ -77,8 +77,11 @@ MENCIONES = {
     "ine.es": "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
     "mivau.gob.es": "Origen de los datos: Ministerio de Vivienda y Agenda Urbana",
     "comunidad.madrid": "Fuente de los datos: Comunidad de Madrid",
+    "agenciatributaria.gob.es": "Fuente: Agencia Tributaria",
+    "geofabrik.de": "© OpenStreetMap contributors",
 }
-ACTUALIZADO = re.compile(r"actualizad[oa] el \d{4}-\d{2}-\d{2}")
+# la AEAT pide la fecha de la última actualización «cuando esté disponible»; si no la publica, la de consulta
+ACTUALIZADO = re.compile(r"(?:actualizad|consultad)[oa] el \d{4}-\d{2}-\d{2}")
 LICENCIA_MODELO = "CC BY 4.0"
 
 

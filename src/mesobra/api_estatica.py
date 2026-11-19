@@ -271,6 +271,8 @@ ALQUILER = {
     "anio": ("entero?", 2000, 2100), "p25": PCT, "p50": PCT, "p75": PCT, "m2": POS_N,
     "factor_ipc": ("decimal", 0.5, 2), "ic": None,
     "origen": ["observado", "estimado", "sin_dato"],
+    "factor_brecha": ("decimal", 0.5, 2),
+    "brecha_ambito": ["municipio", "codigo_postal", "comunidad"],
 }
 # fmt: on
 
