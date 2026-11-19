@@ -28,6 +28,7 @@ def _zona(filas):
     df["origen"] = df["eur_m2_p50"].notna().map({True: "observado", False: "sin_dato"})
     df["ic_inf"] = df["ic_sup"] = float("nan")
     df["factor_ipc"] = 1.0
+    df["factor_brecha"], df["brecha_ambito"] = 1.1, "comunidad"
     df.attrs["ipc_hasta"] = "2026-10"
     return df
 
@@ -69,6 +70,7 @@ def test_m2_por_defecto_es_la_mediana_ponderada():
 
 def test_alquiler_del_fixture_cumple_el_contrato():
     zona = pd.read_csv(PROCESSED / "alquiler_zona.csv", dtype={"zona_id": str})
+    zona["factor_brecha"], zona["brecha_ambito"] = 1.2, "municipio"
     zona.attrs["ipc_hasta"] = "2026-10"  # el fixture trae un factor_ipc de 1,035
     obj = alquiler_json(zona)
     validar("alquiler.json", obj)
