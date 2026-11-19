@@ -30,7 +30,8 @@ Supuestos:
 4. Neto: interpolación lineal en `brutos` de `netos.json`; fuera de la tabla, `ValueError` (no se
    extrapola). Monoparental = 1 adulto con hijos; cada sueldo usa los hijos del hogar (#183).
 5. Transporte público: tabla de `tarifas.json` con la corona más exterior entre origen y destino; tarifa
-   joven si edad ≤ `edad_max_joven`. Un destino sin corona conocida (los polos, hasta F3-01) da error.
+   joven si edad ≤ `edad_max_joven`. La corona de un polo es la de su `zona_id` (F3-01); un destino sin corona
+   conocida da error.
    shortcut: una sola edad (la del visitante) para los dos sueldos, aunque el Abono Joven es personal;
    pasar a `edad` por sueldo con el selector «edad de quien trabaja» (F3-14, #164).
 6. Coche: 2 × km × días × semanas_mes × `eur_km`, sin aparcamiento ni congestión (F3-02, #96).
@@ -150,13 +151,17 @@ def _celda(tiempos: dict, matriz: str, origen: str, destino: str) -> float | Non
 
 
 def _corona(api: Api, origen: str, destino: str) -> str:
-    """La corona más exterior entre origen y destino."""
+    """La corona más exterior entre origen y destino; la de un polo es la de la zona en la que cae."""
     orden = api["tarifas"]["orden_coronas"]
     coronas = {
         f["properties"]["zona_id"]: f["properties"]["corona"]
         for f in api["zonas"]["features"]
     }
-    par = [coronas.get(origen), coronas.get(destino)]
+    zona_destino = {
+        d["destino_id"]: d.get("zona_id", d["destino_id"])
+        for d in api["tiempos"]["destinos"]
+    }
+    par = [coronas.get(origen), coronas.get(zona_destino.get(destino, destino))]
     if any(c not in orden for c in par):
         raise ValueError(
             f"{origen} → {destino}: coronas {par} sin tarifa (orden_coronas {orden})"
