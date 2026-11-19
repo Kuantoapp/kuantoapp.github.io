@@ -10,7 +10,15 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from mesobra import alquiler, api_estatica, hogares, neto, transporte, zonas
+from mesobra import (
+    alquiler,
+    api_estatica,
+    hogares,
+    imputacion,
+    neto,
+    transporte,
+    zonas,
+)
 
 APP_DATOS = Path(__file__).resolve().parents[2] / "app/datos"
 PROCESSED = Path(__file__).resolve().parents[2] / "data/processed"
@@ -170,10 +178,12 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "p25": float(f["eur_m2_p25"]),
             "p50": float(f["eur_m2_p50"]),
             "p75": float(f["eur_m2_p75"]),
-            "m2": float(f["m2_p50"]),
+            "m2": None if pd.isna(f["m2_p50"]) else float(f["m2_p50"]),
             "factor_ipc": float(f["factor_ipc"]),
             "origen": f["origen"],
-            "ic": None,  # alquiler_zona no produce estimados; si llegan, el validador falla
+            "ic": [float(f["ic_inf"]), float(f["ic_sup"])]
+            if f["origen"] == "estimado"
+            else None,
         }
     anio = int(zona["anio"].max())
     if (mes := zona.attrs.get("ipc_hasta")) is None:
@@ -192,7 +202,18 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
         "usado como control). " + ORIGEN_SERPAVI
     )
-    meta = _meta(anio, [SERPAVI, IPC_INE, IPC_CM], nota) | {"ipc_hasta": mes}
+    fuentes = [SERPAVI, IPC_INE, IPC_CM]
+    if n := int((zona["origen"] == "estimado").sum()):
+        nota += (
+            f" {n} zonas sin dato publicado llevan origen estimado: €/m² de vivienda colectiva de {anio} "
+            "estimado con un modelo espacial (mesobra.imputacion, #99) a partir de las zonas vecinas, la "
+            "renta media por hogar del ADRH (tabla 31097 actualizada el 2026-10-15), la población y los "
+            "tiempos en transporte público de tiempos.json; ic es el intervalo de predicción conformal "
+            f"al {imputacion.NIVEL * 100:.0f} % del p50 (cobertura medida, no garantizada) y p25 y p75 salen de los cocientes "
+            "medianos observados. Sin cuantía mensual, así que esas zonas no tienen esfuerzo."
+        )
+        fuentes.append(imputacion.FUENTE_ADRH)
+    meta = _meta(anio, fuentes, nota) | {"ipc_hasta": mes}
     return {"meta": meta, "zonas": zonas}
 
 
@@ -202,7 +223,7 @@ def m2_por_defecto(zona: pd.DataFrame) -> int:
     Se ordena por `m2_p50`, se acumulan los testigos y se toma el primer valor cuya suma
     acumulada llega a la mitad del total. Madrid entero (28079) no entra.
     """
-    f = _ultimo_anio(zona).sort_values("m2_p50")
+    f = _ultimo_anio(zona[zona["origen"] == "observado"]).sort_values("m2_p50")
     acumulado = f["testigos"].cumsum()
     return round(float(f.loc[acumulado >= f["testigos"].sum() / 2, "m2_p50"].iloc[0]))
 
@@ -267,12 +288,11 @@ def tarifas_json(
         por_viajes = escenarios.setdefault(esc, {}).setdefault(edad, {})
         por_viajes.setdefault(str(viajes), {})[corona] = _filas(g)
     ruta = {}
-    for (esc, edad, clave, nl), g in v2.groupby(
-        ["escenario", "edad", "clave_tarifa", "no_laborables"]
+    for (esc, col, edad, clave, nl), g in v2.groupby(
+        ["escenario", "colectivo", "edad", "clave_tarifa", "no_laborables"]
     ):
-        ruta.setdefault(esc, {}).setdefault(edad, {}).setdefault(clave, {})[str(nl)] = (
-            _filas(g)
-        )
+        por_edad = ruta.setdefault(esc, {}).setdefault(col, {}).setdefault(edad, {})
+        por_edad.setdefault(clave, {})[str(nl)] = _filas(g)
     lista = sorted(v2["clave_tarifa"].unique())
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
@@ -288,7 +308,9 @@ def tarifas_json(
         "con A, interzonal sin A) con el sencillo o el 10 viajes de cada producto, el Abono Joven y el "
         "Abono +65 (gratuito; desde los 65 años, edad por verificar). Cercanías: abono del CRTM o Abono "
         "mensual de Renfe (20 €, solo con descuento). no_laborables: viajes de ocio al mes, cobrados en el "
-        "producto principal de la ruta. "
+        "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "
+        "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); el Abono de "
+        "Renfe, igual para todos. "
         + (
             "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
             "una validación (heurística de #161 hasta tener la ruta de r5py). Subestima el coste entre "
@@ -312,6 +334,7 @@ def tarifas_json(
         "origenes": ids,
         "destinos": ids,
         "claves": lista,
+        "colectivos": list(api_estatica.COLECTIVOS),
         "edades": list(api_estatica.EDADES),
         "no_laborables": list(api_estatica.NO_LABORABLES),
         "clave_tarifa": _matriz_claves(claves, ids, lista),
@@ -360,6 +383,7 @@ def main() -> None:
     zona = alquiler.actualizar_ipc(
         alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
     )
+    zona = imputacion.imputar(zona, *imputacion.leer_entradas())
     salidas = {
         "alquiler.json": alquiler_json(zona),
         "netos.json": netos_json(neto.rejilla()),

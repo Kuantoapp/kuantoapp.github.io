@@ -4,11 +4,10 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-import pytest
 from shapely import Point
 
-from mesobra import neto, pipeline_euros, transporte
-from mesobra.api_estatica import validar
+from mesobra import imputacion, neto, pipeline_euros, transporte
+from mesobra.api_estatica import COLECTIVOS, validar
 from mesobra.pipeline_euros import (
     alquiler_json,
     hogares_json,
@@ -69,10 +68,20 @@ def test_m2_por_defecto_es_la_mediana_ponderada():
 def test_alquiler_del_fixture_cumple_el_contrato():
     zona = pd.read_csv(PROCESSED / "alquiler_zona.csv", dtype={"zona_id": str})
     zona.attrs["ipc_hasta"] = "2026-10"  # el fixture trae un factor_ipc de 1,035
-    validar("alquiler.json", alquiler_json(zona.query("origen != 'estimado'")))
-    # alquiler_zona aún no produce estimados
-    with pytest.raises(ValueError, match=r"\.ic:"):
-        validar("alquiler.json", alquiler_json(zona))
+    obj = alquiler_json(zona)
+    validar("alquiler.json", obj)
+    assert obj["zonas"]["28092"]["ic"] == [10.3, 13.4]
+    assert imputacion.FUENTE_ADRH in obj["meta"]["fuentes"]
+    assert "origen estimado" in obj["meta"]["nota"]
+
+
+def test_estimado_sin_m2_y_fuera_del_m2_por_defecto():
+    zona = _zona([("28001", 2024, 10.0, 40.0, 1), ("28002", 2024, 12.0, None, 0)])
+    zona.loc[1, ["origen", "ic_inf", "ic_sup"]] = ["estimado", 10.0, 14.0]
+    obj = alquiler_json(zona)
+    validar("alquiler.json", obj)
+    assert obj["zonas"]["28002"]["m2"] is None
+    assert m2_por_defecto(zona) == 40
 
 
 def test_netos_tarifas_y_hogares_cumplen_el_contrato():
@@ -148,5 +157,11 @@ def test_tarifas_matriz_de_claves():
     assert o["claves"] == ["B1-B1|interurbano", "B1-B2|interurbano"]
     assert o["clave_tarifa"] == [[0, 1], [1, None]]
     assert o["clave_estimada"]
-    cinco = o["tarifas_ruta"]["vigente_2026"]["general"]["B1-B2|interurbano"]["0"][4]
+    assert o["colectivos"] == COLECTIVOS
+    por_colectivo = o["tarifas_ruta"]["vigente_2026"]
+    assert sorted(por_colectivo) == sorted(COLECTIVOS)
+    cinco = por_colectivo["ordinario"]["general"]["B1-B2|interurbano"]["0"][4]
     assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 26.71}
+    # 14,30 € del interzonal para FN especial (BOCM-20251231-2 pág. 66) × 335/30 / 12
+    cinco = por_colectivo["fn_especial"]["general"]["B1-B2|interurbano"]["0"][4]
+    assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 13.31}

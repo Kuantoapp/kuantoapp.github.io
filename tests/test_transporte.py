@@ -7,7 +7,8 @@ from shapely import Point, box
 
 from mesobra import transporte as t
 
-V, S = "vigente_2026", "sin_descuento"
+O = "ordinario"
+V, S = ("vigente_2026", O), ("sin_descuento", O)  # tarifa (escenario, colectivo)
 
 
 def coste(clave, dias, no_laborables=0, *, edad="general", esc=V):
@@ -17,17 +18,21 @@ def coste(clave, dias, no_laborables=0, *, edad="general", esc=V):
 def test_precios_de_control():
     assert (t.ABONO_30["A"][V], t.ABONO_30["C2"][V]) == (D("32.70"), D("49.20"))
     assert (t.ABONO_30["A"][S], t.ABONO_30["C2"][S]) == (D("56.20"), D("84.40"))
-    assert {V: D("10.00"), S: D("20.00")} == t.ABONO_JOVEN
-    assert t.ABONO_INTERZONAL["B2", "C1"] == {V: D("28.70"), S: D("49.30")}
-    assert t.ABONO_INTERZONAL["B1", "C2"] == {V: D("32.70"), S: D("56.20")}
+    assert (t.ABONO_JOVEN[V], t.ABONO_JOVEN[S]) == (D("10.00"), D("20.00"))
+    assert t.ABONO_INTERZONAL["B2", "C1"][V] == D("28.70")
+    assert t.ABONO_INTERZONAL["B2", "C1"][S] == D("49.30")
+    assert t.ABONO_INTERZONAL["B1", "C2"][S] == D("56.20")
     assert (
         len(t.ABONO_INTERZONAL) == 10
     )  # todas las parejas de B1-C2 (BOCM-20251231-2 pág. 66)
     assert [p[V] for p in t.DIEZ_VIAJES_INTERURBANO] == [
         D(x) for x in ("5.10", "7.30", "9.60", "13.80", "17.80", "22.40")
     ]
-    assert t.DIEZ_VIAJES["metro_b"] == {V: D("6.70"), S: D("11.50")}
-    assert t.DIEZ_VIAJES["combinado"] == {V: D("10.90"), S: D("18.80")}
+    assert (t.DIEZ_VIAJES["metro_b"][V], t.DIEZ_VIAJES["metro_b"][S]) == (
+        D("6.70"),
+        D("11.50"),
+    )
+    assert t.DIEZ_VIAJES["combinado"][S] == D("18.80")
     assert t.SENCILLO["metro_a"][V] == D("1.50")
     assert t.SENCILLO["interurbano"][S] == D("3.00")
 
@@ -151,9 +156,11 @@ def test_mas_dias_o_mas_ocio_no_cuestan_menos():
         "B2-C2|interurbano",
         "A-C2|interurbano+metro_a",
     ]
-    for esc, edad, clave in product(t.ESCENARIOS, t.EDADES, claves):
+    for tarifa, edad, clave in product(
+        product(t.ESCENARIOS, t.COLECTIVOS), t.EDADES, claves
+    ):
         costes = [
-            coste(clave, d, nl, edad=edad, esc=esc)[1]
+            coste(clave, d, nl, edad=edad, esc=tarifa)[1]
             for d in t.DIAS
             for nl in t.NO_LABORABLES
         ]
@@ -175,12 +182,14 @@ def test_fuera_de_dominio(dias, nl):
 def test_tabla():
     claves = ["A-A|metro_a", "B2-C1|interurbano"]
     df = t.tabla(claves)
-    assert len(df) == 2 * 3 * 2 * 5 * 3
-    fila = df.query(
-        "escenario == @V and edad == 'general' and clave_tarifa == 'B2-C1|interurbano' "
-        "and dias == 5 and no_laborables == 0"
-    )
-    assert fila.coste_mes.item() == 26.71
+    assert len(df) == 2 * 6 * 3 * 2 * 5 * 3
+    filas = df.query(
+        "escenario == 'vigente_2026' and edad == 'general' "
+        "and clave_tarifa == 'B2-C1|interurbano' and dias == 5 and no_laborables == 0"
+    ).set_index("colectivo")
+    # 28,70 € y 14,30 € (FN especial) × 335/30 / 12
+    assert filas.loc[O, "coste_mes"] == 26.71
+    assert filas.loc["fn_especial", "coste_mes"] == 13.31
 
 
 def test_tabla_v1_conserva_la_forma_de_80():
@@ -189,9 +198,103 @@ def test_tabla_v1_conserva_la_forma_de_80():
     assert t.clave_v1("C2", 4) == "A-C2|interurbano+metro_a"
     assert t.clave_v1("A", 4) == "A-A|metro_a+metro_a"
     fila = df.query(
-        "escenario == @V and ~joven and corona == 'C2' and dias == 5 and viajes_dia == 2"
+        "escenario == 'vigente_2026' and ~joven and corona == 'C2' and dias == 5 "
+        "and viajes_dia == 2"
     )
     assert fila.coste_mes.item() == 45.78
+
+
+def test_control_por_colectivo():
+    # control de la issue (referencia de dm-calculos-normativos §1.3): BOCM-20251231-2 págs. 66-68
+    a, joven = t.ABONO_30["A"], t.ABONO_JOVEN
+    assert [a[V[0], c] for c in ("ordinario", "fn_general", "fn_especial")] == [
+        D("32.70"),
+        D("26.10"),
+        D("16.30"),
+    ]
+    assert joven[V[0], "fn_especial"] == D("5.00")
+    assert (
+        a[V[0], "fn_especial_discapacidad"],
+        a[S[0], "fn_especial_discapacidad"],
+    ) == (
+        D("9.70"),
+        D("16.80"),
+    )
+    assert t.ABONO_INTERZONAL["B2", "C1"][V[0], "fn_general_discapacidad"] == D("17.20")
+    assert t.DIEZ_VIAJES_INTERURBANO[5][S[0], "discapacidad"] == D("30.80")
+
+
+def test_precio_de_la_columna_y_no_del_factor():
+    # el BOCM redondea a 0,10 €: 1,50 × 0,5 = 0,75 y 7,30 × 0,5 = 3,65, pero las columnas dicen 0,70 y 3,60
+    assert t.SENCILLO["metro_a"][V[0], "fn_especial"] == D("0.70")
+    assert t.DIEZ_VIAJES["metro_a"][V[0], "fn_especial"] == D("3.60")
+    assert t.SENCILLO["interurbano"][S[0], "fn_especial_discapacidad"] == D("0.90")
+    assert coste("A-A|metro_a", 1, esc=("vigente_2026", "fn_especial")) == (
+        "10 viajes",
+        D("2.72"),  # 7,5667 viajes ÷ 10 × 3,60
+    )
+
+
+# factores deducidos de las tablas del BOCM (no los publica); solo para comprobar la transcripción, nunca
+# para calcular un precio (docs/verificaciones/transporte-colectivos.md, fila 1)
+FACTOR = dict(zip(t.COLECTIVOS, map(D, ("1", "0.8", "0.8", "0.5", "0.6", "0.3"))))
+# orden estricto de cada fila del BOCM; discapacidad y FN general valen lo mismo
+ORDEN = (
+    "ordinario",
+    "fn_general",
+    "fn_general_discapacidad",
+    "fn_especial",
+    "fn_especial_discapacidad",
+)
+PRECIOS = [
+    *t.ABONOS.values(),
+    t.ABONO_JOVEN,
+    *t.DIEZ_VIAJES.values(),
+    *t.DIEZ_VIAJES_INTERURBANO,
+    *t.SENCILLO.values(),
+]
+
+
+def _fuera_de_banda_o_de_orden(fila: dict[str, D]) -> list[str]:
+    """Columnas que no están entre factor × ordinario − 0,11 € y factor × ordinario, o que rompen el orden."""
+    banda = [
+        c
+        for c, f in FACTOR.items()
+        if not D(0) <= fila["ordinario"] * f - fila[c] <= D("0.11")
+    ]
+    orden = [a for a, b in pairwise(ORDEN) if not fila[a] > fila[b]]
+    return (
+        banda + orden + ["discapacidad"] * (fila["discapacidad"] != fila["fn_general"])
+    )
+
+
+def test_colectivos_en_banda_y_en_orden():
+    # detecta columnas intercambiadas y erratas sin volver a copiar las tablas del BOCM
+    for p, esc in product(PRECIOS, t.ESCENARIOS):
+        assert len(p) == len(t.ESCENARIOS) * len(t.COLECTIVOS)
+        assert _fuera_de_banda_o_de_orden({c: p[esc, c] for c in t.COLECTIVOS}) == [], p
+    sencillo = {c: t.SENCILLO["metro_a"][V[0], c] for c in t.COLECTIVOS}
+    cambiada = sencillo | {
+        "fn_especial": sencillo["fn_general_discapacidad"],
+        "fn_general_discapacidad": sencillo["fn_especial"],
+    }
+    assert _fuera_de_banda_o_de_orden(cambiada)
+    assert _fuera_de_banda_o_de_orden(
+        sencillo | {"fn_especial": D("0.60")}
+    )  # errata de 0,10 €
+
+
+def test_cada_colectivo_paga_menos_o_igual():
+    for clave, d in product(["A-A|metro_a", "B2-C2|interurbano"], t.DIAS):
+        costes = [coste(clave, d, esc=(V[0], c))[1] for c in t.COLECTIVOS]
+        assert max(costes) == costes[0]
+
+
+def test_colectivo_desconocido_o_columnas_que_faltan():
+    with pytest.raises(ValueError, match="colectivo 'monoparental'"):
+        coste("A-A|metro_a", 1, esc=("vigente_2026", "monoparental"))
+    with pytest.raises(ValueError, match="6 columnas"):
+        t._p("1.50 1.20", "1.50 1.20")
 
 
 def _coronas_concentricas():
