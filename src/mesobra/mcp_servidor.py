@@ -34,9 +34,9 @@ if DATOS is None:
 # Una clave mal escrita no se descarta en silencio.
 ESTRICTO = ConfigDict(extra="forbid", strict=True)
 UNIDADES = {
-    "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 (declaración, no retención), tributación individual",
+    "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 (declaración, no retención), tributación individual (ver fuentes.netos.json.supuestos)",
     "alquiler": "€/mes (mediana P50; P25 y P75 en alquiler_p25/p75)",
-    "transporte": "€/mes, estimado: media anual del título más barato con precios del BOCM de 2026 y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
+    "transporte": "€/mes, estimado: media anual del título más barato con precios de 2026 (BOCM de 31-12-2025) y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
     "cesta": "€/mes (cesta básica del hogar)",
     "sobra": "€/mes del hogar = neto − alquiler − transporte − cesta",
     "sobra_banda": "[bajo, alto] €/mes",
