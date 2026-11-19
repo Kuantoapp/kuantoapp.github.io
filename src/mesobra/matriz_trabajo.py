@@ -6,13 +6,14 @@ extraídos del sitio web del INE: www.ine.es. Se usa la hoja `C23` (ocupados de 
 
 Formato: una hoja por año (`C21`, `C22`, `C23`), en largo. La fila 0 agrupa «Lugar de residencia» y «Lugar de
 trabajo»; la 1 trae las columnas de `COLUMNAS`; después, una fila por par (residencia, trabajo) con los «Ocupados de
-16 y más años». El INE suprime las celdas de menos de 5 ocupados (el mínimo publicado es 5): un par que falta no
-es un cero. «No consta» como municipio, o como provincia, de trabajo es lugar desconocido, no un destino.
+16 y más años». El mínimo publicado es 5: probable supresión de las celdas menores (el fichero se llama «anonim»;
+el INE no lo dice en lo leído), así que un par que falta no es un cero. «No consta» como municipio, o como provincia,
+de trabajo es lugar desconocido, no un destino.
 
-En la Comunidad de Madrid, 2023, leído del fichero original el 19-11-2026: 179 municipios de residencia, 3.067.380 ocupados, el
-94,2 % trabaja en la provincia y el 9,47 % tiene municipio de trabajo «No consta». El lugar de trabajo sale sobre
-todo de la afiliación (el 94,2 % de los ocupados, metodología del Censo anual): es el de la cuenta de la Seguridad
-Social, que puede ser la sede de la empresa y no el centro real.
+En la Comunidad de Madrid, 2023, leído del fichero original el 19-11-2026: 179 municipios de residencia, 3.067.380
+ocupados, el 94,19 % trabaja en la provincia y el 9,47 % tiene municipio de trabajo «No consta». El INE obtiene los
+ocupados sobre todo de la afiliación a la Seguridad Social (el 94,2 % de los del censo, metodología del Censo anual,
+abril de 2026): el lugar de trabajo puede ser la sede de la empresa y no el centro real (sin comprobar).
 """
 
 import logging
