@@ -1,9 +1,11 @@
 """`pipeline_euros`: cada JSON cumple el contrato y las reglas de elección de datos."""
 
+import json
 from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
+import pytest
 from shapely import Point
 
 from mesobra import imputacion, neto, pipeline_euros, transporte
@@ -167,3 +169,86 @@ def test_tarifas_matriz_de_claves():
     # 14,30 € del interzonal para FN especial (BOCM-20251231-2 pág. 66) × 335/30 / 12
     cinco = por_colectivo["fn_especial"]["general"]["B1-B2|interurbano"]["0"][4]
     assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 13.31}
+
+
+TARIFAS_APP = Path(__file__).parent.parent / "app" / "datos" / "tarifas.json"
+REGENERA = "regenera app/datos/tarifas.json con pipeline_euros.tarifas_json (#234)"
+
+
+def _publicadas(arbol: dict, niveles: list[str]) -> pd.DataFrame:
+    """Aplana el árbol {nivel: {nivel: ... [fila por día]}} de tarifas.json en una tabla."""
+    filas = []
+
+    def baja(nodo, claves):
+        if isinstance(nodo, list):
+            filas.extend(
+                (*claves, dias, f["titulo"], f["coste_mes"])
+                for dias, f in enumerate(nodo, 1)
+            )
+            return
+        for k, hijo in nodo.items():
+            baja(hijo, (*claves, k))
+
+    baja(arbol, ())
+    return pd.DataFrame(filas, columns=[*niveles, "dias", "titulo", "coste_mes"])
+
+
+def _distintas(publicada: pd.DataFrame, codigo: pd.DataFrame, claves: list[str]):
+    """Filas que faltan, sobran o cambian de título o de coste entre el fichero y el código."""
+    m = publicada.merge(
+        codigo, on=claves, how="outer", indicator=True, validate="one_to_one"
+    )
+    return m[
+        (m["_merge"] != "both")
+        | (m["titulo_x"] != m["titulo_y"])
+        | (m["coste_mes_x"] != m["coste_mes_y"])
+    ]
+
+
+def test_tarifas_publicadas_v1_al_dia_con_transporte():
+    j = json.loads(TARIFAS_APP.read_text("utf-8"))
+    niveles = ["escenario", "edad", "viajes_dia", "corona"]
+    codigo = transporte.tabla_v1()
+    codigo["edad"] = codigo.pop("joven").map({True: "joven", False: "general"})
+    codigo["viajes_dia"] = codigo["viajes_dia"].astype(str)
+    mal = _distintas(_publicadas(j["escenarios"], niveles), codigo, [*niveles, "dias"])
+    assert mal.empty, (
+        f"{len(mal)} filas v1 distintas; {REGENERA}:\n{mal.head(10).to_string()}"
+    )
+    assert j["semanas_mes"] == pytest.approx(227 / 60)
+
+
+def test_tarifas_publicadas_v2_al_dia_con_transporte():
+    j = json.loads(TARIFAS_APP.read_text("utf-8"))
+    niveles = ["escenario", "colectivo", "edad", "clave_tarifa", "no_laborables"]
+    codigo = transporte.tabla(j["claves"])
+    codigo["no_laborables"] = codigo["no_laborables"].astype(str)
+    mal = _distintas(
+        _publicadas(j["tarifas_ruta"], niveles), codigo, [*niveles, "dias"]
+    )
+    assert mal.empty, (
+        f"{len(mal)} filas v2 distintas; {REGENERA}:\n{mal.head(10).to_string()}"
+    )
+
+
+def test_tarifas_publicadas_controles_joven_b2():
+    b2 = json.loads(TARIFAS_APP.read_text("utf-8"))["escenarios"]["vigente_2026"]
+    b2 = b2["joven"]["2"]["B2"]
+    # 1 día: 2 × 227/60 = 7,567 viajes × 9,60 €/10 (10 viajes interurbano de dos saltos, con descuento);
+    # desde el prorrateo de #271 baja del Abono Joven (el 9,31 de la auditoría de #73 era con paquetes enteros)
+    assert b2[0] == {"titulo": "10 viajes", "coste_mes": 7.26}
+    # 5 días: Abono Joven, 10 € con descuento × 335/30 compras al año / 12
+    assert b2[4] == {"titulo": "Abono Joven", "coste_mes": 9.31}
+
+
+def test_tarifas_publicadas_controles_oficial_y_colectivo():
+    j = json.loads(TARIFAS_APP.read_text("utf-8"))
+    # sin descuento, A, 5 días: 2 × 5 × 227/60 viajes × 12,50 €/10 (BOCM-20251231-3 pág. 72) < abono 52,30
+    a = j["escenarios"]["sin_descuento"]["general"]["2"]["A"][4]
+    assert a == {"titulo": "10 viajes", "coste_mes": 47.29}
+    # FN especial, A-B2, 5 días: 37,833 viajes × 4,80 €/10 (BOCM-20251231-2 pág. 67) < abono 20,10
+    ruta = j["tarifas_ruta"]["vigente_2026"]["fn_especial"]["general"]
+    assert ruta["A-B2|interurbano"]["0"][4] == {
+        "titulo": "10 viajes",
+        "coste_mes": 18.16,
+    }

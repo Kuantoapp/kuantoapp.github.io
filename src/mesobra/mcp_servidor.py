@@ -22,9 +22,14 @@ from pydantic import ConfigDict, Field, with_config
 
 from mesobra.calculo import RAIZ, calcular, leer_api
 
-# El wheel trae app/datos como mesobra/datos (force-include); en el checkout, la carpeta del repo.
+# El wheel trae app/datos como mesobra/datos (force-include); en el checkout, la carpeta del repo. En el checkout,
+# src/mesobra/datos existe (guarda polos.csv) pero sin la API: se elige la carpeta que tiene zonas.geojson.
 DATOS = next(
-    (c for c in (Path(__file__).parent / "datos", RAIZ / "app/datos") if c.is_dir()),
+    (
+        c
+        for c in (Path(__file__).parent / "datos", RAIZ / "app/datos")
+        if (c / "zonas.geojson").is_file()
+    ),
     None,
 )
 if DATOS is None:

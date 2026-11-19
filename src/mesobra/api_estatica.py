@@ -238,15 +238,24 @@ def _zonas(o):
     return p + (q or _coherencia_zonas(props))
 
 
-DESTINO = {"destino_id": "destino", "nombre": "texto", "tipo": ["zona", "polo"]}
+DESTINO = {
+    "destino_id": "destino",
+    "nombre": "texto",
+    "tipo": ["zona", "polo"],
+    "zona_id": "zona",  # solo los polos: la zona en la que caen, que da su corona tarifaria (F3-01)
+}
 
 
 def _destinos(destinos):
-    p = _tabla("destinos", destinos, DESTINO, ("destino_id",))
+    p = _tabla("destinos", destinos, DESTINO, ("destino_id",), ("zona_id",))
     return p or [
         f"destinos[{i}]: tipo {d['tipo']!r} no casa con {d['destino_id']!r}"
         for i, d in enumerate(destinos)
         if (d["tipo"] == "polo") != d["destino_id"].startswith("polo:")
+    ] + [
+        f"destinos[{i}]: zona_id es obligatorio en los polos y no va en las zonas"
+        for i, d in enumerate(destinos)
+        if (d["tipo"] == "polo") != ("zona_id" in d)
     ]
 
 
@@ -490,7 +499,8 @@ def _referencias(nombre, o):
     """Ids que el fichero toma de las zonas."""
     if nombre == "tiempos.json":
         return o["origenes"] + [
-            d["destino_id"] for d in o["destinos"] if d["tipo"] == "zona"
+            d["destino_id"] if d["tipo"] == "zona" else d["zona_id"]
+            for d in o["destinos"]
         ]
     if nombre == "alquiler.json":
         return list(o["zonas"])
