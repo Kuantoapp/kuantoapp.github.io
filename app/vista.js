@@ -220,7 +220,7 @@ function fraseAlquiler(zona, { anio, ic, subida, ipc }) {
   // La subida simulada no es un dato observado: se dice aparte y se marca como simulación.
   if (subida > 0) {
     const dato = zona.origen === "estimado" ? `dato estimado de ${anio}` : `contratos de ${anio}`; // una zona imputada no tiene contratos
-    const hasta = ipc === null ? "" : ` actualizado con el IPC de alquiler hasta ${ipc}`;
+    const hasta = ipc === null ? "" : ` actualizad${zona.origen === "estimado" ? "o" : "os"} con el IPC de alquiler hasta ${ipc}`;
     return `Alquiler con la subida del ${subida} %: ${rango} (${dato}${hasta} más la subida; simulación, estimado)`;
   }
   if (zona.origen !== "estimado") {
@@ -285,6 +285,7 @@ export function avisos(alquiler) {
   const zonas = Object.values(alquiler.zonas);
   const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;
   const anterior = zonas.some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
+  // shortcut: aviso global; si conviven zonas con y sin IPC no lo dice por zona, mejorar entonces.
   const conIpc = zonas.some((z) => z.factor_ipc !== 1);
   const lineas = [
     `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? ` y están actualizados con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.`,

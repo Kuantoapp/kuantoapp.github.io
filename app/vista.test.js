@@ -185,6 +185,16 @@ test("con datos reales (con IPC) el aviso y la ficha dicen lo mismo", () => {
   assert.equal(ficha.match(mes)[1], avisos(real.alquiler)[0].match(mes)[1]);
 });
 
+test("con IPC, la subida y la zona estimada concuerdan en el texto", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = caso.salida.zonas["28065"];
+  const base = contextoFicha(ejemplo, caso.entrada, caso.salida, "28065");
+  const linea = (zona, ctx) => lineasFicha("Zona", zona, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea(z, { ...base, subida: 10 }), /contratos de 2024 actualizados con el IPC de alquiler hasta octubre de 2026 más la subida/);
+  assert.match(linea({ ...z, origen: "estimado" }, { ...base, subida: 10 }), /dato estimado de 2024 actualizado con el IPC/);
+  assert.match(linea({ ...z, origen: "estimado" }, { ...base, ic: null }), /año 2024, actualizado con el IPC de alquiler hasta octubre de 2026; sin intervalo/);
+});
+
 test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
   const f = (d) => new Intl.NumberFormat("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
   for (const caso of casos.filter((c) => !("error" in c))) {
