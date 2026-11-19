@@ -12,6 +12,7 @@ from mesobra.sobrecarga_ecv import (
     sobrecarga_control,
     sobrecarga_eurostat,
     tasa,
+    tramos_control,
 )
 
 B = "          "  # «no aplicable» del INE: varios espacios
@@ -200,3 +201,18 @@ def test_renta_por_uc_madrid(h, tenencias, esperado):
         m = m[m.HH021.isin(tenencias)]
     media = np.average(m.HY020 / m.HX240, weights=m.peso_personas)
     assert media == pytest.approx(esperado, abs=0.01)
+
+
+@real
+def test_tramos_control(h):
+    # Tramos de F3-06 (#100, nota del 18-11), ES30 y HH021 3 o 4 (estimado). Las constantes de
+    # sobrecarga.CONTROL se fijaron a mano con EE redondeados antes de ejecutar: difieren ≤ 0,25.
+    from mesobra.sobrecarga import CONTROL
+
+    t = tramos_control(h)
+    esperado = {"<=30": 46.0, "30-40": 18.0, "40-50": 10.4, ">50": 25.6}
+    assert t["tasa"].to_dict() == pytest.approx(esperado, abs=0.05)
+    assert t["tasa"].sum() == pytest.approx(100)
+    assert (t["n"] == 562).all()
+    for tramo, (inf, sup) in t[["ic_inf", "ic_sup"]].iterrows():
+        assert (inf, sup) == pytest.approx(CONTROL[tramo], abs=0.25)
