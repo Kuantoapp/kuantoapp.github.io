@@ -177,6 +177,7 @@ export function contextoFicha(api, entrada, resultado, id) {
   const n = entrada.sueldos.length;
   return {
     anio: dato.anio,
+    subida: entrada.escenario?.subida_alquiler ?? 0,
     // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
     ic: dato.ic?.length && zona.alquiler !== null ? dato.ic.map((v) => (v * zona.alquiler) / dato.p50) : null,
     ref: resultado.ref === null ? null : resultado.zonas[resultado.ref],
@@ -206,8 +207,10 @@ function fraseBanda([bajo, alto]) {
   return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
 }
 
-function fraseAlquiler(zona, { anio, ic }) {
+function fraseAlquiler(zona, { anio, ic, subida }) {
   const rango = `entre ${euros.format(zona.alquiler_p25)} y ${euros.format(zona.alquiler_p75)} € al mes`;
+  // La subida simulada no es un dato observado: se dice aparte y se marca como simulación.
+  if (subida > 0) return `Alquiler con la subida del ${subida} %: ${rango} (contratos de ${anio} más la subida; simulación, estimado)`;
   // shortcut: «contratos de {anio}» vale con factor_ipc 1,0 (hoy en todas); al aplicar el IPC (#94), decir «actualizado con el IPC» y «estimado».
   if (zona.origen !== "estimado") return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
   const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
@@ -236,7 +239,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
-    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}`,
+    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ""}`,
     `Con el ${ESFUERZO_RECOMENDADO * 100} % del neto alcanza para un piso de ${euros.format(piso)} m²${ctx.personas > 1 ? ` compartido entre ${ctx.personas}` : ""} (estimado)`,
   );
   return [...new Set(lineas)];
@@ -395,7 +398,7 @@ export function entradaEscenario(entrada, v) {
 /** Qué simula el mapa, en una línea; `null` si no hay escenario. */
 export function tituloEscenario(v) {
   const partes = [
-    ...(v.tarifas !== ESCENARIO_NEUTRO.tarifas ? ["se acaba el descuento del abono"] : []),
+    ...(v.tarifas !== ESCENARIO_NEUTRO.tarifas ? ["se acaba el descuento del transporte (abonos y 10 viajes)"] : []),
     ...(v.subida !== ESCENARIO_NEUTRO.subida ? [`el alquiler sube un ${v.subida} %`] : []),
     ...(v.cumple26 === "si" ? [`cumples ${EDAD_CUMPLE} años`] : []),
     ...(v.dias_esc !== "" ? [`${v.dias_esc} ${v.dias_esc === "1" ? "día presencial" : "días presenciales"} a la semana`] : []),
@@ -424,10 +427,15 @@ export function estadoDeEnlace(texto, porDefecto, api) {
   const pedido = new URLSearchParams(texto);
   const avisos = [];
   const valores = { ...porDefecto };
+  let desconocidos = 0; // no se repite su nombre: viene de fuera y puede ser un texto largo o engañoso
   for (const [clave, valor] of pedido) {
     if (Object.hasOwn(porDefecto, clave)) valores[clave] = valor;
-    else avisos.push(`El enlace trae un dato desconocido («${clave}»): se ignora.`);
+    else desconocidos += 1;
   }
+  if (desconocidos > 0) avisos.push(`El enlace trae ${desconocidos} ${desconocidos === 1 ? "dato desconocido" : "datos desconocidos"}: se ignoran.`);
+  // El importe que no corresponde a `fuente` no se valida ni se usa: vuelve a su valor por defecto en vez de colarse en el formulario.
+  const inactivo = valores.fuente === "bruto" ? "neto" : valores.fuente === "neto" ? "bruto" : null;
+  if (inactivo !== null) valores[inactivo] = porDefecto[inactivo];
   const malos = (v) => [
     ...(validar(v, api).errores ?? []),
     ...erroresEscenario(v, api),

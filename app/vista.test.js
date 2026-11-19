@@ -139,6 +139,15 @@ const fichaDe = (caso, id, metrica = "precio_hora") => lineasFicha("Zona", caso.
 // Una cifra calculada: un número seguido de su unidad (los motivos como «120 min» o «5 h/mes de diferencia» no lo son).
 const CIFRA = /\d+(,\d+)? ?(€|h al|%|m²)/;
 
+test("con la subida del alquiler activa, la ficha lo dice como simulación y no como contratos observados", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = caso.salida.zonas["28065"];
+  const ctx = { ...contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"), subida: 10 };
+  const linea = lineasFicha("Zona", z, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea, /subida del 10 %.*simulación, estimado/);
+  assert.doesNotMatch(linea, /contratos de \d{4}, tómalo como un suelo/);
+});
+
 test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
   const f = (d) => new Intl.NumberFormat("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
   for (const caso of casos.filter((c) => !("error" in c))) {
@@ -457,7 +466,7 @@ test("la diferencia decide con lo redondeado y avisa si falta una cifra", () => 
 test("el título del escenario nombra solo lo que cambia", () => {
   assert.equal(tituloEscenario(NEUTRO), null);
   assert.equal(tituloEscenario({ ...NEUTRO, tarifas: "sin_descuento", subida: "10", cumple26: "si", dias_esc: "1" }),
-    "Simulación: se acaba el descuento del abono; el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
+    "Simulación: se acaba el descuento del transporte (abonos y 10 viajes); el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
 });
 
 test("los escenarios inválidos se señalan campo a campo", () => {
@@ -479,8 +488,9 @@ test("escribir y leer el enlace devuelve el mismo estado, también con tildes, c
 test("los parámetros inválidos del enlace se descartan con aviso y el resto se conserva", () => {
   const { valores, avisos: av } = estadoDeEnlace("subida=99&foo=1&tarifas=x&ref=nadie&metrica=otra&dias=2&__proto__=1", NEUTRO, real);
   assert.deepEqual(valores, { ...NEUTRO, dias: "2" });
-  assert.equal(av.length, 6);
-  assert.ok(av.some((t) => t.includes("«foo»")) && av.some((t) => t.includes("«subida»")) && av.some((t) => t.includes("«metrica»")));
+  assert.equal(av.length, 5);
+  assert.ok(av.includes("El enlace trae 2 datos desconocidos: se ignoran."));
+  assert.ok(av.some((t) => t.includes("«subida»")) && av.some((t) => t.includes("«metrica»")));
   assert.equal(Object.getPrototypeOf(valores), Object.prototype);
 });
 
@@ -488,4 +498,26 @@ test("un enlace que no da un estado válido ni descartando campos vuelve a los v
   const { valores, avisos: av } = estadoDeEnlace("fuente=neto&neto=", NEUTRO, real);
   assert.deepEqual(valores, NEUTRO);
   assert.match(av.at(-1), /no da un estado válido/);
+});
+
+test("un enlace con claves enormes o numerosas da un solo aviso y no repite su texto", () => {
+  const muchas = Array.from({ length: 1000 }, (_, i) => `clave${i}=1`).join("&");
+  const largo = `${"x".repeat(5000)}=1`;
+  for (const texto of [muchas, largo]) {
+    const { valores, avisos: av } = estadoDeEnlace(texto, NEUTRO, real);
+    assert.deepEqual(valores, NEUTRO);
+    assert.equal(av.length, 1);
+    assert.ok(av[0].length < 100);
+  }
+});
+
+test("el importe que no corresponde a la fuente no se cuela desde el enlace", () => {
+  const { valores } = estadoDeEnlace("fuente=bruto&bruto=30000&neto=texto%20libre", NEUTRO, real);
+  assert.equal(valores.bruto, "30000");
+  assert.equal(valores.neto, NEUTRO.neto);
+});
+
+test("«cumples 26 años» es la primera edad sin Abono Joven: edad_max_joven + 1", () => {
+  assert.equal(ejemplo.tarifas.edad_max_joven + 1, 26);
+  assert.equal(real.tarifas.edad_max_joven + 1, 26);
 });
