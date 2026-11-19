@@ -6,12 +6,12 @@ hospital-ramon-y-cajal,Hospital Universitario Ramón y Cajal,hospital,-3.69398,4
 cobo-calleja,Polígono Industrial Cobo Calleja (Fuenlabrada),poligono_industrial,-3.74846,40.26262,way/27047961,Polígono del sur de la ficha §3 donde trabaja el teleoperador: 159 ha de logística y comercio
 mercamadrid,Mercamadrid,poligono_industrial,-3.66161,40.36056,way/27936758,Mayor centro de distribución de alimentos de la región; gran polo de empleo del sur de la capital
 poligono-pinto-estacion,Polígono Industrial Pinto - Estación,poligono_industrial,-3.70765,40.25273,way/265759177,Segundo polígono del sur de la región (78 ha) para el empleo industrial y logístico fuera de la capital
-ifema,IFEMA Madrid,recinto_ferial,-3.61766,40.46727,way/34050269,Recinto ferial de 90 ha con empleo de eventos y servicios; destino de la pareja en los casos de referencia
+ifema,IFEMA Madrid,recinto_ferial,-3.61375,40.46272,way/34050269,Recinto ferial de 90 ha con empleo de eventos y servicios; destino de la pareja en los casos de referencia
 aeropuerto-t4,Aeropuerto Adolfo Suárez Madrid-Barajas (Terminal 4),aeropuerto,-3.59157,40.49138,way/8031397,Mayor centro de empleo único de la región; se toma la Terminal 4 y no el centroide del recinto (cae en las pistas)
 azca,AZCA,centro_empresarial,-3.69320,40.44933,way/1276148475,Centro de oficinas del eje de la Castellana
 cuatro-torres,Cuatro Torres Business Area,centro_empresarial,-3.68840,40.47770,way/31719889,Mayor concentración de oficinas de grandes empresas al norte de la Castellana
-distrito-telefonica,Distrito Telefónica,centro_empresarial,-3.66330,40.51451,way/23590674,Sede de una gran empresa en Las Tablas; empleo de oficina en la periferia norte de la capital
-ciudad-financiera-santander,Ciudad Financiera del Grupo Santander (Boadilla del Monte),centro_empresarial,-3.86709,40.39260,way/29063822,Gran campus empresarial al oeste (143 ha); empleo de oficina fuera de la capital
+distrito-telefonica,Distrito Telefónica,centro_empresarial,-3.66260,40.51568,way/23590674,Sede de una gran empresa en Las Tablas; empleo de oficina en la periferia norte de la capital
+ciudad-financiera-santander,Ciudad Financiera del Grupo Santander (Boadilla del Monte),centro_empresarial,-3.86363,40.39480,way/29063822,Gran campus empresarial al oeste (143 ha); empleo de oficina fuera de la capital
 arroyo-de-la-vega,Parque Empresarial Arroyo de la Vega (Alcobendas),centro_empresarial,-3.63896,40.53047,way/42999782,Parque empresarial del norte con sedes de multinacionales; polo de oficinas fuera de la capital
 ciudad-universitaria,Ciudad Universitaria de Madrid,universidad,-3.72867,40.44664,way/30648317,Campus de la Complutense y la Politécnica; empleo universitario y de investigación
 tres-cantos,Polígono Industrial Tres Cantos,poligono_industrial,-3.69932,40.60902,way/27730847,Polígono tecnológico e industrial del extremo norte (140 ha); destino de la periferia norte

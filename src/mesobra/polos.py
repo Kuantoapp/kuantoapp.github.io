@@ -5,7 +5,7 @@ lugares de trabajo de los personajes de la ficha §3 (Hospital La Paz, Hospital 
 grandes centros de empleo de la región, cada uno con su motivo. Los polos obtenidos de la EDM2018 y del MITMA quedan
 para N2. La nota metodológica lo dirá.
 
-Cada polo es un punto (EPSG:4326): el centroide del polígono de OpenStreetMap que dice `osm_id`
+Cada polo es un punto (EPSG:4326) del polígono de OpenStreetMap que dice `osm_id`: su centroide o, si el centroide no engancha a la red (IFEMA, Distrito Telefónica, Ciudad Financiera), el punto del borde más cercano a una parada
 (© OpenStreetMap contributors, ODbL, extracto de Geofabrik del 2026-11-13).
 
 `ubicar` asigna cada polo a la zona en la que cae. Su corona tarifaria es la de esa zona (`calculo._corona`), la del
