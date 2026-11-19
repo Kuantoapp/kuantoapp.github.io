@@ -159,7 +159,19 @@ FUENTES_HOGARES = [
         "licencia": "CC BY 4.0",
     }
     for d, i in EPF_IDS.items()
-] + [SERPAVI]
+] + [
+    SERPAVI,
+    {
+        "nombre": "INE, IPC base 2025 por comunidades autónomas y subgrupos ECOICOP (tabla 76137), subgrupos 01.1, 01.2, 04.5 y 08.3 de la Comunidad de Madrid. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+        "url": IPC_INE["url"],
+        "licencia": "CC BY 4.0",
+    },
+    {
+        "nombre": "INE, IPC base 2025 nacional por clases ECOICOP (tabla 76127), clase 04.4.1 Suministro de agua. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+        "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/76127.csv",
+        "licencia": "CC BY 4.0",
+    },
+]
 
 
 def _meta(
@@ -394,7 +406,16 @@ def rutas() -> tuple[pd.DataFrame, list[str]]:
 
 
 def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
-    columnas = ["adultos", "hijos", "personas_comparten", "alimentacion", "suministros"]
+    columnas = [
+        "adultos",
+        "hijos",
+        "personas_comparten",
+        "alimentacion",
+        "suministros",
+        "comunicaciones",
+    ]
+    if not (mes := tabla.attrs.get("ipc_hasta")):
+        raise ValueError("La tabla de hogares no trae attrs['ipc_hasta']")
     perfiles = {
         f["perfil"]: {"m2": m2, **{c: f[c] for c in columnas}}
         for f in tabla.to_dict("records")
@@ -405,10 +426,20 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
         "testigos; el formulario permite cambiarlo. Un mismo m² para todos sobreestima el alquiler de "
         "quien vive solo. EPF del catálogo de la Comunidad de Madrid actualizada el 2026-11-05 "
         "(fuente de los datos: Comunidad de Madrid); alimentación = 01.1 + 01.2 y suministros = "
-        "04.5 + 04.4.1, gasto anual por unidad de consumo entre 12. " + ORIGEN_SERPAVI
+        "04.5 + 04.4.1 y comunicaciones = 08.2.1 (telefonía e Internet; en el IPC, subgrupo 08.3), gasto anual por unidad de consumo "
+        f"entre 12 y actualizado con el IPC de Madrid de cada subgrupo (precios medios de los 12 meses hasta {mes} "
+        "entre la media de 2025; tabla 76137 actualizada el 2026-11-13), salvo el agua, con la clase nacional "
+        "04.4.1 (tabla 76127 actualizada el 2026-11-13), porque el 04.4 de Madrid incluye la recogida de "
+        "basuras. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es; el INE no "
+        "participa ni patrocina este proyecto. Internet y móvil se reparten entre quienes comparten piso "
+        "como la luz (supuesto). Sin comidas fuera de casa (restauración, 11.1: 1.852 €/UC al año en la EPF "
+        "de Madrid de 2025), ni adaptación a la renta (la media se toma como estándar: los hogares con menos "
+        "renta gastan menos en comida por UC porque pueden menos) ni al tamaño del piso o al clima "
+        "(en la sierra la calefacción se queda corta). " + ORIGEN_SERPAVI
     )
     return {
-        "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota),
+        "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota)
+        | {"ipc_hasta": mes},
         "perfiles": perfiles,
         "cesta_uc": {k: float(v) for k, v in cesta.items()},
     }

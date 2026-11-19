@@ -178,6 +178,7 @@ export function contextoFicha(api, entrada, resultado, id) {
   return {
     anio: dato.anio,
     ipc: dato.factor_ipc === 1 ? null : mesIpc(api.alquiler.meta.ipc_hasta),
+    ipcHasta: api.hogares.meta.ipc_hasta,
     subida: entrada.escenario?.subida_alquiler ?? 0,
     // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
     ic: dato.ic?.length && zona.alquiler !== null ? dato.ic.map((v) => (v * zona.alquiler) / dato.p50) : null,
@@ -249,7 +250,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
-    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`,
+    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado: gasto medio de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; incluye internet y móvil)`,
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,

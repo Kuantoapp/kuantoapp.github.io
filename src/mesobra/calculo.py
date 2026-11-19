@@ -107,12 +107,14 @@ def neto_mes(netos: dict, bruto: float, hogar: dict) -> float:
 
 
 def cesta(cesta_uc: dict, hogar: dict) -> float:
-    """Alimentación propia más la parte de suministros del piso, €/mes."""
+    """Alimentación propia más la parte de suministros y comunicaciones del piso, €/mes."""
     uc = 1 + 0.5 * (hogar["adultos"] - 1) + 0.3 * hogar["hijos"]
     p = hogar["personas_comparten"]
     return (
         cesta_uc["alimentacion"] * uc
-        + cesta_uc["suministros"] * (uc + 0.5 * (p - 1)) / p
+        + (cesta_uc["suministros"] + cesta_uc["comunicaciones"])
+        * (uc + 0.5 * (p - 1))
+        / p
     )
 
 
