@@ -41,7 +41,7 @@ IPC_CM = {
 }
 AEAT_VIVIENDAS = {
     "nombre": "Estadística de viviendas declaradas en el IRPF 2024, comparativa con los nuevos contratos por "
-    "provincia, municipio y código postal. Fuente: Agencia Tributaria",
+    "municipio, código postal y tramo de población. Fuente: Agencia Tributaria",
     "url": "https://sede.agenciatributaria.gob.es/AEAT/Contenidos_Comunes/La_Agencia_Tributaria/Estadisticas/"
     "Publicaciones/sites/irpfvivienda/2024/home.html",
     "licencia": "Reutilización autorizada citando la fuente y sin desnaturalizar (aviso legal de la sede de la AEAT)",
@@ -200,6 +200,9 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         zonas[zid] = {
             "factor_brecha": float(b["factor_brecha"]),
             "brecha_ambito": b["brecha_ambito"],
+            "brecha_pureza": None
+            if pd.isna(b["brecha_pureza"])
+            else float(b["brecha_pureza"]),
         }
         if zid not in ultimo.index:
             zonas[zid] |= dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
@@ -241,13 +244,16 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "fiscal que el SERPAVI, pero medias y no medianas). brecha_ambito dice de dónde sale: municipio "
         "(los de más de 20.000 habitantes), codigo_postal (los distritos de Madrid, desde sus códigos "
         "postales ponderados por viviendas arrendadas y repartidos por portales de OpenStreetMap, que "
-        "cruzan límites de distrito) o comunidad (el de la Comunidad de Madrid). El de distrito mide la "
-        "brecha dentro de cada código postal; los de municipio y comunidad incluyen además que los "
+        "cruzan límites de distrito; brecha_pureza es la parte de su peso que viene de códigos postales "
+        "enteros, y con pureza baja el valor depende del reparto) o tramo (en los municipios sin dato "
+        "propio, la mediana de los municipios de la Comunidad de 20.001 a 50.000 habitantes, el tamaño más "
+        "parecido; entre ellos va de 1,05 a 1,26, y esa es su incertidumbre). "
+        "El de distrito mide la brecha dentro de cada código postal; los de municipio y tramo incluyen además que los "
         "contratos nuevos se concentran en las zonas caras, y por eso tienden a ser algo mayores (en "
         "Madrid capital, 1,20 frente a 1,17 con sus códigos postales). p50 × factor_ipc es el "
         "precio de contrato y × factor_brecha el de contrato nuevo, que sigue siendo un suelo: el IPC de "
         "alquiler sigue los contratos en vigor, y los nuevos suben más. Fuente: Agencia Tributaria (la "
-        "tabla no publica fecha de actualización; consultada el 2026-11-19). © OpenStreetMap contributors "
+        "tabla no publica fecha de actualización; consultada el 2026-11-19 y la del tramo el 2026-11-20). © OpenStreetMap contributors "
         "(extracto de Geofabrik actualizado el 2026-11-13, ODbL 1.0)."
     )
     fuentes = [SERPAVI, IPC_INE, IPC_CM, AEAT_VIVIENDAS, OSM_PORTALES]

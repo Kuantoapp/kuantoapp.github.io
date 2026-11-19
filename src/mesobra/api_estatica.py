@@ -281,7 +281,8 @@ ALQUILER = {
     "factor_ipc": ("decimal", 0.5, 2), "ic": None,
     "origen": ["observado", "estimado", "sin_dato"],
     "factor_brecha": ("decimal", 0.5, 2),
-    "brecha_ambito": ["municipio", "codigo_postal", "comunidad"],
+    "brecha_ambito": ["municipio", "codigo_postal", "tramo"],
+    "brecha_pureza": ("decimal?", 0, 1),
 }
 # fmt: on
 
