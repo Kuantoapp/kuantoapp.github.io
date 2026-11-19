@@ -104,7 +104,10 @@ def _nombres() -> dict[str, dict[str, Any]]:
 
 
 def _zona_existente(zona_id: str) -> None:
-    if zona_id not in _api()["alquiler"]["zonas"] or zona_id not in _api()["tiempos"]["origenes"]:
+    if (
+        zona_id not in _api()["alquiler"]["zonas"]
+        or zona_id not in _api()["tiempos"]["origenes"]
+    ):
         raise ValueError(
             f"zona_id {zona_id!r} inexistente: es el código INE de 5 dígitos del municipio "
             "(28065) o 28079 + distrito de Madrid (2807913); consúltalo con indicadores_zona"
