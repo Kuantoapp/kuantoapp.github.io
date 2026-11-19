@@ -252,7 +252,7 @@ def indicadores_zona(
     }
     if anio is None and esfuerzo:
         anio = max(esfuerzo)
-    if esfuerzo and anio not in esfuerzo:
+    if anio is not None and anio not in esfuerzo:
         raise ValueError(f"anio = {anio!r}: hay esfuerzo de {sorted(esfuerzo)}")
     props = _nombres()[zona_id]
     bono = next(
