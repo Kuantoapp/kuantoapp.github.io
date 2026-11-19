@@ -6,7 +6,7 @@ consumo» (€ por unidad de consumo y año), en dos tablas del catálogo de la 
   (`cm_epf_gasto_subgrupo`, igual a INE t=73992): 01.1 alimentos 3.115,68; 01.2 bebidas no
   alcohólicas 188,78; 04.5 electricidad, gas y otros combustibles 806,38.
 - 4 dígitos, `gasto_por_subgrupo_gasto_4_digitos_coicop_epf_base_2006`
-  (`cm_epf_gasto_subgrupo4`): 04.4.1 suministro de agua 166,63; 08.3.1 servicios de telefonía y
+  (`cm_epf_gasto_subgrupo4`): 04.4.1 suministro de agua 166,63; 08.2.1 servicios de telefonía y
   relacionados con Internet 524,62. El 04.4 de 3 dígitos (776,78) lo
   mezcla con gastos comunitarios (600,38), basura (7,06) y saneamiento (2,71).
 Fuente de los datos: Comunidad de Madrid (INE, Encuesta de Presupuestos Familiares)
@@ -22,7 +22,7 @@ Supuestos y límites:
   Supuesto para las comunicaciones: en piso compartido cada uno suele tener su móvil; por persona
   serían ≈15 €/mes más en «comparte». El reparto sale de que la EPF nacional (t=75006) da el 89 % del
   gasto en servicios integrados por hogar.
-- Comunicaciones = 08.3.1 de 4 dígitos (telefonía e Internet): sin equipos ni otros servicios (streaming).
+- Comunicaciones = 08.2.1 de 4 dígitos (COICOP 2018/EPF) (telefonía e Internet): sin equipos ni otros servicios (streaming).
 - `personas_comparten` cuenta las unidades que pagan el alquiler: la pareja suma sus dos
   sueldos y paga el piso entero (1), y en la monoparental el hijo no paga (1).
 - Sin gastos comunitarios, basura ni saneamiento: en alquiler van con la renta y contarlos

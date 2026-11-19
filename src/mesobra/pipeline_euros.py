@@ -426,7 +426,7 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
         "testigos; el formulario permite cambiarlo. Un mismo m² para todos sobreestima el alquiler de "
         "quien vive solo. EPF del catálogo de la Comunidad de Madrid actualizada el 2026-11-05 "
         "(fuente de los datos: Comunidad de Madrid); alimentación = 01.1 + 01.2 y suministros = "
-        "04.5 + 04.4.1 y comunicaciones = 08.3.1 (telefonía e Internet), gasto anual por unidad de consumo "
+        "04.5 + 04.4.1 y comunicaciones = 08.2.1 (telefonía e Internet; en el IPC, subgrupo 08.3), gasto anual por unidad de consumo "
         f"entre 12 y actualizado con el IPC de Madrid de cada subgrupo (precios medios de los 12 meses hasta {mes} "
         "entre la media de 2025; tabla 76137 actualizada el 2026-11-13), salvo el agua, con la clase nacional "
         "04.4.1 (tabla 76127 actualizada el 2026-11-13), porque el 04.4 de Madrid incluye la recogida de "
