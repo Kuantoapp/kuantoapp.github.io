@@ -41,7 +41,7 @@ INDICADORES = {
         ),
         False,
     ),
-    # Definiciones de F3-06 (#100): el 40 % cuenta alquiler y suministros; el 30 %, solo alquiler.
+    # Definiciones de F3-06 (#100): todos los cortes cuentan alquiler y suministros.
     "sobrecarga_40": (
         "sobrecarga",
         ("pct_40_inf", "pct_40_sup"),
@@ -55,7 +55,16 @@ INDICADORES = {
         "sobrecarga",
         ("pct_30_inf", "pct_30_sup"),
         (
-            "% de hogares inquilinos con alquiler por encima del 30 % de su renta "
+            "% de hogares inquilinos con alquiler y suministros por encima del 30 % de su renta "
+            "(rango de un modelo log-normal: σ del Gini y del P80/P20)"
+        ),
+        True,
+    ),
+    "sobrecarga_50": (
+        "sobrecarga",
+        ("pct_50_inf", "pct_50_sup"),
+        (
+            "% de hogares inquilinos con alquiler y suministros por encima del 50 % de su renta "
             "(rango de un modelo log-normal: σ del Gini y del P80/P20)"
         ),
         True,

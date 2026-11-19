@@ -36,6 +36,7 @@ ESPERADAS = {
     "esfuerzo": 5,
     "sobrecarga_40": 4,
     "sobrecarga_30": 4,
+    "sobrecarga_50": 4,
 }
 
 
@@ -46,7 +47,7 @@ def salida():
 
 def test_numero_de_entidades_por_indicador(salida):
     assert {k: len(v) for k, v in salida.items()} == ESPERADAS
-    assert sum(len(v) for v in salida.values()) == 17
+    assert sum(len(v) for v in salida.values()) == 21
 
 
 def test_la_salida_cumple_el_esquema(salida):
@@ -88,14 +89,16 @@ def test_esfuerzo_no_hereda_el_estimado_del_alquiler_en_m2(salida):
 
 
 def test_sobrecarga_sale_de_un_modelo_y_siempre_es_estimada(salida):
-    sobrecarga = salida["sobrecarga_40"] + salida["sobrecarga_30"]
+    sobrecarga = (
+        salida["sobrecarga_50"] + salida["sobrecarga_40"] + salida["sobrecarga_30"]
+    )
     assert sobrecarga
     for e in sobrecarga:
         assert e["description"].endswith(", estimado")
         assert "inquilinos" in e["description"]
-    # #100: el 40 % cuenta alquiler y suministros; el 30 %, solo alquiler.
-    assert "suministros" in salida["sobrecarga_40"][0]["description"]
-    assert "suministros" not in salida["sobrecarga_30"][0]["description"]
+    # #100: todos los cortes cuentan alquiler y suministros.
+    for corte in ("sobrecarga_50", "sobrecarga_40", "sobrecarga_30"):
+        assert "suministros" in salida[corte][0]["description"]
 
 
 def test_sin_bloque_de_sobrecarga_no_se_publica_vacio(tmp_path):

@@ -12,6 +12,7 @@ from mesobra.sobrecarga_ecv import (
     sobrecarga_control,
     sobrecarga_eurostat,
     tasa,
+    tramos_control,
 )
 
 B = "          "  # «no aplicable» del INE: varios espacios
@@ -82,6 +83,27 @@ def test_reglas_a_mano(carpeta):
     assert sobrecarga_control(h).fillna(-1).tolist() == [0, 1, 1, -1, 1]
     # alquiler: 0,33 → 1; 0,30 exacto → 0; blanco; 0,20 → 0; 0,48 → 1
     assert alquiler_30(h).fillna(-1).tolist() == [1, 0, -1, 0, 1]
+
+
+def test_tramos_sintetico(carpeta):
+    # inquilinos de ES30: 1 (0,40 → 30-40, peso 100), 2 (0,50 exacto → 40-50, 200), 5 (0,54 → >50, 100)
+    t = tramos_control(hogares(carpeta))["tasa"].to_dict()
+    assert t == pytest.approx({"<=30": 0, "30-40": 25, "40-50": 50, ">50": 25})
+
+
+def test_tramos_renta_negativa_y_corte_exacto():
+    # renta ≤ 0 → «>50» (Eurostat); 0,30 exacto no supera → «<=30»
+    h = pd.DataFrame(
+        {
+            "DB040": [MADRID] * 2,
+            "HH021": [3, 3],
+            "DB090": [1.0, 1.0],
+            "HH070": [100, 300],
+            "HY020": [-500, 12000],
+        }
+    )
+    t = tramos_control(h)["tasa"].to_dict()
+    assert t == pytest.approx({"<=30": 50, "30-40": 0, "40-50": 0, ">50": 50})
 
 
 def test_reglas_casos_limite():
@@ -200,3 +222,18 @@ def test_renta_por_uc_madrid(h, tenencias, esperado):
         m = m[m.HH021.isin(tenencias)]
     media = np.average(m.HY020 / m.HX240, weights=m.peso_personas)
     assert media == pytest.approx(esperado, abs=0.01)
+
+
+@real
+def test_tramos_control(h):
+    # Tramos de F3-06 (#100, nota del 18-11), ES30 y HH021 3 o 4 (estimado). Las constantes de
+    # sobrecarga.CONTROL se fijaron a mano con EE redondeados antes de ejecutar: difieren ≤ 0,25.
+    from mesobra.sobrecarga import CONTROL
+
+    t = tramos_control(h)
+    esperado = {"<=30": 46.0, "30-40": 18.0, "40-50": 10.4, ">50": 25.6}
+    assert t["tasa"].to_dict() == pytest.approx(esperado, abs=0.05)
+    assert t["tasa"].sum() == pytest.approx(100)
+    assert (t["n"] == 562).all()
+    for tramo, (inf, sup) in t[["ic_inf", "ic_sup"]].iterrows():
+        assert (inf, sup) == pytest.approx(CONTROL[tramo], abs=0.25)

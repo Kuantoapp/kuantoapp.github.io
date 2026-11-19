@@ -22,11 +22,11 @@
   ],
   "titulares": [{"texto":"Titular de ejemplo para tests.","fuente":"Ejemplo inventado"}],
   "sobrecarga": [
-    {"zona_id":"2807901","anio":2024,"pct_40_inf":14.0,"pct_40_sup":19.5,"pct_30_inf":28.0,"pct_30_sup":35.0,"dif_sigma":0.8},
-    {"zona_id":"2807913","anio":2024,"pct_40_inf":22.0,"pct_40_sup":28.5,"pct_30_inf":38.0,"pct_30_sup":45.0,"dif_sigma":1.1},
-    {"zona_id":"28065","anio":2024,"pct_40_inf":12.5,"pct_40_sup":18.0,"pct_30_inf":25.0,"pct_30_sup":32.0,"dif_sigma":0.6},
-    {"zona_id":"28092","anio":2024,"pct_40_inf":11.0,"pct_40_sup":16.5,"pct_30_inf":23.0,"pct_30_sup":30.0,"dif_sigma":0.7},
-    {"zona_id":"28001","anio":2024,"pct_40_inf":null,"pct_40_sup":null,"pct_30_inf":null,"pct_30_sup":null,"dif_sigma":null}
+    {"zona_id":"2807901","anio":2024,"pct_40_inf":14.0,"pct_40_sup":19.5,"pct_30_inf":28.0,"pct_30_sup":35.0,"dif_sigma":0.8,"pct_50_inf":7.0,"pct_50_sup":11.5,"esfuerzo_mediano_inf":35.0,"esfuerzo_mediano_sup":38.0,"cobertura":0.97},
+    {"zona_id":"2807913","anio":2024,"pct_40_inf":22.0,"pct_40_sup":28.5,"pct_30_inf":38.0,"pct_30_sup":45.0,"dif_sigma":1.1,"pct_50_inf":13.0,"pct_50_sup":17.5,"esfuerzo_mediano_inf":38.0,"esfuerzo_mediano_sup":41.0,"cobertura":0.95},
+    {"zona_id":"28065","anio":2024,"pct_40_inf":12.5,"pct_40_sup":18.0,"pct_30_inf":25.0,"pct_30_sup":32.0,"dif_sigma":0.6,"pct_50_inf":6.0,"pct_50_sup":10.5,"esfuerzo_mediano_inf":34.0,"esfuerzo_mediano_sup":37.0,"cobertura":0.99},
+    {"zona_id":"28092","anio":2024,"pct_40_inf":11.0,"pct_40_sup":16.5,"pct_30_inf":23.0,"pct_30_sup":30.0,"dif_sigma":0.7,"pct_50_inf":5.0,"pct_50_sup":9.5,"esfuerzo_mediano_inf":33.0,"esfuerzo_mediano_sup":36.0,"cobertura":0.98},
+    {"zona_id":"28001","anio":2024,"pct_40_inf":null,"pct_40_sup":null,"pct_30_inf":null,"pct_30_sup":null,"dif_sigma":null,"pct_50_inf":null,"pct_50_sup":null,"esfuerzo_mediano_inf":null,"esfuerzo_mediano_sup":null,"cobertura":null}
   ],
   "simulacion": [
     {"perfil":"solo","municipio_id":"28079","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false},

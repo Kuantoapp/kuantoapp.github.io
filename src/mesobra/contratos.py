@@ -158,9 +158,14 @@ CONTRATOS: dict[str, dict] = {
             "anio": "entero",
             "pct_40_inf": "decimal",  # % de hogares inquilinos
             "pct_40_sup": "decimal",  # % de hogares inquilinos
-            "pct_30_inf": "decimal",  # % de hogares inquilinos
-            "pct_30_sup": "decimal",  # % de hogares inquilinos
+            "pct_30_inf": "decimal",  # % de hogares inquilinos; alquiler y suministros
+            "pct_30_sup": "decimal",  # % de hogares inquilinos; alquiler y suministros
+            "pct_50_inf": "decimal",  # % de hogares inquilinos
+            "pct_50_sup": "decimal",  # % de hogares inquilinos
+            "esfuerzo_mediano_inf": "decimal",  # % de la renta
+            "esfuerzo_mediano_sup": "decimal",  # % de la renta
             "dif_sigma": "decimal",
+            "cobertura": "decimal",  # fracción 0-1 de los inquilinos de la zona con sección válida
         },
     },
     "simulacion": {
