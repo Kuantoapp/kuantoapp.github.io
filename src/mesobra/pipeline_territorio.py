@@ -20,6 +20,7 @@ from mesobra.tiempos import (
     FECHA_SALIDA,
     HORA_SALIDA,
     MAX_MINUTOS,
+    MAX_MINUTOS_POLO,
     MIN_INTERNO,
     VELOCIDAD_KMH,
     VENTANA,
@@ -209,7 +210,9 @@ def main() -> None:
     if lejos := polos_lejos(
         tiempos, lista
     ):  # no se publica una columna de polo en null
-        raise ValueError(f"Polos sin ruta o a 30 min o más de su zona: {lejos}")
+        raise ValueError(
+            f"Polos sin ruta o a {MAX_MINUTOS_POLO} min o más de su zona: {lejos}"
+        )
     api_estatica.escribir(
         "tiempos.json", tiempos_json(tiempos, zonas, lista), APP_DATOS
     )

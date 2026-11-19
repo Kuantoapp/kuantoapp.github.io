@@ -47,8 +47,8 @@ from mesobra.zonas import (
 LOG = logging.getLogger(__name__)
 
 MAX_MINUTOS = 120
-# criterio de #95: desde su propia zona, cada polo tiene que quedar a menos de 30 min; si no, el polo o su punto están mal
-MAX_MINUTOS_POLO = 30
+# criterio de #95 (60 min, no los 30 de la issue): desde su propia zona cada polo tiene ruta y queda a menos de 60 min. Por encima del techo de 45 min del tiempo interno (#175) hay polígonos con servicio real escaso (Cobo Calleja, Mercamadrid), no un punto mal puesto; los puntos mal puestos dan sin ruta
+MAX_MINUTOS_POLO = 60
 # supuesto: la línea recta se alarga un 30 % por trazado de calles y vías
 FACTOR_RODEO = 1.3
 # supuesto: velocidad media puerta a puerta en transporte público, incluidas esperas y transbordos. Contraste con

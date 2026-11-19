@@ -127,7 +127,7 @@ def test_propios_polo_avisa_de_las_secciones_sin_ruta(caplog):
     assert "sin ruta a su polo" in caplog.text and "polo:p" in caplog.text
 
 
-def test_polos_lejos_avisa_del_polo_sin_ruta_o_a_30_min_o_mas_de_su_zona(
+def test_polos_lejos_avisa_del_polo_sin_ruta_o_al_umbral_o_mas_de_su_zona(
     zonas, secciones, polos
 ):
     tabla = tiempos.linea_base(zonas, secciones, polos)
