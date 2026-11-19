@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { calcular, precioHora } from "./calculo.js";
+import { calcular, corona, precioHora } from "./calculo.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../tests/${ruta}`, import.meta.url), "utf8"));
 const api = Object.fromEntries(
@@ -32,7 +32,20 @@ for (const caso of casos) {
 
 test("hay 12 o más casos y los de error fallan, no devuelven vacío", () => {
   assert.ok(casos.length >= 12);
-  assert.equal(casos.filter((c) => "error" in c).length, 3);
+  assert.equal(casos.filter((c) => "error" in c).length, 2);
+});
+
+test("la corona de un polo es la de su zona", () => {
+  const polo = (zona) => ({
+    ...api,
+    tiempos: {
+      ...api.tiempos,
+      destinos: api.tiempos.destinos.map((d) => (d.tipo === "polo" ? { ...d, zona_id: zona } : d)),
+    },
+  });
+  assert.equal(corona(api, "2807901", "polo:ifema"), "A"); // zona_id 2807913, corona A
+  assert.equal(corona(polo("28065"), "2807901", "polo:ifema"), "B1");
+  assert.throws(() => corona(polo("28092"), "2807901", "polo:ifema"), /sin tarifa/); // B2: sin tarifa en el ejemplo
 });
 
 test("sin dato o sin ruta sale null, nunca cero", () => {

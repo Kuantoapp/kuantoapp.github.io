@@ -22,6 +22,12 @@ def llamar(herramienta: str, argumentos: dict[str, Any]) -> dict[str, Any]:
     return json.loads(r.content[0].text)
 
 
+def test_datos_es_la_carpeta_con_la_api_aunque_exista_src_mesobra_datos() -> None:
+    # src/mesobra/datos guarda polos.csv (F3-01) y no tiene la API: el MCP no debe elegirla en un checkout
+    assert (RAIZ / "src/mesobra/datos").is_dir()
+    assert mcp_servidor.DATOS == RAIZ / "app/datos"
+
+
 def test_expone_las_tres_herramientas() -> None:
     nombres = {t.name for t in asyncio.run(mcp_servidor.servidor.list_tools())}
     assert nombres == {"calcular_sobrante", "ranking_zonas", "indicadores_zona"}

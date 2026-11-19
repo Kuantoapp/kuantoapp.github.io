@@ -9,7 +9,7 @@
   "origenes": ["2807901","2807913","28065","28092","28001"],
   "destinos": [
     {"destino_id":"2807901","nombre":"Centro","tipo":"zona"},
-    {"destino_id":"polo:ifema","nombre":"IFEMA","tipo":"polo"}
+    {"destino_id":"polo:ifema","nombre":"IFEMA","tipo":"polo","zona_id":"2807913"}
   ],
   "tp": [[9,38],[26,52],[41,63],[52,78],[95,null]],
   "coche": [[7,24],[18,30],[28,35],[33,41],[62,58]],

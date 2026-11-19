@@ -10,6 +10,7 @@ import pytest
 import shapely
 from shapely.geometry import Polygon, shape
 
+from mesobra import api_estatica
 from mesobra.pipeline_territorio import simplificar, tiempos_json
 
 APP_DATOS = Path(__file__).parent.parent / "app" / "datos"
@@ -70,9 +71,28 @@ def _tiempos(minutos: list[float]) -> pd.DataFrame:
     )
 
 
+def _polos() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"destino_id": ["polo:x"], "nombre": ["Polo X"], "zona_id": ["28002"]}
+    )
+
+
+def _tiempos_a_polo(minutos: list[float]) -> pd.DataFrame:
+    """Los pares hacia `polo:x` desde las tres zonas."""
+    return pd.DataFrame(
+        {
+            "zona_id": ["2807901", "28002", "28001"],
+            "destino_id": "polo:x",
+            "modo": "tp",
+            "minutos": minutos,
+            "estimado": False,
+        }
+    )
+
+
 def test_tiempos_json_redondea_y_ordena():
     minutos = [1.0, 2.5, np.nan, 3.49, 4.0, 120.5, 6.0, 7.0, 119.6]
-    t = tiempos_json(_tiempos(minutos), _zonas())
+    t = tiempos_json(_tiempos(minutos), _zonas(), _polos().iloc[0:0])
     assert t["origenes"] == ["28001", "28002", "2807901"]
     assert [d["destino_id"] for d in t["destinos"]] == t["origenes"]
     # filas y columnas en el orden de las zonas: 28001 era la tercera de _tiempos; 120,5 → 121 → null
@@ -80,13 +100,37 @@ def test_tiempos_json_redondea_y_ordena():
     assert "r5py" in t["meta"]["nota"] and "7:30 y las 8:30" in t["meta"]["nota"]
 
 
+def test_tiempos_json_con_polos_es_rectangular_y_valida_el_contrato():
+    tabla = pd.concat([_tiempos([1.0] * 9), _tiempos_a_polo([10.4, 125.0, 30.5])])
+    t = tiempos_json(tabla, _zonas(), _polos())
+    assert [d["destino_id"] for d in t["destinos"]] == [*t["origenes"], "polo:x"]
+    assert t["destinos"][-1] == {
+        "destino_id": "polo:x",
+        "nombre": "Polo X",
+        "tipo": "polo",
+        "zona_id": "28002",
+    }
+    # filas en el orden de las zonas (28001, 28002, 2807901): 30,5 → 31; 125 → null; 10,4 → 10
+    assert [fila[-1] for fila in t["tp"]] == [31, None, 10]
+    assert {len(fila) for fila in t["tp"]} == {4}
+    assert "polos de empleo" in t["meta"]["nota"]
+    api_estatica.validar("tiempos.json", t)
+
+
 def test_tiempos_json_falla_si_falta_un_par():
     with pytest.raises(ValueError, match="Faltan pares"):
-        tiempos_json(_tiempos([1.0] * 9).iloc[1:], _zonas())
+        tiempos_json(_tiempos([1.0] * 9).iloc[1:], _zonas(), _polos().iloc[0:0])
+
+
+def test_tiempos_json_falla_si_faltan_los_pares_de_un_polo():
+    with pytest.raises(ValueError, match="Faltan pares"):
+        tiempos_json(_tiempos([1.0] * 9), _zonas(), _polos())
 
 
 def test_tiempos_json_plan_b_lo_dice():
-    t = tiempos_json(_tiempos([1.0] * 9).assign(estimado=True), _zonas())
+    t = tiempos_json(
+        _tiempos([1.0] * 9).assign(estimado=True), _zonas(), _polos().iloc[0:0]
+    )
     assert "todos los tiempos son estimados" in t["meta"]["nota"]
 
 
@@ -95,7 +139,7 @@ def test_tiempos_json_falla_si_faltan_zonas():
         {"zona_id": ["28001", "28002", "28003"], "nombre": list("ABC")}
     )
     with pytest.raises(ValueError, match="mismos ids"):
-        tiempos_json(_tiempos([1.0] * 9), zonas)
+        tiempos_json(_tiempos([1.0] * 9), zonas, _polos().iloc[0:0])
 
 
 def _real(nombre: str) -> dict:
@@ -114,7 +158,12 @@ def test_ficheros_reales():
     assert len(ids) == 199
     assert sum(f["properties"]["tipo"] == "distrito" for f in zonas["features"]) == 21
     assert tiempos["origenes"] == ids
-    assert len(tiempos["tp"]) == 199 and {len(fila) for fila in tiempos["tp"]} == {199}
+    # destinos = las 199 zonas y, desde F3-01, los polos; la matriz es origen × destino
+    destinos = [d["destino_id"] for d in tiempos["destinos"]]
+    assert destinos[:199] == ids and all(d.startswith("polo:") for d in destinos[199:])
+    assert len(tiempos["tp"]) == 199 and {len(fila) for fila in tiempos["tp"]} == {
+        len(destinos)
+    }
     geom = gpd.GeoSeries([shape(f["geometry"]) for f in zonas["features"]], crs=4326)
     assert geom.is_valid.all()
     poligonos = [p for g in geom for p in getattr(g, "geoms", [g])]

@@ -1,6 +1,7 @@
-"""Tabla `tiempos` en transporte público (`modo = tp`) entre las 199 zonas.
+"""Tabla `tiempos` en transporte público (`modo = tp`) de las 199 zonas a las 199 zonas y a los polos de empleo.
 
-El destino de cada par es el centro de población de la zona de trabajo (`lon_centro`, `lat_centro` de `zonas`).
+El destino de cada par es el centro de población de la zona de trabajo (`lon_centro`, `lat_centro` de `zonas`) o, si
+es un polo (`polos.leer`, F3-01), su punto con `destino_id = polo:<slug>`; los orígenes son siempre las zonas.
 Dentro de una misma zona el tiempo no es cero: es la mediana, sin ponderar, sobre las secciones de la zona, del
 tiempo desde el punto de población de la sección (`zonas.puntos_poblacion`, la geometría de `secciones`) hasta el
 centro de población, con un suelo de `MIN_INTERNO` minutos.
@@ -30,7 +31,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from mesobra import contratos, lineas_estimadas
+from mesobra import contratos, lineas_estimadas, polos
 from mesobra.zonas import (
     PROCESSED,
     RAW,
@@ -89,6 +90,14 @@ def _centros(zonas: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({"x": centros.x, "y": centros.y})
 
 
+def _xy_polos(polos: pd.DataFrame) -> pd.DataFrame:
+    """Punto de cada polo en metros (EPSG:25830): columnas `x` e `y`, índice `destino_id`."""
+    puntos = gpd.GeoSeries.from_xy(
+        polos["lon"], polos["lat"], crs=4326, index=polos["destino_id"]
+    ).to_crs(25830)
+    return pd.DataFrame({"x": puntos.x, "y": puntos.y})
+
+
 def _en_metros(secciones: gpd.GeoDataFrame) -> None:
     """Los centroides y las distancias solo valen en EPSG:25830."""
     if secciones.crs is None or secciones.crs.to_epsg() != 25830:
@@ -99,17 +108,19 @@ def _minutos(km: np.ndarray | pd.Series) -> np.ndarray | pd.Series:
     return km * FACTOR_RODEO / VELOCIDAD_KMH * 60
 
 
-def _tabla(matriz: pd.DataFrame, interno: pd.Series) -> pd.DataFrame:
-    """199 × 199 pares con la diagonal en `interno` (suelo `MIN_INTERNO`) y nulo por encima de `MAX_MINUTOS`.
+def _tabla(matriz: pd.DataFrame, interno: pd.Series, polos: pd.Index) -> pd.DataFrame:
+    """Pares zona × (zonas y `polos`) con la diagonal en `interno` (suelo `MIN_INTERNO`) y nulo por encima de `MAX_MINUTOS`.
 
-    `matriz` trae `from_id`, `to_id` y `minutos`; los pares que falten quedan nulos.
+    `matriz` trae `from_id`, `to_id` y `minutos`; los pares que falten quedan nulos. `polos`: sus `destino_id`.
     """
     ids = interno.index
     if interno.isna().any():
         raise ValueError(
             f"Zonas sin tiempo interno (sin secciones o sin ruta): {ids[interno.isna()].tolist()}"
         )
-    pares = pd.MultiIndex.from_product([ids, ids], names=["zona_id", "destino_id"])
+    pares = pd.MultiIndex.from_product(
+        [ids, ids.append(polos)], names=["zona_id", "destino_id"]
+    )
     tabla = (
         matriz.set_index(["from_id", "to_id"])["minutos"]
         .reindex(pares)
@@ -120,6 +131,9 @@ def _tabla(matriz: pd.DataFrame, interno: pd.Series) -> pd.DataFrame:
     tabla.loc[propia, "minutos"] = (
         tabla.loc[propia, "zona_id"].map(interno.clip(lower=MIN_INTERNO)).to_numpy()
     )
+    # un polo pegado al centro de la zona tampoco baja del suelo; los pares entre zonas distintas no se tocan
+    a_polo = tabla["destino_id"].isin(polos)
+    tabla.loc[a_polo, "minutos"] = tabla.loc[a_polo, "minutos"].clip(lower=MIN_INTERNO)
     tabla["minutos"] = tabla["minutos"].where(tabla["minutos"] <= MAX_MINUTOS)
     return tabla
 
@@ -143,23 +157,30 @@ def _interno_mediana(
     return propios.groupby("zona_id")["minutos"].median().reindex(ids)
 
 
-def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame:
+def linea_base(
+    zonas: pd.DataFrame, secciones: gpd.GeoDataFrame, polos: pd.DataFrame
+) -> pd.DataFrame:
     """Tabla `tiempos` por distancia (plan B3): sin Java y siempre completa, con `estimado = verdadero`.
 
-    `secciones` trae `zona_id` y como geometría su punto de población en EPSG:25830 (ver `main`).
+    `secciones` trae `zona_id` y como geometría su punto de población en EPSG:25830 (ver `main`); `polos`, las
+    columnas `destino_id`, `lon` y `lat` de `polos.leer`.
     """
     _en_metros(secciones)
     centros = _centros(zonas)
-    xy = centros.to_numpy()
+    destinos = pd.concat([centros, _xy_polos(polos)])
+    origen, destino = centros.to_numpy(), destinos.to_numpy()
     km = (
-        np.hypot(xy[:, 0, None] - xy[None, :, 0], xy[:, 1, None] - xy[None, :, 1])
+        np.hypot(
+            origen[:, 0, None] - destino[None, :, 0],
+            origen[:, 1, None] - destino[None, :, 1],
+        )
         / 1000
     )
     ids = centros.index
     matriz = pd.DataFrame(
         {
-            "from_id": np.repeat(ids, len(ids)),
-            "to_id": np.tile(ids, len(ids)),
+            "from_id": np.repeat(ids, len(destinos)),
+            "to_id": np.tile(destinos.index, len(ids)),
             "minutos": _minutos(km).ravel(),
         }
     )
@@ -174,7 +195,9 @@ def linea_base(zonas: pd.DataFrame, secciones: gpd.GeoDataFrame) -> pd.DataFrame
         index=secciones["zona_id"].to_numpy(),
     )
     interno = _minutos(km_sec.groupby(level=0).median()).reindex(ids)
-    return _validada(_tabla(matriz, interno).assign(estimado=True))
+    return _validada(
+        _tabla(matriz, interno, pd.Index(polos["destino_id"])).assign(estimado=True)
+    )
 
 
 def preparar_gtfs(
@@ -242,16 +265,22 @@ def _puntos(ids: pd.Series, lon: pd.Series, lat: pd.Series) -> gpd.GeoDataFrame:
 
 
 def matriz_r5py(
-    zonas: pd.DataFrame, secciones: gpd.GeoDataFrame, osm: Path, gtfs: list[Path]
+    zonas: pd.DataFrame,
+    secciones: gpd.GeoDataFrame,
+    polos: pd.DataFrame,
+    osm: Path,
+    gtfs: list[Path],
 ) -> pd.DataFrame:
     """Tabla `tiempos` con r5py: mediana puerta a puerta de las salidas de 7:30 a 8:30 de `FECHA_SALIDA`.
 
-    El destino es el centro de población de la zona de trabajo. `gtfs` son los zips de `preparar_gtfs`.
+    El destino es el centro de población de la zona de trabajo o el punto de un polo (`destino_id`, `lon` y `lat`
+    de `polos.leer`). `gtfs` son los zips de `preparar_gtfs`.
     """
     from r5py import TransportMode, TransportNetwork, TravelTimeMatrix
 
     _en_metros(secciones)
     centros = _puntos(zonas["zona_id"], zonas["lon_centro"], zonas["lat_centro"])
+    puntos_polo = _puntos(polos["destino_id"], polos["lon"], polos["lat"])
     puntos_seccion = secciones.centroid.to_crs(4326)
     sec = _puntos(secciones["CUSEC"], puntos_seccion.x, puntos_seccion.y)
     # supuesto: el tiempo interno se mide del centro a cada sección y no al revés; con las 4.518 secciones
@@ -259,7 +288,7 @@ def matriz_r5py(
     m = TravelTimeMatrix(
         TransportNetwork(osm, [str(g) for g in gtfs]),
         origins=centros,
-        destinations=pd.concat([centros, sec], ignore_index=True),
+        destinations=pd.concat([centros, puntos_polo, sec], ignore_index=True),
         departure=dt.datetime.combine(FECHA_SALIDA, HORA_SALIDA),
         departure_time_window=VENTANA,
         percentiles=[50],
@@ -276,7 +305,11 @@ def matriz_r5py(
         secciones,
         pd.Index(zonas["zona_id"]),
     )
-    return _validada(_tabla(m[~a_seccion], interno).assign(estimado=False))
+    return _validada(
+        _tabla(m[~a_seccion], interno, pd.Index(polos["destino_id"])).assign(
+            estimado=False
+        )
+    )
 
 
 def marcar_estimados(con: pd.DataFrame, sin: pd.DataFrame) -> pd.DataFrame:
@@ -303,17 +336,17 @@ def marcar_estimados(con: pd.DataFrame, sin: pd.DataFrame) -> pd.DataFrame:
 
 
 def matriz_con_estimadas(
-    zonas: pd.DataFrame, secciones: gpd.GeoDataFrame
+    zonas: pd.DataFrame, secciones: gpd.GeoDataFrame, polos: pd.DataFrame
 ) -> pd.DataFrame:
     """`matriz_r5py` con las líneas reconstruidas de #173, con `estimado` en los pares que mejoran por ellas.
 
     La matriz sin ellas queda en `data/processed/tiempos_sin_estimadas.parquet` como evidencia del marcado.
     """
-    sin = matriz_r5py(zonas, secciones, OSM, preparar_gtfs(GTFS))
+    sin = matriz_r5py(zonas, secciones, polos, OSM, preparar_gtfs(GTFS))
     sin.to_parquet(PROCESSED / "tiempos_sin_estimadas.parquet")
     secuencias, propio = lineas_estimadas.construir(OSM, GTFS_PREPARADOS, FECHA_SALIDA)
     gtfs = [*preparar_gtfs(GTFS, completar=secuencias), propio]
-    con = marcar_estimados(matriz_r5py(zonas, secciones, OSM, gtfs), sin)
+    con = marcar_estimados(matriz_r5py(zonas, secciones, polos, OSM, gtfs), sin)
     LOG.info(
         "Líneas reconstruidas: %d pares cambian; pares con ruta %d → %d",
         con["estimado"].sum(),
@@ -329,14 +362,18 @@ def main(modo: str = "r5py") -> None:
     secciones = secciones_por_zona(leer_secciones(), poblacion_secciones())
     # el tiempo interno se mide desde donde vive la gente, no desde el centroide del polígono (#175)
     secciones = secciones.assign(geometry=puntos_poblacion(secciones, leer_edificios()))
+    lista = polos.ubicar(
+        polos.leer(), zonas
+    )  # falla si un polo cae fuera de la Comunidad
     if modo == "base":
-        tabla = linea_base(zonas, secciones)
+        tabla = linea_base(zonas, secciones, lista)
     elif modo == "r5py":
-        tabla = matriz_con_estimadas(zonas, secciones)
+        tabla = matriz_con_estimadas(zonas, secciones, lista)
     else:
         raise ValueError(f"modo desconocido: {modo!r} (r5py o base)")
+    entre_zonas = tabla[~tabla["destino_id"].isin(lista["destino_id"])]
     sin_ruta = (
-        tabla.groupby("zona_id")["minutos"].count().le(1)
+        entre_zonas.groupby("zona_id")["minutos"].count().le(1)
     )  # solo su propia diagonal
     LOG.info(
         "%.1f %% de pares nulos; zonas sin ruta a ninguna otra: %s",
