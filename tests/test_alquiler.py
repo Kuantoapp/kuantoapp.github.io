@@ -337,7 +337,17 @@ def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.
         return (nombre, "1.000", nuevos, "100", "100")
 
     return {
-        "tramo": _html(tmp_path, "t", [fila("Madrid, Comunidad de", "1.190")]),
+        # mediana de los municipios (1,19); la fila agregada de la Comunidad no cuenta
+        "tramo": _html(
+            tmp_path,
+            "t",
+            [
+                fila("Madrid, Comunidad de", "1.500"),
+                fila("A-28001", "1.100"),
+                fila("B-28002", "1.190"),
+                fila("C-28003", "1.300"),
+            ],
+        ),
         "municipios": _html(
             tmp_path,
             "m",

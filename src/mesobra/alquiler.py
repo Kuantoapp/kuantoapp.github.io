@@ -29,15 +29,12 @@ SERIE_IPC = (
     "Índice",
 )  # IPC297196
 # AEAT, Estadística de viviendas declaradas en el IRPF 2024: comparativa con los nuevos contratos (#251)
-AEAT = RAIZ / "data/raw/aeat_irpfvivienda2024_nuevos_"
 RAW_AEAT = {
-    "municipios": Path(f"{AEAT}municipios_2026-11-19.html"),
-    "cp": Path(f"{AEAT}cp_2026-11-19.html"),
-    "cp_viviendas": Path(f"{AEAT}cp_viviendas_2026-11-19.html"),
-    "tramo": Path(f"{AEAT}tramo_20_50_2026-11-20.html"),
+    k: RAIZ / f"data/raw/aeat_irpfvivienda2024_nuevos_{k}_2026-11-19.html"
+    for k in ("municipios", "cp", "cp_viviendas")
+} | {
+    "tramo": RAIZ / "data/raw/aeat_irpfvivienda2024_nuevos_tramo_20_50_2026-11-20.html"
 }
-# en la página de un tramo de población, el agregado de los municipios de la Comunidad en ese tramo (#320)
-COMUNIDAD = "Madrid, Comunidad de"
 
 # clave -> (hoja, columna de código, ancho del código INE)
 HOJAS = {
@@ -242,8 +239,8 @@ def factor_nuevos(df: pd.DataFrame) -> pd.Series:
 
 
 def leer_brecha(rutas: dict[str, Path] = RAW_AEAT) -> dict:
-    """Factores de la AEAT: `municipio` (código INE), `cp` (factor y viviendas arrendadas) y `tramo` (municipios de
-    la Comunidad de 20.001 a 50.000 habitantes, el tamaño más cercano al de los que no tienen dato propio).
+    """Factores de la AEAT: `municipio` (código INE), `cp` (factor y viviendas arrendadas) y `tramo` (mediana de los
+    municipios de la Comunidad de 20.001 a 50.000 habitantes, el tamaño más cercano al de los que no tienen dato).
     """
     mun = factor_nuevos(leer_aeat(rutas["municipios"]))
     mun = mun[mun.index.str.contains(r"-28\d{3}$")]
@@ -258,10 +255,12 @@ def leer_brecha(rutas: dict[str, Path] = RAW_AEAT) -> dict:
         )
     cp = pd.DataFrame({"factor": factor_nuevos(cp), "viviendas": viviendas})
     cp.index = cp.index.str[:5]
-    tramo = factor_nuevos(leer_aeat(rutas["tramo"]).loc[[COMUNIDAD]])
-    if len(tramo) != 1 or mun.index.has_duplicates or cp.index.has_duplicates:
+    tramo = leer_aeat(rutas["tramo"])
+    # la mediana de sus municipios, no la fila agregada, que pesa más las zonas con más contratos nuevos (#320)
+    tramo = factor_nuevos(tramo[tramo.index.str.contains(r"-28\d{3}$")])
+    if tramo.empty or mun.index.has_duplicates or cp.index.has_duplicates:
         raise ValueError("Territorios repetidos o ausentes en las tablas de la AEAT")
-    return {"municipio": mun, "cp": cp, "tramo": float(tramo.iloc[0])}
+    return {"municipio": mun, "cp": cp, "tramo": float(tramo.median())}
 
 
 def leer_portales(ruta: Path = zonas.OSM) -> gpd.GeoDataFrame:
