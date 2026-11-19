@@ -6,7 +6,7 @@ import pytest
 from mesobra import matriz_trabajo
 
 
-def _bruto(filas: list[tuple]) -> pd.DataFrame:
+def _hoja(filas: list[tuple]) -> pd.DataFrame:
     return pd.DataFrame(filas, columns=matriz_trabajo.COLUMNAS)
 
 
@@ -31,7 +31,7 @@ FILAS = [
 
 
 def test_ordenar_solo_origen_en_la_comunidad_y_no_consta_nulo():
-    df = matriz_trabajo.ordenar(_bruto(FILAS))
+    df = matriz_trabajo.ordenar(_hoja(FILAS))
     assert df["origen"].tolist() == ["28092"] * 5
     assert df["destino"].tolist()[:2] == ["28079", "28092"]
     assert df["destino"].iloc[2:].isna().tolist() == [True, False, True]
@@ -41,7 +41,18 @@ def test_ordenar_solo_origen_en_la_comunidad_y_no_consta_nulo():
 
 
 def test_ordenar_falla_con_ocupados_no_numericos_o_sin_columna():
-    with pytest.raises(ValueError, match="no numéricos"):
-        matriz_trabajo.ordenar(_bruto([(*FILAS[0][:8], "..")]))
+    with pytest.raises(ValueError, match="no enteros"):
+        matriz_trabajo.ordenar(_hoja([(*FILAS[0][:8], "..")]))
     with pytest.raises(ValueError, match="columnas"):
-        matriz_trabajo.ordenar(_bruto(FILAS).drop(columns="Municipio de trabajo"))
+        matriz_trabajo.ordenar(_hoja(FILAS).drop(columns="Municipio de trabajo"))
+
+
+def test_leer_matriz_falla_si_no_estan_los_179_municipios(monkeypatch):
+    monkeypatch.setattr(pd, "read_excel", lambda *a, **k: _hoja(FILAS))
+    with pytest.raises(ValueError, match="179"):
+        matriz_trabajo.leer_matriz()
+
+
+def test_ordenar_falla_con_ocupados_decimales():
+    with pytest.raises(ValueError, match="no enteros"):
+        matriz_trabajo.ordenar(_hoja([(*FILAS[0][:8], "12.5")]))

@@ -9,13 +9,14 @@ trabajo»; la 1 trae las columnas de `COLUMNAS`; después, una fila por par (res
 16 y más años». El INE suprime las celdas de menos de 5 ocupados (el mínimo publicado es 5): un par que falta no
 es un cero. «No consta» como municipio, o como provincia, de trabajo es lugar desconocido, no un destino.
 
-En la Comunidad de Madrid, 2023, leído en bruto el 19-11-2026: 179 municipios de residencia, 3.067.380 ocupados, el
+En la Comunidad de Madrid, 2023, leído del fichero original el 19-11-2026: 179 municipios de residencia, 3.067.380 ocupados, el
 94,2 % trabaja en la provincia y el 9,47 % tiene municipio de trabajo «No consta». El lugar de trabajo sale sobre
-todo de la afiliación (el 94,2 % de los ocupados, metodología del Censo anual): es el de la cuenta de cotización, que
-puede ser la sede de la empresa y no el centro real.
+todo de la afiliación (el 94,2 % de los ocupados, metodología del Censo anual): es el de la cuenta de la Seguridad
+Social, que puede ser la sede de la empresa y no el centro real.
 """
 
 import logging
+from pathlib import Path
 
 import pandas as pd
 
@@ -42,15 +43,17 @@ COLUMNAS = [
 ]
 
 
-def ordenar(bruto: pd.DataFrame) -> pd.DataFrame:
+def ordenar(hoja: pd.DataFrame) -> pd.DataFrame:
     """Pares con origen en la Comunidad: `origen` y `destino` (código INE de 5 cifras, nulo si no consta),
     `prov_destino` (2 cifras, nula si no consta) y `ocupados`. Falla si cambia el formato."""
-    if faltan := [c for c in COLUMNAS if c not in bruto.columns]:
+    if faltan := [c for c in COLUMNAS if c not in hoja.columns]:
         raise ValueError(f"la matriz del INE no trae las columnas {faltan}")
-    m = bruto[bruto["Provincia de residencia"] == MADRID]
+    m = hoja[hoja["Provincia de residencia"] == MADRID]
     ocupados = pd.to_numeric(m["Ocupados de 16 y más años"], errors="coerce")
-    if ocupados.isna().any() or (ocupados < 0).any():
-        raise ValueError("ocupados no numéricos o negativos en la matriz del INE")
+    if ocupados.isna().any() or (ocupados < 0).any() or (ocupados % 1 != 0).any():
+        raise ValueError(
+            "ocupados no enteros, no numéricos o negativos en la matriz del INE"
+        )
     prov = m["Provincia de trabajo"].where(
         m["Provincia de trabajo"].str.fullmatch(r"\d{2}", na=False)
     )
@@ -67,10 +70,9 @@ def ordenar(bruto: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
 
-def leer_matriz(ruta=RAW, hoja: str = HOJA) -> pd.DataFrame:
+def leer_matriz(ruta: Path = RAW) -> pd.DataFrame:
     """Matriz de la Comunidad de `ruta`, validada: un origen por municipio de la Comunidad."""
-    bruto = pd.read_excel(ruta, hoja, header=1, engine="calamine", dtype=str)
-    df = ordenar(bruto)
+    df = ordenar(pd.read_excel(ruta, HOJA, header=1, engine="calamine", dtype=str))
     if (n := df["origen"].nunique()) != MUNICIPIOS:
         raise ValueError(
             f"la matriz trae {n} municipios de residencia de la Comunidad, no {MUNICIPIOS}"
