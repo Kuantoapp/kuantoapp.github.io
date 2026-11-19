@@ -149,6 +149,15 @@ test("con la subida del alquiler activa, la ficha lo dice como simulación y no 
   assert.doesNotMatch(linea, /contratos de \d{4}, tómalo como un suelo/);
 });
 
+test("con la subida, una zona con alquiler estimado no dice «contratos»", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = { ...caso.salida.zonas["28065"], origen: "estimado" };
+  const ctx = { ...contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"), subida: 10 };
+  const linea = lineasFicha("Zona", z, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea, /dato estimado de \d{4} más la subida; simulación, estimado/);
+  assert.doesNotMatch(linea, /contratos/);
+});
+
 test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
   const f = (d) => new Intl.NumberFormat("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
   for (const caso of casos.filter((c) => !("error" in c))) {

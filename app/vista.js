@@ -210,7 +210,10 @@ function fraseBanda([bajo, alto]) {
 function fraseAlquiler(zona, { anio, ic, subida }) {
   const rango = `entre ${euros.format(zona.alquiler_p25)} y ${euros.format(zona.alquiler_p75)} € al mes`;
   // La subida simulada no es un dato observado: se dice aparte y se marca como simulación.
-  if (subida > 0) return `Alquiler con la subida del ${subida} %: ${rango} (contratos de ${anio} más la subida; simulación, estimado)`;
+  if (subida > 0) {
+    const dato = zona.origen === "estimado" ? `dato estimado de ${anio}` : `contratos de ${anio}`; // una zona imputada no tiene contratos
+    return `Alquiler con la subida del ${subida} %: ${rango} (${dato} más la subida; simulación, estimado)`;
+  }
   // shortcut: «contratos de {anio}» vale con factor_ipc 1,0 (hoy en todas); al aplicar el IPC (#94), decir «actualizado con el IPC» y «estimado».
   if (zona.origen !== "estimado") return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
   const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
