@@ -412,9 +412,9 @@ Aplica la regla de `docs/decisiones.md` del 14-11: si el catálogo regional (dat
       | Medida | Tasa directa | Método, σ del Gini | Método, σ del P80/P20 | Diferencia | Punto medio |
       |---|---|---|---|---|---|
       | Alquiler y suministros > 40 % (regla) | 34,44 % | 37,31 % | 37,54 % | +2,87 y **+3,10** | +2,98 |
-      | Alquiler > 30 % | 41,45 % | 44,31 % | 44,49 % | +2,86 y +3,05 | +2,96 |
+      | Alquiler > 30 % | 41,45 % | 44,31 % | 44,49 % | +2,86 y +3,05 | +2,95 |
 
-      **Veredicto: el método vale por la regla (3,10 ≤ 3,7), pero en zona gris.** El intervalo al 95 % del bootstrap de la diferencia contiene 3,7: [−0,77; 6,79] con la σ del Gini y [−2,70; 7,70] con la del P80/P20 (error estándar 1,95 y 2,66). Con 562 hogares, la prueba no distingue un error del método de +3 puntos de uno de +6. El bootstrap remuestrea hogares sin el diseño de la encuesta (el fichero no trae estrato ni sección), así que el intervalo real es, si acaso, más ancho.
+      **Veredicto: la regla no rechaza el método (3,10 ≤ 3,7), pero el resultado no es concluyente (zona gris).** El intervalo al 95 % del bootstrap de la diferencia contiene 3,7: [−0,77; 6,79] con la σ del Gini y [−2,70; 7,70] con la del P80/P20 (error estándar 1,95 y 2,66). Con 562 hogares, la prueba no distingue un error del método de +3 puntos de uno de +6. Tampoco tenía potencia para concluir que vale: con ese error estándar, el intervalo solo quedaría entero por debajo de 3,7 si la diferencia estimada fuera menor que unos −1,5 puntos. El bootstrap remuestrea hogares sin el diseño de la encuesta (el fichero no trae estrato ni sección), así que el intervalo real es, si acaso, más ancho.
 
       **Pasa en parte por compensación** (descomposición, 40 %; los efectos no se suman):
 
@@ -425,7 +425,7 @@ Aplica la regla de `docs/decisiones.md` del 14-11: si el catálogo regional (dat
       | (b) Alquiler empírico, renta log-normal | 37,04 % | 37,27 % |
       | Método (las dos log-normales) | 37,31 % | 37,54 % |
 
-      Usar una UC común (1,784) en lugar de la de cada hogar **baja** la tasa 3,4 puntos (de 34,44 a 31,07 %). Sobre esa base, cualquiera de las dos log-normales la **sube** de 5,5 a 6,2 puntos, y juntas, 6,2 a 6,5. El error neto de +3 es la resta de dos errores de signo contrario y mayor tamaño. Con el 30 % pasa lo mismo: 39,02 % con la UC común, 43,6 a 43,8 % con una log-normal.
+      Usar una UC común (1,784) en lugar de la de cada hogar **baja** la tasa 3,4 puntos (de 34,44 a 31,07 %). Sobre esa base, cualquiera de las dos log-normales la **sube** de 5,5 a 6,2 puntos, y juntas, 6,2 a 6,5. El error neto de +3 es la resta de dos errores de signo contrario y mayor tamaño. Con el 30 % pasa lo mismo: 39,02 % con la UC común, 43,6 a 43,8 % con una log-normal. En (a) y (b), la variable empírica se tipifica con los parámetros de su log-normal para condicionar la otra; así la marginal de la otra no es exactamente log-normal. Condicionar por rangos (cópula gaussiana) daría otra cifra, y la conclusión no depende de ello: el tamaño de la subida es aproximado.
 
       De dónde sale la subida, con los cuantiles (P10, P50 y P90):
       - **Renta:** la log-normal da 8.814, 18.514 y 38.886 € (σ del Gini) frente a 8.051, 19.414 y 39.096 € empíricos. Con la media fija, la log-normal deja la mediana un 4,6 % por debajo de la real: más hogares cerca del umbral. Es el mismo mecanismo que el diagnóstico de #100 encontró en las secciones.
@@ -434,14 +434,14 @@ Aplica la regla de `docs/decisiones.md` del 14-11: si el catálogo regional (dat
       Comprobaciones:
       - El lado directo reproduce las cifras de control: `control_f306` da 36,0 % (criterio de la issue; el 35,9 % era antes de #260) y la función de la tasa directa, con `s = 0` y el 30 %, da lo mismo que `alquiler_30` (41,45 %).
       - Con datos sintéticos log-normales, el proceso completo devuelve la σ verdadera (±0,01) y la tasa directa (±0,3 puntos) (`test_metodo_igual_a_directa_si_los_datos_son_log_normales`).
-      - `prob_supera` frente a un Monte Carlo de 2·10⁶ extracciones con estas entradas: 37,308 frente a 37,312 % y 37,539 frente a 37,538 %.
+      - `prob_supera` frente a un Monte Carlo de 2·10⁶ extracciones con estas entradas: `prob_supera` da 37,312 y 37,538 %; el Monte Carlo, 37,308 y 37,539 %.
       - ρ recalculado a mano: 0,278724, igual que `parametros_ecv`.
       - Sin el hogar de renta ≤ 0 (entradas, ρ y tasa directa recalculados): diferencia +2,77 y +3,08. El veredicto no cambia.
       - **Cuantil ponderado en escalón** en lugar del punto medio: 37,30 y 37,67 %, es decir, −0,01 y +0,13 puntos. **Pasa de la cota prevista de 0,1** con la σ del P80/P20; la diferencia quedaría en 3,23, aún por debajo de 3,7.
-      - **Sensibilidad, error de entradas:** con pesos de personas, como el Gini del ADRH, σ = 0,588 y 0,586 y el método da 37,78 y 37,66 % (+0,3 a +0,5 puntos).
+      - **Sensibilidad, error de entradas:** con pesos de personas, como el Gini del ADRH, σ = 0,588 y 0,586 y el método da 37,78 y 37,66 % (+0,47 y +0,12 puntos frente a su σ con pesos de hogares).
 
       Lectura:
-      - **La forma log-normal no explica el grueso de la desviación de #100**, que sacó 47,2 % frente al control del 36,0 %. Con entradas exactas, el método se desvía unos +3 puntos, en el mismo sentido. El resto (unos +8) viene de las entradas: renta del ADRH, SERPAVI y UC, como apuntó su diagnóstico.
+      - **A escala de la Comunidad, con entradas exactas, el método se desvía +3 puntos (intervalo [−2,7; 7,7]), en el mismo sentido que #100.** #100 sacó 47,2 % (con la misma cesta de 81,08); frente a la tasa directa de la misma medida (34,44 %), son +12,8 puntos, y frente al control con `HH070` (36,0 %), +11,2: 1,6 puntos de esa distancia son de definición. Esta prueba **no permite repartir** los +12,8 entre método y entradas en las secciones: allí la UC común no tiene por qué compensar igual, y el sesgo de la forma por sí sola es de +5,5 a +6,5 puntos. Con el error de esta prueba (+3), las entradas (renta del ADRH, SERPAVI y UC) pesarían más que el método, como apuntó el diagnóstico de #100; con el de la forma sola (+6,5), los dos pesarían casi lo mismo.
       - **La forma sí sesga hacia arriba** de 5,5 a 6,5 puntos, por la mediana de la renta y la cola barata del alquiler. Ese sesgo queda tapado aquí por la UC común. En una sección, la UC del modelo sale del tamaño medio del hogar de la sección y no hay garantía de que compense igual. Una versión futura de F3-06 debería probar la renta con una forma de cola más pesada a la izquierda o integrar por tipo de hogar antes de fiarse del +3.
       - La tasa directa con el mismo coste es 34,44 %, no el 33,6 % de la prueba rápida de #100. Esa prueba se hizo fuera del repo y no se puede saber qué la separa.
       - **Cesta:** se fijó la de 2025 sin IPC (81,08) en los dos lados. **No se han rehecho** las cifras de F3-06 del 18-11 (47,0–47,3 %) con la cesta de 2026 (83,95): este cambio no toca `sobrecarga.py` ni sus datos procesados.
