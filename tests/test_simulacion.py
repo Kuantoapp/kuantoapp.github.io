@@ -226,3 +226,6 @@ def test_por_transporte_cuenta_solo_lo_que_cruza_al_sumar_el_transporte():
     sin = simulacion.cambios(z.assign(transporte=0.0)).set_index(["perfil", "criterio"])
     assert (sin["por_transporte"] == 0).all()
     assert (c["por_transporte"] <= c["elegibles"]).all()
+    assert (
+        c["por_transporte"].sum() > 0
+    )  # los fixtures tienen un caso que cruza solo por el transporte
