@@ -182,11 +182,11 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
   assert.deepEqual(fichaDe(casos[0], "28065"), [
     "Zona",
     "24,4 € por hora extra (estimado)",
-    "Te sobran entre 479 € y 632 € al mes (estimado)",
+    "Te sobran entre 435 € y 589 € al mes (estimado)",
     "Neto del hogar: 1523 € al mes (estimado)",
     "Alquiler: entre 512 y 666 € al mes (contratos de 2024, tómalo como un suelo)",
     "Transporte: 21,90 € al mes (10 viajes) (estimado)",
-    "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)",
+    "Cesta básica: 400 €/mes (estimado: gasto medio de 2025 con el IPC hasta 10/2026; incluye internet y móvil)",
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
     "Tu trabajo te paga 10,1 € netos la hora (estimado, jornada de 40 h a la semana)",

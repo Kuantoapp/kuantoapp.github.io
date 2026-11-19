@@ -57,7 +57,7 @@ export function netoMes(netos, bruto, hogar) {
 export function cesta(cestaUc, hogar) {
   const uc = 1 + 0.5 * (hogar.adultos - 1) + 0.3 * hogar.hijos;
   const p = hogar.personas_comparten;
-  return cestaUc.alimentacion * uc + (cestaUc.suministros * (uc + 0.5 * (p - 1))) / p;
+  return cestaUc.alimentacion * uc + ((cestaUc.suministros + cestaUc.comunicaciones) * (uc + 0.5 * (p - 1))) / p;
 }
 
 export function alquiler(zona, hogar, subida) {

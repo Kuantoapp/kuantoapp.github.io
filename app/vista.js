@@ -177,6 +177,7 @@ export function contextoFicha(api, entrada, resultado, id) {
   const n = entrada.sueldos.length;
   return {
     anio: dato.anio,
+    ipcHasta: api.hogares.meta.ipc_hasta,
     subida: entrada.escenario?.subida_alquiler ?? 0,
     // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
     ic: dato.ic?.length && zona.alquiler !== null ? dato.ic.map((v) => (v * zona.alquiler) / dato.p50) : null,
@@ -188,6 +189,12 @@ export function contextoFicha(api, entrada, resultado, id) {
     netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
     salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
   };
+}
+
+/** `AAAA-MM` → `MM/AAAA`; sin mes falla, para no inventar una fecha. */
+function mesIpc(m) {
+  if (!/^\d{4}-\d{2}$/.test(m)) throw new Error(`hogares.meta.ipc_hasta inválido: ${m}`);
+  return `${m.slice(5)}/${m.slice(0, 4)}`;
 }
 
 function frasePrecio(zona, ref) {
@@ -238,7 +245,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
-    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado, gasto medio de 2025)`,
+    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado: gasto medio de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; incluye internet y móvil)`,
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,

@@ -50,8 +50,8 @@ def test_un_sueldo_a_mano() -> None:
     assert z["neto"] == pytest.approx(neto)
     assert z["alquiler"] == pytest.approx(19.6 * 45)
     assert z["transporte"] == 21.9
-    assert z["cesta"] == pytest.approx(275.37 + 81.08)
-    assert z["sobra"] == pytest.approx(neto - 19.6 * 45 - 21.9 - 356.45)
+    assert z["cesta"] == pytest.approx(275.37 + 81.08 + 43.72)
+    assert z["sobra"] == pytest.approx(neto - 19.6 * 45 - 21.9 - 400.17)
     assert z["horas"] == pytest.approx(9 * 2 * 3 * 3.7833 / 60)
     assert z["esfuerzo"] == pytest.approx(19.6 * 45 / neto)
 
@@ -138,7 +138,9 @@ def test_sin_ruta_no_hay_coste_ni_sobra() -> None:
 def test_cesta_con_el_hogar_del_visitante() -> None:
     uc = API["hogares"]["cesta_uc"]
     comparte = {"adultos": 1, "hijos": 0, "personas_comparten": 3}
-    assert calculo.cesta(uc, comparte) == pytest.approx(275.37 + 81.08 * 2 / 3)
+    assert calculo.cesta(uc, comparte) == pytest.approx(
+        275.37 + (81.08 + 43.72) * 2 / 3
+    )
 
 
 def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:

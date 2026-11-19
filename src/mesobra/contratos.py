@@ -125,6 +125,7 @@ CONTRATOS: dict[str, dict] = {
             "personas_comparten": "entero",  # personas que reparten el alquiler
             "alimentacion": "decimal",  # €/mes
             "suministros": "decimal",  # €/mes
+            "comunicaciones": "decimal",  # €/mes
             "anio": "entero",
         },
     },

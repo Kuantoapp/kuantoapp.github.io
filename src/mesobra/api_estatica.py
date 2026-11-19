@@ -427,10 +427,11 @@ def _tarifas(o):
 PERFIL = {
     "adultos": ("entero", 1, 10), "hijos": ("entero", 0, 10), "m2": ("decimal", 10, 300),
     "personas_comparten": ("entero", 1, 10), "alimentacion": POS, "suministros": POS,
+    "comunicaciones": POS,
 }
 # fmt: on
 PERFILES = ["solo", "comparte", "pareja", "monoparental"]
-CESTA_UC = {"alimentacion": POS, "suministros": POS}
+CESTA_UC = {"alimentacion": POS, "suministros": POS, "comunicaciones": POS}
 
 
 def _hogares(o):

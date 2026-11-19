@@ -90,8 +90,11 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     validar("netos.json", netos_json(neto.rejilla()))
     validar("tarifas.json", _tarifas())
     tabla = pd.read_csv(PROCESSED / "hogares.csv")
+    tabla.attrs["ipc_hasta"] = "2026-10"
     tabla.attrs["nota"] = "Estimado"
-    cesta = pd.Series({"alimentacion": 275.0, "suministros": 81.0})
+    cesta = pd.Series(
+        {"alimentacion": 275.0, "suministros": 81.0, "comunicaciones": 43.7}
+    )
     obj = hogares_json(tabla, cesta, 69)
     validar("hogares.json", obj)
     assert {p["m2"] for p in obj["perfiles"].values()} == {69}
