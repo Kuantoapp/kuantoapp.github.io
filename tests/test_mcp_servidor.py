@@ -48,6 +48,17 @@ def test_escenario_y_dos_sueldos_igual_que_calculo() -> None:
     r = llamar("calcular_sobrante", {**entrada, "zona_id": "2807913"})
     assert r["zona"]["sobra"] == esperado
     assert r["escenario"]["tarifas"] == "sin_descuento"
+    assert "simulacion" in r
+
+
+def test_simulacion_solo_con_escenario_sin_descuento() -> None:
+    r = llamar("calcular_sobrante", {**ENTRADA, "zona_id": "28092"})
+    assert "simulacion" not in r
+    r = llamar(
+        "calcular_sobrante",
+        {**ENTRADA, "zona_id": "28092", "escenario": {"tarifas": "sin_descuento"}},
+    )
+    assert "BOCM-20251231-3" in r["simulacion"]
 
 
 def test_ranking_getafe_dice_cuantas_zonas_y_por_que_faltan() -> None:
@@ -138,6 +149,11 @@ def test_indicadores_zona_igual_que_analisis() -> None:
         ("indicadores_zona", {"zona_id": GETAFE, "anio": 1999}, "anio"),
         ("indicadores_zona", {"zona_id": "1"}, "inexistente"),
         ("indicadores_zona", {"zona_id": GETAFE, "anio": "2023"}, "anio"),
+        (
+            "calcular_sobrante",
+            {**ENTRADA, "zona_id": GETAFE, "escenarios": {"subida_alquiler": 50}},
+            "escenarios",
+        ),
         ("ranking_zonas", {**ENTRADA, "n": True}, "n"),
         (
             "calcular_sobrante",
@@ -182,3 +198,12 @@ def test_indicadores_sin_bono_dice_el_motivo() -> None:
     r = llamar("indicadores_zona", {"zona_id": zona})
     assert r["bono"] is None
     assert "Bono" in r["bono_motivo"]
+
+
+def test_esfuerzo_nulo_dice_el_motivo() -> None:
+    sin_dato = next(
+        z for z, a in API["alquiler"]["zonas"].items() if a["origen"] == "sin_dato"
+    )
+    r = llamar("indicadores_zona", {"zona_id": sin_dato})
+    assert r["esfuerzo"]["esfuerzo"] is None
+    assert r["esfuerzo_motivo"]

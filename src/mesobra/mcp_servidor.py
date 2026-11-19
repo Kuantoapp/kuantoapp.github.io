@@ -31,13 +31,12 @@ if DATOS is None:
     raise FileNotFoundError(
         "sin mesobra/datos ni app/datos: instala el paquete completo"
     )
-ESTRICTO = ConfigDict(
-    extra="forbid", strict=True
-)  # una clave mal escrita no se descarta en silencio
+# Una clave mal escrita no se descarta en silencio.
+ESTRICTO = ConfigDict(extra="forbid", strict=True)
 UNIDADES = {
-    "neto": "€/mes del hogar",
+    "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 (declaración, no retención), tributación individual",
     "alquiler": "€/mes (mediana P50; P25 y P75 en alquiler_p25/p75)",
-    "transporte": "€/mes",
+    "transporte": "€/mes, estimado: media anual del título más barato con precios del BOCM de 2026 y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
     "cesta": "€/mes (cesta básica del hogar)",
     "sobra": "€/mes del hogar = neto − alquiler − transporte − cesta",
     "sobra_banda": "[bajo, alto] €/mes",
@@ -105,7 +104,7 @@ def _nombres() -> dict[str, dict[str, Any]]:
 
 
 def _zona_existente(zona_id: str) -> None:
-    if zona_id not in _api()["alquiler"]["zonas"]:
+    if zona_id not in _api()["alquiler"]["zonas"] or zona_id not in _api()["tiempos"]["origenes"]:
         raise ValueError(
             f"zona_id {zona_id!r} inexistente: es el código INE de 5 dígitos del municipio "
             "(28065) o 28079 + distrito de Madrid (2807913); consúltalo con indicadores_zona"
@@ -154,7 +153,7 @@ def _zona(zona_id: str, z: dict) -> dict[str, Any]:
 def _envoltura(res: dict) -> dict[str, Any]:
     zonas = res["zonas"]
     calculadas = sum(z["sobra"] is not None for z in zonas.values())
-    return {
+    salida = {
         "unidades": UNIDADES,
         "referencia": res["ref"],
         "escenario": res["escenario"],
@@ -162,6 +161,12 @@ def _envoltura(res: dict) -> dict[str, Any]:
         "zonas_total": len(zonas),
         "fuentes": _fuentes("alquiler", "hogares", "netos", "tarifas", "tiempos"),
     }
+    if res["escenario"]["tarifas"] != "vigente_2026":
+        salida["simulacion"] = (
+            "precios oficiales del BOCM-20251231-3 sin la bonificación de 2026 (RDL 17/2025, "
+            "BOE-A-2025-26459); el precio vigente es vigente_2026"
+        )
+    return salida
 
 
 def _claro(f: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
@@ -184,7 +189,9 @@ servidor = MCPServer(
         "herramientas: no estimes ni completes ninguna. Da siempre las horas de viaje junto al "
         "sobrante, di la fuente y el año, y marca como estimado lo estimado. Un valor nulo no es cero: "
         "explica su motivo y sobre cuántas zonas se ha calculado. Los destinos y zonas van por código INE "
-        "(Getafe = 28065), no por nombre."
+        "(Getafe = 28065), no por nombre. Con escenario `sin_descuento` es una simulación: presenta "
+        "junto a ella la cifra `vigente_2026` y etiquétala como tal. La tarifa joven se aplica a todos "
+        "los sueldos según una sola edad."
     ),
 )
 
@@ -276,14 +283,21 @@ def indicadores_zona(
         "alquiler": alq | {"estimado": alq["origen"] == "estimado"},
         "esfuerzo": esfuerzo.get(anio),
         "esfuerzo_motivo": None
-        if esfuerzo.get(anio)
-        else "sin renta o alquiler de la zona",
+        if (esfuerzo.get(anio) or {}).get("esfuerzo") is not None
+        else "sin alquiler o renta de la zona",
         "bono": bono,
         "bono_motivo": None
         if bono
         else "sin datos del Bono Alquiler Joven del municipio",
         "fuentes": _fuentes("alquiler", "analisis"),
     }
+
+
+# shortcut: API privada de mcp 2.3.0 (fijada), revisar al subir de versión. El SDK deja pasar
+# los argumentos de primer nivel mal escritos (`escenarios`) y daría una cifra sin el escenario pedido.
+for _herramienta in servidor._tool_manager.list_tools():
+    _herramienta.fn_metadata.arg_model.model_config["extra"] = "forbid"
+    _herramienta.fn_metadata.arg_model.model_rebuild(force=True)
 
 
 def main() -> None:
