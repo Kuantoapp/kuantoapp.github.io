@@ -405,6 +405,267 @@ Aplica la regla de `docs/decisiones.md` del 14-11: si el catálogo regional (dat
       - Cambiar la definición del cuantil ponderado (punto medio o escalón) mueve menos de 0,1 puntos.
       - Bootstrap de hogares (500 réplicas): intervalo de la diferencia para la zona gris.
     - **Descomposición**, una pieza cada vez sobre la tasa directa: (a) renta empírica de cada hogar con el alquiler log-normal condicionado a ella; (b) alquiler empírico de cada hogar con la renta log-normal condicionada a él; (c) la UC común en lugar de la de cada hogar, con todo lo demás empírico. Más los cuantiles P10, P50 y P90 empíricos frente a los de cada log-normal.
+    - **Resultado (2026-11-20, estimado).** Fuente de todas las cifras: microdatos de la ECV 2025 del INE (`ine_ecv_microdatos_2025_2026-11-18.zip`) y cesta de la EPF 2025 (`hogares.cesta_uc` con factores 1: 81,08 €/UC·mes); cálculo de `test_metodo_con_entradas_de_la_ecv` y del script de abajo. 562 de los 580 inquilinos tienen alquiler y renta; uno tiene renta ≤ 0 (0,12 % del peso) y ninguno alquiler 0.
+
+      Entradas: renta media por UC 21.893 €; Gini winsorizado 30,93, de donde σ = 0,579; P80/P20 2,669, de donde σ = 0,583; alquiler P25 572 y P75 1.000 €/mes (μ = 6,629; σ = 0,414); UC media 1,784; ρ = 0,279.
+
+      | Medida | Tasa directa | Método, σ del Gini | Método, σ del P80/P20 | Diferencia | Punto medio |
+      |---|---|---|---|---|---|
+      | Alquiler y suministros > 40 % (regla) | 34,44 % | 37,31 % | 37,54 % | +2,87 y **+3,10** | +2,98 |
+      | Alquiler > 30 % | 41,45 % | 44,31 % | 44,49 % | +2,86 y +3,05 | +2,96 |
+
+      **Veredicto: el método vale por la regla (3,10 ≤ 3,7), pero en zona gris.** El intervalo al 95 % del bootstrap de la diferencia contiene 3,7: [−0,77; 6,79] con la σ del Gini y [−2,70; 7,70] con la del P80/P20 (error estándar 1,95 y 2,66). Con 562 hogares, la prueba no distingue un error del método de +3 puntos de uno de +6. El bootstrap remuestrea hogares sin el diseño de la encuesta (el fichero no trae estrato ni sección), así que el intervalo real es, si acaso, más ancho.
+
+      **Pasa en parte por compensación** (descomposición, 40 %; los efectos no se suman):
+
+      | Variante (cambia una pieza; UC común en las tres) | σ del Gini | σ del P80/P20 |
+      |---|---|---|
+      | (c) Todo empírico | 31,07 % | 31,07 % |
+      | (a) Renta empírica, alquiler log-normal | 36,54 % | 36,57 % |
+      | (b) Alquiler empírico, renta log-normal | 37,04 % | 37,27 % |
+      | Método (las dos log-normales) | 37,31 % | 37,54 % |
+
+      Usar una UC común (1,784) en lugar de la de cada hogar **baja** la tasa 3,4 puntos (de 34,44 a 31,07 %). Sobre esa base, cualquiera de las dos log-normales la **sube** de 5,5 a 6,2 puntos, y juntas, 6,2 a 6,5. El error neto de +3 es la resta de dos errores de signo contrario y mayor tamaño. Con el 30 % pasa lo mismo: 39,02 % con la UC común, 43,6 a 43,8 % con una log-normal.
+
+      De dónde sale la subida, con los cuantiles (P10, P50 y P90):
+      - **Renta:** la log-normal da 8.814, 18.514 y 38.886 € (σ del Gini) frente a 8.051, 19.414 y 39.096 € empíricos. Con la media fija, la log-normal deja la mediana un 4,6 % por debajo de la real: más hogares cerca del umbral. Es el mismo mecanismo que el diagnóstico de #100 encontró en las secciones.
+      - **Alquiler:** la log-normal da 445, 756 y 1.286 €/mes frente a 400, 750 y 1.309 € empíricos. La cola barata real es más baja que la que dibuja la log-normal ajustada a P25 y P75.
+
+      Comprobaciones:
+      - El lado directo reproduce las cifras de control: `control_f306` da 36,0 % (criterio de la issue; el 35,9 % era antes de #260) y la función de la tasa directa, con `s = 0` y el 30 %, da lo mismo que `alquiler_30` (41,45 %).
+      - Con datos sintéticos log-normales, el proceso completo devuelve la σ verdadera (±0,01) y la tasa directa (±0,3 puntos) (`test_metodo_igual_a_directa_si_los_datos_son_log_normales`).
+      - `prob_supera` frente a un Monte Carlo de 2·10⁶ extracciones con estas entradas: 37,308 frente a 37,312 % y 37,539 frente a 37,538 %.
+      - ρ recalculado a mano: 0,278724, igual que `parametros_ecv`.
+      - Sin el hogar de renta ≤ 0 (entradas, ρ y tasa directa recalculados): diferencia +2,77 y +3,08. El veredicto no cambia.
+      - **Cuantil ponderado en escalón** en lugar del punto medio: 37,30 y 37,67 %, es decir, −0,01 y +0,13 puntos. **Pasa de la cota prevista de 0,1** con la σ del P80/P20; la diferencia quedaría en 3,23, aún por debajo de 3,7.
+      - **Sensibilidad, error de entradas:** con pesos de personas, como el Gini del ADRH, σ = 0,588 y 0,586 y el método da 37,78 y 37,66 % (+0,3 a +0,5 puntos).
+
+      Lectura:
+      - **La forma log-normal no explica el grueso de la desviación de #100**, que sacó 47,2 % frente al control del 36,0 %. Con entradas exactas, el método se desvía unos +3 puntos, en el mismo sentido. El resto (unos +8) viene de las entradas: renta del ADRH, SERPAVI y UC, como apuntó su diagnóstico.
+      - **La forma sí sesga hacia arriba** de 5,5 a 6,5 puntos, por la mediana de la renta y la cola barata del alquiler. Ese sesgo queda tapado aquí por la UC común. En una sección, la UC del modelo sale del tamaño medio del hogar de la sección y no hay garantía de que compense igual. Una versión futura de F3-06 debería probar la renta con una forma de cola más pesada a la izquierda o integrar por tipo de hogar antes de fiarse del +3.
+      - La tasa directa con el mismo coste es 34,44 %, no el 33,6 % de la prueba rápida de #100. Esa prueba se hizo fuera del repo y no se puede saber qué la separa.
+      - **Cesta:** se fijó la de 2025 sin IPC (81,08) en los dos lados. **No se han rehecho** las cifras de F3-06 del 18-11 (47,0–47,3 %) con la cesta de 2026 (83,95): este cambio no toca `sobrecarga.py` ni sus datos procesados.
+
+      <details><summary>metodo_194.py</summary>
+
+      Desde la raíz del repo, con los microdatos descomprimidos como dice `data/README.md`: `python metodo_194.py .`. Reutiliza las funciones del test.
+
+      ```python
+      # ruff: noqa: T201 -- script de un solo uso (#194), su salida es el resultado
+      """#194: el método de F3-06 con entradas de la ECV 2025 frente a la tasa directa. Estimado."""
+
+      import sys
+      from pathlib import Path
+
+      import numpy as np
+      import pandas as pd
+      from scipy.stats import norm
+
+      RAIZ = Path(sys.argv[1])
+      sys.path[:0] = [str(RAIZ / "src"), str(RAIZ / "tests")]
+
+      from test_sobrecarga_ecv import (
+          _cuantil,
+          _directa,
+          _entradas,
+          _gini_winsorizado,
+          _inquilinos,
+          _metodo,
+      )
+
+      from mesobra import hogares as cesta_mod
+      from mesobra import sobrecarga as s
+      from mesobra import sobrecarga_ecv as ecv
+
+      f = pd.Series(
+          1.0, index=sorted({g for c in cesta_mod.CONCEPTOS.values() for _, g in c.values()})
+      )
+      f.attrs["ipc_hasta"] = "2025-12"
+      cesta_mod.factores_ipc = lambda _c: f
+      CESTA = cesta_mod.cesta_uc()["suministros"]
+      print(f"cesta 2025 sin IPC: {CESTA:.4f} €/UC·mes")
+
+      h = ecv.hogares()
+      par = s.parametros_ecv(h)
+      RHO = par["rho"]
+      q = _inquilinos(h)
+      todos = h[(h.DB040 == ecv.MADRID) & h.HH021.isin(ecv.INQUILINOS)]
+      print(f"inquilinos ES30 {len(todos)}, con HH060 y HY020 {len(q)}; rho {RHO:.4f}")
+      borde = (q.HY020 <= 0) | (q.HH060 <= 0)
+      print(
+          f"renta<=0: {(q.HY020 <= 0).sum()}, alquiler 0: {(q.HH060 <= 0).sum()}, "
+          f"peso {100 * q.DB090[borde].sum() / q.DB090.sum():.2f} %"
+      )
+
+      # comprobaciones del lado directo
+      print("control_f306:", ecv.control_f306(h)["tasa"].round(2).to_dict())
+      print(
+          f"directa s=0 k=0,30: {_directa(q, 0.0, 0.30):.3f}  alquiler_30: {ecv.tasa(ecv.alquiler_30(q), q.DB090)[0]:.3f}"
+      )
+
+
+      def rho_de(d):
+          ok = d[(d.HH060 > 0) & (d.HY020 > 0)]
+          c = np.cov(np.log(ok.HH060), np.log(ok.HY020 / ok.HX240), aweights=ok.DB090)
+          return c[0, 1] / np.sqrt(c[0, 0] * c[1, 1])
+
+
+      print(f"rho recalculado {rho_de(q):.6f} frente a parametros_ecv {RHO:.6f}")
+
+      sec, sig = _entradas(q, CESTA)
+      r = q.HY020 / q.HX240
+      print("entradas:", sec.round(4).to_dict("records")[0], "sigmas", sig.round(4))
+      print(
+          f"  Gini wins {100 * _gini_winsorizado(r, q.DB090):.2f}; P80/P20 "
+          f"{np.divide(*_cuantil(r, q.DB090, [0.8, 0.2])):.4f}; alquiler P25/P75 {_cuantil(q.HH060, q.DB090, [0.25, 0.75])}"
+      )
+
+
+      def resultado(d, rho, etiqueta):
+          for nombre, cesta, k in (
+              ("40 % con cesta", CESTA, 0.40),
+              ("30 % alquiler", 0.0, 0.30),
+          ):
+              m = _metodo(d, cesta, k, rho)
+              di = _directa(d, cesta, k)
+              print(
+                  f"{etiqueta} {nombre}: directa {di:.3f}; método σGini {m[0]:.3f} σP80 {m[1]:.3f}; "
+                  f"dif {m[0] - di:+.3f} {m[1] - di:+.3f}; medio {m.mean() - di:+.3f}"
+              )
+
+
+      resultado(q, RHO, "BASE")
+      sin = q[~borde]
+      resultado(sin, rho_de(sin), "SIN BORDE")
+
+      # sensibilidad: σ con pesos de personas
+      w_p = q.peso_personas
+      sp = [
+          s.sigma_gini(100 * _gini_winsorizado(r, w_p)),
+          s.sigma_p80p20(np.divide(*_cuantil(r, w_p, [0.8, 0.2]))),
+      ]
+      print(
+          "σ con pesos de personas:",
+          np.round(sp, 4),
+          "tasa 40:",
+          np.round(100 * s.prob_supera(sec, np.array(sp), RHO, 0.40), 3),
+      )
+
+
+      # sensibilidad: cuantil en escalón
+      def escalon(x, w, qs):
+          o = np.argsort(x.to_numpy())
+          x, w = x.to_numpy()[o], w.to_numpy()[o]
+          c = np.cumsum(w) / w.sum()
+          return np.array([x[np.searchsorted(c, p)] for p in np.atleast_1d(qs)])
+
+
+      p20, p80 = escalon(r, q.DB090, [0.2, 0.8])
+      a25, a75 = np.log(escalon(q.HH060, q.DB090, [0.25, 0.75]))
+      sec_e = sec.assign(mu_a=(a25 + a75) / 2, sigma_a=(a75 - a25) / (2 * norm.ppf(0.75)))
+      sig_e = np.array([sig[0], s.sigma_p80p20(p80 / p20)])
+      print(
+          "cuantil en escalón, tasa 40:",
+          np.round(100 * s.prob_supera(sec_e, sig_e, RHO, 0.40), 3),
+      )
+
+      # Monte Carlo con los parámetros reales
+      g = np.random.default_rng(3)
+      z, e = g.standard_normal((2, 2_000_000))
+      for j, sg in enumerate(sig):
+          mlog = np.log(sec.m_media[0]) - sg**2 / 2
+          renta = np.exp(mlog + sg * (RHO * z + np.sqrt(1 - RHO**2) * e))
+          coste = 12 * (np.exp(sec.mu_a[0] + sec.sigma_a[0] * z) / sec.uc[0] + CESTA)
+          mc = 100 * (coste > 0.40 * renta).mean()
+          print(
+              f"MC σ{j}: {mc:.3f} frente a {100 * s.prob_supera(sec, np.array([sg]), RHO, 0.40)[0]:.3f}"
+          )
+
+
+      # descomposición (40 %, con cesta), una pieza cada vez
+      def descomp(d, rho, k=0.40, cesta=CESTA):
+          sec, sig = _entradas(d, cesta)
+          ub, mu_a, sa, m = sec.uc[0], sec.mu_a[0], sec.sigma_a[0], sec.m_media[0]
+          w = d.DB090.to_numpy()
+          r = (d.HY020 / d.HX240).to_numpy()
+          a = d.HH060.to_numpy()
+          out = {}
+          for j, sg in enumerate(sig):
+              mlog = np.log(m) - sg**2 / 2
+              # (a) renta empírica, alquiler log-normal condicionado a ella
+              zr = (np.log(np.where(r > 0, r, 1)) - mlog) / sg
+              umbral = ub * (k * r / 12 - cesta)
+              pa = 1 - norm.cdf(
+                  (np.log(np.where(umbral > 0, umbral, 1)) - mu_a - sa * rho * zr)
+                  / (sa * np.sqrt(1 - rho**2))
+              )
+              pa = np.where((r <= 0) | (umbral <= 0), 1.0, pa)
+              # (b) alquiler empírico, renta log-normal condicionada a él (alquiler 0: sin correlación)
+              za = np.where(a > 0, (np.log(np.where(a > 0, a, 1)) - mu_a) / sa, 0.0)
+              c = 12 * (a / ub + cesta)
+              pb = norm.cdf(
+                  (np.log(c / k) - mlog - sg * rho * za) / (sg * np.sqrt(1 - rho**2))
+              )
+              out[f"σ{j}"] = (
+                  100 * np.average(pa, weights=w),
+                  100 * np.average(pb, weights=w),
+              )
+          # (c) todo empírico con la UC común
+          pc = ecv.tasa(
+              ecv._supera(12 * (d.HH060 / ub + cesta), d.HY020 / d.HX240, k), d.DB090
+          )[0]
+          return out, pc
+
+
+      out, pc = descomp(q, RHO)
+      print(
+          "DESCOMPOSICIÓN 40 %: (a) renta empírica / alquiler LN, (b) alquiler empírico / renta LN:",
+          {k: np.round(v, 3) for k, v in out.items()},
+          f"(c) UC común {pc:.3f}",
+      )
+      out30, pc30 = descomp(q, RHO, k=0.30, cesta=0.0)
+      print(
+          "DESCOMPOSICIÓN 30 %:",
+          {k: np.round(v, 3) for k, v in out30.items()},
+          f"(c) UC común {pc30:.3f}",
+      )
+
+      # ajuste de la forma: cuantiles empíricos frente a los de cada log-normal
+      for j, sg in enumerate(sig):
+          mlog = np.log(sec.m_media[0]) - sg**2 / 2
+          print(
+              f"renta σ{j}: LN P10/P50/P90",
+              np.round(np.exp(mlog + sg * norm.ppf([0.1, 0.5, 0.9]))),
+          )
+      print("renta empírica P10/P50/P90", np.round(_cuantil(r, q.DB090, [0.1, 0.5, 0.9])))
+      print(
+          "alquiler LN P10/P50/P90",
+          np.round(np.exp(sec.mu_a[0] + sec.sigma_a[0] * norm.ppf([0.1, 0.5, 0.9]))),
+      )
+      print(
+          "alquiler empírico P10/P50/P90",
+          np.round(_cuantil(q.HH060, q.DB090, [0.1, 0.5, 0.9])),
+      )
+
+      # bootstrap de hogares
+      g = np.random.default_rng(194)
+      difs = []
+      for _ in range(500):
+          b = q.iloc[g.integers(0, len(q), len(q))]
+          m = _metodo(b, CESTA, 0.40, rho_de(b))
+          difs.append(m - _directa(b, CESTA, 0.40))
+      difs = np.array(difs)
+      print(
+          "bootstrap dif 40 %: EE",
+          difs.std(0, ddof=1).round(3),
+          "IC95 σGini",
+          np.percentile(difs[:, 0], [2.5, 97.5]).round(3),
+          "σP80",
+          np.percentile(difs[:, 1], [2.5, 97.5]).round(3),
+      )
+      ```
+
+      </details>
   - **Hecho:** la fórmula y la cifra de control están en `src/mesobra/sobrecarga_ecv.py` con tests ([#260](https://github.com/yeraybc/DataMad-hackaton-2026/issues/260)). Los tests comprueban además el reparto por tenencia de ES30 frente al catálogo `1912645` y la renta por unidad de consumo frente al IECM `175_000004`, que coincide al céntimo con `HY020/HX240`: la renta del IECM es la renta disponible **neta** de la ECV.
 - **Fallos de metadatos del catálogo:** `1934665`, el dataset de la EPF y `1912645` dicen «Toda España» y sus filas no llevan territorio. La propuesta de corrección al catálogo (N2, plan §1) **se descartó el 2026-11-18** ([#130](https://github.com/yeraybc/DataMad-hackaton-2026/issues/130), cerrada sin hacer; ver `docs/decisiones.md`). El ámbito real de los tres ya está comprobado contra el INE en esta página, así que el proyecto no se fía de esos metadatos.
 - **Año de la cesta y del alquiler:** el alquiler se actualiza a octubre de 2026 y la cesta se queda en euros de 2025. Hay que decirlo, o actualizar la cesta con el IPC por grupos. **Lo lleva F1-14 ([#82](https://github.com/yeraybc/DataMad-hackaton-2026/issues/82)), que ya tiene la nota en su cuerpo.**

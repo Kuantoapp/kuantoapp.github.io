@@ -1,11 +1,16 @@
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.stats import norm
 
+from mesobra import hogares as cesta_mod
+from mesobra import sobrecarga as s
 from mesobra.sobrecarga_ecv import (
     EFECTO_DISENO,
+    INQUILINOS,
     MADRID,
     RAW,
+    _supera,
     alquiler_30,
     control_f306,
     hogares,
@@ -237,3 +242,158 @@ def test_tramos_control(h):
     assert (t["n"] == 562).all()
     for tramo, (inf, sup) in t[["ic_inf", "ic_sup"]].iterrows():
         assert (inf, sup) == pytest.approx(CONTROL[tramo], abs=0.25)
+
+
+# --- #194: el método de F3-06 con entradas de la ECV --------------------------------------------
+# Regla y diseño en docs/verificaciones/renta-vivienda.md (#194), fijados antes de ejecutar. ESTIMADO.
+UMBRAL_METODO = 3.7
+
+
+def _cuantil(x, w, q):
+    """Cuantil ponderado: interpolación sobre el peso acumulado en el punto medio (como `wq` de #193)."""
+    o = np.argsort(x)
+    x, w = np.asarray(x, dtype=float)[o], np.asarray(w, dtype=float)[o]
+    return np.interp(q, (np.cumsum(w) - w / 2) / w.sum(), x)
+
+
+def _gini_winsorizado(x, w, recorte=s.RECORTE):
+    """Gini ponderado con las colas winsorizadas, con la fórmula de `sobrecarga.gini_recortado`."""
+    x = np.clip(np.asarray(x, dtype=float), *_cuantil(x, w, [recorte, 1 - recorte]))
+    o = np.argsort(x)
+    x, w = x[o], np.asarray(w, dtype=float)[o]
+    u = (np.cumsum(w) - w / 2) / w.sum()
+    return 2 * np.average(u * x, weights=w) / np.average(x, weights=w) - 1
+
+
+def _inquilinos(h):
+    """Inquilinos de ES30 con alquiler y renta declarados: la misma población en los dos lados."""
+    q = h[(h.DB040 == MADRID) & h.HH021.isin(INQUILINOS)]
+    return q.dropna(subset=["HH060", "HY020"])
+
+
+def _entradas(q, cesta):
+    """Toda la Comunidad como una sección, y las dos σ (Gini, P80/P20) de la renta por UC; pesos DB090."""
+    w = q.DB090
+    r = q.HY020 / q.HX240
+    p20, p80 = _cuantil(r, w, [0.2, 0.8])
+    a25, a75 = np.log(_cuantil(q.HH060, w, [0.25, 0.75]))
+    sec = pd.DataFrame(
+        {
+            "m_media": [np.average(r, weights=w)],
+            # como sobrecarga.alquiler_2025
+            "mu_a": [(a25 + a75) / 2],
+            "sigma_a": [(a75 - a25) / (2 * norm.ppf(0.75))],
+            "uc": [np.average(q.HX240, weights=w)],
+            "sum_uc": [cesta],
+        }
+    )
+    sigmas = np.array(
+        [s.sigma_gini(100 * _gini_winsorizado(r, w)), s.sigma_p80p20(p80 / p20)]
+    )
+    return sec, sigmas
+
+
+def _directa(q, cesta, k):
+    return tasa(_supera(12 * (q.HH060 + cesta * q.HX240), q.HY020, k), q.DB090)[0]
+
+
+def _metodo(q, cesta, k, rho):
+    """Tasa (%) del método con cada σ: `prob_supera` difunde las dos σ sobre la única sección."""
+    sec, sigmas = _entradas(q, cesta)
+    return 100 * s.prob_supera(sec, sigmas, rho, k)
+
+
+@pytest.fixture
+def cesta_2025(monkeypatch):
+    """Suministros €/UC·mes de la EPF 2025 sin IPC: la renta y el alquiler de la ECV 2025 son de 2024."""
+    subgrupos = {g for c in cesta_mod.CONCEPTOS.values() for _, g in c.values()}
+    f = pd.Series(1.0, index=sorted(subgrupos))
+    f.attrs["ipc_hasta"] = "2025-12"
+    monkeypatch.setattr(cesta_mod, "factores_ipc", lambda _carpeta: f)
+    return cesta_mod.cesta_uc()["suministros"]
+
+
+def test_cuantil_y_gini_ponderados():
+    x = np.array([3.0, 1.0, 7.0, 2.0, 5.0])
+    assert _cuantil(x, np.ones(5), 0.5) == 3.0
+    # pesos enteros = muestra repetida (sin recorte: el cuantil interpolado no es invariante a repetir)
+    w = np.array([2, 1, 3, 1, 2])
+    n, rep = w.sum(), np.sort(np.repeat(x, w))
+    gini = 2 * (np.arange(1, n + 1) * rep).sum() / (n * rep.sum()) - (n + 1) / n
+    assert _gini_winsorizado(x, w, recorte=0) == pytest.approx(gini)
+    # misma fórmula que gini_recortado: una muestra grande de la log-normal da su Gini winsorizado
+    m = np.random.default_rng(0).lognormal(0, 0.6, 200_000)
+    assert _gini_winsorizado(m, np.ones(len(m))) == pytest.approx(
+        s.gini_recortado(0.6), abs=2e-3
+    )
+
+
+def test_metodo_igual_a_directa_si_los_datos_son_log_normales():
+    # de punta a punta: con hogares log-normales, misma UC y ρ conocido, entradas → método ≈ recuento
+    g = np.random.default_rng(2)
+    z, e = g.standard_normal((2, 200_000))
+    rho, sigma = 0.28, 0.6
+    q = pd.DataFrame(
+        {
+            "DB090": g.uniform(0.5, 2, len(z)),
+            "HH060": np.exp(np.log(800) + 0.35 * z),
+            "HY020": 1.7
+            * np.exp(
+                np.log(20000)
+                - sigma**2 / 2
+                + sigma * (rho * z + np.sqrt(1 - rho**2) * e)
+            ),
+            "HX240": 1.7,
+        }
+    )
+    _, sigmas = _entradas(q, 81.0)
+    assert sigmas == pytest.approx([sigma, sigma], abs=0.01)
+    for k in (0.30, 0.40):
+        assert _metodo(q, 81.0, k, rho) == pytest.approx(
+            [_directa(q, 81.0, k)] * 2, abs=0.3
+        )
+
+
+@real
+def test_metodo_con_entradas_de_la_ecv(h, cesta_2025):
+    # #194, estimado: cifras y veredicto de docs/verificaciones/renta-vivienda.md (regla fijada antes)
+    assert cesta_2025 == pytest.approx(
+        (806.38 + 166.63) / 12
+    )  # EPF 2025, 04.5 + 04.4.1
+    q = _inquilinos(h)
+    assert len(q) == 562
+    rho = s.parametros_ecv(h)["rho"]
+    # el lado directo reproduce las cifras de control (criterio 3: 36,0 tras #260; 35,9 antes)
+    assert control_f306(h).loc["gasto_40", "tasa"] == pytest.approx(36.0, abs=0.05)
+    assert _directa(q, 0.0, 0.30) == pytest.approx(tasa(alquiler_30(q), q.DB090)[0])
+    esperado = {  # medida: directa, método con σ del Gini y con σ del P80/P20
+        "40": (cesta_2025, 0.40, 34.441, (37.312, 37.538)),
+        "30": (0.0, 0.30, 41.447, (44.310, 44.493)),
+    }
+    for c, k, directa, metodo in esperado.values():
+        assert _directa(q, c, k) == pytest.approx(directa, abs=1e-3)
+        assert _metodo(q, c, k, rho) == pytest.approx(metodo, abs=1e-3)
+    c, k, directa, _ = esperado["40"]
+    assert np.abs(_metodo(q, c, k, rho) - directa).max() <= UMBRAL_METODO  # pasa: 3,10
+
+
+def test_prob_supera_coincide_con_monte_carlo():
+    # segunda vía de la integración de Gauss-Hermite: muestreo de las mismas log-normales correlacionadas
+    sec = pd.DataFrame(
+        {
+            "m_media": [20000.0],
+            "mu_a": [np.log(800)],
+            "sigma_a": [0.35],
+            "uc": [1.7],
+            "sum_uc": [81.0],
+        }
+    )
+    sigma, rho, k = 0.6, 0.28, 0.40
+    z, e = np.random.default_rng(1).standard_normal((2, 1_000_000))
+    renta = np.exp(
+        np.log(20000) - sigma**2 / 2 + sigma * (rho * z + np.sqrt(1 - rho**2) * e)
+    )
+    coste = 12 * (np.exp(np.log(800) + 0.35 * z) / 1.7 + 81.0)
+    assert 100 * s.prob_supera(sec, np.array([sigma]), rho, k)[0] == pytest.approx(
+        100 * (coste > k * renta).mean(), abs=0.1
+    )
