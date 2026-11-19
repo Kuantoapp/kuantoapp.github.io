@@ -15,8 +15,8 @@ fieldset label input:not([type="radio"]), fieldset label select { display: block
 #ficha { position: sticky; top: 0; z-index: 1; margin: 0 -1rem; padding: 0.5rem 1rem; background: #fff; border-bottom: 2px solid #222; }
 #ficha:empty { display: none; }
 #ficha p { margin: 0.2rem 0; }
-#ficha p:first-child { font-weight: 600; }
-footer { margin: 1rem 0; color: #555; font-size: 0.8rem; }
+#ficha p:first-child, #ficha .diferencia { font-weight: 600; }
+#ficha .diferencia { color: #7a3b00; }footer { margin: 1rem 0; color: #555; font-size: 0.8rem; }
 #mejores h2, #avisos-dato h2 { margin: 0.75rem 0 0.25rem; font-size: 0.95rem; }
 #mejores ol { margin: 0; padding-left: 1.6rem; }
 #mejores button { padding: 0.1rem 0; border: none; background: none; color: #0b4f9c; font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }

@@ -362,6 +362,86 @@ export function validar(v, api) {
   return { entrada: { hogar, sueldos, ...(ref === "" ? {} : { ref }) } };
 }
 
+// --- Escenarios «¿y si…?» y estado en el enlace ------------------------------------------------
+// Campos del formulario de escenarios (todos son select o deslizador: siempre traen valor) y su valor «sin escenario».
+export const ESCENARIO_NEUTRO = { tarifas: "vigente_2026", subida: "0", cumple26: "no", dias_esc: "" };
+const SUBIDA = [0, 30];
+// Edad con la que se simula «cumples 26 años»: la primera sin Abono Joven (tarifas.edad_max_joven es 25).
+const EDAD_CUMPLE = 26;
+
+/** Errores `{campo, mensaje}` de los valores del formulario de escenarios; `[]` si todos valen. */
+export function erroresEscenario(v, api) {
+  const errores = [];
+  const falla = (campo, mensaje) => errores.push({ campo, mensaje });
+  if (typeof v.tarifas !== "string" || !Object.hasOwn(api.tarifas.escenarios, v.tarifas)) falla("tarifas", "Elige una de las tarifas de la lista");
+  const subida = entero(v.subida);
+  if (subida === null || subida < SUBIDA[0] || subida > SUBIDA[1]) falla("subida", `La subida del alquiler va de ${SUBIDA[0]} a ${SUBIDA[1]} %`);
+  if (!["no", "si"].includes(v.cumple26)) falla("cumple26", "Elige sí o no");
+  if (v.dias_esc !== "" && ![1, 2, 3, 4, 5].includes(entero(v.dias_esc))) falla("dias_esc", "Los días presenciales van de 1 a 5");
+  return errores;
+}
+
+/**
+ * Entrada del cálculo con el escenario aplicado, o `null` si ningún campo se aparta de `ESCENARIO_NEUTRO`.
+ * Los valores ya están validados. Cambiar los días no toca los viajes al día de cada sueldo.
+ */
+export function entradaEscenario(entrada, v) {
+  if (Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro)) return null;
+  const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: EDAD_CUMPLE } : {}) };
+  const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
+  return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias })) };
+}
+
+/** Qué simula el mapa, en una línea; `null` si no hay escenario. */
+export function tituloEscenario(v) {
+  const partes = [
+    ...(v.tarifas !== ESCENARIO_NEUTRO.tarifas ? ["se acaba el descuento del abono"] : []),
+    ...(v.subida !== ESCENARIO_NEUTRO.subida ? [`el alquiler sube un ${v.subida} %`] : []),
+    ...(v.cumple26 === "si" ? [`cumples ${EDAD_CUMPLE} años`] : []),
+    ...(v.dias_esc !== "" ? [`${v.dias_esc} ${v.dias_esc === "1" ? "día presencial" : "días presenciales"} a la semana`] : []),
+  ];
+  return partes.length === 0 ? null : `Simulación: ${partes.join("; ")}`;
+}
+
+/** Línea de la ficha con lo que cambia el sobrante al mes frente a la situación actual, decidida con lo redondeado que se muestra. */
+export function lineaDiferencia(actual, simulada) {
+  if (!esNumero(actual.sobra) || !esNumero(simulada.sobra)) return "Sin cifra para comparar con la situación actual";
+  const dif = Math.round(simulada.sobra - actual.sobra);
+  const cifra = `${euros.format(Math.abs(dif))} €`;
+  if (dif === 0) return "Con este escenario te sobra lo mismo que hoy (simulación, estimado)";
+  return `Con este escenario ${dif < 0 ? "pierdes" : "ganas"} ${cifra} al mes frente a hoy (simulación, estimado)`;
+}
+
+/** Fragmento de la URL (sin «#») con los valores de los formularios. */
+export const estadoAEnlace = (valores) => new URLSearchParams(valores).toString();
+
+/**
+ * Lee el fragmento de la URL. `porDefecto` son los valores de los formularios sin tocar (define qué claves existen).
+ * Descarta, con aviso, las claves desconocidas y los valores no válidos (el campo vuelve a su valor por defecto);
+ * si aun así el conjunto no es válido, descarta el enlace entero. Nunca lanza por lo que traiga la URL.
+ */
+export function estadoDeEnlace(texto, porDefecto, api) {
+  const pedido = new URLSearchParams(texto);
+  const avisos = [];
+  const valores = { ...porDefecto };
+  for (const [clave, valor] of pedido) {
+    if (Object.hasOwn(porDefecto, clave)) valores[clave] = valor;
+    else avisos.push(`El enlace trae un dato desconocido («${clave}»): se ignora.`);
+  }
+  const malos = (v) => [
+    ...(validar(v, api).errores ?? []),
+    ...erroresEscenario(v, api),
+    ...(Object.hasOwn(METRICAS, v.metrica) ? [] : [{ campo: "metrica" }]),
+  ];
+  for (const { campo } of malos(valores)) {
+    if (!pedido.has(campo) || !Object.hasOwn(porDefecto, campo)) continue;
+    valores[campo] = porDefecto[campo];
+    avisos.push(`El enlace trae un valor no válido en «${campo}»: se usa el de ejemplo.`);
+  }
+  if (malos(valores).length > 0) return { valores: porDefecto, avisos: [...avisos, "El enlace no da un estado válido: se usan los valores de ejemplo."] };
+  return { valores, avisos };
+}
+
 /** Licencias de los `meta.fuentes` sin repetir, separadas por «; ». */
 export function licencias(...metas) {
   const textos = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.licencia)));

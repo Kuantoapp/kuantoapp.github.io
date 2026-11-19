@@ -2,7 +2,10 @@
 // La validación, el color y los textos están en vista.js y el cálculo en calculo.js; aquí solo hay DOM.
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
-import { METRICAS, avisoPrueba, avisos, contextoFicha, fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, validar } from "./vista.js";
+import {
+  METRICAS, avisoPrueba, avisos, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia,
+  lineaTooltip, lineasFicha, mejores, pintar, tituloEscenario, validar,
+} from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 const formulario = () => $("formulario");
@@ -37,7 +40,13 @@ function elemento(etiqueta, texto, clase) {
 
 // --- Formulario ----------------------------------------------------------------------------------
 
-const valoresFormulario = () => Object.fromEntries(new FormData(formulario()));
+const formularios = () => [formulario(), $("escenario")];
+const valoresFormulario = () => Object.fromEntries(formularios().flatMap((f) => [...new FormData(f)]));
+
+/** Escribe en los controles los valores ya validados (claves de `valoresFormulario`). */
+function aplicarValores(valores) {
+  for (const f of formularios()) for (const [clave, valor] of Object.entries(valores)) if (f.elements[clave]) f.elements[clave].value = valor;
+}
 
 function rellenarPerfil(api) {
   const f = formulario().elements;
@@ -176,17 +185,27 @@ async function main() {
   const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
+  // El estado de los formularios viaja en el fragmento de la URL, que no se envía a ningún servidor.
+  const enlace = estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api);
+  aplicarValores(enlace.valores);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
   const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
   $("pie").hidden = prueba !== null; // el pie atribuye los tiempos al CRTM: con datos de ejemplo no
-  const lineasAviso = [...(prueba ? [prueba] : []), ...avisos(api.alquiler)];
+  const lineasAviso = [...(prueba ? [prueba] : []), ...enlace.avisos, ...avisos(api.alquiler)];
   $("avisos").replaceChildren(...lineasAviso.map((t) => elemento("li", t)));
   const nombres = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.nombre]));
-  const estado = { entrada: null, resultado: null, metrica: "precio_hora", zona: null };
+  // `resultado` es lo que se pinta (el escenario si lo hay); `actual`, la situación de hoy, solo para la diferencia.
+  const estado = { entrada: null, resultado: null, actual: null, simulando: false, metrica: "precio_hora", zona: null };
   const lineas = (id) => lineasFicha(nombres[id], estado.resultado.zonas[id], estado.metrica, contextoFicha(api, estado.entrada, estado.resultado, id));
-  // La ficha de la zona pinchada se mantiene, actualizada, al cambiar de métrica o de entradas.
-  const pintarFicha = () => $("ficha").replaceChildren(...(estado.zona ? lineas(estado.zona).map((t) => elemento("p", t)) : []));
+  // La ficha de la zona pinchada se mantiene, actualizada, al cambiar de métrica o de entradas. Con un escenario, la tercera línea
+  // es la diferencia frente a hoy (las dos primeras son las del tooltip).
+  const fichaDe = (id) => {
+    const base = lineas(id);
+    return estado.simulando ? [...base.slice(0, 2), lineaDiferencia(estado.actual.zonas[id], estado.resultado.zonas[id]), ...base.slice(2)] : base;
+  };
+  const pintarFicha = () =>
+    $("ficha").replaceChildren(...(estado.zona ? fichaDe(estado.zona).map((t, i) => elemento("p", t, estado.simulando && i === 2 ? "diferencia" : "")) : []));
   const elegir = (id) => {
     estado.zona = id;
     pintarFicha();
@@ -215,8 +234,12 @@ async function main() {
       $("estado").textContent = "Corrige los campos marcados para recalcular el mapa.";
       return;
     }
+    const entradaSim = entradaEscenario(entrada, v);
+    let actual;
+    let pintada;
     try {
-      estado.resultado = calcular(api, entrada);
+      actual = calcular(api, entrada);
+      pintada = entradaSim === null ? actual : calcular(api, entradaSim);
     } catch (error) {
       const porRef = entrada.ref && error.message.startsWith("zona de referencia");
       $("estado").textContent = porRef
@@ -224,14 +247,18 @@ async function main() {
         : `No se pudo calcular: ${error.message}`;
       return;
     }
-    estado.entrada = entrada;
+    Object.assign(estado, { entrada: entradaSim ?? entrada, resultado: pintada, actual, simulando: entradaSim !== null });
     $("estado").textContent = "";
+    $("subida-valor").textContent = `${v.subida} %`;
+    history.replaceState(null, "", `#${estadoAEnlace(v)}`);
     estado.metrica = v.metrica;
-    const algunaZona = Object.values(estado.resultado.zonas)[0];
+    const algunaZona = Object.values(actual.zonas)[0];
     if (v.fuente === "bruto") formulario().elements.neto.value = String(Math.round(algunaZona.neto));
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
+    const simulacion = tituloEscenario(v);
+    if (simulacion) $("leyenda").querySelector(".titulo").after(elemento("p", simulacion, "titulo"));
     pintarFicha();
     pintarMejores();
   }
@@ -243,6 +270,8 @@ async function main() {
     recalcular();
   });
   formulario().addEventListener("submit", (e) => e.preventDefault());
+  $("escenario").addEventListener("input", recalcular);
+  $("escenario").addEventListener("submit", (e) => e.preventDefault());
 
   const tooltip = $("tooltip");
   mapa.on("mousemove", "zonas-relleno", (e) => {

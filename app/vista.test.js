@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
-  fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, resolverDestino, validar,
+  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, entradaEscenario,
+  erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia, lineaTooltip,
+  lineasFicha, mejores, pintar, resolverDestino, tituloEscenario, validar,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -407,4 +408,84 @@ test("la fuente sale de meta.fuentes sin repetir nombres", () => {
 test("las licencias salen de meta.fuentes sin repetir", () => {
   const meta = { fuentes: [{ licencia: "CC BY 4.0" }, { licencia: "ODbL 1.0" }] };
   assert.equal(licencias(meta, meta), "CC BY 4.0; ODbL 1.0");
+});
+
+// --- Escenarios «¿y si…?» y estado en el enlace -------------------------------------------------
+
+const NEUTRO = { ...BASE, ref: "", metrica: "precio_hora", ...ESCENARIO_NEUTRO };
+// Zona A (2807913) a zona A (2807901), 5 días y 2 viajes al día: el abono manda. Con los fixtures, el abono general cuesta 32,70 € y el Abono Joven, 10 €.
+const transporteA = (edad, v) => {
+  const base = { hogar: { perfil: "solo", edad }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["2807913"] };
+  const entrada = entradaEscenario(base, { ...NEUTRO, ...v }) ?? base;
+  return calcular(ejemplo, entrada).zonas["2807913"].transporte;
+};
+
+test("sin el descuento, el abono de un adulto pasa de 32,70 a 56,20 € y el del joven, de 10 a 20 €", () => {
+  const fin = { tarifas: "sin_descuento" };
+  assert.equal(transporteA(30, {}).toFixed(2), "32.70");
+  assert.equal(transporteA(30, fin).toFixed(2), "56.20");
+  assert.equal(transporteA(20, {}).toFixed(2), "10.00");
+  assert.equal(transporteA(20, fin).toFixed(2), "20.00");
+});
+
+test("cumplir 26 años quita el Abono Joven, y cambiar los días no toca los viajes al día", () => {
+  assert.equal(transporteA(25, { cumple26: "si" }).toFixed(2), "32.70");
+  const entrada = { hogar: { perfil: "solo", edad: 25 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 4 }] };
+  const sim = entradaEscenario(entrada, { ...NEUTRO, dias_esc: "3", subida: "10" });
+  assert.deepEqual(sim.sueldos[0], { ...entrada.sueldos[0], dias: 3 });
+  assert.deepEqual(sim.escenario, { tarifas: "vigente_2026", subida_alquiler: 10 });
+  assert.equal(entradaEscenario(entrada, NEUTRO), null);
+  assert.equal(entrada.sueldos[0].dias, 5, "no se modifica la entrada original");
+});
+
+test("la subida del alquiler del escenario reduce lo que sobra, y la ficha lo dice", () => {
+  const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
+  const actual = calcular(ejemplo, entrada).zonas["28065"];
+  const sim = calcular(ejemplo, entradaEscenario(entrada, { ...NEUTRO, subida: "10" })).zonas["28065"];
+  assert.ok(Math.abs(actual.alquiler * 0.1 - (actual.sobra - sim.sobra)) < 1e-9);
+  const euros = Math.round(actual.sobra - sim.sobra).toLocaleString("es-ES");
+  assert.equal(lineaDiferencia(actual, sim), `Con este escenario pierdes ${euros} € al mes frente a hoy (simulación, estimado)`);
+});
+
+test("la diferencia decide con lo redondeado y avisa si falta una cifra", () => {
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 122 }), /ganas 22 € al mes/);
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 78 }), /pierdes 22 € al mes/);
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 100.4 }), /te sobra lo mismo que hoy/);
+  assert.match(lineaDiferencia({ sobra: null }, { sobra: 1 }), /^Sin cifra para comparar/);
+});
+
+test("el título del escenario nombra solo lo que cambia", () => {
+  assert.equal(tituloEscenario(NEUTRO), null);
+  assert.equal(tituloEscenario({ ...NEUTRO, tarifas: "sin_descuento", subida: "10", cumple26: "si", dias_esc: "1" }),
+    "Simulación: se acaba el descuento del abono; el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
+});
+
+test("los escenarios inválidos se señalan campo a campo", () => {
+  assert.deepEqual(erroresEscenario(NEUTRO, real), []);
+  const mal = { tarifas: "x", subida: "31", cumple26: "tal", dias_esc: "6" };
+  assert.deepEqual(erroresEscenario({ ...NEUTRO, ...mal }, real).map((e) => e.campo), Object.keys(mal));
+  assert.equal(erroresEscenario({ ...NEUTRO, subida: "-1" }, real).length, 1);
+  assert.equal(erroresEscenario({ ...NEUTRO, subida: "1.5" }, real).length, 1);
+});
+
+test("escribir y leer el enlace devuelve el mismo estado, también con tildes, comas y espacios", () => {
+  const v = { ...NEUTRO, fuente: "neto", neto: "1.800,50", destino: "Alcalá de Henares", tarifas: "sin_descuento", subida: "17", cumple26: "si", dias_esc: "3", metrica: "sobra" };
+  const { valores, avisos: avisosEnlace } = estadoDeEnlace(estadoAEnlace(v), NEUTRO, real);
+  assert.deepEqual(valores, v);
+  assert.deepEqual(avisosEnlace, []);
+  assert.deepEqual(estadoDeEnlace("", NEUTRO, real), { valores: NEUTRO, avisos: [] });
+});
+
+test("los parámetros inválidos del enlace se descartan con aviso y el resto se conserva", () => {
+  const { valores, avisos: av } = estadoDeEnlace("subida=99&foo=1&tarifas=x&ref=nadie&metrica=otra&dias=2&__proto__=1", NEUTRO, real);
+  assert.deepEqual(valores, { ...NEUTRO, dias: "2" });
+  assert.equal(av.length, 6);
+  assert.ok(av.some((t) => t.includes("«foo»")) && av.some((t) => t.includes("«subida»")) && av.some((t) => t.includes("«metrica»")));
+  assert.equal(Object.getPrototypeOf(valores), Object.prototype);
+});
+
+test("un enlace que no da un estado válido ni descartando campos vuelve a los valores de ejemplo", () => {
+  const { valores, avisos: av } = estadoDeEnlace("fuente=neto&neto=", NEUTRO, real);
+  assert.deepEqual(valores, NEUTRO);
+  assert.match(av.at(-1), /no da un estado válido/);
 });
