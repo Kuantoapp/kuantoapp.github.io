@@ -3,14 +3,16 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, escalaDivergente, escalaSecuencial,
-  fuentes, leyenda, licencias, lineaTooltip, lineasFicha, mejores, pintar, resolverDestino, validar,
+  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, entradaEscenario,
+  erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia, lineaTooltip,
+  lineasFicha, mejores, pintar, resolverDestino, tituloEscenario, validar,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
 const NOMBRES = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
 const cargar = (carpeta) => ({ ...Object.fromEntries(NOMBRES.map((n) => [n, leer(`${carpeta}/${n}.json`)])), zonas: leer(`${carpeta}/zonas.geojson`) });
 const ejemplo = cargar("tests/fixtures/api");
+const EDAD = ejemplo.tarifas.edad_max_joven + 1;
 const real = cargar("app/datos");
 
 const BASE = {
@@ -138,6 +140,24 @@ const fichaDe = (caso, id, metrica = "precio_hora") => lineasFicha("Zona", caso.
 // Una cifra calculada: un número seguido de su unidad (los motivos como «120 min» o «5 h/mes de diferencia» no lo son).
 const CIFRA = /\d+(,\d+)? ?(€|h al|%|m²)/;
 
+test("con la subida del alquiler activa, la ficha lo dice como simulación y no como contratos observados", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = caso.salida.zonas["28065"];
+  const ctx = { ...contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"), subida: 10 };
+  const linea = lineasFicha("Zona", z, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea, /subida del 10 %.*simulación, estimado/);
+  assert.doesNotMatch(linea, /contratos de \d{4}, tómalo como un suelo/);
+});
+
+test("con la subida, una zona con alquiler estimado no dice «contratos»", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = { ...caso.salida.zonas["28065"], origen: "estimado" };
+  const ctx = { ...contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"), subida: 10 };
+  const linea = lineasFicha("Zona", z, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea, /dato estimado de \d{4} más la subida; simulación, estimado/);
+  assert.doesNotMatch(linea, /contratos/);
+});
+
 test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
   const f = (d) => new Intl.NumberFormat("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
   for (const caso of casos.filter((c) => !("error" in c))) {
@@ -165,7 +185,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "Te sobran entre 479 € y 632 € al mes (estimado)",
     "Neto del hogar: 1523 € al mes (estimado)",
     "Alquiler: entre 512 y 666 € al mes (contratos de 2024, tómalo como un suelo)",
-    "Transporte: 21,90 € al mes (10 viajes)",
+    "Transporte: 21,90 € al mes (10 viajes) (estimado)",
     "Cesta básica: 356 €/mes (estimado, gasto medio de 2025)",
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
@@ -175,7 +195,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
   ]);
   // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
   assert.ok(Math.abs(contextoFicha(ejemplo, casos[0].entrada, casos[0].salida, "28065").salarioHora - 10.064) < 0.001);
-  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven)"));
+  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
 });
 
 test("el título de la ficha es el de la celda que paga el cálculo: borde de 25/26 años y 4 viajes al día", () => {
@@ -186,16 +206,16 @@ test("el título de la ficha es el de la celda que paga el cálculo: borde de 25
     const resultado = calcular(ejemplo, structuredClone(entrada));
     return lineasFicha("Zona", resultado.zonas["28065"], "sobra", contextoFicha(ejemplo, entrada, resultado, "28065"));
   };
-  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven)"));
-  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes)"));
+  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
+  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes) (estimado)"));
   const tabla = ejemplo.tarifas.escenarios.vigente_2026.general["4"];
-  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo})`));
+  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo}) (estimado)`));
   assert.ok(celda, "con 4 viajes al día el título y el coste salen de la misma celda");
 });
 
 test("dos sueldos con el mismo título no lo repiten", () => {
   const caso = casos.find((c) => c.nombre.startsWith("pareja con un hijo"));
-  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes)"));
+  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes) (estimado)"));
 });
 
 test("el borde del 30 % y el de la banda se deciden con lo que se muestra redondeado", () => {
@@ -407,4 +427,107 @@ test("la fuente sale de meta.fuentes sin repetir nombres", () => {
 test("las licencias salen de meta.fuentes sin repetir", () => {
   const meta = { fuentes: [{ licencia: "CC BY 4.0" }, { licencia: "ODbL 1.0" }] };
   assert.equal(licencias(meta, meta), "CC BY 4.0; ODbL 1.0");
+});
+
+// --- Escenarios «¿y si…?» y estado en el enlace -------------------------------------------------
+
+const NEUTRO = { ...BASE, ref: "", metrica: "precio_hora", ...ESCENARIO_NEUTRO };
+// Zona A (2807913) a zona A (2807901), 5 días y 2 viajes al día: el abono manda. Con los fixtures, el abono general cuesta 32,70 € y el Abono Joven, 10 €.
+const transporteA = (edad, v) => {
+  const base = { hogar: { perfil: "solo", edad }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["2807913"] };
+  const entrada = entradaEscenario(base, { ...NEUTRO, ...v }, EDAD) ?? base;
+  return calcular(ejemplo, entrada).zonas["2807913"].transporte;
+};
+
+test("sin el descuento, el abono de un adulto pasa de 32,70 a 56,20 € y el del joven, de 10 a 20 €", () => {
+  const fin = { tarifas: "sin_descuento" };
+  assert.equal(transporteA(30, {}).toFixed(2), "32.70");
+  assert.equal(transporteA(30, fin).toFixed(2), "56.20");
+  assert.equal(transporteA(20, {}).toFixed(2), "10.00");
+  assert.equal(transporteA(20, fin).toFixed(2), "20.00");
+});
+
+test("cumplir 26 años quita el Abono Joven, y cambiar los días no toca los viajes al día", () => {
+  assert.equal(transporteA(25, { cumple26: "si" }).toFixed(2), "32.70");
+  const entrada = { hogar: { perfil: "solo", edad: 25 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 4 }] };
+  const sim = entradaEscenario(entrada, { ...NEUTRO, dias_esc: "3", subida: "10" }, EDAD);
+  assert.deepEqual(sim.sueldos[0], { ...entrada.sueldos[0], dias: 3 });
+  assert.deepEqual(sim.escenario, { tarifas: "vigente_2026", subida_alquiler: 10 });
+  assert.equal(entradaEscenario(entrada, NEUTRO, EDAD), null);
+  assert.equal(entrada.sueldos[0].dias, 5, "no se modifica la entrada original");
+});
+
+test("la subida del alquiler del escenario reduce lo que sobra, y la ficha lo dice", () => {
+  const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
+  const actual = calcular(ejemplo, entrada).zonas["28065"];
+  const sim = calcular(ejemplo, entradaEscenario(entrada, { ...NEUTRO, subida: "10" }, EDAD)).zonas["28065"];
+  assert.ok(Math.abs(actual.alquiler * 0.1 - (actual.sobra - sim.sobra)) < 1e-9);
+  const euros = Math.round(actual.sobra - sim.sobra).toLocaleString("es-ES");
+  assert.equal(lineaDiferencia(actual, sim), `Con este escenario pierdes ${euros} € al mes frente a hoy (simulación, estimado)`);
+});
+
+test("la diferencia decide con lo redondeado y avisa si falta una cifra", () => {
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 122 }), /ganas 22 € al mes/);
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 78 }), /pierdes 22 € al mes/);
+  assert.match(lineaDiferencia({ sobra: 100 }, { sobra: 100.4 }), /te sobra lo mismo que hoy/);
+  assert.match(lineaDiferencia({ sobra: null }, { sobra: 1 }), /^Sin cifra para comparar/);
+});
+
+test("el título del escenario nombra solo lo que cambia", () => {
+  assert.equal(tituloEscenario(NEUTRO, EDAD), null);
+  assert.equal(tituloEscenario({ ...NEUTRO, tarifas: "sin_descuento", subida: "10", cumple26: "si", dias_esc: "1" }, EDAD),
+    "Simulación: se acaba el descuento del transporte (abonos y 10 viajes); el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
+});
+
+test("los escenarios inválidos se señalan campo a campo", () => {
+  assert.deepEqual(erroresEscenario(NEUTRO, real), []);
+  const mal = { tarifas: "x", subida: "31", cumple26: "tal", dias_esc: "6" };
+  assert.deepEqual(erroresEscenario({ ...NEUTRO, ...mal }, real).map((e) => e.campo), Object.keys(mal));
+  assert.equal(erroresEscenario({ ...NEUTRO, subida: "-1" }, real).length, 1);
+  assert.equal(erroresEscenario({ ...NEUTRO, subida: "1.5" }, real).length, 1);
+});
+
+test("escribir y leer el enlace devuelve el mismo estado, también con tildes, comas y espacios", () => {
+  const v = { ...NEUTRO, fuente: "neto", neto: "1.800,50", destino: "Alcalá de Henares", tarifas: "sin_descuento", subida: "17", cumple26: "si", dias_esc: "3", metrica: "sobra" };
+  const { valores, avisos: avisosEnlace } = estadoDeEnlace(estadoAEnlace(v), NEUTRO, real);
+  assert.deepEqual(valores, v);
+  assert.deepEqual(avisosEnlace, []);
+  assert.deepEqual(estadoDeEnlace("", NEUTRO, real), { valores: NEUTRO, avisos: [] });
+});
+
+test("los parámetros inválidos del enlace se descartan con aviso y el resto se conserva", () => {
+  const { valores, avisos: av } = estadoDeEnlace("subida=99&foo=1&tarifas=x&ref=nadie&metrica=otra&dias=2&__proto__=1", NEUTRO, real);
+  assert.deepEqual(valores, { ...NEUTRO, dias: "2" });
+  assert.equal(av.length, 5);
+  assert.ok(av.includes("El enlace trae 2 datos desconocidos: se ignoran."));
+  assert.ok(av.some((t) => t.includes("«subida»")) && av.some((t) => t.includes("«metrica»")));
+  assert.equal(Object.getPrototypeOf(valores), Object.prototype);
+});
+
+test("un enlace que no da un estado válido ni descartando campos vuelve a los valores de ejemplo", () => {
+  const { valores, avisos: av } = estadoDeEnlace("fuente=neto&neto=", NEUTRO, real);
+  assert.deepEqual(valores, NEUTRO);
+  assert.match(av.at(-1), /no da un estado válido/);
+});
+
+test("un enlace con claves enormes o numerosas da un solo aviso y no repite su texto", () => {
+  const muchas = Array.from({ length: 1000 }, (_, i) => `clave${i}=1`).join("&");
+  const largo = `${"x".repeat(5000)}=1`;
+  for (const texto of [muchas, largo]) {
+    const { valores, avisos: av } = estadoDeEnlace(texto, NEUTRO, real);
+    assert.deepEqual(valores, NEUTRO);
+    assert.equal(av.length, 1);
+    assert.ok(av[0].length < 100);
+  }
+});
+
+test("el importe que no corresponde a la fuente no se cuela desde el enlace", () => {
+  const { valores } = estadoDeEnlace("fuente=bruto&bruto=30000&neto=texto%20libre", NEUTRO, real);
+  assert.equal(valores.bruto, "30000");
+  assert.equal(valores.neto, NEUTRO.neto);
+});
+
+test("«cumples 26 años» es la primera edad sin Abono Joven: edad_max_joven + 1", () => {
+  assert.equal(ejemplo.tarifas.edad_max_joven + 1, 26);
+  assert.equal(real.tarifas.edad_max_joven + 1, 26);
 });

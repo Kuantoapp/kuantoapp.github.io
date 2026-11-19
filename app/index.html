@@ -101,8 +101,34 @@
           <p class="ayuda">Puede ser donde vives ahora. El precio de la hora compara cada zona con esta.</p>
         </fieldset>
       </form>
-      <!-- Contenedor vacío: lo rellena F2-02 (escenarios). -->
-      <section id="escenarios"></section>
+      <section id="escenarios">
+        <form id="escenario" novalidate autocomplete="off">
+          <fieldset>
+            <legend>¿Y si…?</legend>
+            <label>Descuento del transporte (abonos y bonos de viajes)
+              <select name="tarifas">
+                <option value="vigente_2026">Se mantiene el de 2026</option>
+                <option value="sin_descuento">Se acaba: precio oficial</option>
+              </select>
+            </label>
+            <label>El alquiler sube <output id="subida-valor" for="subida-rango"></output>
+              <input id="subida-rango" name="subida" type="range" min="0" max="30" step="1" value="0">
+            </label>
+            <label>Cumples 26 años y pierdes el Abono Joven (fuente: ficha del Abono Joven, CRTM)
+              <select name="cumple26"><option value="no">No</option><option value="si">Sí</option></select>
+            </label>
+            <label>Días presenciales a la semana
+              <select name="dias_esc">
+                <option value="">Los mismos que arriba</option>
+                <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
+                <option value="4">Cuatro</option><option value="5">Cinco</option>
+              </select>
+            </label>
+            <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
+            <p class="ayuda">La dirección de la página guarda el formulario y los escenarios, sueldo incluido. No sale de tu navegador, pero queda en su historial. No la compartas si no quieres que se vea tu sueldo.</p>
+          </fieldset>
+        </form>
+      </section>
       <footer>
         <p id="pie">Powered by <a href="https://www.crtm.es/" rel="noopener noreferrer">CRTM</a>. Tiempos calculados el <span id="fecha-datos"></span>. Este proyecto no está patrocinado ni avalado por el CRTM.</p>
       </footer>
