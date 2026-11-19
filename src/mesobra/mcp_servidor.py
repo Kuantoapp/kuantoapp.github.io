@@ -14,7 +14,7 @@ from collections import Counter
 from collections.abc import Callable
 from functools import cache, wraps
 from pathlib import Path
-from typing import Any, NotRequired, TypedDict
+from typing import Any, Literal, NotRequired, TypedDict
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
@@ -39,7 +39,7 @@ UNIDADES = {
 
 
 class Hogar(TypedDict):
-    perfil: str  # solo, comparte, pareja o monoparental
+    perfil: Literal["solo", "comparte", "pareja", "monoparental"]
     edad: int  # 16 a 64
     adultos: NotRequired[int]
     hijos: NotRequired[int]
@@ -48,16 +48,16 @@ class Hogar(TypedDict):
 
 
 class Sueldo(TypedDict):
-    destino: str  # destino_id: el código de la zona donde trabaja (Getafe: 28065)
+    destino: str  # código INE de la zona donde trabaja, no el nombre (Getafe: 28065)
     dias: int  # días presenciales a la semana, 1 a 5
-    modo: str  # tp (transporte público) o coche
+    modo: Literal["tp", "coche"]  # tp = transporte público
     bruto: NotRequired[float]  # €/año; o neto_mes, uno de los dos
     neto_mes: NotRequired[float]  # €/mes
     viajes_dia: NotRequired[int]  # 2 (ida y vuelta) o 4
 
 
 class Escenario(TypedDict, total=False):
-    tarifas: str  # vigente_2026 o sin_descuento
+    tarifas: Literal["vigente_2026", "sin_descuento"]
     subida_alquiler: float  # %
     edad: int
 
@@ -170,7 +170,8 @@ servidor = MCPServer(
         "Cifras de «¿Me sobra?» (Comunidad de Madrid, 199 zonas). Todas las cifras salen de estas "
         "herramientas: no estimes ni completes ninguna. Da siempre las horas de viaje junto al "
         "sobrante, di la fuente y el año, y marca como estimado lo estimado. Un valor nulo no es cero: "
-        "explica su motivo y sobre cuántas zonas se ha calculado."
+        "explica su motivo y sobre cuántas zonas se ha calculado. Los destinos y zonas van por código INE "
+        "(Getafe = 28065), no por nombre."
     ),
 )
 
