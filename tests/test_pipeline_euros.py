@@ -237,3 +237,16 @@ def test_tarifas_publicadas_controles_joven_b2():
     assert b2[0] == {"titulo": "10 viajes", "coste_mes": 7.26}
     # 5 días: Abono Joven, 10 € con descuento × 335/30 compras al año / 12
     assert b2[4] == {"titulo": "Abono Joven", "coste_mes": 9.31}
+
+
+def test_tarifas_publicadas_controles_oficial_y_colectivo():
+    j = json.loads(TARIFAS_APP.read_text("utf-8"))
+    # sin descuento, A, 5 días: 2 × 5 × 227/60 viajes × 12,50 €/10 (BOCM-20251231-3 pág. 72) < abono 52,30
+    a = j["escenarios"]["sin_descuento"]["general"]["2"]["A"][4]
+    assert a == {"titulo": "10 viajes", "coste_mes": 47.29}
+    # FN especial, A-B2, 5 días: 37,833 viajes × 4,80 €/10 (BOCM-20251231-2 pág. 67) < abono 20,10
+    ruta = j["tarifas_ruta"]["vigente_2026"]["fn_especial"]["general"]
+    assert ruta["A-B2|interurbano"]["0"][4] == {
+        "titulo": "10 viajes",
+        "coste_mes": 18.16,
+    }
