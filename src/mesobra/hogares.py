@@ -95,17 +95,21 @@ def _mes(periodo: str) -> int:
     return int(periodo[:4]) * 12 + int(periodo[5:])
 
 
+def _leer(ruta: Path) -> pd.DataFrame:
+    return pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
+
+
 def factores_ipc(carpeta: Path = RAW) -> pd.Series:
     """Factor por subgrupo: media de los 12 últimos meses ÷ media de 2025; `attrs["ipc_hasta"]` = último mes."""
     subgrupos = [sub for c in CONCEPTOS.values() for _, sub in c.values()]
     columnas = ["subgrupo", "Tipo de dato", "Periodo", "Total"]
-    leer = lambda f: pd.read_csv(carpeta / f, sep=";", encoding="utf-8-sig", dtype=str)
-    madrid = leer(IPC)
+    madrid = _leer(carpeta / IPC)
     madrid = madrid[madrid.iloc[:, 0] == "13 Madrid, Comunidad de"].iloc[:, 1:]
+    nacional = _leer(carpeta / IPC_NACIONAL).set_axis(columnas, axis=1)
     df = pd.concat(
         [
             madrid.set_axis(columnas, axis=1),
-            leer(IPC_NACIONAL).set_axis(columnas, axis=1),
+            nacional[nacional["subgrupo"] == "04.4.1 Suministro de agua"],
         ]
     )
     df = df[(df["Tipo de dato"] == "Índice") & df["subgrupo"].isin(subgrupos)]

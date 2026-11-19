@@ -49,7 +49,7 @@ from mesobra.figuras import es
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
 FUENTE_CALCULO = (
-    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF, tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
+    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
     "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
 )
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"

@@ -23,7 +23,7 @@ Supuestos y sentido del sesgo:
 - Menores de 18 (no de 14) a 0,3 en la escala OCDE, hogares inquilinos del tamaño medio de la sección: bajan la UC
   y sobrestiman.
 - La cesta de suministros no incluye comunidad, basuras, alcantarillado, mantenimiento ni seguro: infraestima.
-  Son de 2025 frente a la renta de 2024.
+  Son de 2025 actualizados con el IPC (`hogares.cesta_uc`, attrs `ipc_hasta`) frente a la renta de 2024: sobrestima.
 - ρ regional, probablemente mayor que dentro de una sección. El sentido depende de la tasa: con una tasa por encima
   del 50 %, un ρ mayor la sube; por debajo, la baja (sensibilidad con ρ = 0).
 - Ayudas sin descontar (en la ECV baja el control de 36,0 a 35,5).

@@ -37,7 +37,7 @@ AGUA = "04.4.1 Suministro de agua"
 FACTOR = {s: (200 + 10 * a) / 1200 for s, a in ALTOS.items()}
 
 
-def _ipc(carpeta, omitir=None, dic25=True):
+def _ipc(carpeta, omitir=None, dic25=True, hueco=None):
     filas = [
         "Comunidades y Ciudades Autónomas;Subgrupos ECOICOP ver.2;Tipo de dato;Periodo;Total"
     ]
@@ -49,6 +49,8 @@ def _ipc(carpeta, omitir=None, dic25=True):
             (2026, m) for m in range(1, 11)
         ]:
             v = 100 if a == 2025 else alto
+            if (sub, f"{a}M{m:02d}") == hueco:
+                continue
             num = f"{v:.3f}".replace(".", ",")
             if sub == AGUA:
                 nacional.append(f"{sub};Índice;{a}M{m:02d};{num}")
@@ -133,4 +135,10 @@ def test_falta_un_subgrupo_del_ipc(tmp_path):
 def test_ipc_sin_los_12_meses_de_2025(tmp_path):
     _escribir(tmp_path, dic25=False)
     with pytest.raises(ValueError, match="12 meses"):
+        hogares.factores_ipc(tmp_path)
+
+
+def test_ipc_con_un_hueco_en_los_ultimos_12_meses(tmp_path):
+    _escribir(tmp_path, hueco=("01.1 Alimentos", "2026M05"))
+    with pytest.raises(ValueError, match="consecutivos"):
         hogares.factores_ipc(tmp_path)
