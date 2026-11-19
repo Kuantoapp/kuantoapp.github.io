@@ -23,6 +23,7 @@ from mesobra.tiempos import (
     MIN_INTERNO,
     VELOCIDAD_KMH,
     VENTANA,
+    polos_lejos,
 )
 from mesobra.zonas import PROCESSED
 
@@ -149,7 +150,7 @@ def _nota_tiempos(tiempos: pd.DataFrame, n_polos: int) -> str:
         "Minutos puerta a puerta en transporte público del centro de población de la zona de origen al de la de "
         f"destino; dentro de la zona, mediana desde sus secciones, con un mínimo de {MIN_INTERNO:.0f} min. null: "
         f"más de {MAX_MINUTOS} min o sin ruta. Además, {n_polos} polos de empleo con nombre (destinos `polo:`, lista "
-        "propia: supuesto declarado) con el mismo cálculo hasta su punto de OpenStreetMap; su corona tarifaria es la de "
+        "propia: supuesto declarado) con el mismo cálculo hasta su punto de OpenStreetMap (desde su propia zona, mediana desde las secciones de la zona, como el tiempo interno); su corona tarifaria es la de "
         f"su `zona_id`. {origen} Datos de OpenStreetMap (© OpenStreetMap contributors, ODbL). Powered by CRTM."
     )
 
@@ -205,6 +206,10 @@ def main() -> None:
     # primero las zonas: escribir comprueba los ids de tiempos.json contra el zonas.geojson de la carpeta
     api_estatica.escribir("zonas.geojson", zonas_geojson(zonas), APP_DATOS)
     lista = ubicar(leer(), zonas)
+    if lejos := polos_lejos(
+        tiempos, lista
+    ):  # no se publica una columna de polo en null
+        raise ValueError(f"Polos sin ruta o a 30 min o más de su zona: {lejos}")
     api_estatica.escribir(
         "tiempos.json", tiempos_json(tiempos, zonas, lista), APP_DATOS
     )

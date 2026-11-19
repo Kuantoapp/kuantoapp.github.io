@@ -106,6 +106,27 @@ def test_polo_de_la_propia_zona_es_la_mediana_desde_sus_secciones(
     assert _par(tabla, "A", "polo:propio") < _minutos(3)
 
 
+def test_propios_polo_avisa_de_las_secciones_sin_ruta(caplog):
+    matriz = pd.DataFrame(
+        {
+            "from_id": ["A1", "A2", "A3", "B1"],
+            "to_id": "polo:p",
+            "minutos": [10.0, np.nan, 20.0, 99.0],
+        }
+    )
+    secciones = pd.DataFrame(
+        {"CUSEC": ["A1", "A2", "A3", "B1"], "zona_id": ["A", "A", "A", "B"]}
+    )
+    polos = pd.DataFrame({"destino_id": ["polo:p"], "zona_id": ["A"]})
+    with caplog.at_level(logging.WARNING):
+        propios = tiempos._propios_polo(matriz, secciones, polos)
+    assert propios["minutos"].tolist() == [
+        15.0
+    ]  # mediana de 10 y 20; B1 es de otra zona
+    assert propios[["from_id", "to_id"]].values.tolist() == [["A", "polo:p"]]
+    assert "sin ruta a su polo" in caplog.text and "polo:p" in caplog.text
+
+
 def test_polos_lejos_avisa_del_polo_sin_ruta_o_a_30_min_o_mas_de_su_zona(
     zonas, secciones, polos
 ):

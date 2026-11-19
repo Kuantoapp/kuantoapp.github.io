@@ -1,7 +1,8 @@
 """Tabla `tiempos` en transporte público (`modo = tp`) de las 199 zonas a las 199 zonas y a los polos de empleo.
 
 El destino de cada par es el centro de población de la zona de trabajo (`lon_centro`, `lat_centro` de `zonas`) o, si
-es un polo (`polos.leer`, F3-01), su punto con `destino_id = polo:<slug>`; los orígenes son siempre las zonas.
+es un polo (`polos.leer`, F3-01), su punto con `destino_id = polo:<slug>`; los orígenes son siempre las zonas. Desde su
+propia zona, un polo se mide como el tiempo interno: mediana desde las secciones de la zona (`_propios_polo`).
 Dentro de una misma zona el tiempo no es cero: es la mediana, sin ponderar, sobre las secciones de la zona, del
 tiempo desde el punto de población de la sección (`zonas.puntos_poblacion`, la geometría de `secciones`) hasta el
 centro de población, con un suelo de `MIN_INTERNO` minutos.
@@ -134,7 +135,7 @@ def _tabla(matriz: pd.DataFrame, interno: pd.Series, polos: pd.Index) -> pd.Data
     tabla.loc[propia, "minutos"] = (
         tabla.loc[propia, "zona_id"].map(interno.clip(lower=MIN_INTERNO)).to_numpy()
     )
-    # un polo pegado al centro de la zona tampoco baja del suelo; los pares entre zonas distintas no se tocan
+    # ningún par hacia un polo baja del suelo; los pares entre zonas distintas no se tocan
     a_polo = tabla["destino_id"].isin(polos)
     tabla.loc[a_polo, "minutos"] = tabla.loc[a_polo, "minutos"].clip(lower=MIN_INTERNO)
     tabla["minutos"] = tabla["minutos"].where(tabla["minutos"] <= MAX_MINUTOS)
@@ -180,6 +181,11 @@ def _propios_polo(
         left_on=["to_id", "zona_id"],
         right_on=["destino_id", "zona_id"],
     )
+    if (sin_ruta := m.loc[m["minutos"].isna(), "to_id"]).size:
+        LOG.warning(
+            "Secciones sin ruta a su polo, fuera de la mediana: %s",
+            sin_ruta.value_counts().to_dict(),
+        )
     propios = m.groupby(["zona_id", "to_id"])["minutos"].median().reset_index()
     return propios.rename(columns={"zona_id": "from_id"})
 
@@ -334,7 +340,7 @@ def matriz_r5py(
     """Tabla `tiempos` con r5py: mediana puerta a puerta de las salidas de 7:30 a 8:30 de `FECHA_SALIDA`.
 
     El destino es el centro de población de la zona de trabajo o el punto de un polo (`destino_id`, `lon` y `lat`
-    de `polos.leer`). `gtfs` son los zips de `preparar_gtfs`.
+    de `polos.ubicar`, con `zona_id`). `gtfs` son los zips de `preparar_gtfs`.
     """
     from r5py import TransportMode, TransportNetwork, TravelTimeMatrix
 
