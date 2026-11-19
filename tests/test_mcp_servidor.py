@@ -134,9 +134,35 @@ def test_indicadores_zona_igual_que_analisis() -> None:
             },
             "perfil",
         ),
-        ("ranking_zonas", {**ENTRADA, "n": 0}, "n = 0"),
+        ("ranking_zonas", {**ENTRADA, "n": 0}, "greater than or equal"),
         ("indicadores_zona", {"zona_id": GETAFE, "anio": 1999}, "anio"),
         ("indicadores_zona", {"zona_id": "1"}, "inexistente"),
+        ("indicadores_zona", {"zona_id": GETAFE, "anio": "2023"}, "anio"),
+        ("ranking_zonas", {**ENTRADA, "n": True}, "n"),
+        (
+            "calcular_sobrante",
+            {**ENTRADA, "zona_id": GETAFE, "escenario": {"subida": 50}},
+            "subida",
+        ),
+        (
+            "calcular_sobrante",
+            {"hogar": {**HOGAR, "hijoss": 2}, "sueldos": [SUELDO], "zona_id": GETAFE},
+            "hijoss",
+        ),
+        (
+            "calcular_sobrante",
+            {
+                "hogar": HOGAR,
+                "sueldos": [{**SUELDO, "viajesdia": 4}],
+                "zona_id": GETAFE,
+            },
+            "viajesdia",
+        ),
+        (
+            "calcular_sobrante",
+            {"hogar": {**HOGAR, "edad": "30"}, "sueldos": [SUELDO], "zona_id": GETAFE},
+            "edad",
+        ),
     ],
 )
 def test_rechaza_argumentos_invalidos_con_mensaje(
@@ -144,3 +170,15 @@ def test_rechaza_argumentos_invalidos_con_mensaje(
 ) -> None:
     with pytest.raises(ToolError, match=mensaje):
         llamar(herramienta, argumentos)
+
+
+def test_indicadores_sin_bono_dice_el_motivo() -> None:
+    analisis = json.loads((RAIZ / "app/datos/analisis.json").read_text("utf-8"))
+    con_bono = {b["municipio_id"] for b in analisis["bono"]}
+    props = {
+        f["properties"]["zona_id"]: f["properties"] for f in API["zonas"]["features"]
+    }
+    zona = next(z for z, p in props.items() if p["municipio_id"] not in con_bono)
+    r = llamar("indicadores_zona", {"zona_id": zona})
+    assert r["bono"] is None
+    assert "Bono" in r["bono_motivo"]

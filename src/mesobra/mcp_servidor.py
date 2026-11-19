@@ -14,17 +14,26 @@ from collections import Counter
 from collections.abc import Callable
 from functools import cache, wraps
 from pathlib import Path
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import Annotated, Any, Literal, NotRequired, TypedDict
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
+from pydantic import ConfigDict, Field, with_config
 
 from mesobra.calculo import RAIZ, calcular, leer_api
 
 # El wheel trae app/datos como mesobra/datos (force-include); en el checkout, la carpeta del repo.
 DATOS = next(
-    c for c in (Path(__file__).parent / "datos", RAIZ / "app/datos") if c.is_dir()
+    (c for c in (Path(__file__).parent / "datos", RAIZ / "app/datos") if c.is_dir()),
+    None,
 )
+if DATOS is None:
+    raise FileNotFoundError(
+        "sin mesobra/datos ni app/datos: instala el paquete completo"
+    )
+ESTRICTO = ConfigDict(
+    extra="forbid", strict=True
+)  # una clave mal escrita no se descarta en silencio
 UNIDADES = {
     "neto": "€/mes del hogar",
     "alquiler": "€/mes (mediana P50; P25 y P75 en alquiler_p25/p75)",
@@ -38,6 +47,7 @@ UNIDADES = {
 }
 
 
+@with_config(ESTRICTO)
 class Hogar(TypedDict):
     perfil: Literal["solo", "comparte", "pareja", "monoparental"]
     edad: int  # 16 a 64
@@ -47,6 +57,7 @@ class Hogar(TypedDict):
     m2: NotRequired[float]
 
 
+@with_config(ESTRICTO)
 class Sueldo(TypedDict):
     destino: str  # código INE de la zona donde trabaja, no el nombre (Getafe: 28065)
     dias: int  # días presenciales a la semana, 1 a 5
@@ -56,6 +67,7 @@ class Sueldo(TypedDict):
     viajes_dia: NotRequired[int]  # 2 (ida y vuelta) o 4
 
 
+@with_config(ESTRICTO)
 class Escenario(TypedDict, total=False):
     tarifas: Literal["vigente_2026", "sin_descuento"]
     subida_alquiler: float  # %
@@ -85,6 +97,7 @@ def _fuentes(*nombres: str) -> dict[str, Any]:
     return salida
 
 
+@cache
 def _nombres() -> dict[str, dict[str, Any]]:
     return {
         f["properties"]["zona_id"]: f["properties"] for f in _api()["zonas"]["features"]
@@ -188,8 +201,6 @@ def calcular_sobrante(
     de viaje, la banda, el esfuerzo de alquiler y el precio de la hora frente a la zona de referencia."""
     _zona_existente(zona_id)
     res = _calcular(hogar, sueldos, escenario)
-    if zona_id not in res["zonas"]:
-        raise ValueError(f"zona_id {zona_id!r} sin tiempos de viaje en tiempos.json")
     return _envoltura(res) | {"zona": _zona(zona_id, res["zonas"][zona_id])}
 
 
@@ -199,12 +210,10 @@ def ranking_zonas(
     hogar: Hogar,
     sueldos: list[Sueldo],
     escenario: Escenario | None = None,
-    n: int = 10,
+    n: Annotated[int, Field(strict=True, ge=1, le=199)] = 10,
 ) -> dict[str, Any]:
     """Las `n` zonas donde más sobra al mes, cada una con sus horas de viaje; y las zonas sin cifra
     con su motivo. Las que más sobran pueden estar muy lejos del trabajo: mira las horas."""
-    if type(n) is not int or not 1 <= n <= 199:
-        raise ValueError(f"n = {n!r}: debe ser un entero de 1 a 199")
     res = _calcular(hogar, sueldos, escenario)
     zonas = {z: _zona(z, v) for z, v in res["zonas"].items()}
     con_cifra = sorted(
@@ -231,7 +240,9 @@ def ranking_zonas(
 
 @servidor.tool()
 @_claro
-def indicadores_zona(zona_id: str, anio: int | None = None) -> dict[str, Any]:
+def indicadores_zona(
+    zona_id: str, anio: Annotated[int | None, Field(strict=True)] = None
+) -> dict[str, Any]:
     """Alquiler (€/m²), esfuerzo de alquiler sobre la renta y ayuda del Bono Alquiler Joven de una zona;
     `anio` es el del esfuerzo (por defecto, el último)."""
     _zona_existente(zona_id)
@@ -244,6 +255,14 @@ def indicadores_zona(zona_id: str, anio: int | None = None) -> dict[str, Any]:
     if esfuerzo and anio not in esfuerzo:
         raise ValueError(f"anio = {anio!r}: hay esfuerzo de {sorted(esfuerzo)}")
     props = _nombres()[zona_id]
+    bono = next(
+        (
+            b
+            for b in api["analisis"]["bono"]
+            if b["municipio_id"] == props["municipio_id"]
+        ),
+        None,
+    )
     alq = api["alquiler"]["zonas"][zona_id]
     return {
         "unidades": {
@@ -251,19 +270,18 @@ def indicadores_zona(zona_id: str, anio: int | None = None) -> dict[str, Any]:
             "alquiler_mes_p50": "€/mes",
             "renta_hogar_mes": "€/mes, renta neta media por hogar",
             "esfuerzo": "proporción alquiler ÷ renta del hogar",
-            "bono": "solicitudes, aceptadas y rechazadas: hogares; necesidad: índice relativo",
+            "bono": "por municipio (en los distritos de Madrid, el de todo el municipio); solicitudes, aceptadas y rechazadas: hogares; necesidad: índice relativo",
         },
         "zona": props,
         "alquiler": alq | {"estimado": alq["origen"] == "estimado"},
         "esfuerzo": esfuerzo.get(anio),
-        "bono": next(
-            (
-                b
-                for b in api["analisis"]["bono"]
-                if b["municipio_id"] == props["municipio_id"]
-            ),
-            None,
-        ),
+        "esfuerzo_motivo": None
+        if esfuerzo.get(anio)
+        else "sin renta o alquiler de la zona",
+        "bono": bono,
+        "bono_motivo": None
+        if bono
+        else "sin datos del Bono Alquiler Joven del municipio",
         "fuentes": _fuentes("alquiler", "analisis"),
     }
 
