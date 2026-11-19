@@ -227,7 +227,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
     "Tu trabajo te paga 10,1 € netos la hora (estimado, jornada de 40 h a la semana)",
-    "El alquiler se lleva el 39 % del neto, más del 30 % que esta herramienta toma como referencia",
+    "El alquiler se lleva el 39 % del neto, más del 30 % que esta herramienta toma como referencia (estimado)",
     "Con el 30 % del neto alcanza para un piso de 35 m² (estimado)",
   ]);
   // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
@@ -259,8 +259,8 @@ test("el borde del 30 % y el de la banda se deciden con lo que se muestra redond
   const caso = casos[0];
   const ctx = contextoFicha(ejemplo, caso.entrada, caso.salida, "28065");
   const con = (cambios) => lineasFicha("Zona", { ...caso.salida.zonas["28065"], ...cambios }, "sobra", ctx);
-  assert.ok(con({ esfuerzo: 0.3004 }).includes("El alquiler se lleva el 30 % del neto"));
-  assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia"));
+  assert.ok(con({ esfuerzo: 0.3004 }).includes("El alquiler se lleva el 30 % del neto (estimado)"));
+  assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia (estimado)"));
   assert.ok(con({ sobra_banda: [-0.3, 120] }).includes("Te sobran entre 0 € y 120 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 0.2] }).includes("Te faltan entre 0 € y 80 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 120] }).includes("Entre que te falten 80 € y te sobren 120 € al mes (estimado)"));

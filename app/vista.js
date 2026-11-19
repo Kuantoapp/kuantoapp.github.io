@@ -253,7 +253,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
-    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ""}`,
+    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ctx.ipc !== null ? " (estimado)" : ""}`,
     `Con el ${ESFUERZO_RECOMENDADO * 100} % del neto alcanza para un piso de ${euros.format(piso)} m²${ctx.personas > 1 ? ` compartido entre ${ctx.personas}` : ""} (estimado)`,
   );
   return [...new Set(lineas)];
@@ -288,7 +288,7 @@ export function avisos(alquiler) {
   // shortcut: aviso global; si conviven zonas con y sin IPC no lo dice por zona, mejorar entonces.
   const conIpc = zonas.some((z) => z.factor_ipc !== 1);
   const lineas = [
-    `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? ` y están actualizados con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.`,
+    `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? `, y la cifra está actualizada con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.`,
     `El dato de alquiler es de ${alquiler.meta.anio_dato}${anterior ? "; en alguna zona, de un año anterior, y lo dice su ficha" : ""}.`,
   ];
   const estimadas = cuantas("estimado");
