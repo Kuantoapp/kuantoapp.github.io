@@ -81,6 +81,7 @@ MENCIONES = {
     "geofabrik.de": "© OpenStreetMap contributors",
 }
 # la AEAT pide la fecha de la última actualización «cuando esté disponible»; si no la publica, la de consulta
+# shortcut: «consultada el» vale para cualquier fuente; limitarlo por dominio si otra fuente con fecha lo usa
 ACTUALIZADO = re.compile(r"(?:actualizad|consultad)[oa] el \d{4}-\d{2}-\d{2}")
 LICENCIA_MODELO = "CC BY 4.0"
 

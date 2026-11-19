@@ -336,7 +336,13 @@ def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.
     return {
         "provincia": _html(tmp_path, "p", [fila("Madrid, Comunidad de", "1.190")]),
         "municipios": _html(
-            tmp_path, "m", [fila("Getafe-28065", "1.150"), fila("Madrid", "1")]
+            tmp_path,
+            "m",
+            [
+                fila("Getafe-28065", "1.150"),
+                fila("Madrid", "1"),
+                fila("Madrid-28079", "1.200"),
+            ],
         ),
         "cp": _html(
             tmp_path, "c", [fila("28001-A", "1.100"), fila("28002-B", "1.300")]
@@ -348,7 +354,7 @@ def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.
 def test_leer_brecha(tmp_path):
     b = alquiler.leer_brecha(_aeat(tmp_path))
     assert b["provincia"] == pytest.approx(1.19)
-    assert b["municipio"].to_dict() == pytest.approx({"28065": 1.15})
+    assert b["municipio"].to_dict() == pytest.approx({"28065": 1.15, "28079": 1.2})
     assert b["cp"].loc["28002"].tolist() == pytest.approx([1.3, 300])
 
 
@@ -392,13 +398,17 @@ def test_brecha_por_zona_precedencia(tmp_path):
             "metodo": "portales",
         }
     )
-    zona = pd.DataFrame({"zona_id": ["2807901", "2807902", "28065", "28147"]})
+    zona = pd.DataFrame(
+        {"zona_id": ["2807901", "2807902", "28065", "28147", "2807903"]}
+    )
     zona.attrs["ipc_hasta"] = "2026-10"
     z = alquiler.brecha_por_zona(zona, b, tabla)
     # distrito 02: viviendas × peso = 100 × 0,25 de 28001 (factor 1,1) y 300 de 28002 (1,3)
     esperado = (25 * 1.1 + 300 * 1.3) / 325
-    assert z["factor_brecha"].tolist() == pytest.approx([1.1, esperado, 1.15, 1.19])
+    assert z["factor_brecha"].tolist() == pytest.approx(
+        [1.1, esperado, 1.15, 1.19, 1.2]
+    )
     assert z["brecha_ambito"].tolist() == [
-        "codigo_postal", "codigo_postal", "municipio", "comunidad",
+        "codigo_postal", "codigo_postal", "municipio", "comunidad", "municipio",
     ]  # fmt: skip
     assert z.attrs["ipc_hasta"] == "2026-10"

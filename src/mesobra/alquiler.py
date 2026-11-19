@@ -317,13 +317,18 @@ def brecha_por_zona(
     Comunidad de Madrid. Es del año de la AEAT (2024) para todas las filas.
     """
     cp = brecha["cp"]
+    LOG.info(
+        "códigos postales con portales y sin dato de la AEAT, fuera del reparto: %s",
+        sorted(set(tabla_cp["origen"]) - set(cp.index)),
+    )
     distritos = paso_secciones.pasar_intensiva(tabla_cp, cp["factor"], cp["viviendas"])
     pureza = paso_secciones.pureza(tabla_cp, cp["factor"], cp["viviendas"])
     LOG.info(
         "pureza de los distritos (código postal entero): %s", pureza.round(2).to_dict()
     )
     factor = zona["zona_id"].map(distritos)
-    mun = zona["zona_id"].map(brecha["municipio"])
+    # un distrito sin código postal con dato toma el de su municipio (28079), no el de la Comunidad
+    mun = zona["zona_id"].str[:5].map(brecha["municipio"])
     df = zona.copy()
     df["brecha_ambito"] = np.select(
         [factor.notna(), mun.notna()], ["codigo_postal", "municipio"], "comunidad"

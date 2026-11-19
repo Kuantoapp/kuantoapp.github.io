@@ -4,6 +4,7 @@ No calcula nada nuevo: solo da forma al contrato de `api_estatica`. Ejecutar con
 `python -m mesobra.pipeline_euros`. Todos los valores salen en tipos nativos de Python.
 """
 
+import logging
 from datetime import date
 from pathlib import Path
 
@@ -228,7 +229,10 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "fiscal que el SERPAVI, pero medias y no medianas). brecha_ambito dice de dónde sale: municipio "
         "(los de más de 20.000 habitantes), codigo_postal (los distritos de Madrid, desde sus códigos "
         "postales ponderados por viviendas arrendadas y repartidos por portales de OpenStreetMap, que "
-        "cruzan límites de distrito) o comunidad (el de la Comunidad de Madrid). p50 × factor_ipc es el "
+        "cruzan límites de distrito) o comunidad (el de la Comunidad de Madrid). El de distrito mide la "
+        "brecha dentro de cada código postal; los de municipio y comunidad incluyen además que los "
+        "contratos nuevos se concentran en las zonas caras, y por eso tienden a ser algo mayores (en "
+        "Madrid capital, 1,20 frente a 1,17 con sus códigos postales). p50 × factor_ipc es el "
         "precio de contrato y × factor_brecha el de contrato nuevo, que sigue siendo un suelo: el IPC de "
         "alquiler sigue los contratos en vigor, y los nuevos suben más. Fuente: Agencia Tributaria (la "
         "tabla no publica fecha de actualización; consultada el 2026-11-19). © OpenStreetMap contributors "
@@ -411,6 +415,8 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
 
 
 def main() -> None:
+    # cobertura y pureza de la tabla de paso de código postal a distrito
+    logging.basicConfig(level=logging.INFO)
     claves, ids = rutas()
     zona = alquiler.actualizar_ipc(
         alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
