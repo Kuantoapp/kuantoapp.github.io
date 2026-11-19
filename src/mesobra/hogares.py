@@ -242,6 +242,9 @@ def factores_tramo(carpeta: Path = RAW) -> pd.Series:
             raise ValueError(f"EPF por tramo de ingresos {ANIO}: tramos repetidos")
     alim, gasto_hogar, gasto_uc = (_numero(s) for s in series)
     por_uc = alim / (gasto_hogar / gasto_uc)
+    # `_numero` deja en nulo una celda vacía: un tramo sin dato no puede dar un factor
+    if vacios := por_uc.index[por_uc.isna()].tolist():
+        raise ValueError(f"EPF por tramo de ingresos {ANIO}: sin valor en {vacios}")
     return pd.Series(
         (por_uc[list(TRAMOS)] / por_uc["Total"]).to_numpy(),
         index=pd.Index(TRAMOS.values(), name="desde"),

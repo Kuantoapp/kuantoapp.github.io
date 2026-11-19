@@ -157,7 +157,7 @@ TRAMOS = [
 NIVEL = "Nivel de ingresos mensuales netos regulares del hogar"
 
 
-def _tramos(carpeta, omitir=None):
+def _tramos(carpeta, omitir=None, vacio=None):
     """Tramo k (1 a 8): alimentos por hogar 1000·k y 1 + (k − 1)/10 UC; total: 4000 y 2 UC (2000 €/UC)."""
     grupos = [
         f"{NIVEL};Gastos medios y distribución porcentual;Grupos de gasto (2 dígitos);Periodo;Total"
@@ -167,7 +167,7 @@ def _tramos(carpeta, omitir=None):
         if t == omitir:
             continue
         alim, n = (4000, 2) if t == "Total" else (1000 * i, 1 + (i - 1) / 10)
-        alim_txt = f"{alim:.2f}".replace(".", ",")
+        alim_txt = "" if t == vacio else f"{alim:.2f}".replace(".", ",")
         grupos += [
             f"{t};Gasto medio por hogar;01 Alimentos y bebidas no alcohólicas;2025;{alim_txt}",
             f"{t};Gasto medio por hogar;01 Alimentos y bebidas no alcohólicas;2024;1,00",
@@ -181,6 +181,7 @@ def _tramos(carpeta, omitir=None):
             f"{t};Dato base;Gasto medio por unidad de consumo;2025;"
             + f"{total / n:.4f}".replace(".", ","),
             f"{t};Dato base;Gasto medio por unidad de consumo;2024;1,00",
+            f"{t};Variación respecto al año anterior;Gasto medio por hogar;2025;1,00",
         ]
     (carpeta / hogares.EPF_TRAMOS).write_text("\n".join(grupos), encoding="utf-8-sig")
     (carpeta / hogares.EPF_TRAMOS_UC).write_text("\n".join(uc), encoding="utf-8-sig")
@@ -197,4 +198,10 @@ def test_factores_tramo(tmp_path):
 def test_factores_tramo_falta_un_tramo(tmp_path):
     _tramos(tmp_path, omitir="De 2.000 a 2.499 euros")
     with pytest.raises(ValueError, match="2.000 a 2.499"):
+        hogares.factores_tramo(tmp_path)
+
+
+def test_factores_tramo_con_un_valor_vacio(tmp_path):
+    _tramos(tmp_path, vacio="Hasta 499 euros")
+    with pytest.raises(ValueError, match="Hasta 499"):
         hogares.factores_tramo(tmp_path)
