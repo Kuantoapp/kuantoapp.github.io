@@ -12,6 +12,7 @@ const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta
 const NOMBRES = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
 const cargar = (carpeta) => ({ ...Object.fromEntries(NOMBRES.map((n) => [n, leer(`${carpeta}/${n}.json`)])), zonas: leer(`${carpeta}/zonas.geojson`) });
 const ejemplo = cargar("tests/fixtures/api");
+const EDAD = ejemplo.tarifas.edad_max_joven + 1;
 const real = cargar("app/datos");
 
 const BASE = {
@@ -425,7 +426,7 @@ const NEUTRO = { ...BASE, ref: "", metrica: "precio_hora", ...ESCENARIO_NEUTRO }
 // Zona A (2807913) a zona A (2807901), 5 días y 2 viajes al día: el abono manda. Con los fixtures, el abono general cuesta 32,70 € y el Abono Joven, 10 €.
 const transporteA = (edad, v) => {
   const base = { hogar: { perfil: "solo", edad }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["2807913"] };
-  const entrada = entradaEscenario(base, { ...NEUTRO, ...v }) ?? base;
+  const entrada = entradaEscenario(base, { ...NEUTRO, ...v }, EDAD) ?? base;
   return calcular(ejemplo, entrada).zonas["2807913"].transporte;
 };
 
@@ -440,17 +441,17 @@ test("sin el descuento, el abono de un adulto pasa de 32,70 a 56,20 € y el del
 test("cumplir 26 años quita el Abono Joven, y cambiar los días no toca los viajes al día", () => {
   assert.equal(transporteA(25, { cumple26: "si" }).toFixed(2), "32.70");
   const entrada = { hogar: { perfil: "solo", edad: 25 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 4 }] };
-  const sim = entradaEscenario(entrada, { ...NEUTRO, dias_esc: "3", subida: "10" });
+  const sim = entradaEscenario(entrada, { ...NEUTRO, dias_esc: "3", subida: "10" }, EDAD);
   assert.deepEqual(sim.sueldos[0], { ...entrada.sueldos[0], dias: 3 });
   assert.deepEqual(sim.escenario, { tarifas: "vigente_2026", subida_alquiler: 10 });
-  assert.equal(entradaEscenario(entrada, NEUTRO), null);
+  assert.equal(entradaEscenario(entrada, NEUTRO, EDAD), null);
   assert.equal(entrada.sueldos[0].dias, 5, "no se modifica la entrada original");
 });
 
 test("la subida del alquiler del escenario reduce lo que sobra, y la ficha lo dice", () => {
   const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
   const actual = calcular(ejemplo, entrada).zonas["28065"];
-  const sim = calcular(ejemplo, entradaEscenario(entrada, { ...NEUTRO, subida: "10" })).zonas["28065"];
+  const sim = calcular(ejemplo, entradaEscenario(entrada, { ...NEUTRO, subida: "10" }, EDAD)).zonas["28065"];
   assert.ok(Math.abs(actual.alquiler * 0.1 - (actual.sobra - sim.sobra)) < 1e-9);
   const euros = Math.round(actual.sobra - sim.sobra).toLocaleString("es-ES");
   assert.equal(lineaDiferencia(actual, sim), `Con este escenario pierdes ${euros} € al mes frente a hoy (simulación, estimado)`);
@@ -464,8 +465,8 @@ test("la diferencia decide con lo redondeado y avisa si falta una cifra", () => 
 });
 
 test("el título del escenario nombra solo lo que cambia", () => {
-  assert.equal(tituloEscenario(NEUTRO), null);
-  assert.equal(tituloEscenario({ ...NEUTRO, tarifas: "sin_descuento", subida: "10", cumple26: "si", dias_esc: "1" }),
+  assert.equal(tituloEscenario(NEUTRO, EDAD), null);
+  assert.equal(tituloEscenario({ ...NEUTRO, tarifas: "sin_descuento", subida: "10", cumple26: "si", dias_esc: "1" }, EDAD),
     "Simulación: se acaba el descuento del transporte (abonos y 10 viajes); el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
 });
 

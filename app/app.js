@@ -234,7 +234,7 @@ async function main() {
       $("estado").textContent = "Corrige los campos marcados para recalcular el mapa.";
       return;
     }
-    const entradaSim = entradaEscenario(entrada, v);
+    const entradaSim = entradaEscenario(entrada, v, api.tarifas.edad_max_joven + 1);
     let actual;
     let pintada;
     try {
@@ -257,7 +257,7 @@ async function main() {
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
-    const simulacion = tituloEscenario(v);
+    const simulacion = tituloEscenario(v, api.tarifas.edad_max_joven + 1);
     if (simulacion) $("leyenda").querySelector(".titulo").after(elemento("p", simulacion, "titulo"));
     pintarFicha();
     pintarMejores();

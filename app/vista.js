@@ -369,8 +369,6 @@ export function validar(v, api) {
 // Campos del formulario de escenarios (todos son select o deslizador: siempre traen valor) y su valor «sin escenario».
 export const ESCENARIO_NEUTRO = { tarifas: "vigente_2026", subida: "0", cumple26: "no", dias_esc: "" };
 const SUBIDA = [0, 30];
-// Edad con la que se simula «cumples 26 años»: la primera sin Abono Joven (tarifas.edad_max_joven es 25).
-const EDAD_CUMPLE = 26;
 
 /** Errores `{campo, mensaje}` de los valores del formulario de escenarios; `[]` si todos valen. */
 export function erroresEscenario(v, api) {
@@ -388,19 +386,19 @@ export function erroresEscenario(v, api) {
  * Entrada del cálculo con el escenario aplicado, o `null` si ningún campo se aparta de `ESCENARIO_NEUTRO`.
  * Los valores ya están validados. Cambiar los días no toca los viajes al día de cada sueldo.
  */
-export function entradaEscenario(entrada, v) {
+export function entradaEscenario(entrada, v, edadCumple) {
   if (Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro)) return null;
-  const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: EDAD_CUMPLE } : {}) };
+  const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}) };
   const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
   return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias })) };
 }
 
 /** Qué simula el mapa, en una línea; `null` si no hay escenario. */
-export function tituloEscenario(v) {
+export function tituloEscenario(v, edadCumple) {
   const partes = [
     ...(v.tarifas !== ESCENARIO_NEUTRO.tarifas ? ["se acaba el descuento del transporte (abonos y 10 viajes)"] : []),
     ...(v.subida !== ESCENARIO_NEUTRO.subida ? [`el alquiler sube un ${v.subida} %`] : []),
-    ...(v.cumple26 === "si" ? [`cumples ${EDAD_CUMPLE} años`] : []),
+    ...(v.cumple26 === "si" ? [`cumples ${edadCumple} años`] : []),
     ...(v.dias_esc !== "" ? [`${v.dias_esc} ${v.dias_esc === "1" ? "día presencial" : "días presenciales"} a la semana`] : []),
   ];
   return partes.length === 0 ? null : `Simulación: ${partes.join("; ")}`;
