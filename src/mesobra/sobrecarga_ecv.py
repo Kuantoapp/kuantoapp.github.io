@@ -89,15 +89,36 @@ def tasa(y: pd.Series, w: pd.Series) -> tuple[float, float, int]:
     return 100 * p, 100 * ee, n
 
 
-def control_f306(h: pd.DataFrame) -> pd.DataFrame:
-    """Cifras de control de F3-06: inquilinos de Madrid, ponderados con DB090. ESTIMADO."""
-    q = h[(h.DB040 == MADRID) & h.HH021.isin(INQUILINOS)]
+def _tabla_control(q: pd.DataFrame, indicadores: dict[str, pd.Series]) -> pd.DataFrame:
     filas = {}
-    for nombre, y in {
-        "gasto_40": sobrecarga_control(q),
-        "alquiler_30": alquiler_30(q),
-    }.items():
+    for nombre, y in indicadores.items():
         t, ee, n = tasa(y, q.DB090)
         e = Z95 * ee * np.sqrt(EFECTO_DISENO)
         filas[nombre] = {"tasa": t, "ee": ee, "ic_inf": t - e, "ic_sup": t + e, "n": n}
     return pd.DataFrame.from_dict(filas, orient="index")
+
+
+def tramos_control(h: pd.DataFrame) -> pd.DataFrame:
+    """Reparto de los inquilinos de Madrid por tramos de gasto HH070·12/HY020 (≤30, 30-40, 40-50, >50). ESTIMADO.
+
+    Renta ≤ 0 cuenta en «>50», como en la regla de Eurostat.
+    """
+    q = h[(h.DB040 == MADRID) & h.HH021.isin(INQUILINOS)]
+    s = {k: _supera(q.HH070 * 12, q.HY020, k) for k in (0.30, 0.40, 0.50)}
+    return _tabla_control(
+        q,
+        {
+            "<=30": 1 - s[0.30],
+            "30-40": s[0.30] - s[0.40],
+            "40-50": s[0.40] - s[0.50],
+            ">50": s[0.50],
+        },
+    )
+
+
+def control_f306(h: pd.DataFrame) -> pd.DataFrame:
+    """Cifras de control de F3-06: inquilinos de Madrid, ponderados con DB090. ESTIMADO."""
+    q = h[(h.DB040 == MADRID) & h.HH021.isin(INQUILINOS)]
+    return _tabla_control(
+        q, {"gasto_40": sobrecarga_control(q), "alquiler_30": alquiler_30(q)}
+    )
