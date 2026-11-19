@@ -186,7 +186,9 @@ def _zona(anio=2024, factor=1.0):
 
 
 def _con_brecha(zona):
-    return zona.assign(factor_brecha=1.2, brecha_ambito="municipio")
+    return zona.assign(
+        factor_brecha=1.2, brecha_ambito="codigo_postal", brecha_pureza=0.4
+    )
 
 
 def _ipc():
@@ -281,7 +283,8 @@ def test_alquiler_json_lleva_la_brecha():
         _con_brecha(alquiler.actualizar_ipc(_zona(), _ipc()))
     )["zonas"]
     assert z["28001"]["factor_brecha"] == 1.2
-    assert z["28001"]["brecha_ambito"] == "municipio"
+    assert z["28001"]["brecha_ambito"] == "codigo_postal"
+    assert z["28001"]["brecha_pureza"] == 0.4
 
 
 CABECERA = (
@@ -334,7 +337,7 @@ def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.
         return (nombre, "1.000", nuevos, "100", "100")
 
     return {
-        "provincia": _html(tmp_path, "p", [fila("Madrid, Comunidad de", "1.190")]),
+        "tramo": _html(tmp_path, "t", [fila("Madrid, Comunidad de", "1.190")]),
         "municipios": _html(
             tmp_path,
             "m",
@@ -353,7 +356,7 @@ def _aeat(tmp_path, detalle=(("28001-A", "100", "1.000"), ("28002-B", "300", "1.
 
 def test_leer_brecha(tmp_path):
     b = alquiler.leer_brecha(_aeat(tmp_path))
-    assert b["provincia"] == pytest.approx(1.19)
+    assert b["tramo"] == pytest.approx(1.19)
     assert b["municipio"].to_dict() == pytest.approx({"28065": 1.15, "28079": 1.2})
     assert b["cp"].loc["28002"].tolist() == pytest.approx([1.3, 300])
 
@@ -409,6 +412,10 @@ def test_brecha_por_zona_precedencia(tmp_path):
         [1.1, esperado, 1.15, 1.19, 1.2]
     )
     assert z["brecha_ambito"].tolist() == [
-        "codigo_postal", "codigo_postal", "municipio", "comunidad", "municipio",
+        "codigo_postal", "codigo_postal", "municipio", "tramo", "municipio",
     ]  # fmt: skip
+    # pureza: 01 solo recibe una parte de 28001 (0); 02 recibe 28002 entero (300 de 325); el resto, sin pureza
+    pureza = z["brecha_pureza"]
+    assert pureza.iloc[:2].tolist() == pytest.approx([0, 300 / 325])
+    assert pureza.iloc[2:].isna().all()
     assert z.attrs["ipc_hasta"] == "2026-10"

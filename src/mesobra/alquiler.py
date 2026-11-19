@@ -29,11 +29,15 @@ SERIE_IPC = (
     "Índice",
 )  # IPC297196
 # AEAT, Estadística de viviendas declaradas en el IRPF 2024: comparativa con los nuevos contratos (#251)
+AEAT = RAIZ / "data/raw/aeat_irpfvivienda2024_nuevos_"
 RAW_AEAT = {
-    k: RAIZ / f"data/raw/aeat_irpfvivienda2024_nuevos_{k}_2026-11-19.html"
-    for k in ("provincia", "municipios", "cp", "cp_viviendas")
+    "municipios": Path(f"{AEAT}municipios_2026-11-19.html"),
+    "cp": Path(f"{AEAT}cp_2026-11-19.html"),
+    "cp_viviendas": Path(f"{AEAT}cp_viviendas_2026-11-19.html"),
+    "tramo": Path(f"{AEAT}tramo_20_50_2026-11-20.html"),
 }
-PROVINCIA = "Madrid, Comunidad de"
+# en la página de un tramo de población, el agregado de los municipios de la Comunidad en ese tramo (#320)
+COMUNIDAD = "Madrid, Comunidad de"
 
 # clave -> (hoja, columna de código, ancho del código INE)
 HOJAS = {
@@ -238,7 +242,9 @@ def factor_nuevos(df: pd.DataFrame) -> pd.Series:
 
 
 def leer_brecha(rutas: dict[str, Path] = RAW_AEAT) -> dict:
-    """Factores de la AEAT: `municipio` (código INE), `cp` (factor y viviendas arrendadas) y `provincia`."""
+    """Factores de la AEAT: `municipio` (código INE), `cp` (factor y viviendas arrendadas) y `tramo` (municipios de
+    la Comunidad de 20.001 a 50.000 habitantes, el tamaño más cercano al de los que no tienen dato propio).
+    """
     mun = factor_nuevos(leer_aeat(rutas["municipios"]))
     mun = mun[mun.index.str.contains(r"-28\d{3}$")]
     mun.index = mun.index.str[-5:]
@@ -252,10 +258,10 @@ def leer_brecha(rutas: dict[str, Path] = RAW_AEAT) -> dict:
         )
     cp = pd.DataFrame({"factor": factor_nuevos(cp), "viviendas": viviendas})
     cp.index = cp.index.str[:5]
-    provincia = factor_nuevos(leer_aeat(rutas["provincia"]).loc[[PROVINCIA]])
-    if len(provincia) != 1 or mun.index.has_duplicates or cp.index.has_duplicates:
+    tramo = factor_nuevos(leer_aeat(rutas["tramo"]).loc[[COMUNIDAD]])
+    if len(tramo) != 1 or mun.index.has_duplicates or cp.index.has_duplicates:
         raise ValueError("Territorios repetidos o ausentes en las tablas de la AEAT")
-    return {"municipio": mun, "cp": cp, "provincia": float(provincia.iloc[0])}
+    return {"municipio": mun, "cp": cp, "tramo": float(tramo.iloc[0])}
 
 
 def leer_portales(ruta: Path = zonas.OSM) -> gpd.GeoDataFrame:
@@ -312,9 +318,9 @@ def tabla_paso_cp(
 def brecha_por_zona(
     zona: pd.DataFrame, brecha: dict, tabla_cp: pd.DataFrame
 ) -> pd.DataFrame:
-    """`zona` con `factor_brecha` y `brecha_ambito` (ficha §6.2, #251): el del municipio en la AEAT; en un distrito,
-    el de sus códigos postales (media ponderada por viviendas arrendadas × peso de portales); si no, el de la
-    Comunidad de Madrid. Es del año de la AEAT (2024) para todas las filas.
+    """`zona` con `factor_brecha`, `brecha_ambito` y `brecha_pureza` (ficha §6.2, #251, #320): el del municipio en
+    la AEAT; en un distrito, el de sus códigos postales (media ponderada por viviendas arrendadas × peso de
+    portales), con su pureza; si no, el del tramo de 20.001 a 50.000 habitantes. Es de 2024 en todas las filas.
     """
     cp = brecha["cp"]
     LOG.info(
@@ -331,9 +337,10 @@ def brecha_por_zona(
     mun = zona["zona_id"].str[:5].map(brecha["municipio"])
     df = zona.copy()
     df["brecha_ambito"] = np.select(
-        [factor.notna(), mun.notna()], ["codigo_postal", "municipio"], "comunidad"
+        [factor.notna(), mun.notna()], ["codigo_postal", "municipio"], "tramo"
     )
-    df["factor_brecha"] = factor.fillna(mun).fillna(brecha["provincia"])
+    df["factor_brecha"] = factor.fillna(mun).fillna(brecha["tramo"])
+    df["brecha_pureza"] = zona["zona_id"].map(pureza).where(factor.notna())
     return df
 
 
