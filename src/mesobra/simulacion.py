@@ -10,7 +10,7 @@ todas las filas van `estimado` y ser elegible no es cobrar (decisión 26).
 
 Método de #301 (registro previo en `docs/decisiones.md`, 2026-11-19, fijado antes de ejecutar con los pesos). Se
 evalúa cada par (zona de residencia z, destino d) y no la media del municipio: z es elegible para d si cumple edad,
-ingresos y (alquiler(z) + T(z, d) + VTT × H(z, d)) ÷ neto ≥ `CORTE`; `alquiler_transporte` es igual con VTT = 0.
+ingresos y (alquiler(z) + T(z, d) + VTT × H(z, d)) ÷ neto > `CORTE`; `alquiler_transporte` es igual con VTT = 0.
 T es el transporte al mes del hogar y H las horas de viaje al mes de más frente a la zona ref(d) con menos minutos
 hacia d: H = máx(0, horas(z, d) − horas(ref(d), d)), con las horas del propio `calcular`. pct(z) = Σ_d w(z, d) ·
 1[elegible(z, d)] × 100 y el del municipio, la mediana de pct entre sus zonas. `bono_vigente` no depende del
@@ -51,17 +51,22 @@ Decisiones y sentido de su sesgo:
 13. Las alternativas sustituyen el tope y mantienen edad e ingresos; misma cuantía; son simulados e ilustrativos, no
     una propuesta. Lo que cambia frente a `bono_vigente` sale sobre todo de quitar el tope. En la pareja, la renta es
     la de una persona y el esfuerzo el del hogar: no se compara entre criterios.
-14. Corte 45 % (`CORTE`): el índice H+T del CNT (vivienda + transporte ≤ 45 % de la renta del hogar = 30 % + 15 %;
-    H+T Index Methods, nov. 2022, p. 4); referencia estadounidense, no norma. Es la revisión del 30 % de #296
+14. Corte 45 % (`CORTE`): el índice H+T del CNT (vivienda + transporte, «no más del 45 %» de la renta del hogar = 30 %
+    + 15 %; H+T Index Methods, nov. 2022, p. 4); referencia estadounidense, no norma. Con el CNT, exactamente el 45 %
+    sigue siendo asequible: solo es elegible si el esfuerzo es mayor que el corte (el registro previo decía ≥; es un
+    cambio de frontera, no de parámetro; vale también para los criterios de #296). Es la revisión del 30 % de #296
     (`sobrecarga_30`, #100), que se fijó antes de ver resultados: con el 30 %, el término de horas bastaba para pasar
     el umbral en casi todos los municipios. El 45 % se eligió tras ver esos datos, así que el registro previo de
     #301 se escribió antes de ejecutar con los pesos y se publica la curva de cortes de 25 % a 50 %, con el 30 %
     marcado, y los criterios de #296 como sensibilidad (`simulacion_296`).
 15. VTT = 0,325 × coste laboral total por hora de la Comunidad de Madrid (INE, ETCL4391, media de 2025T3–2026T2:
-    30,0175 €/h) = 9,76 €/h; banda de la proporción 0,25 a 0,40 (7,50 a 12,01 €/h: CE CBA Guide 2014, p. 90, y
-    Vademécum 2021-2027, p. 55; HEATCO, España 0,34 a 0,38). Madrid y no la media nacional (ETCL4443, 25,8225 €/h →
-    8,39 €/h) porque el producto se ofrece en las condiciones de DataMad: con la nacional entran menos. Valorar el
-    tiempo de viaje con una fracción del salario es un supuesto, no un dato.
+    30,0175 €/h) = 9,76 €/h. 0,325 es el punto medio de la banda 0,25 a 0,40 (7,50 a 12,01 €/h), no un valor de la
+    fuente: CE CBA Guide 2014, p. 90, y Vademécum 2021-2027, p. 55; HEATCO, España 0,34 a 0,38. El coste laboral
+    total incluye la parte del empleador (cotizaciones), y el VTT se compara con el neto del hogar: el numerador va
+    inflado frente a un valor del tiempo sobre el salario neto, así que sobreestima el esfuerzo y los elegibles de
+    `horas_viaje`. Madrid y no la media nacional (ETCL4443, 25,8225 €/h → 8,39 €/h) porque el producto se ofrece en
+    las condiciones de DataMad: con la nacional entran menos. Valorar el tiempo de viaje con una fracción del
+    salario es un supuesto, no un dato.
 16. Pesos w(z, d): matriz de residencia × trabajo del INE (`matriz_trabajo`, ocupados de 2023), destinos de la
     Comunidad con municipio conocido, renormalizados. «No consta» y fuera de la región se excluyen y se declara su
     masa por municipio (se marca si pasa del 25 %): se supone que quienes trabajan fuera o sin municipio conocido
@@ -76,14 +81,20 @@ Decisiones y sentido de su sesgo:
 18. Pares sin tiempo (null: más de 120 min o sin ruta) con w > 0: 120 min (`TP_IMPUTADO`), cota inferior provisional
     hasta #311; subestima horas y por tanto los elegibles. Como `calcular` da con ello transporte y horas, no hace
     falta código de tarifas aparte. Los pares con w = 0 se quedan sin tiempo.
-19. ref(d) = la zona con menos minutos hacia d entre las que tienen tiempo; H mide el viaje de más frente a la
-    mejor ubicada, que puede no ser asequible: sobreestima H si nadie puede vivir allí. H = 0 para la propia ref.
+19. ref(d) = la zona con menos minutos observados hacia d (el mínimo observado, no 0: la diagonal d → d es una
+    mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los destinos cuya ref no
+    es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible: sobreestima H si
+    nadie puede vivir allí. H = 0 para la propia ref.
 20. `elegible` del municipio = pct ≥ 50 % (`PCT_MINIMO`), la mayoría de sus ocupados; es un convenio de lectura, no
-    de la norma. El municipio es la mediana de sus zonas, sin ponderar por población.
-21. Sensibilidad: regla histórica de colocación adecuada del art. 301 LGSS (RDLeg 8/2015, redacción original; la
-    sustituyó el 02-03-2023 la Ley 3/2023, que no fija criterios de desplazamiento): ida y vuelta mayor del 25 % de
-    la jornada diaria (8 h) o coste del desplazamiento mayor del 20 % del salario mensual (bruto del primer sueldo
-    ÷ 12; el coste de un solo trabajador, T ÷ n.º de sueldos). Va a la tabla de sensibilidades, no al contrato.
+    de la norma. El municipio es la mediana de sus zonas: en Madrid pesa 1 cada distrito, sin ponderar por población,
+    y `pct_mediano` de los logs es la mediana entre municipios, que pesan 1 cada uno.
+21. Sensibilidad parcial: regla histórica de colocación adecuada del art. 301 LGSS (RDLeg 8/2015, redacción original;
+    la sustituyó el 02-03-2023 la Ley 3/2023, que no fija criterios de desplazamiento): ida y vuelta mayor del 25 % de
+    la jornada diaria (8 h) o coste del desplazamiento mayor del 20 % del salario mensual. SIN LEER EN EL BOE: base
+    legal de fuente secundaria; no publicar hasta citar el texto literal de BOE-A-2015-11724. No aplica el radio de
+    30 km ni el alojamiento. «Salario mensual» = bruto del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14
+    (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es el de un solo trabajador, T ÷ n.º de sueldos
+    (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la tabla de sensibilidades, no al contrato.
 22. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
     transporte barato). El de 23 años usa el Abono Joven (hasta 25 años), tarifa plana por corona.
 23. Horas trabajadas al mes = `semanas_mes` × 5 × 8 por sueldo (151,3 h; solo en `simulacion_296`). Pares sin alquiler
@@ -141,9 +152,12 @@ PCT_MINIMO = (
     50.0  # % de ocupados elegibles para que lo sea el municipio (registro previo)
 )
 TP_IMPUTADO = 120  # min, cota inferior provisional para los pares sin tiempo con flujo, hasta #311
-MASA_EXCLUIDA_MAX = 0.25  # se marca a los municipios con más masa excluida
+MASA_EXCLUIDA_MAX = 0.25  # se marca a los municipios con más masa excluida o imputada
+POCOS_OCUPADOS = 100  # se marca a los municipios con menos ocupados observados
 # Art. 301 LGSS, RDLeg 8/2015, redacción original: ida y vuelta > 25 % de la jornada diaria; coste > 20 % del salario.
 LGSS_TIEMPO, LGSS_COSTE = 0.25, 0.20
+# «Salario mensual» = bruto anual ÷ pagas: 12 por defecto; ÷ 14 es la sensibilidad (el umbral baja).
+PAGAS_LGSS = {"lgss_2015": 12, "lgss_2015_14": 14}
 IDS = ("smi_30", "teleoperador_23", "pareja_mediana", "madre_oficina", "joven_mediano")
 
 # Acuerdo CG 26-12-2024, Anexo II: 55 municipios (texto completo en BDNS 805618, doc. 1505247, «Certificado ACG»,
@@ -272,10 +286,10 @@ def _carga(r: dict, criterio: str, vtt: float) -> float:
     return carga
 
 
-def _desplazamiento_largo(r: dict) -> bool:
+def _desplazamiento_largo(r: dict, pagas: int) -> bool:
     """Regla histórica del art. 301 LGSS: ida y vuelta > 25 % de la jornada o coste > 20 % del salario mensual."""
     viaje = 2 * r["minutos"] > LGSS_TIEMPO * titulares.HORAS_DIA * 60
-    coste = r["transporte"] / r["n_sueldos"] > LGSS_COSTE * r["ingresos_bruto"] / 12
+    coste = r["transporte"] / r["n_sueldos"] > LGSS_COSTE * r["ingresos_bruto"] / pagas
     return viaje or coste
 
 
@@ -283,15 +297,18 @@ def fallos(
     r: dict, criterio: str, ingresos: str, vtt: float, corte: float
 ) -> list[str]:
     """Requisitos que fallan en una fila de pares o de municipios con `criterio` (único sitio donde se decide).
-    `vtt` en €/h (solo cuenta en `horas_viaje`) y `corte` como fracción del neto."""
+    `vtt` en €/h (solo cuenta en `horas_viaje`) y `corte` como fracción del neto. Es elegible solo si el esfuerzo
+    supera el corte: el CNT dice «no más del 45 %», así que exactamente el corte sigue siendo asequible."""
+    if criterio not in (*CRITERIOS, *CRITERIOS_296, *PAGAS_LGSS):
+        raise ValueError(f"criterio desconocido: {criterio!r}")
     renta = D(str(r["renta"]))
     limite = tope(r["municipio_id"], r["tipo"]) if criterio == "bono_vigente" else None
     f = requisitos(r["edad"], D(str(r[ingresos])), renta, limite)
-    if criterio == "lgss_2015":
-        if not _desplazamiento_largo(r):
+    if criterio in PAGAS_LGSS:
+        if not _desplazamiento_largo(r, PAGAS_LGSS[criterio]):
             f.append("desplazamiento corto (art. 301 LGSS, RDLeg 8/2015)")
-    elif criterio != "bono_vigente" and _carga(r, criterio, vtt) < corte:
-        f.append(f"esfuerzo < {corte} (criterio alternativo, {criterio})")
+    elif criterio != "bono_vigente" and _carga(r, criterio, vtt) <= corte:
+        f.append(f"esfuerzo <= {corte} (criterio alternativo, {criterio})")
     return f
 
 
@@ -305,8 +322,10 @@ def variantes() -> list[tuple[str, dict, str, str]]:
     return salida
 
 
-def imputar_tiempos(api: dict, w: pd.DataFrame) -> tuple[dict, set[tuple[str, str]]]:
-    """Copia de `api` con `TP_IMPUTADO` minutos en los pares (zona, destino) con w > 0 y `tp` nulo, y esos pares."""
+def imputar_tiempos(
+    api: dict, w: pd.DataFrame, minutos: int = TP_IMPUTADO
+) -> tuple[dict, set[tuple[str, str]]]:
+    """Copia de `api` con `minutos` (por defecto `TP_IMPUTADO`) en los pares (zona, destino) con w > 0 y `tp` nulo, y esos pares."""
     t = api["tiempos"]
     destinos = [d["destino_id"] for d in t["destinos"]]
     if faltan := set(w["destino"]) - set(destinos):
@@ -322,7 +341,7 @@ def imputar_tiempos(api: dict, w: pd.DataFrame) -> tuple[dict, set[tuple[str, st
     for i, z in enumerate(t["origenes"]):
         for j, d in enumerate(destinos):
             if tp[i][j] is None and d in flujo.get(zona_mun[z], ()):
-                tp[i][j] = TP_IMPUTADO
+                tp[i][j] = minutos
                 imputados.add((z, d))
     return api | {"tiempos": t | {"tp": tp}}, imputados
 
@@ -332,7 +351,8 @@ def tabla_pares(
 ) -> pd.DataFrame:
     """Una fila por (variante, zona con alquiler, destino de zona) con alquiler, transporte, neto, horas, minutos,
     `horas_extra` (H), `imputado` y el peso `w` (0 si el municipio no tiene flujo a ese destino). `api` es la de
-    `imputar_tiempos`. Falla si un par con w > 0 queda sin transporte u horas."""
+    `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d (no 0: la diagonal d → d es una
+    mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin transporte, horas o neto."""
     zona_mun = {
         f["properties"]["zona_id"]: f["properties"]["municipio_id"]
         for f in api["zonas"]["features"]
@@ -344,7 +364,7 @@ def tabla_pares(
     horas_mes = (
         api["tarifas"]["semanas_mes"] * titulares.DIAS_SEMANA * titulares.HORAS_DIA
     )
-    filas = []
+    filas, refs = [], {}
     for pid, p, hogar, tipo in variantes():
         # ingresos de quien solicita (decisión 9), de todo el hogar (sensibilidad) y bruto (sensibilidad)
         bases = [float(base_imponible(b)) for b, _ in p["sueldos"]]
@@ -374,7 +394,8 @@ def tabla_pares(
                 for i, z in enumerate(t["origenes"])
                 if t["tp"][i][j] is not None
             ]
-            ref = zonas[min(con_tiempo)[1]]["horas"] if con_tiempo else None
+            refs[d] = min(con_tiempo)[1] if con_tiempo else None
+            ref = zonas[refs[d]]["horas"] if con_tiempo else None
             for i, (zona, z) in enumerate(zonas.items()):
                 if z["alquiler"] is None:
                     continue
@@ -399,17 +420,25 @@ def tabla_pares(
         w.rename(columns={"origen": "municipio_id"}),
         on=["municipio_id", "destino"],
         how="left",
+        validate="many_to_one",
     )
     df["w"] = df["w"].fillna(0.0)
     incompletos = df[
-        (df["w"] > 0) & df[["transporte", "horas", "horas_extra"]].isna().any(axis=1)
+        (df["w"] > 0)
+        & df[["transporte", "horas", "horas_extra", "neto"]].isna().any(axis=1)
     ]
     if not incompletos.empty:
-        raise ValueError(f"{len(incompletos)} pares con peso sin transporte u horas")
+        raise ValueError(
+            f"{len(incompletos)} pares con peso sin transporte, horas o neto"
+        )
     LOG.info(
-        "pares: %d; con peso: %d; imputados a %d min: %d",
-        len(df), (df["w"] > 0).sum(), TP_IMPUTADO, df["imputado"].sum(),
+        "pares: %d; con peso: %d; imputados: %d",
+        len(df), (df["w"] > 0).sum(), df["imputado"].sum(),
     )  # fmt: skip
+    propia = {d: r for d, r in refs.items() if r != d}
+    LOG.info(
+        "destinos cuya referencia no es el propio destino: %d: %s", len(propia), propia
+    )
     return df
 
 
@@ -424,7 +453,14 @@ def tabla_zonas(pares: pd.DataFrame) -> pd.DataFrame:
     """Como #296: una fila por (variante, zona) con la mediana entre destinos de zona, sin ponderar y sin los
     pares imputados."""
     completas = pares[~pares["imputado"]].dropna(subset=list(MEDIDAS))
-    return completas.groupby(list(FIJAS), as_index=False)[list(MEDIDAS)].median()
+    zonas = completas.groupby(list(FIJAS), as_index=False)[list(MEDIDAS)].median()
+    LOG.info(
+        "tabla_zonas: descartados %d de %d pares (imputados o sin medida) y %d de %d zonas",
+        len(pares) - len(completas), len(pares),
+        len(pares.drop_duplicates(["perfil", "zona_id"])) - len(zonas),
+        len(pares.drop_duplicates(["perfil", "zona_id"])),
+    )  # fmt: skip
+    return zonas
 
 
 def _municipios(zonas: pd.DataFrame, medidas: tuple[str, ...]) -> pd.DataFrame:
@@ -560,19 +596,43 @@ def curva(pares: pd.DataFrame) -> pd.DataFrame:
 
 
 def _imputacion(pares: pd.DataFrame) -> pd.DataFrame:
-    """Por municipio de residencia: pares (zona, destino) imputados y masa de w imputada (media de sus zonas)."""
+    """Por municipio de residencia: pares (zona, destino) imputados y masa de w en pares imputados (mediana de sus
+    zonas, con 0 en las que no tienen ninguno)."""
     una = pares[pares["perfil"] == pares["perfil"].iloc[0]]
-    i = una[una["imputado"]]
-    zonas = i.groupby(["municipio_id", "zona_id"]).agg(
-        pares=("w", "size"), masa=("w", "sum")
+    zonas = una.assign(masa=una["w"] * una["imputado"]).groupby(
+        ["municipio_id", "zona_id"]
     )
+    zonas = zonas.agg(pares=("imputado", "sum"), masa=("masa", "sum"))
     return zonas.groupby(level="municipio_id").agg(
-        pares=("pares", "sum"), masa=("masa", "mean")
+        pares=("pares", "sum"), masa=("masa", "median")
     )
+
+
+def calidad(
+    pares: pd.DataFrame, excluida: pd.Series, observados: pd.Series
+) -> pd.DataFrame:
+    """Tabla auxiliar por municipio de residencia: masa excluida, masa imputada (nula si no tiene fila en
+    `simulacion`), ocupados observados y marcas de poca fiabilidad."""
+    c = pd.DataFrame(
+        {
+            "masa_excluida": excluida,
+            "masa_imputada": _imputacion(pares)["masa"],
+            "ocupados_observados": observados,
+        }
+    ).rename_axis("municipio_id")
+    c["marca_imputada"] = c["masa_imputada"] > MASA_EXCLUIDA_MAX
+    c["marca_excluida"] = c["masa_excluida"] > MASA_EXCLUIDA_MAX
+    c["marca_pocos"] = c["ocupados_observados"] < POCOS_OCUPADOS
+    return c.reset_index()
 
 
 def _log_tabla(titulo: str, t: pd.DataFrame) -> None:
     LOG.info("%s:\n%s", titulo, t.round(3).to_string())
+
+
+def _pares(api: dict, w: pd.DataFrame, minutos: int = TP_IMPUTADO) -> pd.DataFrame:
+    api_imp, imputados = imputar_tiempos(api, w, minutos)
+    return tabla_pares(api_imp, w, imputados)
 
 
 def main() -> None:
@@ -583,15 +643,22 @@ def main() -> None:
         for f in api["zonas"]["features"]
         if f["properties"]["tipo"] == "municipio"
     } | {"28079": "Madrid"}
-    w, excluida = matriz_trabajo.pesos(
-        matriz_trabajo.leer_matriz(), matriz_trabajo.leer_cuotas_distritos()
+    matriz, cuotas = (
+        matriz_trabajo.leer_matriz(),
+        matriz_trabajo.leer_cuotas_distritos(),
     )
-    api_imp, imputados = imputar_tiempos(api, w)
-    pares = tabla_pares(api_imp, w, imputados)
+    w, excluida = matriz_trabajo.pesos(matriz, cuotas)
+    pares = _pares(api, w)
     df = simulacion(pares)
     PROCESSED.mkdir(parents=True, exist_ok=True)
     df.to_csv(PROCESSED / "simulacion.csv", index=False)
     LOG.info("simulacion.csv: %d filas", len(df))
+    cal = calidad(pares, excluida, matriz_trabajo.ocupados_observados(matriz))
+    cal.to_csv(PROCESSED / "simulacion_calidad.csv", index=False)
+    LOG.info(
+        "simulacion_calidad.csv: %d municipios; marca_imputada %d, marca_excluida %d, marca_pocos %d",
+        len(cal), cal["marca_imputada"].sum(), cal["marca_excluida"].sum(), cal["marca_pocos"].sum(),
+    )  # fmt: skip
     sin_fila = set(nombres) - set(df["municipio_id"])
     LOG.info(
         "municipios sin fila (sin alquiler, sin pesos o sin ruta): %d", len(sin_fila)
@@ -605,7 +672,7 @@ def main() -> None:
     _log_tabla("masa excluida por municipio", excluida.describe())
     imp = _imputacion(pares)
     LOG.info(
-        "imputados a %d min: %d pares; masa de w por municipio de residencia (media %.4f, máx. %.4f); los 10 mayores:\n%s",
+        "imputados a %d min: %d pares; masa de w por municipio de residencia (mediana de sus zonas; media %.4f, máx. %.4f); los 10 mayores:\n%s",
         TP_IMPUTADO, imp["pares"].sum(), imp["masa"].mean(), imp["masa"].max(),
         imp.sort_values("masa", ascending=False).head(10).rename(index=nombres).round(4).to_string(),
     )  # fmt: skip
@@ -613,15 +680,23 @@ def main() -> None:
         "base (corte 0,45, VTT 9,76)", cambios(df).set_index(["perfil", "criterio"])
     )
     _log_tabla("curva de cortes: municipios elegibles", curva(pares))
+    uniformes = pd.Series(1 / len(cuotas), index=cuotas.index)
     sensibilidades = {
         "VTT 7,50": simulacion(pares, vtt=BANDA_VTT[0]),
         "VTT 12,01": simulacion(pares, vtt=BANDA_VTT[1]),
         "VTT nacional": simulacion(pares, vtt=VTT_NACIONAL),
-        "LGSS 2015": simulacion(pares, ("bono_vigente", "lgss_2015")),
+        "LGSS 2015 (÷ 12)": simulacion(pares, ("bono_vigente", "lgss_2015")),
+        "LGSS 2015 (÷ 14)": simulacion(pares, ("bono_vigente", "lgss_2015_14")),
         "criterios de #296": simulacion_296(tabla_zonas(pares)),
         "ingresos = bruto": simulacion(pares, ingresos="bruto"),
         "regla del RD (suma del hogar)": simulacion(pares, ingresos="hogar"),
         "alquiler P75": simulacion(pares, alquiler="alquiler_p75"),
+        "tiempo imputado 60 min": simulacion(_pares(api, w, 60)),
+        "tiempo imputado 90 min": simulacion(_pares(api, w, 90)),
+        "sin pares imputados (w renormalizado)": simulacion(pares[~pares["imputado"]]),
+        "cuotas de distrito uniformes": simulacion(
+            _pares(api, matriz_trabajo.pesos(matriz, uniformes)[0])
+        ),
     }
     for nombre, s in sensibilidades.items():
         _log_tabla(

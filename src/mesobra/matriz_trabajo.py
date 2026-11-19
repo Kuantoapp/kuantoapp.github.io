@@ -124,6 +124,12 @@ def leer_cuotas_distritos(ruta: Path = DISTRITOS, zonas: Path = ZONAS) -> pd.Ser
     return (cuotas / cuotas.sum()).sort_index()
 
 
+def ocupados_observados(m: pd.DataFrame) -> pd.Series:
+    """Por origen, ocupados que trabajan en la Comunidad con municipio conocido: la base de los pesos."""
+    dentro = m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
+    return dentro.groupby("origen")["ocupados"].sum()
+
+
 def pesos(m: pd.DataFrame, cuotas: pd.Series) -> tuple[pd.DataFrame, pd.Series]:
     """(w, excluida): `w` con columnas `origen`, `destino` (código de municipio, o `zona_id` de distrito si es Madrid)
     y `w` = ocupados ÷ total de los que trabajan en la Comunidad con municipio conocido, que suma 1 por origen;
