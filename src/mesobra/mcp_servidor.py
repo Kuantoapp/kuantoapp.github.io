@@ -34,7 +34,7 @@ if DATOS is None:
 # Una clave mal escrita no se descarta en silencio.
 ESTRICTO = ConfigDict(extra="forbid", strict=True)
 UNIDADES = {
-    "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 (declaración, no retención), tributación individual (ver fuentes.netos.json.supuestos)",
+    "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 de la declaración (retención si no hay obligación de declarar), tributación individual, sin deducciones reembolsables (ver fuentes.netos.json.supuestos)",
     "alquiler": "€/mes (mediana P50; P25 y P75 en alquiler_p25/p75)",
     "transporte": "€/mes, estimado: media anual del título más barato con precios de 2026 (BOCM de 31-12-2025) y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
     "cesta": "€/mes (cesta básica del hogar)",
@@ -104,10 +104,7 @@ def _nombres() -> dict[str, dict[str, Any]]:
 
 
 def _zona_existente(zona_id: str) -> None:
-    if (
-        zona_id not in _api()["alquiler"]["zonas"]
-        or zona_id not in _api()["tiempos"]["origenes"]
-    ):
+    if zona_id not in _api()["alquiler"]["zonas"]:
         raise ValueError(
             f"zona_id {zona_id!r} inexistente: es el código INE de 5 dígitos del municipio "
             "(28065) o 28079 + distrito de Madrid (2807913); consúltalo con indicadores_zona"
@@ -210,6 +207,8 @@ def calcular_sobrante(
     """Cuánto sobra al mes (neto − alquiler − transporte − cesta) viviendo en `zona_id`, con las horas
     de viaje, la banda, el esfuerzo de alquiler y el precio de la hora frente a la zona de referencia."""
     _zona_existente(zona_id)
+    if zona_id not in _api()["tiempos"]["origenes"]:
+        raise ValueError(f"zona_id {zona_id!r} sin tiempos de viaje en tiempos.json")
     res = _calcular(hogar, sueldos, escenario)
     return _envoltura(res) | {"zona": _zona(zona_id, res["zonas"][zona_id])}
 
