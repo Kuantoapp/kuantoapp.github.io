@@ -71,6 +71,8 @@ def test_la_corona_del_polo_es_la_de_su_zona():
     del_punto = gpd.sjoin(puntos, zonas.leer_coronas(), predicate="intersects")[
         "corona"
     ]
+    # un polo fuera de toda corona desaparecería del sjoin y `.all()` de una serie vacía da True
+    assert len(del_punto) == len(lista) and del_punto.index.is_unique
     de_la_zona = lista["zona_id"].map(capa.set_index("zona_id")["corona"])
     assert (del_punto == de_la_zona.loc[del_punto.index]).all()
 

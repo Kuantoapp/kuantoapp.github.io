@@ -12,8 +12,9 @@ import numpy as np
 import pandas as pd
 import shapely
 
-from mesobra import api_estatica, polos
+from mesobra import api_estatica
 from mesobra.pipeline_euros import APP_DATOS
+from mesobra.polos import leer, ubicar
 from mesobra.tiempos import (
     FACTOR_RODEO,
     FECHA_SALIDA,
@@ -203,7 +204,7 @@ def main() -> None:
     tiempos = pd.read_parquet(PROCESSED / "tiempos.parquet")
     # primero las zonas: escribir comprueba los ids de tiempos.json contra el zonas.geojson de la carpeta
     api_estatica.escribir("zonas.geojson", zonas_geojson(zonas), APP_DATOS)
-    lista = polos.ubicar(polos.leer(), zonas)
+    lista = ubicar(leer(), zonas)
     api_estatica.escribir(
         "tiempos.json", tiempos_json(tiempos, zonas, lista), APP_DATOS
     )

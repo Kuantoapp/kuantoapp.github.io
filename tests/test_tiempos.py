@@ -47,13 +47,15 @@ def zonas() -> pd.DataFrame:
 
 @pytest.fixture
 def polos() -> pd.DataFrame:
-    """`cerca` a 3 km de B y `lejos` a 200 km al norte de A: más de `MAX_MINUTOS` desde todas las zonas."""
+    """`cerca` a 3 km de B, `lejos` a 200 km al norte de A (más de `MAX_MINUTOS` desde todas las zonas) y `propio`
+    dentro de A, a 3 km de su centro y a 3 y 1 km de sus dos secciones."""
     puntos = gpd.GeoSeries.from_xy(
-        [X0 + 10500, X0 + 500], [Y0 + 3500, Y0 + 200500], crs=25830
+        [X0 + 10500, X0 + 500, X0 + 3500], [Y0 + 3500, Y0 + 200500, Y0 + 500], crs=25830
     ).to_crs(4326)
     return pd.DataFrame(
         {
-            "destino_id": ["polo:cerca", "polo:lejos"],
+            "destino_id": ["polo:cerca", "polo:lejos", "polo:propio"],
+            "zona_id": ["B", "A", "A"],
             "lon": puntos.x,
             "lat": puntos.y,
         }
@@ -76,7 +78,7 @@ def test_linea_base_es_distancia_por_rodeo_entre_velocidad(zonas, secciones, pol
 
 def test_linea_base_tiene_todos_los_pares_y_el_contrato(zonas, secciones, polos):
     tabla = tiempos.linea_base(zonas, secciones, polos)  # valida con contratos.validar
-    assert len(tabla) == 3 * (3 + 2)  # zonas × (zonas + polos)
+    assert len(tabla) == 3 * (3 + 3)  # zonas × (zonas + polos)
     assert set(tabla["zona_id"]) == set(CENTROS_M)  # los orígenes son solo las zonas
     assert (tabla["modo"] == "tp").all()
     assert tabla["estimado"].all()
@@ -92,6 +94,27 @@ def test_polo_es_distancia_a_su_punto_y_no_tiene_tiempo_interno(
         _minutos(np.hypot(10000, 3000) / 1000), abs=0.01
     )
     assert np.isnan(_par(tabla, "A", "polo:lejos"))  # 200 km
+    assert _par(tabla, "B", "polo:propio") == pytest.approx(_minutos(7), abs=0.01)
+
+
+def test_polo_de_la_propia_zona_es_la_mediana_desde_sus_secciones(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
+    # secciones de A a 3 y 1 km del polo → mediana 2 km; del centro de A (3 km) saldría _minutos(3)
+    assert _par(tabla, "A", "polo:propio") == pytest.approx(_minutos(2), abs=0.01)
+    assert _par(tabla, "A", "polo:propio") < _minutos(3)
+
+
+def test_polos_lejos_avisa_del_polo_sin_ruta_o_a_30_min_o_mas_de_su_zona(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
+    # cerca está a 9 min de B y propio a 5 de A; lejos, sin ruta desde A
+    assert tiempos.polos_lejos(tabla, polos) == ["polo:lejos"]
+    assert tiempos.polos_lejos(tabla, polos.iloc[[0, 2]]) == []
+    # un polo sin ninguna fila en la tabla también se avisa
+    assert tiempos.polos_lejos(tabla.iloc[:0], polos.iloc[:1]) == ["polo:cerca"]
 
 
 def test_tiempo_interno_es_la_mediana_de_las_secciones_y_nunca_cero(
@@ -108,7 +131,7 @@ def test_por_encima_del_maximo_es_nulo(zonas, secciones, polos):
     tabla = tiempos.linea_base(zonas, secciones, polos)
     assert np.isnan(_par(tabla, "A", "C"))  # 200 km
     # C con A y B, en los dos sentidos (4); `lejos` desde las tres zonas (3); `cerca` desde C (1)
-    assert tabla["minutos"].isna().sum() == 8
+    assert tabla["minutos"].isna().sum() == 9
     assert tabla["minutos"].dropna().le(tiempos.MAX_MINUTOS).all()
 
 
@@ -249,6 +272,6 @@ def test_marcar_estimados_solo_mejoras_por_encima_del_ruido():
 def test_el_modulo_se_importa_sin_r5py(monkeypatch, zonas, secciones, polos):
     monkeypatch.setitem(sys.modules, "r5py", None)  # simula que r5py (o Java) no está
     recargado = importlib.reload(tiempos)
-    assert len(recargado.linea_base(zonas, secciones, polos)) == 15
+    assert len(recargado.linea_base(zonas, secciones, polos)) == 18
     with pytest.raises(ImportError):
         recargado.matriz_r5py(zonas, secciones, polos, Path("no.pbf"), [])

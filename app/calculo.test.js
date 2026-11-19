@@ -43,7 +43,7 @@ test("la corona de un polo es la de su zona", () => {
       destinos: api.tiempos.destinos.map((d) => (d.tipo === "polo" ? { ...d, zona_id: zona } : d)),
     },
   });
-  assert.equal(corona(api, "2807901", "polo:ifema"), "A"); // zona_id 2807913, corona A
+  assert.equal(corona(api, "2807901", "polo:ifema"), "A"); // zona_id 2807913 (ficticia en el ejemplo: IFEMA está en Barajas), corona A
   assert.equal(corona(polo("28065"), "2807901", "polo:ifema"), "B1");
   assert.throws(() => corona(polo("28092"), "2807901", "polo:ifema"), /sin tarifa/); // B2: sin tarifa en el ejemplo
 });
