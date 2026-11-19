@@ -363,7 +363,7 @@ export function validar(v, api) {
   const adultos = enRango("adultos", v.adultos, [1, 2]);
   const hijos = enRango("hijos", v.hijos, [0, maxHijos], `Hasta ${maxHijos} hijos`);
   const edad = enRango("edad", v.edad, EDAD, `La edad va de ${EDAD[0]} a ${EDAD[1]} años`);
-  const personas = enRango("personas", v.personas, PERSONAS);
+  const personas = enRango("personas", v.personas, PERSONAS, `Cuenta tu hogar: de ${PERSONAS[0]} (no compartes piso) a ${PERSONAS[1]}`);
   const m2 = numero(v.m2);
   if (m2 === null || m2 < M2[0] || m2 > M2[1]) falla("m2", `La vivienda va de ${M2[0]} a ${M2[1]} m²`);
 
