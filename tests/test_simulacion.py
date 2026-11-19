@@ -1,4 +1,4 @@
-"""Tests de `simulacion` (#101): umbrales, topes, base imponible a mano, propiedades y contrato."""
+"""Tests de `simulacion` (#101, #301): umbrales, topes, base imponible a mano, pesos, H, imputación y contrato."""
 
 import json
 import re
@@ -9,8 +9,16 @@ from itertools import product
 import pandas as pd
 import pytest
 
-from mesobra import bono, calculo, contratos, neto, simulacion, titulares
-from mesobra.simulacion import requisitos, tope
+from mesobra import (
+    bono,
+    calculo,
+    contratos,
+    matriz_trabajo,
+    neto,
+    simulacion,
+    titulares,
+)
+from mesobra.simulacion import Escenario, requisitos, tope
 
 
 def _api() -> dict:
@@ -104,12 +112,17 @@ RENTAS = [0, 100, 299.99, 300, 450, 600, 601, 900, 901, 1500]
 INGRESOS = [0, 8000, 25199, 25200, 25201, 40000]
 
 
-def _fila(renta=500.0, transporte=0.0, horas=0.0, **kw) -> dict:
+def _fila(renta=500.0, transporte=0.0, horas_extra=0.0, **kw) -> dict:
     return {
         "municipio_id": "28079", "tipo": "vivienda", "edad": 30, "ingresos_base": 10000.0,
-        "renta": renta, "transporte": transporte, "horas": horas, "neto": 1000.0,
-        "horas_trab": 151.3, "beneficiarios": 1, **kw,
+        "ingresos_bruto": 12000.0, "renta": renta, "transporte": transporte, "horas_extra": horas_extra,
+        "horas": 0.0, "minutos": 10, "neto": 1000.0, "horas_trab": 151.3, "n_sueldos": 1,
+        "beneficiarios": 1, **kw,
     }  # fmt: skip
+
+
+def _fallos(f: dict, criterio: str, corte: float = 0.3, vtt: float = 10.0) -> list[str]:
+    return simulacion.fallos(f, criterio, "ingresos_base", vtt, corte)
 
 
 def test_subir_renta_nunca_hace_entrar_por_tope():
@@ -121,49 +134,41 @@ def test_subir_renta_nunca_hace_entrar_por_tope():
 
 
 def test_subir_ingresos_nunca_hace_entrar():
-    for c in simulacion.CRITERIOS:
+    for c in (*simulacion.CRITERIOS, "lgss_2015"):
         ok = [
-            not simulacion.fallos(
-                _fila(ingresos_base=float(i)), c, "ingresos_base", D("0.3")
-            )
+            not _fallos(_fila(ingresos_base=float(i), minutos=90, renta=900.0), c)
             for i in INGRESOS
         ]
         assert ok == sorted(ok, reverse=True)
 
 
-def test_cuantia_en_rango_y_horas_incluyen_alquiler_transporte():
-    for renta, transp, horas in product(RENTAS, (0.0, 80.0, 300.0), (0.0, 20.0, 100.0)):
-        d = {}
-        for c in simulacion.CRITERIOS:
-            f = _fila(renta=float(renta), transporte=transp, horas=horas)
-            d[c] = not simulacion.fallos(f, c, "ingresos_base", D("0.3"))
-        assert not d["alquiler_transporte"] or d["horas_viaje"]
-        t = pd.DataFrame([{"perfil": "p", "edad": 30, "tipo": "vivienda", "ingresos_base": 1.0}
-                          | _fila(renta=float(renta), transporte=transp, horas=horas)])  # fmt: skip
-        s = simulacion._evaluar(t, "base", "renta", D("0.3"))
-        assert s["eur_mes"].between(0, 250).all() and (s["eur_mes"] <= renta).all()
+def test_horas_viaje_incluye_alquiler_transporte_y_el_vtt_a_mano():
+    for renta, transp, h in product(RENTAS, (0.0, 80.0, 300.0), (0.0, 20.0, 100.0)):
+        f = _fila(renta=float(renta), transporte=transp, horas_extra=h)
+        assert bool(_fallos(f, "alquiler_transporte")) or not _fallos(f, "horas_viaje")
+    # (400 + 50 + 10 € × 5 h) ÷ 1.000 € = 0,50: entra con corte 0,45 y no con 0,55; sin horas, 0,45
+    f = _fila(renta=400.0, transporte=50.0, horas_extra=5.0)
+    assert _fallos(f, "horas_viaje", 0.45) == []
+    assert _fallos(f, "horas_viaje", 0.55) and _fallos(f, "alquiler_transporte", 0.46)
+
+
+def test_lgss_ida_y_vuelta_o_coste():
+    # 120 min de ida y vuelta = 25 % de 8 h: no pasa; 61 de ida, sí. Coste: 20 % de 12.000 ÷ 12 = 200 €
+    assert _fallos(_fila(minutos=60), "lgss_2015")
+    assert _fallos(_fila(minutos=61), "lgss_2015") == []
+    assert _fallos(_fila(transporte=200.0), "lgss_2015")
+    assert _fallos(_fila(transporte=200.01), "lgss_2015") == []
+    # dos sueldos: el coste es el de cada trabajador
+    assert _fallos(_fila(transporte=300.0, n_sueldos=2), "lgss_2015")
 
 
 def test_sin_transporte_ni_horas_coinciden_las_alternativas():
     for renta in RENTAS:
         a, h = (
-            simulacion.fallos(_fila(renta=float(renta)), c, "ingresos_base", D("0.3"))
+            _fallos(_fila(renta=float(renta)), c)
             for c in ("alquiler_transporte", "horas_viaje")
         )
         assert bool(a) == bool(h)
-
-
-def test_simulacion_sobre_la_api_de_ejemplo_cumple_el_contrato():
-    api = _api()
-    df = simulacion.simulacion(simulacion.tabla_zonas(api))
-    contratos.validar(df, "simulacion")
-    assert not df.duplicated(["perfil", "municipio_id", "criterio"]).any()
-    assert set(df["criterio"]) == set(simulacion.CRITERIOS) and df["estimado"].all()
-    assert set(df["perfil"]) <= {v[0] for v in simulacion.variantes()}
-    c = simulacion.cambios(simulacion.tabla_zonas(api))
-    assert set(c["criterio"]) == set(simulacion.CRITERIOS)
-    assert len(simulacion.IDS) == len(titulares.PERFILES)
-    assert re.fullmatch(r"[a-z_0-9]+", "".join(simulacion.IDS))
 
 
 @pytest.mark.parametrize(
@@ -188,44 +193,238 @@ def test_base_de_la_pareja_y_la_madre():
     assert simulacion.base_imponible(titulares.OFICINA) == D("24427.16")
 
 
+def test_vtt_es_la_proporcion_del_coste_laboral_de_madrid():
+    assert round(simulacion.VTT, 2) == 9.76
+    assert [round(v, 2) for v in simulacion.BANDA_VTT] == [7.50, 12.01]
+    assert round(simulacion.VTT_NACIONAL, 2) == 8.39
+
+
 def test_mediana_de_zonas_por_municipio():
     medidas = ("alquiler", "alquiler_p75", "transporte", "horas")
     z = pd.DataFrame(
         {"perfil": "p", "municipio_id": "m", "zona_id": ["a", "b", "c"], "neto": 1.0}
         | {c: [1.0, 2.0, 10.0] for c in medidas}
     )
-    m = simulacion._municipios(z)
+    m = simulacion._municipios(z, medidas)
     assert len(m) == 1 and m.loc[0, "alquiler"] == 2.0 and m.loc[0, "horas"] == 2.0
 
 
-def test_cuantia_de_la_pareja_cuenta_dos_personas():
-    f = _fila(renta=400.0, beneficiarios=2) | {"perfil": "p"}
-    s = simulacion._evaluar(pd.DataFrame([f]), alquiler="renta")
-    assert s.set_index("criterio").loc["bono_vigente", "eur_mes"] == 400.0
-
-
-def test_cambios_cuenta_a_mano_y_aplica_el_escenario():
-    z = simulacion.tabla_zonas(_api())
-    ok = simulacion.simulacion(z).pivot(
-        index=["perfil", "municipio_id"], columns="criterio", values="elegible"
+def test_cuantia_de_la_pareja_cuenta_dos_personas_y_no_pasa_de_la_renta():
+    mun = pd.DataFrame(
+        [{"perfil": "p", "municipio_id": "m", "beneficiarios": 2, "alquiler": 400.0}]
     )
-    c = simulacion.cambios(z).set_index(["perfil", "criterio"])
-    for (perfil, crit), r in c.iterrows():
-        g = ok.loc[perfil]
-        assert r["entran"] == (~g["bono_vigente"] & g[crit]).sum()
-        assert r["salen"] == (g["bono_vigente"] & ~g[crit]).sum()
-    # la suma del hogar de la pareja (48.430 €) pasa de 3 × IPREM: fuera de todo
-    h = simulacion.cambios(z, ingresos="hogar").set_index(["perfil", "criterio"])
-    assert (h.loc["pareja_mediana", "elegibles"] == 0).all()
-    assert (c.loc["pareja_mediana", "elegibles"] > 0).any()
+    (f,) = simulacion._filas(mun, "bono_vigente", [100.0], Escenario())
+    assert f[4] == 400.0
+    mun["alquiler"] = 900.0
+    assert simulacion._filas(mun, "bono_vigente", [49.9], Escenario())[0][3:5] == (
+        False,
+        0.0,
+    )
+    assert simulacion._filas(mun, "bono_vigente", [50.0], Escenario())[0][3:5] == (
+        True,
+        500.0,
+    )
 
 
-def test_por_transporte_cuenta_solo_lo_que_cruza_al_sumar_el_transporte():
-    z = simulacion.tabla_zonas(_api())
-    c = simulacion.cambios(z).set_index(["perfil", "criterio"])
-    sin = simulacion.cambios(z.assign(transporte=0.0)).set_index(["perfil", "criterio"])
-    assert (sin["por_transporte"] == 0).all()
-    assert (c["por_transporte"] <= c["elegibles"]).all()
+def _pares_a_mano() -> pd.DataFrame:
+    """Un municipio, dos zonas y dos destinos con pesos 0,7 y 0,3; neto de 1.000 € y corte de 0,30."""
+    base = {
+        "perfil": "p",
+        "municipio_id": "m",
+        "tipo": "vivienda",
+        "edad": 30,
+        "ingresos_base": 1.0,
+        "neto": 1000.0,
+    }
+    filas = []
+    for zona, destino, w, alquiler, transporte, h in [
+        ("a", "d1", 0.7, 300.0, 50.0, 0.0),  # 0,35: elegible
+        ("a", "d2", 0.3, 250.0, 0.0, 10.0),  # 0,25 sin horas, 0,35 con 10 h × 10 €/h
+        ("b", "d1", 0.7, 400.0, 0.0, 0.0),
+        ("b", "d2", 0.3, 400.0, 0.0, 0.0),
+    ]:  # fmt: skip
+        filas.append(base | {"zona_id": zona, "destino": destino, "w": w, "alquiler": alquiler,
+                             "transporte": transporte, "horas_extra": h})  # fmt: skip
+    return pd.DataFrame(filas)
+
+
+def test_pct_a_mano_con_dos_destinos():
+    pares = _pares_a_mano()
+    mun = pd.DataFrame([{"perfil": "p", "municipio_id": "m"}])
+    e = Escenario(corte=0.3, vtt=10.0)
+    # alquiler_transporte: la zona a, 70 %; la b, 100 %: mediana 85
+    assert simulacion._pct_municipios(
+        pares, mun, "alquiler_transporte", e
+    ) == pytest.approx([85.0])
+    # horas_viaje: el viaje de más hace entrar a la zona a en d2: 100 y 100
+    assert simulacion._pct_municipios(pares, mun, "horas_viaje", e) == pytest.approx(
+        [100.0]
+    )
+    # VTT = 0: horas_viaje = alquiler_transporte
+    assert simulacion._pct_municipios(
+        pares, mun, "horas_viaje", e._replace(vtt=0.0)
+    ) == pytest.approx([85.0])
+
+
+def _api2() -> dict:
+    """API de ejemplo con dos destinos de zona y tres orígenes; Getafe sin tiempo ni a Centro ni a Vallecas."""
+    api = _api()
+    t = api["tiempos"]
+    destinos = [{**t["destinos"][1], "tipo": "zona", "destino_id": "2807913"}]
+    tp = [list(f) for f in t["tp"]]
+    tp[2] = [None, None]
+    return {
+        **api,
+        "tiempos": {**t, "destinos": [t["destinos"][0], *destinos], "tp": tp},
+    }
+
+
+W = pd.DataFrame(
+    {
+        "origen": ["28079", "28079", "28065"],
+        "destino": ["2807901", "2807913", "2807913"],
+        "w": [0.6, 0.4, 1.0],
+    }
+)
+
+
+def _pares() -> pd.DataFrame:
+    imp, imputados = simulacion.imputar_tiempos(_api2(), W)
+    return simulacion.tabla_pares(imp, W, imputados)
+
+
+def test_imputa_a_120_solo_con_peso_y_sin_tiempo():
+    api = _api2()
+    imp, pares = simulacion.imputar_tiempos(api, W)
+    # Getafe → Centro tiene tp nulo pero w = 0: sigue nulo; Getafe → Vallecas, con w = 1: 120
+    assert imp["tiempos"]["tp"][2] == [None, simulacion.TP_IMPUTADO]
+    assert pares == {("28065", "2807913")}
+    assert api["tiempos"]["tp"][2] == [None, None]  # la API original no cambia
+    assert imp["tiempos"]["tp"][:2] == api["tiempos"]["tp"][:2]
+
+
+def test_imputar_falla_con_un_destino_desconocido():
+    with pytest.raises(ValueError, match="destinos con peso"):
+        simulacion.imputar_tiempos(_api2(), W.assign(destino="28999"))
+
+
+def test_h_es_cero_en_la_zona_de_referencia_y_nunca_negativa():
+    pares = _pares()
+    assert (pares["horas_extra"].dropna() >= 0).all()
+    # Centro es la referencia hacia los dos destinos (9 y 38 min): H = 0
+    assert (pares.loc[pares["zona_id"] == "2807901", "horas_extra"] == 0).all()
+    assert (pares.loc[pares["zona_id"] == "2807913", "horas_extra"] > 0).all()
+    assert pares.loc[pares["imputado"], "w"].gt(0).all()
+    assert set(pares.loc[pares["imputado"], "zona_id"]) == {"28065"}
+
+
+def test_con_vtt_cero_horas_viaje_es_alquiler_transporte_y_el_pct_esta_en_rango():
+    pares = _pares()
+    s = simulacion.simulacion(pares, vtt=0.0)
+    a, h = (
+        s[s["criterio"] == c].drop(columns="criterio").reset_index(drop=True)
+        for c in simulacion.CRITERIOS[1:]
+    )
+    pd.testing.assert_frame_equal(a, h)
+    base = simulacion.simulacion(pares)
+    assert base["pct_ocupados_elegibles"].between(0, 100).all()
+    assert not base.duplicated(["perfil", "municipio_id", "criterio"]).any()
+    assert base["estimado"].all() and set(base["criterio"]) == set(simulacion.CRITERIOS)
+    assert {v[0] for v in simulacion.variantes()} >= set(simulacion.IDS)
+
+
+def test_sensibilidades_sobre_la_api_de_ejemplo():
+    pares = _pares()
+    lgss = simulacion.simulacion(pares, ("bono_vigente", "lgss_2015"))
+    assert set(lgss["criterio"]) == {"bono_vigente", "lgss_2015"}
+    s296 = simulacion.simulacion_296(simulacion.tabla_zonas(pares))
+    assert set(s296["criterio"]) == {"bono_vigente", *simulacion.CRITERIOS_296}
+    assert set(s296["pct_ocupados_elegibles"]) <= {0.0, 100.0}
+    c = simulacion.cambios(simulacion.simulacion(pares)).set_index(
+        ["perfil", "criterio"]
+    )
     assert (
-        c["por_transporte"].sum() > 0
-    )  # los fixtures tienen un caso que cruza solo por el transporte
+        (c.xs("bono_vigente", level="criterio")[["entran", "salen"]] == 0).all().all()
+    )
+    assert set(simulacion.curva(pares).columns) == {0.25, 0.3, 0.35, 0.4, 0.45, 0.5}
+    assert len(simulacion.IDS) == len(titulares.PERFILES)
+    assert re.fullmatch(r"[a-z_0-9]+", "".join(simulacion.IDS))
+
+
+def test_el_contrato_exige_pct_ocupados_elegibles():
+    df = pd.read_csv(
+        calculo.RAIZ / "tests/fixtures/processed/simulacion.csv",
+        dtype=contratos.dtypes("simulacion"),
+    )
+    contratos.validar(df, "simulacion")
+    with pytest.raises(ValueError, match="pct_ocupados_elegibles"):
+        contratos.validar(df.drop(columns="pct_ocupados_elegibles"), "simulacion")
+
+
+MATRIZ = pd.DataFrame(
+    {
+        "origen": ["28001"] * 5 + ["28002"],
+        "prov_destino": ["28", "28", "28", "19", None, "28"],
+        "destino": ["28079", "28065", None, "19001", None, "28065"],
+        "ocupados": [60, 40, 10, 30, 20, 5],
+    }
+)
+CUOTAS = pd.Series({"2807901": 0.25, "2807902": 0.75})
+
+
+def test_pesos_suman_uno_por_origen_y_declaran_la_masa_excluida():
+    w, excluida = matriz_trabajo.pesos(MATRIZ, CUOTAS)
+    assert w.groupby("origen")["w"].sum().tolist() == pytest.approx([1.0, 1.0])
+    # 28001: con municipio en la Comunidad, 100 de 160 (fuera: 10 sin municipio, 30 de Guadalajara, 20 sin provincia)
+    assert excluida["28001"] == pytest.approx(60 / 160) and excluida["28002"] == 0
+
+
+def test_el_reparto_de_madrid_conserva_su_peso():
+    w, _ = matriz_trabajo.pesos(MATRIZ, CUOTAS)
+    o = w[w["origen"] == "28001"].set_index("destino")["w"]
+    assert o["2807901"] + o["2807902"] == pytest.approx(0.6)
+    assert o["2807902"] == pytest.approx(3 * o["2807901"]) and o[
+        "28065"
+    ] == pytest.approx(0.4)
+    assert "28079" not in o.index
+
+
+def _csv_distritos(nombres: list[str]) -> str:
+    cab = "Año;Concepto;Tipo territorio;Código territorio;Territorio;Estrato Empleo;Medida;Valor;Unidad;Estado dato"
+    pre = (
+        "Ocupados en unidades productivas en el distrito de {} del municipio de Madrid"
+    )
+    filas = [
+        f"2023;{pre.format(n)};Otros;;;Total;Ocupados;{100 * (i + 1)};Número;"
+        for i, n in enumerate(nombres)
+    ]
+    filas += [
+        f"2023;{pre.format('las que no consta distrito')};Otros;;;Total;Ocupados;9999;Número;",
+        f"2023;{pre.format(nombres[0])};Otros;;;De 3 a 9 trabajadores;Ocupados;7;Número;",
+        f"2015;{pre.format(nombres[0])};Otros;;;Total;Ocupados;7;Número;",
+        f"2023;Unidades productivas en el distrito de {nombres[0]} del municipio de Madrid;Otros;;;Total;Unidades productivas;7;Número;",
+    ]  # fmt: skip
+    return "﻿" + "\r\n".join([cab, *filas]) + "\r\n"
+
+
+def test_cuotas_de_distritos_con_un_csv_sintetico(tmp_path):
+    nombres = [f"Distrito {i}" for i in range(1, 22)]
+    nombres[0], nombres[1] = "Fuencarral - El Pardo", "Moncloa - Aravaca"
+    geo = ["Fuencarral-El Pardo", "Moncloa-Aravaca", *nombres[2:]]
+    zonas = {
+        "features": [
+            {"properties": {"zona_id": f"28079{i:02d}", "nombre": n, "tipo": "distrito", "municipio_id": "28079"}}
+            for i, n in enumerate(geo, 1)
+        ]
+    }  # fmt: skip
+    (tmp_path / "zonas.geojson").write_text(json.dumps(zonas), "utf-8")
+    csv = tmp_path / "d.csv"
+    csv.write_text(_csv_distritos(nombres), "utf-8", newline="")
+    c = matriz_trabajo.leer_cuotas_distritos(csv, tmp_path / "zonas.geojson")
+    assert len(c) == 21 and c.sum() == pytest.approx(1.0)
+    assert c["2807901"] == pytest.approx(100 / sum(100 * (i + 1) for i in range(21)))
+    csv.write_text(
+        _csv_distritos(nombres[:20]), "utf-8", newline=""
+    )  # falta un distrito
+    with pytest.raises(ValueError, match="distritos"):
+        matriz_trabajo.leer_cuotas_distritos(csv, tmp_path / "zonas.geojson")

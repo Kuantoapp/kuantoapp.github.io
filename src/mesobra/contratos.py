@@ -178,6 +178,7 @@ CONTRATOS: dict[str, dict] = {
             "elegible": "booleano",
             "eur_mes": "decimal",  # €/mes
             "estimado": "booleano",
+            "pct_ocupados_elegibles": "decimal",  # % de los ocupados de la zona, 0-100
         },
     },
 }

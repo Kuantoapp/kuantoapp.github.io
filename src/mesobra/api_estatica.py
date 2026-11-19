@@ -467,6 +467,7 @@ SOBRECARGA["cobertura"] = ("decimal?", 0, 1)
 SIMULACION = {
     "perfil": PERFILES, "municipio_id": "municipio", "criterio": "texto",
     "elegible": "booleano", "eur_mes": POS, "estimado": "booleano",
+    "pct_ocupados_elegibles": ("decimal", 0, 100),
 }
 # bloque -> (columnas, clave); sobrecarga y simulacion son opcionales
 BLOQUES = {
