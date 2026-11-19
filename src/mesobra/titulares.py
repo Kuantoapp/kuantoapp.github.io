@@ -37,8 +37,8 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
     tienen pocos destinos).
 14. «Ejes» = corona del origen (A = Madrid capital).
     # shortcut: mezcla ejes distintos dentro de una corona, definir corredores cuando existan.
-15. Los destinos `polo` se excluyen: sin corona, `calcular` da error hasta que haya polos con corona
-    (F3-01).
+15. Los destinos `polo` se excluyen: son una lista elegida a mano (F3-01) y no destinos que cualquier
+    zona pueda tener, así que no entran en la mediana por zona.
 """
 
 import pandas as pd
@@ -119,7 +119,7 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
         f["properties"]["zona_id"]: f["properties"]["corona"]
         for f in api["zonas"]["features"]
     }
-    # Los polos no tienen corona: `calcular` fallaría (hasta F3-01); solo los destinos de zona.
+    # Los polos son una lista elegida a mano y no entran en la mediana por zona (nota 15); solo los de zona.
     destinos = [
         d["destino_id"] for d in api["tiempos"]["destinos"] if d["tipo"] == "zona"
     ]

@@ -164,7 +164,6 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
         ({"hogar": {"perfil": "solo", "edad": 65}}, "edad = 65"),
         ({"sueldos": [CENTRO | {"dias": 6}]}, "dias = 6"),
         ({"sueldos": [CENTRO | {"modo": "bici"}]}, "modo 'bici'"),
-        ({"sueldos": [CENTRO | {"destino": "polo:ifema"}]}, "sin tarifa"),
         ({"zonas": ["28092"]}, "sin tarifa"),
         ({"hogar": {"perfil": "otro", "edad": 30}}, "perfil desconocido"),
         ({"sueldos": [CENTRO | {"neto_mes": 1500}]}, "uno de los dos"),
@@ -196,6 +195,19 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
 def test_entradas_invalidas_fallan(cambios: dict, mensaje: str) -> None:
     with pytest.raises(ValueError, match=mensaje):
         calculo.calcular(API, _entrada(**cambios))
+
+
+def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
+    assert (
+        calculo._corona(API, "2807901", "polo:ifema") == "A"
+    )  # zona_id 2807913, corona A
+    api = copy.deepcopy(API)
+    polo = next(d for d in api["tiempos"]["destinos"] if d["tipo"] == "polo")
+    polo["zona_id"] = "28065"
+    assert calculo._corona(api, "2807901", "polo:ifema") == "B1"
+    polo["zona_id"] = "28092"  # la corona B2 no tiene tarifa en el ejemplo
+    with pytest.raises(ValueError, match="sin tarifa"):
+        calculo._corona(api, "2807901", "polo:ifema")
 
 
 @pytest.mark.parametrize("edad", [16, 64])

@@ -154,8 +154,45 @@ test("con la subida, una zona con alquiler estimado no dice «contratos»", () =
   const z = { ...caso.salida.zonas["28065"], origen: "estimado" };
   const ctx = { ...contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"), subida: 10 };
   const linea = lineasFicha("Zona", z, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
-  assert.match(linea, /dato estimado de \d{4} más la subida; simulación, estimado/);
+  assert.match(linea, /dato estimado de \d{4}.* más la subida; simulación, estimado/);
   assert.doesNotMatch(linea, /contratos/);
+});
+
+test("con factor_ipc distinto de 1 la ficha no dice «contratos de {año}» a secas y lleva estimado; con 1 sí", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const alquiler = (id) => fichaDe(caso, id, "sobra").find((l) => l.startsWith("Alquiler"));
+  assert.match(alquiler("28065"), /actualizados con el IPC de alquiler hasta octubre de 2026.*estimado\)$/);
+  assert.doesNotMatch(alquiler("28065"), /contratos de \d{4}, tómalo/);
+  const sin = { ...ejemplo, alquiler: { ...ejemplo.alquiler, zonas: { ...ejemplo.alquiler.zonas, 28065: { ...ejemplo.alquiler.zonas["28065"], factor_ipc: 1 } } } };
+  const ctx = contextoFicha(sin, caso.entrada, caso.salida, "28065");
+  assert.match(lineasFicha("Zona", caso.salida.zonas["28065"], "sobra", ctx).find((l) => l.startsWith("Alquiler")), /\(contratos de 2024, tómalo como un suelo\)$/);
+});
+
+test("el aviso y la ficha nombran el mismo mes del IPC", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const mes = /hasta (\w+ de \d{4})/;
+  const deAviso = avisos(ejemplo.alquiler)[0].match(mes)[1];
+  const deFicha = fichaDe(caso, "28065", "sobra").find((l) => l.startsWith("Alquiler")).match(mes)[1];
+  assert.equal(deAviso, deFicha);
+  assert.match(avisos(ejemplo.alquiler)[0], /\(estimado\)/);
+});
+
+test("con datos reales (con IPC) el aviso y la ficha dicen lo mismo", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const api = { ...ejemplo, alquiler: real.alquiler }; // la zona 28065 del fixture existe también en los datos reales
+  const ficha = lineasFicha("Zona", caso.salida.zonas["28065"], "sobra", contextoFicha(api, caso.entrada, caso.salida, "28065")).find((l) => l.startsWith("Alquiler"));
+  const mes = /hasta (\w+ de \d{4})/;
+  assert.equal(ficha.match(mes)[1], avisos(real.alquiler)[0].match(mes)[1]);
+});
+
+test("con IPC, la subida y la zona estimada concuerdan en el texto", () => {
+  const caso = casos.find((c) => !("error" in c));
+  const z = caso.salida.zonas["28065"];
+  const base = contextoFicha(ejemplo, caso.entrada, caso.salida, "28065");
+  const linea = (zona, ctx) => lineasFicha("Zona", zona, "sobra", ctx).find((l) => l.startsWith("Alquiler"));
+  assert.match(linea(z, { ...base, subida: 10 }), /contratos de 2024 actualizados con el IPC de alquiler hasta octubre de 2026 más la subida/);
+  assert.match(linea({ ...z, origen: "estimado" }, { ...base, subida: 10 }), /dato estimado de 2024 actualizado con el IPC/);
+  assert.match(linea({ ...z, origen: "estimado" }, { ...base, ic: null }), /año 2024, actualizado con el IPC de alquiler hasta octubre de 2026; sin intervalo/);
 });
 
 test("la ficha de cada caso de referencia trae exactamente sus cifras", () => {
@@ -184,13 +221,13 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "24,4 € por hora extra (estimado)",
     "Te sobran entre 435 € y 589 € al mes (estimado)",
     "Neto del hogar: 1523 € al mes (estimado)",
-    "Alquiler: entre 512 y 666 € al mes (contratos de 2024, tómalo como un suelo)",
+    "Alquiler: entre 512 y 666 € al mes (contratos de 2024 actualizados con el IPC de alquiler hasta octubre de 2026, tómalo como un suelo; estimado)",
     "Transporte: 21,90 € al mes (10 viajes) (estimado)",
-    "Cesta básica: 400 €/mes (estimado: gasto medio de 2025 con el IPC hasta 10/2026; incluye internet y móvil)",
+    "Cesta básica: 400 €/mes (estimado: gasto medio de 2025 con el IPC hasta octubre de 2026; incluye internet y móvil)",
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
     "Tu trabajo te paga 10,1 € netos la hora (estimado, jornada de 40 h a la semana)",
-    "El alquiler se lleva el 39 % del neto, más del 30 % que esta herramienta toma como referencia",
+    "El alquiler se lleva el 39 % del neto, más del 30 % que esta herramienta toma como referencia (estimado)",
     "Con el 30 % del neto alcanza para un piso de 35 m² (estimado)",
   ]);
   // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
@@ -222,8 +259,8 @@ test("el borde del 30 % y el de la banda se deciden con lo que se muestra redond
   const caso = casos[0];
   const ctx = contextoFicha(ejemplo, caso.entrada, caso.salida, "28065");
   const con = (cambios) => lineasFicha("Zona", { ...caso.salida.zonas["28065"], ...cambios }, "sobra", ctx);
-  assert.ok(con({ esfuerzo: 0.3004 }).includes("El alquiler se lleva el 30 % del neto"));
-  assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia"));
+  assert.ok(con({ esfuerzo: 0.3004 }).includes("El alquiler se lleva el 30 % del neto (estimado)"));
+  assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia (estimado)"));
   assert.ok(con({ sobra_banda: [-0.3, 120] }).includes("Te sobran entre 0 € y 120 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 0.2] }).includes("Te faltan entre 0 € y 80 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 120] }).includes("Entre que te falten 80 € y te sobren 120 € al mes (estimado)"));

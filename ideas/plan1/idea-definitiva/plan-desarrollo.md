@@ -100,7 +100,7 @@ Los identificadores `F1-04` son estables. Las duraciones, los tamaños y los umb
 | Fichero · grano · clave | Contenido (unidad) | Produce | Consume |
 |---|---|---|---|
 | `zonas.geojson` · zona · `zona_id` | Polígonos simplificados en EPSG:4326; propiedades `zona_id`, `nombre`, `tipo`, `municipio_id`, `corona`, `poblacion` | F1-08, F4-02 (Izan) | Web, MCP, F2-06, F3-05, F3-08 |
-| `tiempos.json` · origen × destino | `origenes` (lista de `zona_id`), `destinos` (lista con `destino_id`, `nombre`, `tipo`), `tp` (matriz de minutos enteros), y si existen `coche` (minutos), `km_coche` y parámetros de coste | F1-08, F4-02 (Izan) | Web, MCP, F2-09, F3-05, F3-07 |
+| `tiempos.json` · origen × destino | `origenes` (lista de `zona_id`), `destinos` (lista con `destino_id`, `nombre`, `tipo`; los polos `polo:<slug>` llevan además `zona_id`, la zona en la que caen, que da su corona), `tp` (matriz de minutos enteros), y si existen `coche` (minutos), `km_coche` y parámetros de coste | F1-08, F4-02 (Izan) | Web, MCP, F2-09, F3-05, F3-07 |
 | `alquiler.json` · zona · `zona_id` | Por zona, el último año con dato de cada una: `anio`, `p25`, `p50`, `p75` (€/m² al mes), `m2`, `factor_ipc`, `origen`, `ic` | F1-15, F4-03 (Yeray) | Web, MCP, F2-07 |
 | `netos.json` · bruto × configuración | `brutos` (€), `configuraciones`, matriz `neto_anual` (€/año) | F1-15, F4-03 (Yeray) | Web, MCP |
 | `tarifas.json` · escenario × edad × viajes al día × corona × días | `orden_coronas`, `edad_max_joven`, `viajes_dia` ([2, 4]: ida y vuelta directa, o con cambio de operador en cada sentido), y por escenario el `coste_mes` (€/mes) y el `titulo` | F1-15, F4-03 (Yeray) | Web, MCP |

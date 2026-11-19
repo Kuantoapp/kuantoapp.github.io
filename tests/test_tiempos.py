@@ -45,6 +45,23 @@ def zonas() -> pd.DataFrame:
     )
 
 
+@pytest.fixture
+def polos() -> pd.DataFrame:
+    """`cerca` a 3 km de B, `lejos` a 200 km al norte de A (más de `MAX_MINUTOS` desde todas las zonas) y `propio`
+    dentro de A, a 3 km de su centro y a 3 y 1 km de sus dos secciones."""
+    puntos = gpd.GeoSeries.from_xy(
+        [X0 + 10500, X0 + 500, X0 + 3500], [Y0 + 3500, Y0 + 200500, Y0 + 500], crs=25830
+    ).to_crs(4326)
+    return pd.DataFrame(
+        {
+            "destino_id": ["polo:cerca", "polo:lejos", "polo:propio"],
+            "zona_id": ["B", "A", "A"],
+            "lon": puntos.x,
+            "lat": puntos.y,
+        }
+    )
+
+
 def _minutos(km: float) -> float:
     return km * tiempos.FACTOR_RODEO / tiempos.VELOCIDAD_KMH * 60
 
@@ -53,49 +70,106 @@ def _par(tabla: pd.DataFrame, origen: str, destino: str) -> float:
     return tabla.set_index(["zona_id", "destino_id"]).loc[(origen, destino), "minutos"]
 
 
-def test_linea_base_es_distancia_por_rodeo_entre_velocidad(zonas, secciones):
-    tabla = tiempos.linea_base(zonas, secciones)
+def test_linea_base_es_distancia_por_rodeo_entre_velocidad(zonas, secciones, polos):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
     assert _par(tabla, "A", "B") == pytest.approx(_minutos(10), abs=0.01)
     assert _par(tabla, "B", "A") == pytest.approx(_par(tabla, "A", "B"))
 
 
-def test_linea_base_tiene_todos_los_pares_y_el_contrato(zonas, secciones):
-    tabla = tiempos.linea_base(zonas, secciones)  # valida con contratos.validar
-    assert len(tabla) == 9
+def test_linea_base_tiene_todos_los_pares_y_el_contrato(zonas, secciones, polos):
+    tabla = tiempos.linea_base(zonas, secciones, polos)  # valida con contratos.validar
+    assert len(tabla) == 3 * (3 + 3)  # zonas × (zonas + polos)
+    assert set(tabla["zona_id"]) == set(CENTROS_M)  # los orígenes son solo las zonas
     assert (tabla["modo"] == "tp").all()
     assert tabla["estimado"].all()
     assert tabla["km"].isna().all()
 
 
-def test_tiempo_interno_es_la_mediana_de_las_secciones_y_nunca_cero(zonas, secciones):
-    tabla = tiempos.linea_base(zonas, secciones)
+def test_polo_es_distancia_a_su_punto_y_no_tiene_tiempo_interno(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
+    assert _par(tabla, "B", "polo:cerca") == pytest.approx(_minutos(3), abs=0.01)
+    assert _par(tabla, "A", "polo:cerca") == pytest.approx(
+        _minutos(np.hypot(10000, 3000) / 1000), abs=0.01
+    )
+    assert np.isnan(_par(tabla, "A", "polo:lejos"))  # 200 km
+    assert _par(tabla, "B", "polo:propio") == pytest.approx(_minutos(7), abs=0.01)
+
+
+def test_polo_de_la_propia_zona_es_la_mediana_desde_sus_secciones(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
+    # secciones de A a 3 y 1 km del polo → mediana 2 km; del centro de A (3 km) saldría _minutos(3)
+    assert _par(tabla, "A", "polo:propio") == pytest.approx(_minutos(2), abs=0.01)
+    assert _par(tabla, "A", "polo:propio") < _minutos(3)
+
+
+def test_propios_polo_avisa_de_las_secciones_sin_ruta(caplog):
+    matriz = pd.DataFrame(
+        {
+            "from_id": ["A1", "A2", "A3", "B1"],
+            "to_id": "polo:p",
+            "minutos": [10.0, np.nan, 20.0, 99.0],
+        }
+    )
+    secciones = pd.DataFrame(
+        {"CUSEC": ["A1", "A2", "A3", "B1"], "zona_id": ["A", "A", "A", "B"]}
+    )
+    polos = pd.DataFrame({"destino_id": ["polo:p"], "zona_id": ["A"]})
+    with caplog.at_level(logging.WARNING):
+        propios = tiempos._propios_polo(matriz, secciones, polos)
+    assert propios["minutos"].tolist() == [
+        15.0
+    ]  # mediana de 10 y 20; B1 es de otra zona
+    assert propios[["from_id", "to_id"]].values.tolist() == [["A", "polo:p"]]
+    assert "sin ruta a su polo" in caplog.text and "polo:p" in caplog.text
+
+
+def test_polos_lejos_avisa_del_polo_sin_ruta_o_a_30_min_o_mas_de_su_zona(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
+    # cerca está a 9 min de B y propio a 5 de A; lejos, sin ruta desde A
+    assert tiempos.polos_lejos(tabla, polos) == ["polo:lejos"]
+    assert tiempos.polos_lejos(tabla, polos.iloc[[0, 2]]) == []
+    # un polo sin ninguna fila en la tabla también se avisa
+    assert tiempos.polos_lejos(tabla.iloc[:0], polos.iloc[:1]) == ["polo:cerca"]
+
+
+def test_tiempo_interno_es_la_mediana_de_las_secciones_y_nunca_cero(
+    zonas, secciones, polos
+):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
     # A: centroides a 0 y 2 km del centro → mediana 1 km; B: una sola sección en el centro → suelo
     assert _par(tabla, "A", "A") == pytest.approx(_minutos(1), abs=0.01)
     assert _par(tabla, "B", "A") > 0
     assert _par(tabla, "B", "B") == tiempos.MIN_INTERNO
 
 
-def test_por_encima_del_maximo_es_nulo(zonas, secciones):
-    tabla = tiempos.linea_base(zonas, secciones)
+def test_por_encima_del_maximo_es_nulo(zonas, secciones, polos):
+    tabla = tiempos.linea_base(zonas, secciones, polos)
     assert np.isnan(_par(tabla, "A", "C"))  # 200 km
-    assert tabla["minutos"].isna().sum() == 4  # C con A y B, en los dos sentidos
+    # C con A y B, en los dos sentidos (4); `lejos` desde las tres zonas (3); `cerca` desde C (1)
+    assert tabla["minutos"].isna().sum() == 9
     assert tabla["minutos"].dropna().le(tiempos.MAX_MINUTOS).all()
 
 
-def test_zona_sin_secciones_falla(zonas, secciones):
+def test_zona_sin_secciones_falla(zonas, secciones, polos):
     with pytest.raises(ValueError, match="sin tiempo interno"):
-        tiempos.linea_base(zonas, secciones[secciones["zona_id"] != "C"])
+        tiempos.linea_base(zonas, secciones[secciones["zona_id"] != "C"], polos)
 
 
-def test_secciones_en_otro_crs_fallan(zonas, secciones):
+def test_secciones_en_otro_crs_fallan(zonas, secciones, polos):
     with pytest.raises(ValueError, match="EPSG:25830"):
-        tiempos.linea_base(zonas, secciones.to_crs(4326))
+        tiempos.linea_base(zonas, secciones.to_crs(4326), polos)
 
 
 def test_zona_sin_ruta_interna_falla():
     matriz = pd.DataFrame({"from_id": ["A"], "to_id": ["B"], "minutos": [10.0]})
     with pytest.raises(ValueError, match=r"sin tiempo interno.*'B'"):
-        tiempos._tabla(matriz, pd.Series({"A": 5.0, "B": np.nan}))
+        tiempos._tabla(matriz, pd.Series({"A": 5.0, "B": np.nan}), pd.Index([]))
 
 
 def test_interno_mediana_por_zona():
@@ -119,17 +193,22 @@ def test_tabla_completa_pares_ausentes_y_sustituye_la_diagonal():
     interno = pd.Series({"A": 7.0, "B": 0.0}, name="minutos")
     matriz = pd.DataFrame(
         {
-            "from_id": ["A", "A", "B"],
-            "to_id": ["A", "B", "A"],
-            "minutos": [0.0, 30.0, 150.0],
+            "from_id": ["A", "A", "B", "A", "A"],
+            "to_id": ["A", "B", "A", "polo:p", "polo:q"],
+            "minutos": [0.0, 30.0, 150.0, 45.0, 0.3],
         }
     )
-    tabla = tiempos._tabla(matriz, interno)
-    assert len(tabla) == 4
+    tabla = tiempos._tabla(matriz, interno, pd.Index(["polo:p", "polo:q"]))
+    assert len(tabla) == 8  # 2 zonas × (2 zonas + 2 polos)
+    assert (
+        _par(tabla, "A", "polo:q") == tiempos.MIN_INTERNO
+    )  # un polo pegado tampoco baja del suelo
     assert _par(tabla, "A", "A") == 7.0  # la diagonal de r5py (0) no vale
     assert _par(tabla, "B", "B") == tiempos.MIN_INTERNO  # suelo
     assert _par(tabla, "A", "B") == 30.0
     assert np.isnan(_par(tabla, "B", "A"))  # 150 > 120
+    assert _par(tabla, "A", "polo:p") == 45.0
+    assert np.isnan(_par(tabla, "B", "polo:p"))  # par ausente
 
 
 def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
@@ -211,9 +290,9 @@ def test_marcar_estimados_solo_mejoras_por_encima_del_ruido():
     np.testing.assert_array_equal(marcado["minutos"].to_numpy(), minutos)
 
 
-def test_el_modulo_se_importa_sin_r5py(monkeypatch, zonas, secciones):
+def test_el_modulo_se_importa_sin_r5py(monkeypatch, zonas, secciones, polos):
     monkeypatch.setitem(sys.modules, "r5py", None)  # simula que r5py (o Java) no está
     recargado = importlib.reload(tiempos)
-    assert len(recargado.linea_base(zonas, secciones)) == 9
+    assert len(recargado.linea_base(zonas, secciones, polos)) == 18
     with pytest.raises(ImportError):
-        recargado.matriz_r5py(zonas, secciones, Path("no.pbf"), [])
+        recargado.matriz_r5py(zonas, secciones, polos, Path("no.pbf"), [])

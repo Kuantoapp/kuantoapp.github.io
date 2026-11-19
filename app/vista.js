@@ -177,6 +177,7 @@ export function contextoFicha(api, entrada, resultado, id) {
   const n = entrada.sueldos.length;
   return {
     anio: dato.anio,
+    ipc: dato.factor_ipc === 1 ? null : mesIpc(api.alquiler.meta.ipc_hasta),
     ipcHasta: api.hogares.meta.ipc_hasta,
     subida: entrada.escenario?.subida_alquiler ?? 0,
     // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
@@ -189,12 +190,6 @@ export function contextoFicha(api, entrada, resultado, id) {
     netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
     salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
   };
-}
-
-/** `AAAA-MM` → `MM/AAAA`; sin mes falla, para no inventar una fecha. */
-function mesIpc(m) {
-  if (!/^\d{4}-\d{2}$/.test(m)) throw new Error(`hogares.meta.ipc_hasta inválido: ${m}`);
-  return `${m.slice(5)}/${m.slice(0, 4)}`;
 }
 
 function frasePrecio(zona, ref) {
@@ -214,17 +209,27 @@ function fraseBanda([bajo, alto]) {
   return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
 }
 
-function fraseAlquiler(zona, { anio, ic, subida }) {
+const MES = new Intl.DateTimeFormat("es-ES", { month: "long", year: "numeric", timeZone: "UTC" });
+
+/** «2026-10» (`meta.ipc_hasta`) como «octubre de 2026». */
+function mesIpc(aaaamm) {
+  return MES.format(new Date(`${aaaamm}-01T00:00:00Z`));
+}
+
+function fraseAlquiler(zona, { anio, ic, subida, ipc }) {
   const rango = `entre ${euros.format(zona.alquiler_p25)} y ${euros.format(zona.alquiler_p75)} € al mes`;
   // La subida simulada no es un dato observado: se dice aparte y se marca como simulación.
   if (subida > 0) {
     const dato = zona.origen === "estimado" ? `dato estimado de ${anio}` : `contratos de ${anio}`; // una zona imputada no tiene contratos
-    return `Alquiler con la subida del ${subida} %: ${rango} (${dato} más la subida; simulación, estimado)`;
+    const hasta = ipc === null ? "" : ` actualizad${zona.origen === "estimado" ? "o" : "os"} con el IPC de alquiler hasta ${ipc}`;
+    return `Alquiler con la subida del ${subida} %: ${rango} (${dato}${hasta} más la subida; simulación, estimado)`;
   }
-  // shortcut: «contratos de {anio}» vale con factor_ipc 1,0 (hoy en todas); al aplicar el IPC (#94), decir «actualizado con el IPC» y «estimado».
-  if (zona.origen !== "estimado") return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
+  if (zona.origen !== "estimado") {
+    if (ipc === null) return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
+    return `Alquiler: ${rango} (contratos de ${anio} actualizados con el IPC de alquiler hasta ${ipc}, tómalo como un suelo; estimado)`;
+  }
   const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
-  return `Alquiler estimado: ${rango} (año ${anio}; ${intervalo})`;
+  return `Alquiler estimado: ${rango} (año ${anio}${ipc === null ? "" : `, actualizado con el IPC de alquiler hasta ${ipc}`}; ${intervalo})`;
 }
 
 /**
@@ -249,7 +254,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
-    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ""}`,
+    `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ctx.ipc !== null ? " (estimado)" : ""}`,
     `Con el ${ESFUERZO_RECOMENDADO * 100} % del neto alcanza para un piso de ${euros.format(piso)} m²${ctx.personas > 1 ? ` compartido entre ${ctx.personas}` : ""} (estimado)`,
   );
   return [...new Set(lineas)];
@@ -281,8 +286,10 @@ export function avisos(alquiler) {
   const zonas = Object.values(alquiler.zonas);
   const cuantas = (origen) => zonas.filter((z) => z.origen === origen).length;
   const anterior = zonas.some((z) => z.anio != null && z.anio < alquiler.meta.anio_dato);
+  // shortcut: aviso global; si conviven zonas con y sin IPC no lo dice por zona, mejorar entonces.
+  const conIpc = zonas.some((z) => z.factor_ipc !== 1);
   const lineas = [
-    "El alquiler sale de contratos ya firmados y declarados, no de anuncios, así que va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.",
+    `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? `, y la cifra está actualizada con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.`,
     `El dato de alquiler es de ${alquiler.meta.anio_dato}${anterior ? "; en alguna zona, de un año anterior, y lo dice su ficha" : ""}.`,
   ];
   const estimadas = cuantas("estimado");
