@@ -171,9 +171,6 @@ def test_tarifas_matriz_de_claves():
 
 TARIFAS_APP = Path(__file__).parent.parent / "app" / "datos" / "tarifas.json"
 REGENERA = "regenera app/datos/tarifas.json con pipeline_euros.tarifas_json (#234)"
-sin_tarifas_app = pytest.mark.skipif(
-    not TARIFAS_APP.exists(), reason="sin app/datos/tarifas.json"
-)
 
 
 def _publicadas(arbol: dict, niveles: list[str]) -> pd.DataFrame:
@@ -196,7 +193,9 @@ def _publicadas(arbol: dict, niveles: list[str]) -> pd.DataFrame:
 
 def _distintas(publicada: pd.DataFrame, codigo: pd.DataFrame, claves: list[str]):
     """Filas que faltan, sobran o cambian de título o de coste entre el fichero y el código."""
-    m = publicada.merge(codigo, on=claves, how="outer", indicator=True)
+    m = publicada.merge(
+        codigo, on=claves, how="outer", indicator=True, validate="one_to_one"
+    )
     return m[
         (m["_merge"] != "both")
         | (m["titulo_x"] != m["titulo_y"])
@@ -204,7 +203,6 @@ def _distintas(publicada: pd.DataFrame, codigo: pd.DataFrame, claves: list[str])
     ]
 
 
-@sin_tarifas_app
 def test_tarifas_publicadas_v1_al_dia_con_transporte():
     j = json.loads(TARIFAS_APP.read_text("utf-8"))
     niveles = ["escenario", "edad", "viajes_dia", "corona"]
@@ -218,11 +216,8 @@ def test_tarifas_publicadas_v1_al_dia_con_transporte():
     assert j["semanas_mes"] == pytest.approx(227 / 60)
 
 
-@sin_tarifas_app
 def test_tarifas_publicadas_v2_al_dia_con_transporte():
     j = json.loads(TARIFAS_APP.read_text("utf-8"))
-    if "tarifas_ruta" not in j:
-        pytest.skip("tarifas.json sin la forma v2")
     niveles = ["escenario", "colectivo", "edad", "clave_tarifa", "no_laborables"]
     codigo = transporte.tabla(j["claves"])
     codigo["no_laborables"] = codigo["no_laborables"].astype(str)
@@ -234,7 +229,6 @@ def test_tarifas_publicadas_v2_al_dia_con_transporte():
     )
 
 
-@sin_tarifas_app
 def test_tarifas_publicadas_controles_joven_b2():
     b2 = json.loads(TARIFAS_APP.read_text("utf-8"))["escenarios"]["vigente_2026"]
     b2 = b2["joven"]["2"]["B2"]
