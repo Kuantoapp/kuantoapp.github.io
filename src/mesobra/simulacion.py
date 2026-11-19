@@ -11,32 +11,42 @@ Decisiones y sentido de su sesgo:
 1. Criterio vigente: RD 42/2022 en la ronda «2024» de Madrid (BOCM-20250110-20, FAQ 2024). Sigue en tramitación
    (BOCM-20260922-16); sin convocatoria del RD 326/2026 en Madrid. Texto completo del Acuerdo en BDNS 805618, doc. 1505247.
 2. IPREM «referido a 14 pagas» (Acuerdo, art. 4.4): 8.400 € (DA 90.ª.d Ley 31/2022, BOE-A-2022-22128, fijado «durante
-   2023»; rige en 2026 por la prórroga presupuestaria: en el consolidado del 18-11-2026 ninguna norma lo actualiza, pero
-   no hay norma de 2026 que lo fije). Umbral 3 × IPREM = 25.200 €, «iguales o inferiores». Si subiera, entrarían más.
+   2023»; sin cambios en el consolidado del 18-11-2026 y prorrogado: RDL 9/2024, RDL 1/2025 y RDL 3/2026, preámbulos).
+   El art. 4.4 pide el IPREM del ejercicio de los ingresos (2024 o 2025): el mismo valor. Umbral 3 × IPREM = 25.200 €,
+   «iguales o inferiores».
 3. Edad de 18 a 35 años incluidos (RD 42/2022, art. 6.1.a, BOE-A-2022-802). Los 5 perfiles (23 a 34) cumplen: sin efecto.
 4. Topes (art. 8; Acuerdo CG 26-12-2024, art. 5 y Anexo II, leído en bruto): vivienda 600 € (900 € en 55 municipios) y
    habitación 300 € (450 €), «hasta». `TOPE_900_2024` = `bono.TOPE_900` (ronda 2022) + 26 municipios nuevos.
-5. Cuantía: min(250 €, renta) (art. 11). Sin otros límites de duración: sobreestima el importe anual.
+5. Cuantía: min(250 € × personas beneficiarias, renta) (RD art. 11; Acuerdo, arts. 4.1.d y 8.1): en la pareja de 29
+   las dos pueden ser beneficiarias (mismo sueldo, cada una cumple sola); en los demás, una. Sin límites de duración.
 6. Se supone que cada perfil cumple el resto de requisitos (fuente regular de ingresos, sin exclusiones del art. 6.2)
    y que garaje, trastero y gastos van en la renta del SERPAVI, sin la valoración del 80, 95 o 75 % de la FAQ p. 12:
    sobreestima los elegibles.
 7. Cada parámetro va en `Decimal` con su cita, arriba de este módulo (`parametros_2026.py` queda fuera de la issue).
 8. «Ingresos» = base imponible general (supuesto de la referencia §5): bruto − cotización − 2.000 € (art. 19.2.f) −
-   reducción del art. 20, como `neto.cuota_irpf`. Es menor que el bruto: entran más perfiles (sensibilidad con el bruto).
+   reducción del art. 20, como `neto.cuota_irpf`. La norma no fija la medida («rentas anuales», «información del
+   IRPF»; Acuerdo, arts. 4.1.d y 4.4) y decide a la pareja y a la madre: con la base (24.215 y 24.427 €) entran; con el
+   bruto (28.038 y 28.264 €), no. Se presentan siempre con la sensibilidad `ingresos="bruto"`.
 9. Cuentan solo los ingresos de la persona solicitante, el primer sueldo: Acuerdo, art. 4.1.d, si conviven jóvenes sin
    parentesco de 1.er grado o todos de hasta 35 años y firma el contrato (la pareja de 29); la madre suma su hijo, sin
-   ingresos; en habitación, solo la persona arrendataria. El RD suma los de los convivientes: en la pareja entran más con esta regla (sensibilidad `hogar`).
+   ingresos; en habitación, solo la persona arrendataria. El RD suma los de los convivientes: con esa regla la pareja
+   queda fuera (sensibilidad `hogar`).
 10. Se usa el bruto de referencia del perfil (de 2024 a 2026) y no el del ejercicio que mira la convocatoria: cuanto
-    más antiguo es el sueldo real, más bajo sería y más perfiles entrarían.
+    más antiguo es el sueldo real, más bajo sería y más perfiles entrarían. La cotización y el art. 20 son los de 2026:
+    en la pareja y la madre el art. 20 es 0 y la diferencia es de pocos euros frente a un margen de 773 a 985 €.
 11. Vivienda de 69 m² para los 5 perfiles; los 3 «solo» se repiten como habitación con el hogar `comparte` (alquiler
     repartido entre `personas_comparten`), aproximación a la renta de una habitación. 69 m² sobreestima la renta de
-    quien vive solo: menos entran por el tope.
+    quien vive solo: menos entran por el tope. La habitación (un tercio del piso) es una cota inferior de su renta.
 12. Alquiler P50 del SERPAVI con `factor_ipc`: suelo del precio (parque de contratos, no oferta nueva); más entran
     por el tope y menos por esfuerzo (sensibilidad con el P75).
 13. Las alternativas sustituyen el tope y mantienen edad e ingresos. `alquiler_transporte`: (alquiler + transporte) ÷
     neto ≥ 30 %; `horas_viaje`: ese esfuerzo + horas de viaje ÷ horas trabajadas ≥ 30 % (valora la hora de viaje al
     neto por hora). El 30 % es el corte de `sobrecarga_30` (#100), fijado antes de ejecutar con datos reales; el 40 %
-    va como sensibilidad. Misma cuantía; son simulados.
+    va como sensibilidad. Misma cuantía; son simulados e ilustrativos, no una propuesta. Lo que cambia frente a
+    `bono_vigente` sale sobre todo de quitar el tope; `cambios` separa los municipios que cruzan el umbral solo al
+    sumar el transporte (`por_transporte`). Con el 30 %, el término de horas (mediana a un destino cualquiera de la
+    región, no al trabajo de nadie) basta para pasar el umbral en casi todos: `horas_viaje` es un criterio de lejanía.
+    En la pareja, la renta es la de una persona y el esfuerzo el del hogar: no se compara entre criterios.
 14. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
     transporte barato). El de 23 años usa el Abono Joven (hasta 25 años), tarifa plana por corona.
 15. Municipio = mediana de sus zonas, y cada zona = mediana entre destinos de zona (los polos fuera, como en
@@ -50,7 +60,6 @@ Decisiones y sentido de su sesgo:
 
 import logging
 from decimal import Decimal as D
-from pathlib import Path
 
 import pandas as pd
 
@@ -59,13 +68,13 @@ from mesobra import bono, calculo, contratos, neto, parametros_2026, titulares
 LOG = logging.getLogger(__name__)
 PROCESSED = calculo.RAIZ / "data/processed"
 
-# DA 90.ª Ley 31/2022 (BOE-A-2022-22128): IPREM de 14 pagas; verificado=False para 2026.
+# DA 90.ª.d Ley 31/2022 (BOE-A-2022-22128), prorrogada (RDL 3/2026); 14 pagas por el Acuerdo, art. 4.4.
 IPREM = D(8400)
-# RD 42/2022, art. 6.1.d (BOE-A-2022-802): ingresos iguales o inferiores a 3 × IPREM.
+# RD 42/2022, art. 6.1.d (BOE-A-2022-802); Acuerdo, art. 4.1.d: ingresos iguales o inferiores a 3 × IPREM.
 UMBRAL_INGRESOS = 3 * IPREM
 # RD 42/2022, art. 6.1.a: de 18 a 35 años, ambos incluidos.
 EDAD_MIN, EDAD_MAX = 18, 35
-# RD 42/2022, art. 11: 250 €/mes como máximo, sin pasar de la renta.
+# RD 42/2022, art. 11; Acuerdo, art. 8.1: 250 €/mes por persona beneficiaria, sin pasar de la renta.
 CUANTIA = D(250)
 # RD 42/2022, art. 8; Acuerdo CG 26-12-2024 (BOCM-20250110-20), Anexo II: (tope general, tope en TOPE_900_2024).
 TOPES = {"vivienda": (D(600), D(900)), "habitacion": (D(300), D(450))}
@@ -166,6 +175,7 @@ NOMBRES_ANEXO_II = [
 
 def base_imponible(bruto: float | D) -> D:
     """Base imponible general: bruto − cotización − 2.000 € − reducción del art. 20 (como `neto.cuota_irpf`)."""
+    # shortcut: duplica neto.py:86-87 (la issue no deja tocar neto); extraer a neto cuando se pueda tocar.
     bruto = D(str(bruto))
     rnt = max(bruto - neto.cotizacion(bruto), D(0))
     gastos = min(parametros_2026.GASTOS_OTROS, rnt)
@@ -183,9 +193,9 @@ def requisitos(edad: int, ingresos: D, renta: D, maximo: D | None) -> list[str]:
     if not EDAD_MIN <= edad <= EDAD_MAX:
         f.append("edad (RD 42/2022, art. 6.1.a)")
     if ingresos > UMBRAL_INGRESOS:
-        f.append("ingresos > 3 × IPREM (art. 6.1.d)")
+        f.append("ingresos > 3 × IPREM (RD art. 6.1.d; Acuerdo, art. 4.1.d)")
     if maximo is not None and renta > maximo:
-        f.append("renta > tope (art. 8; Anexo II)")
+        f.append("renta > tope (RD art. 8; Acuerdo, art. 5 y Anexo II)")
     return f
 
 
@@ -237,6 +247,8 @@ def tabla_zonas(api: dict) -> pd.DataFrame:
             "ingresos_bruto": p["sueldos"][0][0],
             "ingresos_hogar": sum(bases),
             "horas_trab": horas_mes * len(p["sueldos"]),
+            # la pareja de 29: cada una firma y cumple sola (Acuerdo, art. 4.1.d); habitación: una
+            "beneficiarios": len(p["sueldos"]) if tipo == "vivienda" else 1,
         }
         for d in destinos:
             entrada = {
@@ -263,7 +275,11 @@ def tabla_zonas(api: dict) -> pd.DataFrame:
     medidas = ["alquiler", "alquiler_p75", "transporte", "horas"]
     completas = df.dropna(subset=medidas)
     LOG.info(
-        "pares con alquiler, transporte y horas: %d de %d", len(completas), len(df)
+        "pares completos: %d de %d (sin alquiler: %d; sin ruta: %d)",
+        len(completas),
+        len(df),
+        df["alquiler"].isna().sum(),
+        df["transporte"].isna().sum(),
     )
     fijas = [c for c in df.columns if c not in medidas and c != "zona_id"]
     return completas.groupby(["zona_id", *fijas], as_index=False)[medidas].median()
@@ -271,50 +287,55 @@ def tabla_zonas(api: dict) -> pd.DataFrame:
 
 def _municipios(zonas: pd.DataFrame) -> pd.DataFrame:
     """Mediana de sus zonas por (perfil, municipio)."""
-    claves = ["perfil", "municipio_id"]
-    fijas = [c for c in zonas.columns if c not in claves]
     medidas = ["alquiler", "alquiler_p75", "transporte", "horas"]
-    agg = {c: "median" if c in medidas else "first" for c in fijas if c != "zona_id"}
-    return zonas.groupby(claves, as_index=False).agg(agg)
+    # las columnas fijas en la clave: si no fueran constantes, saldrían claves repetidas y `validar` fallaría
+    claves = [c for c in zonas.columns if c not in medidas and c != "zona_id"]
+    return zonas.groupby(claves, as_index=False)[medidas].median()
 
 
-def _evaluar(t: pd.DataFrame, ingresos: str, alquiler: str, umbral: D) -> pd.DataFrame:
+def _evaluar(
+    t: pd.DataFrame,
+    ingresos: str = "base",
+    alquiler: str = "alquiler",
+    umbral: D = UMBRAL,
+) -> pd.DataFrame:
     """Contrato `simulacion` para cada fila de `t` (zonas o municipios) y cada criterio."""
     filas = []
     for r in t.assign(renta=t[alquiler]).to_dict("records"):
         for c in CRITERIOS:
             ok = not fallos(r, c, f"ingresos_{ingresos}", umbral)
-            eur = float(min(CUANTIA, D(str(r["renta"])))) if ok else 0.0
+            maximo = CUANTIA * r["beneficiarios"]
+            eur = float(min(maximo, D(str(r["renta"])))) if ok else 0.0
             filas.append((r["perfil"], r["municipio_id"], c, ok, eur, True))
     return pd.DataFrame(
         filas, columns=list(contratos.CONTRATOS["simulacion"]["columnas"])
     )
 
 
-def simulacion(
-    zonas: pd.DataFrame,
-    umbral: D = UMBRAL,
-    ingresos: str = "base",
-    alquiler: str = "alquiler",
-) -> pd.DataFrame:
-    """Tabla `simulacion` por (perfil, municipio, criterio), validada. `ingresos`: base, bruto u hogar."""
-    df = _evaluar(_municipios(zonas), ingresos, alquiler, umbral)
+def simulacion(zonas: pd.DataFrame, **escenario: str | D) -> pd.DataFrame:
+    """Tabla `simulacion` por (perfil, municipio, criterio), validada. `escenario`: los de `_evaluar`."""
+    df = _evaluar(_municipios(zonas), **escenario)
     contratos.validar(df, "simulacion")
     return df
 
 
 def cambios(zonas: pd.DataFrame, **escenario: str | D) -> pd.DataFrame:
-    """Por perfil y criterio alternativo: elegibles, municipios que entran y que salen frente a `bono_vigente`
-    y % de zonas elegibles en Madrid (21 distritos). `escenario`: umbral, ingresos, alquiler de `simulacion`."""
-    ok = simulacion(zonas, **escenario).pivot(
-        index=["perfil", "municipio_id"], columns="criterio", values="elegible"
-    )
-    esc = {"umbral": UMBRAL, "ingresos": "base", "alquiler": "alquiler"} | escenario
-    mad = _evaluar(zonas[zonas["municipio_id"] == MADRID], **esc)
+    """Por perfil y criterio: elegibles, municipios que entran y que salen frente a `bono_vigente`, los que entran
+    solo al sumar el transporte (`por_transporte`: fuera con transporte 0) y % de zonas elegibles en Madrid
+    (21 distritos). `escenario`: los de `_evaluar`."""
+
+    def tabla(z: pd.DataFrame) -> pd.DataFrame:
+        return simulacion(z, **escenario).pivot(
+            index=["perfil", "municipio_id"], columns="criterio", values="elegible"
+        )
+
+    ok, sin_tr = tabla(zonas), tabla(zonas.assign(transporte=0.0))
+    mad = _evaluar(zonas[zonas["municipio_id"] == MADRID], **escenario)
     pct = 100 * mad.groupby(["perfil", "criterio"])["elegible"].mean()
     filas = []
     for perfil, g in ok.groupby(level="perfil"):
-        for c in CRITERIOS[1:]:
+        g0 = sin_tr.loc[g.index]
+        for c in CRITERIOS:
             filas.append(
                 {
                     "perfil": perfil,
@@ -323,6 +344,7 @@ def cambios(zonas: pd.DataFrame, **escenario: str | D) -> pd.DataFrame:
                     "elegibles": int(g[c].sum()),
                     "entran": int((~g["bono_vigente"] & g[c]).sum()),
                     "salen": int((g["bono_vigente"] & ~g[c]).sum()),
+                    "por_transporte": int((g[c] & ~g0[c]).sum()),
                     "pct_zonas_madrid": float(pct.get((perfil, c), float("nan"))),
                 }
             )
@@ -331,7 +353,7 @@ def cambios(zonas: pd.DataFrame, **escenario: str | D) -> pd.DataFrame:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    api = calculo.leer_api(Path(calculo.RAIZ / "app/datos"))
+    api = calculo.leer_api(calculo.RAIZ / "app/datos")
     zonas = tabla_zonas(api)
     sin_alquiler = {
         f["properties"]["municipio_id"] for f in api["zonas"]["features"]

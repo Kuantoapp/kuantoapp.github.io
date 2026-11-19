@@ -22,7 +22,7 @@ def _api() -> dict:
 
 def test_umbral_de_ingresos():
     assert requisitos(30, D(25201), D(0), D(600)) == [
-        "ingresos > 3 × IPREM (art. 6.1.d)"
+        "ingresos > 3 × IPREM (RD art. 6.1.d; Acuerdo, art. 4.1.d)"
     ]
     assert requisitos(30, D(25199), D(0), D(600)) == []
     assert requisitos(30, D(25200), D(0), D(600)) == []
@@ -108,7 +108,7 @@ def _fila(renta=500.0, transporte=0.0, horas=0.0, **kw) -> dict:
     return {
         "municipio_id": "28079", "tipo": "vivienda", "edad": 30, "ingresos_base": 10000.0,
         "renta": renta, "transporte": transporte, "horas": horas, "neto": 1000.0,
-        "horas_trab": 151.3, **kw,
+        "horas_trab": 151.3, "beneficiarios": 1, **kw,
     }  # fmt: skip
 
 
@@ -161,6 +161,68 @@ def test_simulacion_sobre_la_api_de_ejemplo_cumple_el_contrato():
     assert set(df["criterio"]) == set(simulacion.CRITERIOS) and df["estimado"].all()
     assert set(df["perfil"]) <= {v[0] for v in simulacion.variantes()}
     c = simulacion.cambios(simulacion.tabla_zonas(api))
-    assert set(c["criterio"]) == set(simulacion.CRITERIOS[1:])
+    assert set(c["criterio"]) == set(simulacion.CRITERIOS)
     assert len(simulacion.IDS) == len(titulares.PERFILES)
     assert re.fullmatch(r"[a-z_0-9]+", "".join(simulacion.IDS))
+
+
+@pytest.mark.parametrize(
+    ("ingresos", "renta", "maximo", "falla"),
+    [(D("25200.01"), D(0), D(600), "4.1.d"), (D(0), D("600.01"), D(600), "art. 5")]
+    + [(D(0), D("450.01"), tope("28079", "habitacion"), "art. 5")]
+    + [(D(0), D("300.01"), tope("28001", "habitacion"), "art. 5")],
+)
+def test_un_centimo_por_encima_falla(ingresos, renta, maximo, falla):
+    (f,) = requisitos(30, ingresos, renta, maximo)
+    assert falla in f
+
+
+def test_edad_minima_y_moraleja():
+    assert requisitos(18, D(0), D(0), None) == []
+    assert tope("28089", "vivienda") == 900  # Anexo II; la ficha de la sede la omite
+
+
+def test_base_de_la_pareja_y_la_madre():
+    # cotización del 6,5 %; rnt > 19.747,50, así que el art. 20 es 0
+    assert simulacion.base_imponible(titulares.EAES) == D("24215.30")
+    assert simulacion.base_imponible(titulares.OFICINA) == D("24427.16")
+
+
+def test_mediana_de_zonas_por_municipio():
+    medidas = ("alquiler", "alquiler_p75", "transporte", "horas")
+    z = pd.DataFrame(
+        {"perfil": "p", "municipio_id": "m", "zona_id": ["a", "b", "c"], "neto": 1.0}
+        | {c: [1.0, 2.0, 10.0] for c in medidas}
+    )
+    m = simulacion._municipios(z)
+    assert len(m) == 1 and m.loc[0, "alquiler"] == 2.0 and m.loc[0, "horas"] == 2.0
+
+
+def test_cuantia_de_la_pareja_cuenta_dos_personas():
+    f = _fila(renta=400.0, beneficiarios=2) | {"perfil": "p"}
+    s = simulacion._evaluar(pd.DataFrame([f]), alquiler="renta")
+    assert s.set_index("criterio").loc["bono_vigente", "eur_mes"] == 400.0
+
+
+def test_cambios_cuenta_a_mano_y_aplica_el_escenario():
+    z = simulacion.tabla_zonas(_api())
+    ok = simulacion.simulacion(z).pivot(
+        index=["perfil", "municipio_id"], columns="criterio", values="elegible"
+    )
+    c = simulacion.cambios(z).set_index(["perfil", "criterio"])
+    for (perfil, crit), r in c.iterrows():
+        g = ok.loc[perfil]
+        assert r["entran"] == (~g["bono_vigente"] & g[crit]).sum()
+        assert r["salen"] == (g["bono_vigente"] & ~g[crit]).sum()
+    # la suma del hogar de la pareja (48.430 €) pasa de 3 × IPREM: fuera de todo
+    h = simulacion.cambios(z, ingresos="hogar").set_index(["perfil", "criterio"])
+    assert (h.loc["pareja_mediana", "elegibles"] == 0).all()
+    assert (c.loc["pareja_mediana", "elegibles"] > 0).any()
+
+
+def test_por_transporte_cuenta_solo_lo_que_cruza_al_sumar_el_transporte():
+    z = simulacion.tabla_zonas(_api())
+    c = simulacion.cambios(z).set_index(["perfil", "criterio"])
+    sin = simulacion.cambios(z.assign(transporte=0.0)).set_index(["perfil", "criterio"])
+    assert (sin["por_transporte"] == 0).all()
+    assert (c["por_transporte"] <= c["elegibles"]).all()
