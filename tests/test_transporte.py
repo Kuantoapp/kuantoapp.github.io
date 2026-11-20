@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from decimal import Decimal as D
 from itertools import pairwise, product
 
@@ -147,6 +148,29 @@ def test_cercanias():
     assert coste("A-C2|cercanias", 5) == ("Abono Renfe", D("18.33"))
     # sin descuento no hay precio de Renfe: solo el abono del CRTM
     assert coste("A-C2|cercanias", 5, esc=S) == ("Abono 30 días", D("78.54"))
+    # joven: 10 × 11 / 12 = 9,17 < Abono Joven del CRTM (9,31); sin descuento no hay abono de Renfe
+    assert coste("A-C2|cercanias", 5, edad="joven") == ("Abono Renfe Joven", D("9.17"))
+    assert "Renfe" not in coste("A-C2|cercanias", 5, edad="joven", esc=S)[0]
+    # ruta mixta: el Abono Joven cubre las dos partes y gana al Renfe Joven más el metro
+    assert coste("A-C2|cercanias+metro_a", 5, edad="joven") == (
+        "Abono Joven",
+        D("9.31"),
+    )
+
+
+def test_anios_de_nacimiento_del_abono_renfe_joven():
+    # la edad cumplida no decrece en el año: los extremos 1-1 y 31-12 de 2026 bastan
+    def es_joven_en_2026(nac):
+        edades = [
+            f.year - nac.year - ((f.month, f.day) < (nac.month, nac.day))
+            for f in (date(2026, 1, 1), date(2026, 12, 31))
+        ]
+        return any(t.EDAD_MIN_JOVEN <= e <= t.EDAD_MAX_JOVEN for e in edades)
+
+    nacimientos = (date(1999, 1, 1) + timedelta(i) for i in range(14 * 366))
+    jovenes = {n.year for n in nacimientos if n.year <= 2012 and es_joven_en_2026(n)}
+    desde, hasta = t.ANIOS_NACIMIENTO_RENFE_JOVEN
+    assert jovenes == set(range(desde, hasta + 1))  # incluidos y ajustados
 
 
 def test_mas_dias_o_mas_ocio_no_cuestan_menos():
@@ -155,6 +179,8 @@ def test_mas_dias_o_mas_ocio_no_cuestan_menos():
         "B1-B1|interurbano",
         "B2-C2|interurbano",
         "A-C2|interurbano+metro_a",
+        "A-C2|cercanias",
+        "A-C2|cercanias+metro_a",
     ]
     for tarifa, edad, clave in product(
         product(t.ESCENARIOS, t.COLECTIVOS), t.EDADES, claves
@@ -171,6 +197,20 @@ def test_mas_dias_o_mas_ocio_no_cuestan_menos():
         assert all(
             costes[i : i + 3] == sorted(costes[i : i + 3]) for i in range(0, 15, 3)
         )
+
+
+def test_joven_no_paga_mas_que_general_y_el_abono_renfe_joven_es_de_2026():
+    for tarifa, clave, d, nl in product(
+        product(t.ESCENARIOS, t.COLECTIVOS),
+        ["A-C2|cercanias", "A-C2|cercanias+metro_a"],
+        t.DIAS,
+        t.NO_LABORABLES,
+    ):
+        joven = coste(clave, d, nl, edad="joven", esc=tarifa)
+        assert joven[1] <= coste(clave, d, nl, esc=tarifa)[1]
+        if "Abono Renfe Joven" in joven[0]:
+            assert tarifa[0] == "vigente_2026"
+            assert "Abono Renfe Joven" not in coste(clave, d, nl, esc=tarifa)[0]
 
 
 @pytest.mark.parametrize(("dias", "nl"), [(0, 0), (3, 5)])
