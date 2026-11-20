@@ -161,7 +161,7 @@ FUENTES_RUTA = [
         "licencia": LICENCIA_WEB_CRTM,
     },
     {
-        "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3.2.a).2.º: abono mensual de Cercanías de Renfe de tarifa única 20 € en 2026",
+        "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3.2.a).2.º y 3.º: abono mensual de Cercanías de Renfe de tarifa única 20 € en 2026, y 10 € para jóvenes nacidos de 2000 a 2011",
         "url": URL_RDL,
         "licencia": LICENCIA_RDL,
     },
@@ -399,10 +399,13 @@ def tarifas_json(
         "atraviesa la ruta y un producto por validación; se compara el abono que cubre el rango (normal "
         "con A, interzonal sin A) con el sencillo o el 10 viajes de cada producto, el Abono Joven y el "
         "Abono +65 (gratuito; desde los 65 años, edad por verificar). Cercanías: abono del CRTM o Abono "
-        "mensual de Renfe (20 €, solo con descuento). no_laborables: viajes de ocio al mes, cobrados en el "
+        "mensual de Renfe (RDL 17/2025, art. 3.2.a; solo con descuento): 20 €, o 10 € para jóvenes nacidos de "
+        f"{transporte.ANIOS_NACIMIENTO_RENFE_JOVEN[0]} a {transporte.ANIOS_NACIMIENTO_RENFE_JOVEN[1]}, que incluye "
+        f"a todo el Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años. "
+        "no_laborables: viajes de ocio al mes, cobrados en el "
         "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "
-        "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); el Abono de "
-        "Renfe, igual para todos. "
+        "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); los abonos de "
+        "Renfe, iguales para todos los colectivos (cota superior para familia numerosa). "
         + (
             "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
             "una validación (heurística hasta tener la ruta de r5py). Subestima el coste entre "

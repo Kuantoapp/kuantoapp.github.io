@@ -19,11 +19,16 @@ Los precios con descuento (`vigente_2026`) dependen del RDL 17/2025, que es temp
 viajes se prorratea (viajes ÷ 10 × precio), porque no caduca: la ficha
 del CRTM dice «Validez: Ilimitada» (https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/,
 consultada el 18-11-2026; #162 sustituye a los paquetes enteros de #80).
-Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (20 €, todos los núcleos,
-solo 2026); sin descuento no hay precio publicado de Renfe y solo cuenta el abono del CRTM. Los 20 €
-valen para todos los colectivos: Renfe admite el descuento de familia numerosa pero no publica su importe
-(cota superior para FN) y no tiene descuento por discapacidad (preguntas frecuentes de los abonos
-bonificados, consultadas el 18-11-2026). El Bonotren
+Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (RDL 17/2025, art. 3.2.a).2.º:
+20 €, todos los núcleos con tarificación zonal, solo 2026); sin descuento no hay precio publicado de Renfe y
+solo cuenta el abono del CRTM. Los jóvenes nacidos de 2000 a 2011 tienen uno de 10 € (art. 3.2.a).3.º), que
+se aplica a todo el colectivo joven (15 a 25 años) porque nació en esos años. Supuestos: quien nació en 2000
+y ya cumplió 26 cuenta como general y no recibe los 10 € (se sobrestima su coste en Cercanías); se supone
+nacionalidad española o residencia legal; Madrid es núcleo con tarificación zonal. Cuesta lo mismo que el
+Abono Joven del CRTM; sale 0,14 €/mes más barato solo porque vale un mes natural (11 al año) y no 30 días.
+Los 20 € y los 10 € valen para todos los colectivos: según Renfe (preguntas frecuentes de los abonos bonificados, consultadas el 18-11-2026) admite
+el descuento de familia numerosa pero no publica su importe (cota superior para FN) y no tiene descuento por
+discapacidad. El Bonotren
 va por zonas de Renfe, que no son las coronas, y no se modela.
 Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna norma fija si basta con 65
 cumplidos (verificar).
@@ -175,9 +180,14 @@ SENCILLO = {
     "interurbano": SENCILLO_300,
     "urbano": SENCILLO_150,
 }
-# Abono mensual de Renfe Cercanías en 2026 (todos los núcleos, hasta el 31-1-2027), solo con descuento
-# https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes (18-11-2026)
+# Abono mensual de Renfe Cercanías de 20 € (todos los núcleos), solo con descuento: RDL 17/2025
+# (BOE-A-2025-26459), art. 3.2.a).2.º, https://www.boe.es/eli/es/rdl/2025/12/23/17
+# El RDL lo crea del 1-1 al 31-12-2026 y vale un mes desde su inicio; que el último llegue al 31-1-2027
+# es inferencia nuestra, no lo dice el RDL, y no cambia ninguna cifra.
 ABONO_RENFE = {("vigente_2026", c): D("20.00") for c in COLECTIVOS}
+# Abono de 10 € para nacidos de 2000 a 2011: RDL 17/2025, art. 3.2.a).3.º (misma URL)
+ABONO_RENFE_JOVEN = {("vigente_2026", c): D("10.00") for c in COLECTIVOS}
+ANIOS_NACIMIENTO_RENFE_JOVEN = (2000, 2011)  # RDL 17/2025, art. 3.2.a).3.º
 ABONOS_RENFE_ANIO = 11  # vale un mes natural desde su inicio: 11 al año con 30 días de vacaciones en bloque
 
 
@@ -277,7 +287,7 @@ def _opciones(
 
 
 def _por_viaje(
-    tarifa: tuple[str, str], clave: str, dias: int, no_laborables: int
+    tarifa: tuple[str, str], clave: str, dias: int, no_laborables: int, edad: str
 ) -> tuple[str, D]:
     """Título y coste de pagar cada producto con su sencillo o su 10 viajes; infinito si alguno no tiene."""
     cmin, cmax, productos = _partes(clave)
@@ -290,6 +300,11 @@ def _por_viaje(
         opciones = _opciones(p, v, cmin, cmax, tarifa)
         if p == "cercanias" and tarifa in ABONO_RENFE:
             opciones["Abono Renfe"] = ABONO_RENFE[tarifa] * ABONOS_RENFE_ANIO / 12
+        if p == "cercanias" and edad == "joven" and tarifa in ABONO_RENFE_JOVEN:
+            # quien tiene de 15 a 25 años algún día de 2026 nació de 2000 a 2011 (lo prueba un test)
+            opciones["Abono Renfe Joven"] = (
+                ABONO_RENFE_JOVEN[tarifa] * ABONOS_RENFE_ANIO / 12
+            )
         if not opciones:
             if p != "cercanias":
                 raise ValueError(f"producto sin precio por viaje: {p!r} en {clave!r}")
@@ -335,7 +350,7 @@ def coste_mes(
     ocio = _opciones(productos[0], D(no_laborables), cmin, cmax, tarifa)
     ocio_vacaciones = min(ocio.values(), default=D(0)) / 12
     candidatos = {
-        **dict([_por_viaje(tarifa, clave, dias, no_laborables)]),
+        **dict([_por_viaje(tarifa, clave, dias, no_laborables, edad)]),
         titulo: precio * ABONOS_ANIO / 12 + ocio_vacaciones,
     }
     if edad == "joven":
