@@ -318,7 +318,7 @@ export function avisos(alquiler) {
   // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.
   // La fecha de la tabla 76137 del INE solo viaja dentro de `meta.nota`; si falta, la línea sale sin ella.
   const fecha = alquiler.meta.nota?.match(/tabla 76137 actualizada el (\d{4}-\d{2}-\d{2})/)?.[1];
-  const fuente = `${fuentes(alquiler.meta)}${conIpc && fecha ? ` (tabla 76137 del INE actualizada el ${fecha})` : ""}.`;
+  const fuente = `${fuentes(alquiler.meta)}.${conIpc && fecha ? ` Tabla 76137 del INE actualizada el ${fecha}.` : ""}`;
   return alquiler.meta.ejemplo === true ? lineas : [...lineas, fuente];
 }
 
