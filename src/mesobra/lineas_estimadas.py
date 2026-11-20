@@ -337,7 +337,8 @@ def _segundos_del_id(ids: pd.Series) -> pd.Series:
     """Segundos de la salida que lleva cada `trip_id` (NaN si no lleva hora); `ValueError` si no es una hora válida.
 
     Larga (`..._06:56:00_...`) o corta al final (`..._1515`, `..._620`: 6:20). Los minutos van de 0 a 59 y la hora
-    hasta 47 (GTFS admite pasar de las 24 en los viajes de madrugada); `..._2024` o `..._9975` no son una hora.
+    hasta 47 (GTFS admite pasar de las 24 en los viajes de madrugada); `..._9975` no es una hora. Un final como
+    `..._2024` sí pasa por hora (20:24): solo se mira en viajes de relleno, donde hoy no hay ninguno así.
     """
     hm = ids.str.extract(HORA_EN_ID).astype(float)
     hm = hm.fillna(ids.str.extract(HORA_CORTA).astype(float))
