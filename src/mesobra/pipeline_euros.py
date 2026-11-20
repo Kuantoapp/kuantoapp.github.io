@@ -368,7 +368,7 @@ def tarifas_json(
     lista = sorted(v2["clave_tarifa"].unique())
     nota = (
         "Título más barato al mes (€/mes) con los precios de 2026 del BOCM de 31-12-2025. vigente_2026 "
-        "lleva el descuento del RDL 17/2025, que solo vale para 2026; sin_descuento, los precios "
+        "lleva el descuento de 2026 (ayuda del Estado del RDL 17/2025 más la aportación de la Comunidad de Madrid y los ayuntamientos, BOCM-20251231-2), que solo vale para 2026; sin_descuento, los precios "
         "oficiales. coste_mes es la media mensual del año (1/12), estimada con supuestos: 227 días de "
         "trabajo al año (calendario laboral de 2026 de la Comunidad de Madrid, Decreto 75/2025; supuestos: "
         "2 festivos locales en laborable y 22 laborables de vacaciones en un bloque); el Abono 30 días y "
