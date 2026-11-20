@@ -12,13 +12,8 @@ const formulario = () => $("formulario");
 const NOMBRES = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
 const EDAD_POR_DEFECTO = 30; // supuesto: hogares.json no trae edad; decide el Abono Joven (hasta 25 años)
 
-/** Carpeta de datos: `?datos=<ruta>` o `datos/`. Se rechaza otro origen: la página no pide nada a terceros. */
-function carpetaDatos() {
-  const ruta = new URLSearchParams(location.search).get("datos") ?? "datos/";
-  const base = new URL(ruta.endsWith("/") ? ruta : `${ruta}/`, location.href);
-  if (base.origin !== location.origin) throw new Error("El parámetro «datos» debe apuntar al mismo sitio");
-  return base;
-}
+// Siempre `datos/` junto a la página: sin parámetro, porque en github.io el origen lo comparten otros repos (#255).
+const CARPETA_DATOS = new URL("datos/", location.href);
 
 async function cargarJSON(base, nombre) {
   const res = await fetch(new URL(nombre, base));
@@ -193,7 +188,7 @@ function crearMapa(zonas) {
 // --- Principal -----------------------------------------------------------------------------------
 
 async function main() {
-  const api = await cargarApi(carpetaDatos());
+  const api = await cargarApi(CARPETA_DATOS);
   $("fecha-datos").textContent = api.tiempos.meta.generado;
   const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
