@@ -61,7 +61,7 @@ Decisiones y sentido de su sesgo:
     marcado, y los criterios de #296 como sensibilidad (`simulacion_296`).
 15. VTT = 0,325 × coste laboral total por hora de la Comunidad de Madrid (INE, ETCL4391, media de 2025T3–2026T2:
     30,0175 €/h) = 9,76 €/h. 0,325 es el punto medio de la banda 0,25 a 0,40 (7,50 a 12,01 €/h), no un valor de la
-    fuente: CE CBA Guide 2014, p. 90, y Vademécum 2021-2027, p. 55; HEATCO, España 0,34 a 0,38. El coste laboral
+    fuente: CE CBA Guide 2014, p. 91 y nota 90 (HEATCO, 30 a 42 %), y Vademécum 2021-2027, p. 55. El coste laboral
     total incluye la parte del empleador (cotizaciones), y el VTT se compara con el neto del hogar: el numerador va
     inflado frente a un valor del tiempo sobre el salario neto, así que sobreestima el esfuerzo y los elegibles de
     `horas_viaje`. Madrid y no la media nacional (ETCL4443, 25,8225 €/h → 8,39 €/h) porque el producto se ofrece en
@@ -78,23 +78,30 @@ Decisiones y sentido de su sesgo:
     (`matriz_trabajo.leer_cuotas_distritos`, sin «no consta distrito»), igual para todos los orígenes: ignora que
     cada origen trabaja más cerca, e infla las horas de quien vive junto a pocos distritos (más elegibles). Madrid
     como origen usa la fila del municipio en sus 21 distritos: no distingue entre distritos de residencia.
-18. Pares sin tiempo (null: más de 120 min o sin ruta) con w > 0: 120 min (`TP_IMPUTADO`), cota inferior provisional
-    hasta #311; subestima horas y por tanto los elegibles. Como `calcular` da con ello transporte y horas, no hace
-    falta código de tarifas aparte. Los pares con w = 0 se quedan sin tiempo.
-19. ref(d) = la zona con menos minutos observados hacia d (el mínimo observado, no 0: la diagonal d → d es una
-    mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los destinos cuya ref no
-    es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible: sobreestima H si
-    nadie puede vivir allí. H = 0 para la propia ref.
+18. Pares sin tiempo (null: más de 120 min o sin ruta) con w > 0: 120 min (`TP_IMPUTADO`), imputación provisional,
+    no cota inferior: #311 (cerrada por #350) halló nulos falsos por horarios rotos, y `tiempos.json` no se ha
+    regenerado (#105). Sensibilidades: 60 y 90 min (nulos falsos, hacia abajo), 180 min (hacia arriba) y sin pares
+    imputados. Como `calcular` da con ello transporte y horas, no hace falta código de tarifas aparte. Los pares con
+    w = 0 se quedan sin tiempo.
+19. ref(d) = la zona con menos minutos observados hacia d, sin los imputados (el mínimo observado, no 0: la diagonal
+    d → d es una mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los
+    destinos cuya ref no es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible:
+    sobreestima H si nadie puede vivir allí. H = 0 para la propia ref.
 20. `elegible` del municipio = pct ≥ 50 % (`PCT_MINIMO`), la mayoría de sus ocupados; es un convenio de lectura, no
     de la norma. El municipio es la mediana de sus zonas: en Madrid pesa 1 cada distrito, sin ponderar por población,
     y `pct_mediano` de los logs es la mediana entre municipios, que pesan 1 cada uno.
 21. Sensibilidad parcial: regla histórica de colocación adecuada del art. 301 LGSS (RDLeg 8/2015, redacción original;
     la sustituyó el 02-03-2023 la Ley 3/2023, que no fija criterios de desplazamiento): ida y vuelta mayor del 25 % de
-    la jornada diaria (8 h) o coste del desplazamiento mayor del 20 % del salario mensual. SIN LEER EN EL BOE: base
-    legal de fuente secundaria; no publicar hasta citar el texto literal de BOE-A-2015-11724. No aplica el radio de
-    30 km ni el alojamiento. «Salario mensual» = bruto del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14
-    (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es el de un solo trabajador, T ÷ n.º de sueldos
-    (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la tabla de sensibilidades, no al contrato.
+    la jornada diaria (8 h), coste del desplazamiento mayor del 20 % del salario mensual, o salario menos ese coste
+    por debajo del SMI (la norma remite al SMI sin cuantía: se toma el del año simulado, 17.094 €, RD 126/2026,
+    art. 3.1, BOE-A-2026-3815). Texto original leído en el BOE el 20-11-2026 (BOE-A-2015-11724, en vigor del
+    02-01-2016 al 01-03-2023, https://www.boe.es/buscar/doc.php?id=BOE-A-2015-11724; lo sustituye la DF 4.11 de la
+    Ley 3/2023, BOE-A-2023-5365). La norma pide el tiempo mínimo y se usa el mediano de 7:30 a 8:30, que es mayor:
+    sobreestima los desplazamientos largos. No aplica el radio de 30 km (fuera de él no rige la presunción de
+    adecuación; aplicar las excepciones sin radio subestima los largos) ni el alojamiento. «Salario mensual» = bruto
+    del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14 (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es
+    el de un solo trabajador, T ÷ n.º de sueldos (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la
+    tabla de sensibilidades, no al contrato.
 22. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
     transporte barato). El de 23 años usa el Abono Joven (hasta 25 años), tarifa plana por corona.
 23. Horas trabajadas al mes = `semanas_mes` × 5 × 8 por sueldo (151,3 h; solo en `simulacion_296`). Pares sin alquiler
@@ -141,7 +148,8 @@ UMBRAL_296 = 0.30  # corte de `sobrecarga_30` (#100), el de #296
 # por hora, media de 2025T3 a 2026T2) y ETCL4443 (nacional, mismo periodo).
 COSTE_LABORAL_HORA_MADRID = 30.0175
 COSTE_LABORAL_HORA_NACIONAL = 25.8225
-# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 90 y Vademécum 2021-2027 p. 55 (banda 0,25 a 0,40).
+# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 91 (nota 90) y Vademécum 2021-2027 p. 55
+# (banda 0,25 a 0,40).
 PROPORCION_COMMUTING = 0.325
 BANDA_PROPORCION = (0.25, 0.40)
 VTT = PROPORCION_COMMUTING * COSTE_LABORAL_HORA_MADRID  # €/h
@@ -151,10 +159,11 @@ CORTE = 0.45  # índice H+T del CNT (30 % de vivienda + 15 % de transporte), H+T
 PCT_MINIMO = (
     50.0  # % de ocupados elegibles para que lo sea el municipio (registro previo)
 )
-TP_IMPUTADO = 120  # min, cota inferior provisional para los pares sin tiempo con flujo, hasta #311
+TP_IMPUTADO = 120  # min, imputación provisional de los pares sin tiempo con flujo, hasta regenerar tiempos (#105)
 MASA_EXCLUIDA_MAX = 0.25  # se marca a los municipios con más masa excluida o imputada
 POCOS_OCUPADOS = 100  # se marca a los municipios con menos ocupados observados
-# Art. 301 LGSS, RDLeg 8/2015, redacción original: ida y vuelta > 25 % de la jornada diaria; coste > 20 % del salario.
+# Art. 301 LGSS, RDLeg 8/2015, redacción original (BOE-A-2015-11724, en vigor del 02-01-2016 al 01-03-2023):
+# ida y vuelta > 25 % de la jornada diaria; coste > 20 % del salario; salario − coste < SMI.
 LGSS_TIEMPO, LGSS_COSTE = 0.25, 0.20
 # «Salario mensual» = bruto anual ÷ pagas: 12 por defecto; ÷ 14 es la sensibilidad (el umbral baja).
 PAGAS_LGSS = {"lgss_2015": 12, "lgss_2015_14": 14}
@@ -286,11 +295,13 @@ def _carga(r: dict, criterio: str, vtt: float) -> float:
     return carga
 
 
-def _desplazamiento_largo(r: dict, pagas: int) -> bool:
-    """Regla histórica del art. 301 LGSS: ida y vuelta > 25 % de la jornada o coste > 20 % del salario mensual."""
+def _colocacion_inadecuada(r: dict, pagas: int) -> bool:
+    """Regla histórica del art. 301 LGSS: ida y vuelta > 25 % de la jornada, coste > 20 % del salario mensual o
+    salario mensual menos el coste por debajo del SMI mensual."""
     viaje = 2 * r["minutos"] > LGSS_TIEMPO * titulares.HORAS_DIA * 60
-    coste = r["transporte"] / r["n_sueldos"] > LGSS_COSTE * r["ingresos_bruto"] / pagas
-    return viaje or coste
+    salario, coste = r["ingresos_bruto"] / pagas, r["transporte"] / r["n_sueldos"]
+    smi = float(parametros_2026.SMI_ANUAL) / pagas
+    return viaje or coste > LGSS_COSTE * salario or salario - coste < smi
 
 
 def fallos(
@@ -305,8 +316,8 @@ def fallos(
     limite = tope(r["municipio_id"], r["tipo"]) if criterio == "bono_vigente" else None
     f = requisitos(r["edad"], D(str(r[ingresos])), renta, limite)
     if criterio in PAGAS_LGSS:
-        if not _desplazamiento_largo(r, PAGAS_LGSS[criterio]):
-            f.append("desplazamiento corto (art. 301 LGSS, RDLeg 8/2015)")
+        if not _colocacion_inadecuada(r, PAGAS_LGSS[criterio]):
+            f.append("colocación adecuada (art. 301 LGSS, RDLeg 8/2015)")
     elif criterio != "bono_vigente" and _carga(r, criterio, vtt) <= corte:
         f.append(f"esfuerzo <= {corte} (criterio alternativo, {criterio})")
     return f
@@ -328,9 +339,11 @@ def imputar_tiempos(
     """Copia de `api` con `minutos` (por defecto `TP_IMPUTADO`) en los pares (zona, destino) con w > 0 y `tp` nulo, y esos pares."""
     t = api["tiempos"]
     destinos = [d["destino_id"] for d in t["destinos"]]
-    if faltan := set(w["destino"]) - set(destinos):
+    # solo los de zona: `tabla_pares` no usa los demás y su peso se perdería sin aviso
+    zonas = {d["destino_id"] for d in t["destinos"] if d["tipo"] == "zona"}
+    if faltan := set(w["destino"]) - zonas:
         raise ValueError(
-            f"destinos con peso que no están en tiempos.json: {sorted(faltan)[:5]}"
+            f"destinos con peso que no están en tiempos.json como zona: {sorted(faltan)[:5]}"
         )
     zona_mun = {
         f["properties"]["zona_id"]: f["properties"]["municipio_id"]
@@ -351,8 +364,9 @@ def tabla_pares(
 ) -> pd.DataFrame:
     """Una fila por (variante, zona con alquiler, destino de zona) con alquiler, transporte, neto, horas, minutos,
     `horas_extra` (H), `imputado` y el peso `w` (0 si el municipio no tiene flujo a ese destino). `api` es la de
-    `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d (no 0: la diagonal d → d es una
-    mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin transporte, horas o neto."""
+    `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d, sin los pares imputados (no 0: la
+    diagonal d → d es una mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin
+    transporte, horas o neto."""
     zona_mun = {
         f["properties"]["zona_id"]: f["properties"]["municipio_id"]
         for f in api["zonas"]["features"]
@@ -392,7 +406,7 @@ def tabla_pares(
             con_tiempo = [
                 (t["tp"][i][j], z)
                 for i, z in enumerate(t["origenes"])
-                if t["tp"][i][j] is not None
+                if t["tp"][i][j] is not None and (z, d) not in imputados
             ]
             refs[d] = min(con_tiempo)[1] if con_tiempo else None
             ref = zonas[refs[d]]["horas"] if con_tiempo else None
@@ -693,6 +707,7 @@ def main() -> None:
         "alquiler P75": simulacion(pares, alquiler="alquiler_p75"),
         "tiempo imputado 60 min": simulacion(_pares(api, w, 60)),
         "tiempo imputado 90 min": simulacion(_pares(api, w, 90)),
+        "tiempo imputado 180 min": simulacion(_pares(api, w, 180)),
         "sin pares imputados (w renormalizado)": simulacion(pares[~pares["imputado"]]),
         "cuotas de distrito uniformes": simulacion(
             _pares(api, matriz_trabajo.pesos(matriz, uniformes)[0])

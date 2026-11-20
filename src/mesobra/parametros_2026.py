@@ -56,7 +56,8 @@ DESCENDIENTES_ESTATAL = (D(2400), D(2700))
 # Mínimo por 1.º y 2.º descendiente en Madrid (DL 1/2010, art. 2 bis; BOCM-m-2010-90068)
 DESCENDIENTES_MADRID = (D("2575.85"), D("2897.83"))
 
-# Umbral de la DA 61.ª.1.a) LIRPF, fijado en literal; coincide con el SMI anual de 2026 (RD 126/2026, art. 1)
+# Umbral de la DA 61.ª.1.a) LIRPF, fijado en literal; coincide con el SMI anual de 2026
+# (RD 126/2026, art. 3.1; BOE-A-2026-3815)
 SMI_ANUAL = D(17094)
 # Deducción por percepción del SMI (LIRPF, DA 61.ª, redacción del RDL 5/2026, art. 28; BOE-A-2026-3810)
 DEDUCCION_SMI = D("590.89")
