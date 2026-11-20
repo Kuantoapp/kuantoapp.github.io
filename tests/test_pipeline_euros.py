@@ -1,6 +1,7 @@
 """`pipeline_euros`: cada JSON cumple el contrato y las reglas de elección de datos."""
 
 import json
+import re
 from pathlib import Path
 
 import geopandas as gpd
@@ -216,6 +217,44 @@ def _distintas(publicada: pd.DataFrame, codigo: pd.DataFrame, claves: list[str])
         | (m["titulo_x"] != m["titulo_y"])
         | (m["coste_mes_x"] != m["coste_mes_y"])
     ]
+
+
+def _meta_tarifas():
+    return _tarifas()["meta"], json.loads(TARIFAS_APP.read_text("utf-8"))["meta"]
+
+
+def test_meta_visible_describe_solo_la_v1():
+    for meta in _meta_tarifas():
+        for v2 in ("tarifas_ruta", "Renfe", "+65", "79 %"):
+            assert v2 not in meta["nota"]
+        assert not re.search(r"#\d", meta["nota"])
+        assert "2023" not in meta["nota"]
+        assert "ayuntamientos" in meta["nota"]
+        assert "ordinario" in meta["nota"] and "sin ocio" in meta["nota"]
+        nombres = " ".join(f["nombre"] for f in meta["fuentes"])
+        assert (
+            "capítulo III" in nombres
+            and "arts. 5 a 17" in nombres
+            and "art. 3" not in nombres
+        )
+        assert not any("verificar" in f["licencia"] for f in meta["fuentes"])
+        fichas = [
+            f for f in meta["fuentes"] if "crtm.es/billetes-y-tarifas" in f["url"]
+        ]
+        assert fichas and not any("datos abiertos" in f["licencia"] for f in fichas)
+        urls = " ".join(f["url"] for f in meta["fuentes"])
+        assert "renfe.com" not in urls and "abono-plus65" not in urls
+        assert "BOE-A-2025-26459" in urls
+
+
+def test_meta_ruta_lleva_la_v2_y_sus_fuentes():
+    for meta in _meta_tarifas():
+        assert "tarifas_ruta" in meta["nota_ruta"]
+        assert not re.search(r"#\d", meta["nota_ruta"])
+        urls = " ".join(f["url"] for f in meta["fuentes_ruta"])
+        assert "abono-plus65" in urls and "renfe.com" not in urls
+        assert "3.2.a).2.º" in " ".join(f["nombre"] for f in meta["fuentes_ruta"])
+        assert not any("verificar" in f["licencia"] for f in meta["fuentes_ruta"])
 
 
 def test_tarifas_publicadas_v1_al_dia_con_transporte():
