@@ -28,6 +28,16 @@ Activa el entorno con `source .venv/bin/activate` (en Windows, desde Git Bash: `
 
 Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. Para importar `mesobra` fuera de pytest: `uv pip install -e .`. `r5py` arranca Java al importarse (necesita JDK 21 y `JAVA_HOME` apuntando a él): solo se comprueba en local, no en la CI. Licencia: MIT (`LICENSE`).
 
+## Regenerar la API estática
+
+```bash
+python -m mesobra
+```
+
+Comprueba que `data/raw/` tiene todos los ficheros de `data/README.md` con su SHA-256 (si falta uno, se detiene diciendo cuál es y cómo obtenerlo), ejecuta `pipeline_territorio`, `pipeline_euros`, `pipeline_analisis` y `sdm` en ese orden y valida todo `app/datos/` con `api_estatica.validar`. No tiene opciones. Después, `git status` muestra qué ha cambiado en `app/datos/`.
+
+Requisitos: las fuentes de `data/README.md` descargadas y `data/processed/zonas.parquet` y `tiempos.parquet`, que `pipeline_territorio` lee sin relanzar r5py. Esas dos tablas se generan antes con `python -m mesobra.zonas` y `python -m mesobra.tiempos`, que sí usan r5py (JDK 21 con `JAVA_HOME`, unos 30 min, #105). Si se quiere el modo coche, `python -m mesobra.coche` (r5py, JDK 21) genera antes `tiempos_coche.parquet`; sin él, `tiempos.json` sale sin coche. Tiempo de `python -m mesobra`: pendiente de medir en la primera ejecución completa.
+
 ## Demo publicada
 
 La carpeta `app/` se publica tal cual, sin compilar, en **https://yeraybc.github.io/DataMad-hackaton-2026/**. La publica [`.github/workflows/pages.yml`](.github/workflows/pages.yml) en cada push a `main` que cambie `app/`; para publicar sin cambios, *Actions → Pages → Run workflow*. Requiere el repositorio público y Pages con origen «GitHub Actions» (decisión D5). Solo se publica `app/`: los ejemplos de `tests/fixtures/` no están en la web. Sin red, la demo se sirve en local con `python -m http.server -d app`.

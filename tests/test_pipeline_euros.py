@@ -104,9 +104,15 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     cesta = pd.Series(
         {"alimentacion": 275.0, "suministros": 81.0, "comunicaciones": 43.7}
     )
-    obj = hogares_json(tabla, cesta, 69)
+    tramos = pd.Series([0.73, 1.14], index=pd.Index([0, 5000], name="desde"))
+    obj = hogares_json(tabla, cesta, tramos, 69)
     validar("hogares.json", obj)
     assert {p["m2"] for p in obj["perfiles"].values()} == {69}
+    assert obj["cesta_tramos"] == [
+        {"desde": 0, "factor": 0.73},
+        {"desde": 5000, "factor": 1.14},
+    ]
+    assert type(obj["cesta_tramos"][1]["desde"]) is int
 
 
 def _tarifas():

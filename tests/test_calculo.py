@@ -138,9 +138,40 @@ def test_sin_ruta_no_hay_coste_ni_sobra() -> None:
 def test_cesta_con_el_hogar_del_visitante() -> None:
     uc = API["hogares"]["cesta_uc"]
     comparte = {"adultos": 1, "hijos": 0, "personas_comparten": 3}
-    assert calculo.cesta(uc, comparte) == pytest.approx(
+    assert calculo.cesta(uc, comparte, 1.0) == pytest.approx(
         275.37 + (81.08 + 43.72) * 2 / 3
     )
+    # el factor del tramo solo toca la alimentación
+    assert calculo.cesta(uc, comparte, 0.5) == pytest.approx(
+        275.37 * 0.5 + (81.08 + 43.72) * 2 / 3
+    )
+
+
+# Cortes de la EPF: un céntimo a cada lado de cada uno (#312). Fixture: 0,7 · 0,8 · 0,85 · 0,95 · 0,9 · 0,97 · 1,02 · 1,15.
+CORTES = [
+    (0.01, 0.7), (499.99, 0.7), (500, 0.8), (999.99, 0.8), (1000, 0.85),
+    (1499.99, 0.85), (1500, 0.95), (1999.99, 0.95), (2000, 0.9), (2499.99, 0.9),
+    (2500, 0.97), (2999.99, 0.97), (3000, 1.02), (4999.99, 1.02), (5000, 1.15),
+    (90000, 1.15),
+]  # fmt: skip
+
+
+@pytest.mark.parametrize(("neto", "factor"), CORTES)
+def test_tramo_de_la_cesta_en_los_cortes(neto: float, factor: float) -> None:
+    assert calculo.tramo_cesta(API["hogares"]["cesta_tramos"], neto)["factor"] == factor
+
+
+def test_escenario_cesta_del_tramo() -> None:
+    """Con 1.400 €/mes de neto propio (tramo 1.000-1.499, 0,85) en «comparte» solo baja la alimentación."""
+    sueldo = {**CENTRO, "neto_mes": 1400}
+    sueldo.pop("bruto", None)
+    hogar = {"perfil": "comparte", "edad": 28}
+    media = _zona(_entrada(hogar=hogar, sueldos=[sueldo]), "2807913")
+    tramo = _zona(
+        _entrada(hogar=hogar, sueldos=[sueldo], escenario={"cesta": "tramo"}), "2807913"
+    )
+    assert media["cesta"] - tramo["cesta"] == pytest.approx(275.37 * 0.15)
+    assert tramo["sobra"] - media["sobra"] == pytest.approx(275.37 * 0.15)
 
 
 def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
@@ -162,6 +193,7 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
         ({"sueldos": [CENTRO | {"bruto": 120001}]}, "fuera de la tabla"),
         ({"hogar": {"perfil": "solo", "edad": 30, "hijos": 3}}, "hijos = 3"),
         ({"hogar": {"perfil": "solo", "edad": 65}}, "edad = 65"),
+        ({"escenario": {"cesta": "baja"}}, "cesta"),
         ({"sueldos": [CENTRO | {"dias": 6}]}, "dias = 6"),
         ({"sueldos": [CENTRO | {"modo": "bici"}]}, "modo 'bici'"),
         ({"zonas": ["28092"]}, "sin tarifa"),
@@ -200,7 +232,7 @@ def test_entradas_invalidas_fallan(cambios: dict, mensaje: str) -> None:
 def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
     assert (
         calculo._corona(API, "2807901", "polo:ifema") == "A"
-    )  # zona_id 2807913, corona A
+    )  # zona_id 2807913 (zona ficticia en el ejemplo: IFEMA está en Barajas), corona A
     api = copy.deepcopy(API)
     polo = next(d for d in api["tiempos"]["destinos"] if d["tipo"] == "polo")
     polo["zona_id"] = "28065"
@@ -208,6 +240,13 @@ def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
     polo["zona_id"] = "28092"  # la corona B2 no tiene tarifa en el ejemplo
     with pytest.raises(ValueError, match="sin tarifa"):
         calculo._corona(api, "2807901", "polo:ifema")
+
+
+def test_zona_id_nulo_cae_a_destino_id_como_en_js() -> None:
+    api = copy.deepcopy(API)
+    centro = next(d for d in api["tiempos"]["destinos"] if d["destino_id"] == "2807901")
+    centro["zona_id"] = None
+    assert calculo._corona(api, "2807901", "2807901") == "A"
 
 
 @pytest.mark.parametrize("edad", [16, 64])
@@ -285,6 +324,7 @@ def test_escenario_aplicado_en_la_salida() -> None:
         "tarifas": "vigente_2026",
         "subida_alquiler": 5,
         "edad": 30,
+        "cesta": "media",
     }
 
 

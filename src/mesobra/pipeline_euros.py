@@ -170,26 +170,40 @@ EPF_IDS = {
     3: "39d6f25b-e043-428f-b8f6-4a46214bf34e/resource/83b08257-b457-4fe4-a11b-0fd37a2c33f7",
     4: "87b3102d-79f3-44ab-8b33-3f347bbe048b/resource/88ed4858-b94e-40e5-aae5-8a2d786546b4",
 }
-FUENTES_HOGARES = [
-    {
-        "nombre": f"INE, Encuesta de Presupuestos Familiares, {d} dígitos. Fuente de los datos: Comunidad de Madrid",
-        "url": EPF.format(i, d),
-        "licencia": "CC BY 4.0",
-    }
-    for d, i in EPF_IDS.items()
-] + [
-    SERPAVI,
-    {
-        "nombre": "INE, IPC base 2025 por comunidades autónomas y subgrupos ECOICOP (tabla 76137), subgrupos 01.1, 01.2, 04.5 y 08.3 de la Comunidad de Madrid. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
-        "url": IPC_INE["url"],
-        "licencia": "CC BY 4.0",
-    },
-    {
-        "nombre": "INE, IPC base 2025 nacional por clases ECOICOP (tabla 76127), clase 04.4.1 Suministro de agua. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
-        "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/76127.csv",
-        "licencia": "CC BY 4.0",
-    },
-]
+FUENTES_HOGARES = (
+    [
+        {
+            "nombre": f"INE, Encuesta de Presupuestos Familiares, {d} dígitos. Fuente de los datos: Comunidad de Madrid",
+            "url": EPF.format(i, d),
+            "licencia": "CC BY 4.0",
+        }
+        for d, i in EPF_IDS.items()
+    ]
+    + [
+        SERPAVI,
+        {
+            "nombre": "INE, IPC base 2025 por comunidades autónomas y subgrupos ECOICOP (tabla 76137), subgrupos 01.1, 01.2, 04.5 y 08.3 de la Comunidad de Madrid. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+            "url": IPC_INE["url"],
+            "licencia": "CC BY 4.0",
+        },
+        {
+            "nombre": "INE, IPC base 2025 nacional por clases ECOICOP (tabla 76127), clase 04.4.1 Suministro de agua. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+            "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/76127.csv",
+            "licencia": "CC BY 4.0",
+        },
+    ]
+    + [
+        {
+            "nombre": f"INE, Encuesta de Presupuestos Familiares de España 2025 por nivel de ingresos (tabla {t}, {que}; actualizada el 2026-06-25). Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+            "url": f"https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/{t}.csv",
+            "licencia": "CC BY 4.0",
+        }
+        for t, que in [
+            (73809, "gasto por hogar del grupo 01"),
+            (73795, "gasto total por hogar y por unidad de consumo"),
+        ]
+    ]
+)
 
 
 def _meta(
@@ -433,7 +447,9 @@ def rutas() -> tuple[pd.DataFrame, list[str]]:
     return tp, z["zona_id"].tolist()
 
 
-def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
+def hogares_json(
+    tabla: pd.DataFrame, cesta: pd.Series, tramos: pd.Series, m2: int
+) -> dict:
     columnas = [
         "adultos",
         "hijos",
@@ -461,15 +477,22 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
         "basuras. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es; el INE no "
         "participa ni patrocina este proyecto. Internet y móvil se reparten entre quienes comparten piso "
         "como la luz (supuesto). Sin comidas fuera de casa (restauración, 11.1: 1.852 €/UC al año en la EPF "
-        "de Madrid de 2025), ni adaptación a la renta (la media se toma como estándar: los hogares con menos "
+        "de Madrid de 2025), ni adaptación a la renta por defecto (la media se toma como estándar: los hogares con menos "
         "renta gastan menos en comida por UC porque pueden menos) ni al tamaño del piso o al clima "
-        "(en la sierra la calefacción se queda corta). " + ORIGEN_SERPAVI
+        "(en la sierra la calefacción se queda corta). Escenario «cesta de tu tramo de ingresos» "
+        "(estimado): la alimentación por el cociente entre la alimentación por UC del tramo de ingresos "
+        "mensuales netos regulares del hogar y la de todos los hogares, EPF de España de 2025 (tablas "
+        "73809 y 73795; UC por hogar = gasto total por hogar ÷ gasto por UC), porque la EPF de Madrid no "
+        "la da por tramo. " + ORIGEN_SERPAVI
     )
     return {
         "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota)
         | {"ipc_hasta": mes},
         "perfiles": perfiles,
         "cesta_uc": {k: float(v) for k, v in cesta.items()},
+        "cesta_tramos": [
+            {"desde": int(d), "factor": float(f)} for d, f in tramos.items()
+        ],
     }
 
 
@@ -493,7 +516,10 @@ def main() -> None:
             ids,
         ),
         "hogares.json": hogares_json(
-            hogares.hogares(), hogares.cesta_uc(), m2_por_defecto(zona)
+            hogares.hogares(),
+            hogares.cesta_uc(),
+            hogares.factores_tramo(),
+            m2_por_defecto(zona),
         ),
     }
     for nombre, objeto in salidas.items():

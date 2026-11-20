@@ -8,6 +8,7 @@
     "nota": "Ejemplo inventado para tests; no son datos."
   },
   "cesta_uc": {"alimentacion": 275.37, "suministros": 81.08, "comunicaciones": 43.72},
+  "cesta_tramos": [{"desde":0,"factor":0.7},{"desde":500,"factor":0.8},{"desde":1000,"factor":0.85},{"desde":1500,"factor":0.95},{"desde":2000,"factor":0.9},{"desde":2500,"factor":0.97},{"desde":3000,"factor":1.02},{"desde":5000,"factor":1.15}],
   "perfiles": {
     "solo": {"adultos":1,"hijos":0,"personas_comparten":1,"m2":45,"alimentacion":280.0,"suministros":90.0,"comunicaciones":40.0},
     "comparte": {"adultos":1,"hijos":0,"personas_comparten":3,"m2":80,"alimentacion":280.0,"suministros":45.0,"comunicaciones":20.0},

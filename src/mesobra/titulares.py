@@ -49,7 +49,7 @@ from mesobra.figuras import es
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
 FUENTE_CALCULO = (
-    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
+    "elaboración propia con mesobra.calculo (alquiler del SERPAVI actualizado con el IPC de alquiler del INE (IPC297196) hasta {ipc_hasta}, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
     "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
 )
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"
@@ -191,7 +191,7 @@ def resumen(df: pd.DataFrame, neto_hora: float) -> dict:
 
 
 def resumenes(api: dict) -> list[tuple[dict, dict]]:
-    """(perfil, resumen) de cada perfil; el resumen añade `n_ref_distinta` (destinos con otra referencia)."""
+    """(perfil, resumen) de cada perfil; el resumen añade `n_ref_distinta` (destinos con otra referencia) e `ipc_hasta`."""
     horas = api["tarifas"]["semanas_mes"] * DIAS_SEMANA * HORAS_DIA
     salida = []
     for perfil in PERFILES:
@@ -199,6 +199,7 @@ def resumenes(api: dict) -> list[tuple[dict, dict]]:
         r = resumen(df, df["neto"].iloc[0] / (len(perfil["sueldos"]) * horas))
         ref = df.groupby("destino")["ref"].first()
         r["n_ref_distinta"] = int((ref != ref.index).sum())
+        r["ipc_hasta"] = api["alquiler"]["meta"]["ipc_hasta"]
         r["n_destinos"] = len(ref)
         salida.append((perfil, r))
     return salida
@@ -208,7 +209,7 @@ def titulares(res: list[tuple[dict, dict]]) -> list[dict]:
     """Dos entradas `{"texto", "fuente"}` por perfil; descriptivas, con n y banda, todo «estimado»."""
     salida = []
     for perfil, r in res:
-        fuente = f"{FUENTE_CALCULO}; sueldo: {perfil['fuente']}"
+        fuente = f"{FUENTE_CALCULO.format(ipc_hasta=r['ipc_hasta'])}; sueldo: {perfil['fuente']}"
         coronas = ", ".join(
             f"{c} {es(m, 2)} € (n = {es(n, 0)})" for c, (m, n) in r["coronas"].items()
         )
