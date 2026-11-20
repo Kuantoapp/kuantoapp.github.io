@@ -96,6 +96,7 @@ def leer_cuotas_distritos(ruta: Path = DISTRITOS, zonas: Path = ZONAS) -> pd.Ser
     """Cuota de los ocupados de 2023 de cada distrito de Madrid (`zona_id` 2807901…) en el Colectivo Empresarial
     (Total, sin «no consta distrito»). Falla si no salen los 21 distritos de `zonas`."""
     props = [f["properties"] for f in json.loads(zonas.read_text("utf-8"))["features"]]
+    # shortcut: une por nombre porque el CSV no trae código de distrito; si lo trae, unir por código
     ids = {
         _clave(p["nombre"]): p["zona_id"]
         for p in props
@@ -124,10 +125,15 @@ def leer_cuotas_distritos(ruta: Path = DISTRITOS, zonas: Path = ZONAS) -> pd.Ser
     return (cuotas / cuotas.sum()).sort_index()
 
 
+def _dentro(m: pd.DataFrame) -> pd.DataFrame:
+    """Filas con destino en la Comunidad y municipio conocido: la base común de `pesos` y `ocupados_observados`."""
+    return m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
+
+
 def ocupados_observados(m: pd.DataFrame) -> pd.Series:
-    """Por origen, ocupados que trabajan en la Comunidad con municipio conocido: la base de los pesos."""
-    dentro = m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
-    return dentro.groupby("origen")["ocupados"].sum()
+    """Por origen, ocupados que trabajan en la Comunidad con municipio conocido: la base de los pesos (0 si no hay)."""
+    observados = _dentro(m).groupby("origen")["ocupados"].sum()
+    return observados.reindex(m["origen"].unique(), fill_value=0)
 
 
 def pesos(m: pd.DataFrame, cuotas: pd.Series) -> tuple[pd.DataFrame, pd.Series]:
@@ -135,14 +141,9 @@ def pesos(m: pd.DataFrame, cuotas: pd.Series) -> tuple[pd.DataFrame, pd.Series]:
     y `w` = ocupados ÷ total de los que trabajan en la Comunidad con municipio conocido, que suma 1 por origen;
     `excluida`, por origen, la fracción de sus ocupados que queda fuera (otras provincias o «No consta»).
     Las celdas suprimidas no se imputan: no se distinguen de los ceros."""
-    dentro = m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
-    dentro = dentro.groupby(["origen", "destino"], as_index=False)["ocupados"].sum()
-    por_origen = dentro.groupby("origen")["ocupados"].sum()
-    excluida = (
-        1
-        - por_origen.reindex(m["origen"].unique(), fill_value=0)
-        / m.groupby("origen")["ocupados"].sum()
-    )
+    dentro = _dentro(m).groupby(["origen", "destino"], as_index=False)["ocupados"].sum()
+    por_origen = ocupados_observados(m)
+    excluida = 1 - por_origen / m.groupby("origen")["ocupados"].sum()
     dentro["w"] = dentro["ocupados"] / dentro["origen"].map(por_origen)
     madrid = dentro["destino"] == MUNICIPIO_MADRID
     reparto = dentro[madrid].merge(

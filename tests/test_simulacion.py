@@ -153,13 +153,24 @@ def test_horas_viaje_incluye_alquiler_transporte_y_el_vtt_a_mano():
 
 
 def test_lgss_ida_y_vuelta_o_coste():
-    # 120 min de ida y vuelta = 25 % de 8 h: no pasa; 61 de ida, sí. Coste: 20 % de 12.000 ÷ 12 = 200 €
-    assert _fallos(_fila(minutos=60), "lgss_2015")
-    assert _fallos(_fila(minutos=61), "lgss_2015") == []
-    assert _fallos(_fila(transporte=200.0), "lgss_2015")
-    assert _fallos(_fila(transporte=200.01), "lgss_2015") == []
+    # bruto de 24.000 (por encima del SMI tras el coste). 120 min de ida y vuelta = 25 % de 8 h: no pasa; 61 de ida,
+    # sí. Coste: 20 % de 24.000 ÷ 12 = 400 €
+    assert _fallos(_fila(minutos=60, ingresos_bruto=24000.0), "lgss_2015")
+    assert _fallos(_fila(minutos=61, ingresos_bruto=24000.0), "lgss_2015") == []
+    assert _fallos(_fila(transporte=400.0, ingresos_bruto=24000.0), "lgss_2015")
+    assert _fallos(_fila(transporte=400.01, ingresos_bruto=24000.0), "lgss_2015") == []
     # dos sueldos: el coste es el de cada trabajador
-    assert _fallos(_fila(transporte=300.0, n_sueldos=2), "lgss_2015")
+    assert _fallos(
+        _fila(transporte=600.0, n_sueldos=2, ingresos_bruto=24000.0), "lgss_2015"
+    )
+
+
+@pytest.mark.parametrize("criterio", ["lgss_2015", "lgss_2015_14"])
+def test_lgss_salario_menos_coste_bajo_el_smi(criterio):
+    # bruto = SMI anual: sin coste es adecuada; con 0,01 € de coste el salario queda por debajo del SMI
+    smi = float(simulacion.parametros_2026.SMI_ANUAL)
+    assert _fallos(_fila(ingresos_bruto=smi), criterio)
+    assert _fallos(_fila(ingresos_bruto=smi, transporte=0.01), criterio) == []
 
 
 def test_sin_transporte_ni_horas_coinciden_las_alternativas():
@@ -305,9 +316,27 @@ def test_imputa_a_120_solo_con_peso_y_sin_tiempo():
     assert imp["tiempos"]["tp"][:2] == api["tiempos"]["tp"][:2]
 
 
-def test_imputar_falla_con_un_destino_desconocido():
+def test_imputar_falla_con_un_destino_desconocido_o_que_no_es_zona():
     with pytest.raises(ValueError, match="destinos con peso"):
         simulacion.imputar_tiempos(_api2(), W.assign(destino="28999"))
+    api = _api2()
+    t = api["tiempos"]
+    no_zona = {
+        **api,
+        "tiempos": {
+            **t,
+            "destinos": [{**t["destinos"][0], "tipo": "polo"}, t["destinos"][1]],
+        },
+    }
+    with pytest.raises(ValueError, match="como zona"):
+        simulacion.imputar_tiempos(no_zona, W)
+
+
+def test_la_referencia_no_sale_de_un_par_imputado():
+    # Getafe → Vallecas imputado a 1 min sería el mínimo; la referencia sigue siendo Centro (observado): H = 0
+    imp, imputados = simulacion.imputar_tiempos(_api2(), W, 1)
+    pares = simulacion.tabla_pares(imp, W, imputados)
+    assert (pares.loc[pares["zona_id"] == "2807901", "horas_extra"] == 0).all()
 
 
 def test_h_es_cero_en_la_zona_de_referencia_y_nunca_negativa():
@@ -379,6 +408,20 @@ def test_pesos_suman_uno_por_origen_y_declaran_la_masa_excluida():
     assert w.groupby("origen")["w"].sum().tolist() == pytest.approx([1.0, 1.0])
     # 28001: con municipio en la Comunidad, 100 de 160 (fuera: 10 sin municipio, 30 de Guadalajara, 20 sin provincia)
     assert excluida["28001"] == pytest.approx(60 / 160) and excluida["28002"] == 0
+    assert matriz_trabajo.ocupados_observados(MATRIZ).to_dict() == {
+        "28001": 100,
+        "28002": 5,
+    }
+    # un origen sin destinos observados en la Comunidad: 0 observados, no NaN
+    fuera = pd.DataFrame(
+        {
+            "origen": ["28003"],
+            "prov_destino": ["19"],
+            "destino": ["19001"],
+            "ocupados": [7],
+        }
+    )
+    assert matriz_trabajo.ocupados_observados(fuera).to_dict() == {"28003": 0}
 
 
 def test_el_reparto_de_madrid_conserva_su_peso():
@@ -508,8 +551,8 @@ def test_sensibilidades_de_ingresos_y_de_alquiler_cambian_lo_que_deben():
 
 
 def test_lgss_con_14_pagas_baja_el_umbral_de_coste():
-    # 20 % de 12.000 ÷ 12 = 200 €; ÷ 14 = 171 €: con 190 € solo pasa con 14 pagas
-    f = _fila(transporte=190.0)
+    # 20 % de 24.000 ÷ 12 = 400 €; ÷ 14 = 342,86 €: con 380 € solo pasa con 14 pagas
+    f = _fila(transporte=380.0, ingresos_bruto=24000.0)
     assert _fallos(f, "lgss_2015") and _fallos(f, "lgss_2015_14") == []
 
 
