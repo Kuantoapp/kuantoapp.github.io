@@ -112,7 +112,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const { alquiler, hogares, netos, tarifas, tiempos, zonas } = api;
   const metas = [zonas.meta, alquiler.meta, tiempos.meta, hogares.meta, netos.meta, tarifas.meta];
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
-  const hayImprecisas = imprecisas(alquiler).size > 0;
+  const hayImprecisas = imprecisas(alquiler).size > 0 && m.datos.includes("alquiler");
   const usaAlquiler = m.datos.includes("alquiler");
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
@@ -124,7 +124,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     fila.append(muestra, elemento("span", texto));
     cont.append(fila);
   }
-  cont.append(elemento("p", `${hayImprecisas ? "Borde punteado: pocos contratos (impreciso). " : ""}${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
+  cont.append(elemento("p", `${hayImprecisas ? "Borde punteado: pocos alquileres declarados (impreciso). " : ""}${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
   const detalle = document.createElement("details");
   const ejemplo = avisoPrueba(metas) !== null; // datos inventados: no se atribuyen a ninguna fuente
   const notas = [

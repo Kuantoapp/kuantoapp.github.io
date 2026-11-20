@@ -171,9 +171,9 @@ test("con factor_ipc distinto de 1 la ficha no dice «contratos de {año}» a se
 
 const conTestigos = (n) => ({ ...ejemplo, alquiler: { ...ejemplo.alquiler, zonas: { ...ejemplo.alquiler.zonas, 28065: { ...ejemplo.alquiler.zonas["28065"], testigos: n } } } });
 
-test("la ficha avisa de pocos contratos con menos de min_testigos y no con 50 ni en una zona estimada", () => {
+test("la ficha avisa de pocos alquileres declarados con menos de min_testigos y no con 50 ni en una zona estimada", () => {
   const lineas = (api, id, caso = casos.find((c) => !("error" in c))) => lineasFicha("Zona", caso.salida.zonas[id], "sobra", contextoFicha(api, caso.entrada, caso.salida, id));
-  assert.ok(lineas(conTestigos(49), "28065").some((l) => l.startsWith("Impreciso: pocos contratos (49 en 2024, menos de 50)")));
+  assert.ok(lineas(conTestigos(49), "28065").some((l) => l.startsWith("Impreciso: pocos alquileres declarados (49 en 2024, menos de 50)")));
   assert.ok(!lineas(conTestigos(50), "28065").some((l) => l.startsWith("Impreciso")));
   assert.ok(!lineas(conTestigos(49), "28092", casos.find((c) => c.nombre.startsWith("coche"))).some((l) => l.startsWith("Impreciso")), "estimada: testigos null");
 });
@@ -184,28 +184,29 @@ test("imprecisas con datos reales: 33 zonas, entre ellas Titulcia", () => {
   assert.ok(pocas.has("28147"));
 });
 
-test("pintar marca impreciso con 49 testigos y no con 50", () => {
-  const resultado = { zonas: Object.fromEntries(ejemplo.zonas.features.map((f) => [f.properties.zona_id, { sobra: 1 }])) };
-  const marca = (n) => {
+test("pintar marca impreciso con 49 testigos y no con 50, y nunca en horas", () => {
+  const resultado = { zonas: Object.fromEntries(ejemplo.zonas.features.map((f) => [f.properties.zona_id, { sobra: 1, horas: 1 }])) };
+  const marca = (n, metrica = "sobra") => {
     const api = conTestigos(n);
-    return pintar(api.zonas, resultado, "sobra", imprecisas(api.alquiler)).zonas.features.filter((f) => f.properties.impreciso).map((f) => f.properties.zona_id);
+    return pintar(api.zonas, resultado, metrica, imprecisas(api.alquiler)).zonas.features.filter((f) => f.properties.impreciso).map((f) => f.properties.zona_id);
   };
   assert.deepEqual(marca(49), ["28065"]);
   assert.deepEqual(marca(50), []);
+  assert.deepEqual(marca(49, "horas"), []);
 });
 
 test("mejores marca las imprecisas en las métricas del alquiler y no en las horas", () => {
   const resultado = { ref: null, zonas: { a: { sobra: 1, horas: 2 }, b: { sobra: 0, horas: 1 } } };
   const nombres = { a: "A", b: "B" };
   const pocas = new Set(["a"]);
-  assert.equal(mejores(resultado, "sobra", nombres, pocas)[0].texto, "A: 1 €/mes (impreciso: pocos contratos)");
+  assert.equal(mejores(resultado, "sobra", nombres, pocas)[0].texto, "A: 1 €/mes (impreciso: pocos alquileres declarados)");
   assert.equal(mejores(resultado, "sobra", nombres, pocas)[1].texto, "B: 0 €/mes");
   assert.equal(mejores(resultado, "horas", nombres, pocas)[1].texto, "A: 2,0 h/mes");
 });
 
-test("los avisos cuentan las zonas con pocos contratos solo si las hay", () => {
-  assert.ok(avisos(conTestigos(49).alquiler).includes("1 zona con pocos contratos (menos de 50): borde punteado; su ficha lo avisa."));
-  assert.ok(!avisos(ejemplo.alquiler).some((l) => l.includes("pocos contratos")));
+test("los avisos cuentan las zonas con pocos alquileres declarados solo si las hay", () => {
+  assert.ok(avisos(conTestigos(49).alquiler).includes("1 zona con pocos alquileres declarados (menos de 50): borde punteado; su ficha lo avisa."));
+  assert.ok(!avisos(ejemplo.alquiler).some((l) => l.includes("pocos alquileres declarados")));
 });
 
 test("el aviso y la ficha nombran el mismo mes del IPC", () => {

@@ -129,6 +129,7 @@ export function pintar(zonas, resultado, metrica, pocas = new Set()) {
     return zona;
   };
   const escala = METRICAS[metrica].divergente ? escalaDivergente : escalaSecuencial;
+  const usaAlquiler = METRICAS[metrica].datos.includes("alquiler");
   const clases = escala(zonas.features.map((f) => de(f)[metrica]));
   const usadas = new Set();
   const features = zonas.features.map((f) => {
@@ -145,7 +146,7 @@ export function pintar(zonas, resultado, metrica, pocas = new Set()) {
         color: clave === null ? colorPara(valor, clases) : CATEGORIAS[clave].color,
         referencia: zona.etiqueta === REFERENCIA,
         estimado: zona.origen === "estimado",
-        impreciso: pocas.has(f.properties.zona_id),
+        impreciso: usaAlquiler && pocas.has(f.properties.zona_id), // en horas el alquiler no cuenta
       },
     };
   });
@@ -288,7 +289,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseBanda(zona.sobra_banda),
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
-    ...(ctx.impreciso ? [`Impreciso: pocos contratos (${ctx.testigos} en ${ctx.anio}, menos de ${ctx.minTestigos}): con tan pocos alquileres declarados, unos pocos mueven la cifra (fuente: SERPAVI, MIVAU)`] : []),
+    ...(ctx.impreciso ? [`Impreciso: pocos alquileres declarados (${ctx.testigos} en ${ctx.anio}, menos de ${ctx.minTestigos}): unos pocos mueven la cifra (fuente: SERPAVI, MIVAU)`] : []),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
     `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
@@ -314,7 +315,7 @@ export function mejores(resultado, metrica, nombres, pocas = new Set()) {
     .filter(([, z]) => esNumero(z[metrica]) && (metrica !== "precio_hora" || z.horas > ref.horas))
     .sort(([, a], [, b]) => signo * (a[metrica] - b[metrica]))
     .slice(0, MEJORES)
-    .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}${usaAlquiler && pocas.has(id) ? " (impreciso: pocos contratos)" : ""}` }));
+    .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}${usaAlquiler && pocas.has(id) ? " (impreciso: pocos alquileres declarados)" : ""}` }));
 }
 
 /** Aviso de que los ficheros cargados son de ejemplo, según `meta.ejemplo` (`null` si son datos reales). */
@@ -338,7 +339,7 @@ export function avisos(alquiler) {
   const zonasN = (n) => `${n} ${n === 1 ? "zona" : "zonas"}`;
   if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
   const pocas = imprecisas(alquiler).size;
-  if (pocas > 0) lineas.push(`${zonasN(pocas)} con pocos contratos (menos de ${alquiler.meta.min_testigos}): borde punteado; su ficha lo avisa.`);
+  if (pocas > 0) lineas.push(`${zonasN(pocas)} con pocos alquileres declarados (menos de ${alquiler.meta.min_testigos}): borde punteado; su ficha lo avisa.`);
   const sinDato = cuantas("sin_dato");
   if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
   // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.
