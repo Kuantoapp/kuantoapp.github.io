@@ -10,6 +10,7 @@ INFORME = Path(__file__).resolve().parents[1] / "app" / "informe.html"
 
 def test_hash_del_estilo_coincide_con_la_csp():
     html = INFORME.read_text(encoding="utf-8")
+    assert html.count("<style") == 1, "La CSP solo autoriza un bloque de estilos"
     estilo = re.search(r"<style>(.*?)</style>", html, re.DOTALL).group(1)
     huella = base64.b64encode(hashlib.sha256(estilo.encode()).digest()).decode()
     assert f"style-src 'sha256-{huella}'" in html, (
