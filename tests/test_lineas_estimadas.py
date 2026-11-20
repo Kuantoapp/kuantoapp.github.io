@@ -174,42 +174,97 @@ def test_completar_tablas_sin_esas_rutas_no_toca_nada():
             b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
             b"t1,08:00:00,08:00:00,A,0\r\nt1,08:10:00,08:10:00,B,1\r\n"
         ),
-        "stops.txt": b"stop_id,stop_lon,stop_lat,location_type\r\nA,-3.7,40.4,0\r\n",
+        # sin `location_type`, como el de Cercanías
+        "stops.txt": b"stop_id,stop_lon,stop_lat\r\nA,-3.7,40.4\r\n",
     }
     assert le.completar_tablas(tablas, {"R": ["A", "B"]}) is tablas
 
 
-def test_rellenar_horarios_usa_la_salida_del_trip_id_y_la_velocidad_de_las_parecidas():
-    xy = pd.DataFrame(
-        {"x": [X0, X0 + 3000, X0 + 7000], "y": [Y0, Y0, Y0]}, index=["p", "q", "r"]
-    )
-    real, relleno = "8__101___", "8__102___"
-    viaje = f"x_{relleno}_1_06:56:00_1_-__1"
+COLS = ["trip_id", "arrival_time", "departure_time", "stop_id", "stop_sequence"]
+XY3 = pd.DataFrame(
+    {"x": [X0, X0 + 3000, X0 + 7000], "y": [Y0, Y0, Y0]}, index=["p", "q", "r"]
+)
+RELLENO3 = ("01:00:00", "01:00:00", "01:00:00")
+
+
+def _viaje(trip_id: str, horas: tuple[str, ...]) -> list[tuple[str, ...]]:
+    return [
+        (trip_id, h, h, s, str(i))
+        for i, (s, h) in enumerate(zip("pqr", horas, strict=True))
+    ]
+
+
+def _escenario(*viajes: tuple[str, str, tuple[str, ...]]):
+    """Una línea real (30 km/h: 3 km en 6 min, 7 km en 14) y los viajes `(trip_id, route_id, horas)` dados."""
+    filas = _viaje("t1", ("07:40:00", "07:46:00", "07:54:00"))
+    rutas = {"t1": "8__101___"}
+    for trip_id, route_id, horas in viajes:
+        filas += _viaje(trip_id, horas)
+        rutas[trip_id] = route_id
     trips = pd.DataFrame(
         {
-            "trip_id": ["t1", viaje],
-            "route_id": [real, relleno],
+            "trip_id": list(rutas),
+            "route_id": list(rutas.values()),
             "service_id": "L",
             "direction_id": "0",
         }
     )
-    horas = ("07:40:00", "07:46:00", "07:54:00")  # 30 km/h: 3 km en 6 min, 7 km en 14
-    filas = [
-        ("t1", h, h, s, str(i))
-        for i, (s, h) in enumerate(zip("pqr", horas, strict=True))
-    ]
-    filas += [(viaje, "01:00:00", "01:00:00", s, str(i)) for i, s in enumerate("pqr")]
-    cols = ["trip_id", "arrival_time", "departure_time", "stop_id", "stop_sequence"]
-    st = pd.DataFrame(filas, columns=cols)
-    salida = le.rellenar_horarios(trips, st, xy)
-    nuevo = salida[salida["trip_id"] == viaje].sort_values("stop_sequence")
-    assert nuevo["departure_time"].tolist() == ["06:56:00", "07:02:00", "07:10:00"]
-    assert salida[salida["trip_id"] == "t1"]["departure_time"].tolist() == list(horas)
-    sin_hora = trips.assign(trip_id=["t1", "malo"])
+    return trips, pd.DataFrame(filas, columns=COLS)
+
+
+def _horas(st: pd.DataFrame, trip_id: str) -> list[str]:
+    q = st[st["trip_id"] == trip_id].sort_values("stop_sequence")
+    return q["departure_time"].tolist()
+
+
+def test_rellenar_horarios_usa_la_salida_del_trip_id_y_la_velocidad_de_las_parecidas():
+    largo, corto = "x_8__102___-1_06:56:00_1_-__1", "x_8__102___-1_620"
+    trips, st = _escenario(
+        (largo, "8__102___", RELLENO3), (corto, "8__102___", RELLENO3)
+    )
+    salida = le.rellenar_horarios(trips, st, XY3)
+    assert _horas(salida, largo) == ["06:56:00", "07:02:00", "07:10:00"]
+    assert _horas(salida, corto) == ["06:20:00", "06:26:00", "06:34:00"]  # hora corta
+    assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
+
+
+def test_rellenar_horarios_sin_nada_que_hacer_devuelve_el_mismo_objeto():
+    trips, st = _escenario()
+    assert le.rellenar_horarios(trips, st, XY3) is st
+
+
+def test_rellenar_horarios_falla_si_no_hay_hora_valida_o_viaje():
+    trips, st = _escenario(("x_8__102___-sin_hora", "8__102___", RELLENO3))
     with pytest.raises(ValueError, match="sin hora"):
-        le.rellenar_horarios(
-            sin_hora, st.assign(trip_id=st["trip_id"].replace(viaje, "malo")), xy
-        )
+        le.rellenar_horarios(trips, st, XY3)
+    for imposible in (
+        "x_8__102___-1_2075",
+        "x_8__102___-1_9915",
+        "x_8__102___-1_99:15:00_",
+    ):
+        trips, st = _escenario((imposible, "8__102___", RELLENO3))
+        with pytest.raises(ValueError, match="Hora imposible"):
+            le.rellenar_horarios(trips, st, XY3)
+    trips, st = _escenario(("x_8__102___-1_620", "8__102___", RELLENO3))
+    with pytest.raises(ValueError, match="no están en trips.txt"):
+        le.rellenar_horarios(trips[trips["trip_id"] == "t1"], st, XY3)
+
+
+def test_rellenar_horarios_desplaza_la_primera_salida_de_relleno_y_deja_el_nocturno():
+    parcial = "x_8__483___-1_07:30:00_1_-__1"
+    nocturno = "x_8_N_101___-1_01:00:00_1_-__1"
+    sin_hora = "x_8_N_102___-sin_hora"
+    recorrido = ("01:00:01", "01:01:55", "01:03:35")
+    trips, st = _escenario(
+        (parcial, "8__483___", recorrido),
+        (nocturno, "8_N_101___", ("01:00:00", "01:02:00", "01:05:00")),
+        (sin_hora, "8_N_102___", recorrido),
+    )
+    salida = le.rellenar_horarios(trips, st, XY3)
+    # se conservan los tiempos de recorrido: +6 h 29 min 59 s en todas las paradas
+    assert _horas(salida, parcial) == ["07:30:00", "07:31:54", "07:33:34"]
+    assert _horas(salida, nocturno) == ["01:00:00", "01:02:00", "01:05:00"]
+    assert _horas(salida, sin_hora) == list(recorrido)
 
 
 def test_activos_cuenta_dia_de_la_semana_vigencia_altas_y_bajas(tmp_path):
