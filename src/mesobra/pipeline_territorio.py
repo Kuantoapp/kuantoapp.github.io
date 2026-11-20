@@ -14,7 +14,7 @@ import pandas as pd
 import shapely
 
 from mesobra import api_estatica
-from mesobra.coche import EUR_KM, NORMA_EUR_KM
+from mesobra.coche import EUR_KM, NORMA_EUR_KM, VELOCIDAD_MAX_KMH
 from mesobra.pipeline_euros import APP_DATOS
 from mesobra.polos import leer, ubicar
 from mesobra.tiempos import (
@@ -171,8 +171,7 @@ def _nota_coche() -> str:
         f"de la zona, mediana de la distancia de los edificios de la zona a su centro × {rodeo}. El factor es un "
         "supuesto sin fuente: el error es mayor en trayectos cortos urbanos y en la sierra, donde el rodeo real es "
         "mayor, y a favor en autovía recta. Dentro de la propia zona, el tiempo en coche no baja de recorrer esos km a "
-        "120 km/h (mínimo, estimado). "
-        ""
+        f"{VELOCIDAD_MAX_KMH:.0f} km/h (mínimo, estimado). "
         f"coste_coche.eur_km: {eur} €/km, la cuantía de los gastos de locomoción en vehículo propio exceptuada de "
         "gravamen en el IRPF (Orden HFP/792/2023), una compensación fiscal y no un coste medido. Se usa como "
         "aproximación del coste por km del trayecto de casa al trabajo (supuesto): la norma la fija para los "
