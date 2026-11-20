@@ -36,7 +36,7 @@ python -m mesobra
 
 Comprueba que `data/raw/` tiene todos los ficheros de `data/README.md` con su SHA-256 (si falta uno, se detiene diciendo cuál es y cómo obtenerlo), ejecuta `pipeline_territorio`, `pipeline_euros`, `pipeline_analisis` y `sdm` en ese orden y valida todo `app/datos/` con `api_estatica.validar`. No tiene opciones. Después, `git status` muestra qué ha cambiado en `app/datos/`.
 
-Requisitos: las fuentes de `data/README.md` descargadas y `data/processed/zonas.parquet` y `tiempos.parquet`, que `pipeline_territorio` lee sin relanzar r5py. Esas dos tablas se generan antes con `python -m mesobra.zonas` y `python -m mesobra.tiempos`, que sí usan r5py (JDK 21 con `JAVA_HOME`, unos 30 min, #105). Tiempo de `python -m mesobra`: pendiente de medir en la primera ejecución completa.
+Requisitos: las fuentes de `data/README.md` descargadas y `data/processed/zonas.parquet` y `tiempos.parquet`, que `pipeline_territorio` lee sin relanzar r5py. Esas dos tablas se generan antes con `python -m mesobra.zonas` y `python -m mesobra.tiempos`, que sí usan r5py (JDK 21 con `JAVA_HOME`, unos 30 min, #105). Si se quiere el modo coche, `python -m mesobra.coche` (r5py, JDK 21) genera antes `tiempos_coche.parquet`; sin él, `tiempos.json` sale sin coche. Tiempo de `python -m mesobra`: pendiente de medir en la primera ejecución completa.
 
 ## Demo publicada
 
