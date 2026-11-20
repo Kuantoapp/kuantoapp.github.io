@@ -3,9 +3,9 @@
 import json
 from pathlib import Path
 
-HOOKS = json.loads((Path(__file__).parents[1] / ".claude/settings.json").read_text())[
-    "hooks"
-]
+HOOKS = json.loads(
+    (Path(__file__).parents[1] / ".claude/settings.json").read_text(encoding="utf-8")
+)["hooks"]
 
 # (fragmento del comando, evento, matcher) que debe existir; y nada de esos scripts fuera de su sitio
 ESPERADO = {

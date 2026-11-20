@@ -350,9 +350,9 @@ def main(argv: list[str]) -> int:
     por_revisor = exigidos(cambiados(base, raiz), raiz)
     try:
         cuerpo = (
-            json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())[
-                "pull_request"
-            ].get("body")
+            json.loads(
+                Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8")
+            )["pull_request"].get("body")
             or ""
         )
     except (KeyError, OSError, ValueError, TypeError):

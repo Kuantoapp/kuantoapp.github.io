@@ -116,7 +116,9 @@ def referencias_rotas(raiz: Path) -> list[str]:
 
 def cuerpo_pr() -> str:
     try:
-        evento = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+        evento = json.loads(
+            Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8")
+        )
         return (evento.get("pull_request") or {}).get("body") or ""
     except (KeyError, OSError, ValueError):
         return ""

@@ -27,7 +27,7 @@ cifras = cargar(CIFRAS)
 def proyecto(tmp_path: Path) -> Path:
     (tmp_path / "data/raw").mkdir(parents=True)
     (tmp_path / "data/processed").mkdir()
-    (tmp_path / "data/raw/ine.csv").write_text("a\n")
+    (tmp_path / "data/raw/ine.csv").write_text("a\n", encoding="utf-8")
     return tmp_path
 
 
@@ -119,7 +119,9 @@ def test_hooks_funcionan_con_python_de_macos(tmp_path):
     if not py39.exists():
         return
     raiz = Path(__file__).parents[1]
-    hooks = json.loads((raiz / ".claude/settings.json").read_text())["hooks"]
+    hooks = json.loads((raiz / ".claude/settings.json").read_text(encoding="utf-8"))[
+        "hooks"
+    ]
     # Último recurso del lanzador (.claude/hooks/py): el python3 del sistema ejecuta el script directamente
     comandos = {
         h["command"]
@@ -210,7 +212,7 @@ def test_raw_post_deja_solo_lectura(tmp_path):
 def guion(tmp_path: Path, texto: str) -> list[str]:
     ruta = tmp_path / "docs/pitch/guion.md"
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    ruta.write_text(texto)
+    ruta.write_text(texto, encoding="utf-8")
     return cifras.revisar(ruta)
 
 
@@ -247,7 +249,8 @@ def test_cifras_ignora_etiquetas_html(tmp_path):
     ruta = tmp_path / "app/inicio.html"
     ruta.parent.mkdir(parents=True)
     ruta.write_text(
-        '<div style="width: 300px" data-n="120">Hola</div>\n<p>Te sobran 340 €</p>\n'
+        '<div style="width: 300px" data-n="120">Hola</div>\n<p>Te sobran 340 €</p>\n',
+        encoding="utf-8",
     )
     errores = cifras.revisar(ruta)
     assert len(errores) == 1 and ":2:" in errores[0]
@@ -256,7 +259,7 @@ def test_cifras_ignora_etiquetas_html(tmp_path):
 def test_cifras_desde_hook(tmp_path):
     ruta = tmp_path / "docs/pitch/guion.md"
     ruta.parent.mkdir(parents=True)
-    ruta.write_text("Un 22 %.\n")
+    ruta.write_text("Un 22 %.\n", encoding="utf-8")
     entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(tmp_path)}
     evento = json.dumps({"tool_input": {"file_path": str(ruta)}})
     r = subprocess.run(
@@ -273,6 +276,6 @@ def test_cifras_desde_hook(tmp_path):
 def test_cifras_solo_en_lo_vigilado(tmp_path):
     otro = tmp_path / "docs/decisiones.md"
     otro.parent.mkdir(parents=True)
-    otro.write_text("Un 22 %.\n")
+    otro.write_text("Un 22 %.\n", encoding="utf-8")
     assert not cifras.vigilado(otro, tmp_path)
     assert cifras.vigilado(tmp_path / "app/textos/inicio.md", tmp_path)

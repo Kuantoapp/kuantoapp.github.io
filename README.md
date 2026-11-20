@@ -23,7 +23,7 @@ Antes hacen falta `data/processed/zonas.parquet` y `tiempos.parquet`, que `pipel
 
 Para ver la web en local sin red: `python -m http.server -d app` y abrir <http://localhost:8000/>.
 
-Tests: `pytest -q` (Python) y `npm test` (la lógica de `app/`).
+Tests: `pytest -q` (Python) y `npm test` (la lógica de `app/`). `tests/test_codificacion.py` falla si un `read_text`, `write_text` u `open` de texto no lleva `encoding`: en Windows el defecto es cp1252 (#291).
 
 `python -m mesobra.sdm` publica además los indicadores de alquiler y sobrecarga en el esquema [Smart Data Models](https://smartdatamodels.org/) (`KeyPerformanceIndicator`), y ya forma parte de `python -m mesobra`.
 
@@ -91,7 +91,7 @@ uv venv && uv pip install -r requirements-dev.txt
 Activa el entorno con `source .venv/bin/activate` (en Windows, desde Git Bash: `source .venv/Scripts/activate`; ver [Windows](.claude/README.md#windows)). Después, abre `claude` en la raíz y acepta el diálogo de confianza (ver [.claude/README.md](.claude/README.md#uso-en-equipo)).
 ## Dependencias
 
-Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. Para importar `mesobra` fuera de pytest: `uv pip install -e .`. `r5py` arranca Java al importarse (necesita JDK 21 y `JAVA_HOME` apuntando a él): solo se comprueba en local, no en la CI. Licencia: MIT (`LICENSE`).
+Las de ejecución están en `requirements.txt` con versión fijada (`uv pip install -r requirements.txt`); las de desarrollo, en `requirements-dev.txt`. El paquete `mesobra` vive en `src/mesobra/` y `pyproject.toml` no declara dependencias: la lista única es `requirements.txt`. Para importar `mesobra` fuera de pytest: `uv pip install -e .`. `r5py` arranca Java al importarse (necesita JDK 21 y `JAVA_HOME` apuntando a él): solo se comprueba en local, no en la CI. En Windows, si `python -c "import pyarrow.parquet"` falla con «Una directiva de Control de aplicaciones bloqueó este archivo», es Smart App Control o WDAC del equipo, no el repo: hasta que se permita esa DLL, nada que lea o escriba Parquet funciona en ese equipo (#291). Licencia: MIT (`LICENSE`).
 
 ## Demo publicada
 

@@ -69,7 +69,8 @@ def test_poblacion_joven(tmp_path):
     lineas += ["Total Nacional;08 Barcelona;08019 B;Total;20 años;2023;9"]
     ruta.write_text(
         "Total Nacional;Provincias;Municipios;Sexo;Edad;Periodo;Total\n"
-        + "\n".join(lineas)
+        + "\n".join(lineas),
+        encoding="utf-8",
     )
     pob = bono.poblacion_joven(bono._edades(ruta, 2023))
     assert pob.to_dict() == {"28001": 1020}

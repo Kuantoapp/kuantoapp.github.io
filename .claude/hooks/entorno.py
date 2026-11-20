@@ -17,7 +17,7 @@ ARREGLO = "uv venv && uv pip install -r requirements-dev.txt"
 
 def avisos(base: Path) -> list[str]:
     fijada = (
-        (base / ".python-version").read_text().strip()
+        (base / ".python-version").read_text(encoding="utf-8").strip()
         if (base / ".python-version").exists()
         else ""
     )

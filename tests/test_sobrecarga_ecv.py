@@ -37,7 +37,7 @@ R = [(101, 50), (102, 60), (201, 10), (301, 20), (401, 30), (501, 40)]
 def _csv(ruta, columnas, filas):
     ruta.parent.mkdir(parents=True, exist_ok=True)
     cuerpo = "\n".join(",".join(str(v) for v in f) for f in filas)
-    ruta.write_text(",".join(columnas) + "\n" + cuerpo + "\n")
+    ruta.write_text(",".join(columnas) + "\n" + cuerpo + "\n", encoding="utf-8")
 
 
 @pytest.fixture
@@ -66,16 +66,16 @@ def test_hogares_une_y_pesa_personas(carpeta):
 
 def test_hogares_falta_en_h(carpeta):
     ruta = carpeta / "ECV_Th_2025/CSV/esudb25h.csv"
-    lineas = ruta.read_text().splitlines()
-    ruta.write_text("\n".join(lineas[:-1]) + "\n")
+    lineas = ruta.read_text(encoding="utf-8").splitlines()
+    ruta.write_text("\n".join(lineas[:-1]) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="no están a la vez"):
         hogares(carpeta)
 
 
 def test_hogares_sin_personas(carpeta):
     ruta = carpeta / "ECV_Tr_2025/CSV/esudb25r.csv"
-    lineas = ruta.read_text().splitlines()
-    ruta.write_text("\n".join(lineas[:-1]) + "\n")
+    lineas = ruta.read_text(encoding="utf-8").splitlines()
+    ruta.write_text("\n".join(lineas[:-1]) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="sin personas"):
         hogares(carpeta)
 
