@@ -539,7 +539,9 @@ test("la ficha dice qué cesta usa, el tramo con su diferencia y por qué la med
   assert.match(baja, /simulación, estimado/);
   assert.match(baja, /fuente: INE, EPF de España 2025/);
   assert.match(baja, /La de referencia es la media/);
-  assert.match(linea(499.99, "tramo"), /de menos de 500 € al mes: un 30 % menos/);
+  assert.match(baja, /sobre el gasto medio de Madrid de 2025 con el IPC/);
+  // el neto que elige el tramo va con céntimos: 499,99 no se lee «500» junto a «menos de 500»
+  assert.match(linea(499.99, "tramo"), /\(499,99 € netos al mes\), de menos de 500 € al mes: un 30 % menos/);
   assert.match(linea(6000, "tramo"), /de 5000 € al mes o más: un 15 % más que la media/);
 });
 

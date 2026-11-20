@@ -207,7 +207,7 @@ function fraseCesta(zona, ctx) {
   const rango = desde === 0 ? `de menos de ${euros.format(hasta)} € al mes` : hasta === null ? `de ${euros.format(desde)} € al mes o más` : `de ${euros.format(desde)} a ${euros.format(hasta - 1)} € al mes`;
   const pct = Math.round(Math.abs(factor - 1) * 100);
   const frente = pct === 0 ? "lo mismo que la media" : `un ${pct} % ${factor < 1 ? "menos" : "más"} que la media`;
-  return `Cesta básica: ${euros.format(zona.cesta)} €/mes (simulación, estimado: la comida, con lo que gastan los hogares de tu tramo de ingresos, ${rango}: ${frente}; fuente: INE, EPF de España 2025. La de referencia es la media: quien gana poco puede gastar menos en comida porque no le llega; incluye internet y móvil)`;
+  return `Cesta básica: ${euros.format(zona.cesta)} €/mes (simulación, estimado: la comida, con lo que gastan los hogares de tu tramo de ingresos (${conCentimos.format(zona.neto)} € netos al mes), ${rango}: ${frente}, sobre el gasto medio de Madrid de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; fuente: INE, EPF de España 2025. La de referencia es la media: quien gana poco puede gastar menos en comida porque no le llega; incluye internet y móvil)`;
 }
 
 function frasePrecio(zona, ref) {
