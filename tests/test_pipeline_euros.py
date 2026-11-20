@@ -223,6 +223,9 @@ def test_meta_visible_describe_solo_la_v1():
             assert v2 not in meta["nota"]
         assert not re.search(r"#\d", meta["nota"])
         assert "2023" not in meta["nota"]
+        assert "ordinario" in meta["nota"] and "sin ocio" in meta["nota"]
+        nombres = " ".join(f["nombre"] for f in meta["fuentes"])
+        assert "capítulo III" in nombres and "art. 3" not in nombres
         assert not any("verificar" in f["licencia"] for f in meta["fuentes"])
         fichas = [
             f for f in meta["fuentes"] if "crtm.es/billetes-y-tarifas" in f["url"]
@@ -238,7 +241,8 @@ def test_meta_ruta_lleva_la_v2_y_sus_fuentes():
         assert "tarifas_ruta" in meta["nota_ruta"]
         assert not re.search(r"#\d", meta["nota_ruta"])
         urls = " ".join(f["url"] for f in meta["fuentes_ruta"])
-        assert "abono-plus65" in urls and "renfe.com" in urls
+        assert "abono-plus65" in urls and "renfe.com" not in urls
+        assert "3.2.a).2.º" in " ".join(f["nombre"] for f in meta["fuentes_ruta"])
         assert not any("verificar" in f["licencia"] for f in meta["fuentes_ruta"])
 
 

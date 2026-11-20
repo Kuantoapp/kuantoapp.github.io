@@ -58,6 +58,8 @@ LICENCIA_BOE = (
     "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
 )
 LICENCIA_BOCM = "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI, BOE-A-1996-8930)"
+LICENCIA_RDL = f"{LICENCIA_BOCM}; reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia Estatal Boletín Oficial del Estado"
+URL_RDL = "https://www.boe.es/boe/dias/2025/12/24/pdfs/BOE-A-2025-26459.pdf"
 LICENCIA_WEB_CRTM = (
     "Aviso legal de crtm.es (https://www.crtm.es/aviso-legal/): reutilización citando la fuente, "
     "sin alterar el contenido ni dar a entender patrocinio del CRTM; extraída el 2026-11-20"
@@ -146,9 +148,9 @@ FUENTES_TARIFAS = (
     ]
     + [
         {
-            "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3: bonificación de abonos y títulos multiviaje en 2026",
-            "url": "https://www.boe.es/boe/dias/2025/12/24/pdfs/BOE-A-2025-26459.pdf",
-            "licencia": f"{LICENCIA_BOCM}; reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia Estatal Boletín Oficial del Estado",
+            "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), capítulo III (arts. 5 a 9): ayudas a los descuentos de abonos y títulos multiviaje del transporte autonómico y local en 2026",
+            "url": URL_RDL,
+            "licencia": LICENCIA_RDL,
         },
     ]
 )
@@ -159,9 +161,9 @@ FUENTES_RUTA = [
         "licencia": LICENCIA_WEB_CRTM,
     },
     {
-        "nombre": "Abonos bonificados de Renfe 2026, preguntas frecuentes (Abono mensual de Cercanías)",
-        "url": "https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes",
-        "licencia": "Condiciones de renfe.com: reproducción prohibida salvo autorización expresa; solo se enlaza, el precio se cita del RDL 17/2025",
+        "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3.2.a).2.º: abono mensual de Cercanías de Renfe de tarifa única 20 € en 2026",
+        "url": URL_RDL,
+        "licencia": LICENCIA_RDL,
     },
 ]
 EPF_IDS = {
@@ -373,6 +375,7 @@ def tarifas_json(
         "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida); "
         "el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
         "el billete sencillo de la zona A, a 1,50 € (EMT o Metro de hasta 5 estaciones). "
+        "Precio ordinario (sin descuentos de familia numerosa ni discapacidad) y solo viajes al trabajo, sin ocio. "
         "escenarios: viajes_dia 2, ida y vuelta pasando por la zona A; "
         "4, con cambio a Metro de la zona A en cada sentido. "
         f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
