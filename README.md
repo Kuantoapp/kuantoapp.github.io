@@ -31,7 +31,7 @@ Tests: `pytest -q` (Python) y `npm test` (la lógica de `app/`).
 
 `mesobra-mcp` es un servidor [MCP](https://modelcontextprotocol.io/) local (stdio) con tres herramientas: `calcular_sobrante`, `ranking_zonas` e `indicadores_zona`. Lee los mismos ficheros de `app/datos/` que la web, sin red y sin que el sueldo salga del equipo, y cada respuesta lleva unidades, año del dato, fuentes y supuestos.
 
-Con [uv](https://docs.astral.sh/uv/getting-started/installation/) no hay que clonar nada:
+Con [uv](https://docs.astral.sh/uv/getting-started/installation/) no hay que clonar nada, una vez que el repositorio sea público:
 
 ```bash
 claude mcp add mesobra -- uvx --from git+https://github.com/yeraybc/DataMad-hackaton-2026 mesobra-mcp
@@ -47,7 +47,7 @@ Desde un clon del repositorio, `uvx --from . mesobra-mcp` arranca el mismo servi
 
 ## Datos, licencias y fuentes
 
-- **Datos derivados** (`app/datos/*.json` y `zonas.geojson`): CC BY 4.0. Cada fichero lista en `meta.fuentes` sus fuentes con su licencia y en `meta.nota` su método. La licencia va por fichero: los que incorporan datos de OpenStreetMap (`tiempos.json`, `zonas.geojson` y `alquiler.json`, según su `meta.fuentes`) van con ODbL 1.0, y las condiciones de cada fuente de terceros se mantienen. Decisiones en [`docs/decisiones.md`](docs/decisiones.md) (16-11-2026).
+- **Datos derivados** (`app/datos/*.json` y `zonas.geojson`): CC BY 4.0. Cada fichero lista en `meta.fuentes` sus fuentes con su licencia y en `meta.nota` su método. La licencia va por fichero: lo derivado de OpenStreetMap lleva ODbL 1.0, que hoy es `tiempos.json`, y las condiciones de cada fuente de terceros se mantienen. Decisiones en [`docs/decisiones.md`](docs/decisiones.md) (16-11-2026).
 - **Código**: MIT ([`LICENSE`](LICENSE)).
 
 Fuentes y cita que exige cada licencia. El detalle por fichero descargado, con URL y SHA-256, está en [`data/README.md`](data/README.md).
