@@ -18,6 +18,7 @@ from mesobra import (
     simulacion,
     titulares,
 )
+from mesobra import transporte as tr
 from mesobra.simulacion import Escenario, requisitos, tope
 
 
@@ -578,3 +579,67 @@ def test_calidad_por_municipio_con_sus_marcas():
 def test_imputar_con_otros_minutos():
     imp, _ = simulacion.imputar_tiempos(_api2(), W, 60)
     assert imp["tiempos"]["tp"][2] == [None, 60]
+
+
+def _api_fin(coronas: dict[str, str]) -> dict:
+    """API mínima para `fin_descuento`: `escenarios` de `tr.tabla_v1()` y una zona por municipio."""
+    esc = {}
+    for (e, joven, viajes, corona), g in tr.tabla_v1().groupby(
+        ["escenario", "joven", "viajes_dia", "corona"]
+    ):
+        edad = esc.setdefault(e, {}).setdefault("joven" if joven else "general", {})
+        edad.setdefault(str(viajes), {})[corona] = g.sort_values("dias")[
+            ["titulo", "coste_mes"]
+        ].to_dict("records")
+    zonas = [
+        {"properties": {"municipio_id": m, "corona": c}} for m, c in coronas.items()
+    ]
+    return {"tarifas": {"escenarios": esc}, "zonas": {"features": zonas}}
+
+
+CORONAS_FIN = {"28079": "A", "28005": "B1", "28006": "B2", "28007": "B3"}
+CORONAS_FIN |= {"28008": "C1", "28009": "C2"}
+
+
+def test_fin_descuento_control_de_la_issue():
+    # control (#102, referencia §1.2): por abono, 84,40 − 49,20 = 35,20 € y joven 20,00 − 10,00 = 10,00 €
+    for precios, control in [
+        (tr.ABONO_30["C2"], D("35.20")),
+        (tr.ABONO_JOVEN, D("10.00")),
+    ]:
+        sin, con = (precios[e, "ordinario"] for e in tr.ESCENARIOS[::-1])
+        assert sin - con == control
+    # media del año: × 335/360 (decisión 30); el joven redondea cada escenario (18,61 − 9,31)
+    df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
+    df = df.set_index(["perfil", "municipio_id"])["eur_mes"]
+    assert float(D("35.20") * tr.ABONOS_ANIO / 12) == pytest.approx(32.76, abs=0.005)
+    assert df["adulto", "28009"] == pytest.approx(32.76, abs=0.005)
+    assert df["joven", "28009"] == pytest.approx(9.30, abs=0.005)
+
+
+def test_fin_descuento_propiedades_y_contrato():
+    df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
+    contratos.validar(df, "simulacion")
+    assert (df["criterio"] == "fin_descuento").all() and df["estimado"].all()
+    assert (df["eur_mes"] > 0).all() and df["elegible"].all()
+    assert df["pct_ocupados_elegibles"].isna().all()
+    # Abono Joven: tarifa plana en todas las coronas
+    assert df[df["perfil"] == "joven"]["eur_mes"].nunique() == 1
+    adulto = df[df["perfil"] == "adulto"].set_index("municipio_id")["eur_mes"]
+    assert adulto[list(CORONAS_FIN)].is_monotonic_increasing  # de A a C2
+
+
+def test_fin_descuento_falla_si_un_municipio_cae_en_dos_coronas():
+    api = _api_fin({"28079": "A"})
+    api["zonas"]["features"].append(
+        {"properties": {"municipio_id": "28079", "corona": "B1"}}
+    )
+    with pytest.raises(ValueError, match="dos coronas"):
+        simulacion.fin_descuento(api)
+
+
+def test_fin_descuento_con_los_datos_publicados():
+    api = calculo.leer_api(calculo.RAIZ / "app/datos")
+    df = simulacion.fin_descuento(api)
+    municipios = {f["properties"]["municipio_id"] for f in api["zonas"]["features"]}
+    assert set(df["municipio_id"]) == municipios and (df["eur_mes"] > 0).all()
