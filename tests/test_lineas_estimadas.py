@@ -250,21 +250,19 @@ def test_rellenar_horarios_falla_si_no_hay_hora_valida_o_viaje():
         le.rellenar_horarios(trips[trips["trip_id"] == "t1"], st, XY3)
 
 
-def test_rellenar_horarios_desplaza_la_primera_salida_de_relleno_y_deja_el_nocturno():
+def test_rellenar_horarios_no_toca_los_viajes_con_solo_la_primera_parada_de_relleno():
+    # la 483: primera parada a 01:00:01 y el resto con horas reales; es de #349, no se reconstruye
     parcial = "x_8__483___-1_07:30:00_1_-__1"
-    nocturno = "x_8_N_101___-1_01:00:00_1_-__1"
-    sin_hora = "x_8_N_102___-sin_hora"
-    recorrido = ("01:00:01", "01:01:55", "01:03:35")
-    trips, st = _escenario(
-        (parcial, "8__483___", recorrido),
-        (nocturno, "8_N_101___", ("01:00:00", "01:02:00", "01:05:00")),
-        (sin_hora, "8_N_102___", recorrido),
-    )
-    salida = le.rellenar_horarios(trips, st, XY3)
-    # se conservan los tiempos de recorrido: +6 h 29 min 59 s en todas las paradas
-    assert _horas(salida, parcial) == ["07:30:00", "07:31:54", "07:33:34"]
-    assert _horas(salida, nocturno) == ["01:00:00", "01:02:00", "01:05:00"]
-    assert _horas(salida, sin_hora) == list(recorrido)
+    recorrido = ("01:00:01", "07:30:51", "07:32:06")
+    trips, st = _escenario((parcial, "8__483___", recorrido))
+    assert le.rellenar_horarios(trips, st, XY3) is st
+
+
+def test_hhmmss_rechaza_segundos_negativos_o_no_finitos():
+    assert le._hhmmss(np.array([0.0, 3661.0])) == ["00:00:00", "01:01:01"]
+    for malo in (-4500.0, np.nan, np.inf):
+        with pytest.raises(ValueError, match="Segundos"):
+            le._hhmmss(np.array([malo]))
 
 
 def test_activos_cuenta_dia_de_la_semana_vigencia_altas_y_bajas(tmp_path):

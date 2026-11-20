@@ -14,8 +14,8 @@ Decisión de Izan del 2026-11-15 (`docs/decisiones.md`). Para cada línea de `RU
 - **Líneas con horario de relleno** (#311): el CRTM publica 33 rutas (30 interurbanas y los urbanos 1A, 1B y 1 de
   Leganés) con todas las paradas de cada viaje a las 01:00:00, y r5py no las ve en la franja de punta (lista en
   `docs/decisiones.md`). `rellenar_horarios` toma la salida real del `trip_id` y reparte la hora por distancia con la
-  velocidad de las líneas parecidas (`parecidas`). Los viajes con solo la primera salida de relleno (308 de la 483 y 12 de otras líneas)
-  se desplazan a la hora de su `trip_id` y conservan su recorrido. Es una estimación: el cociente entre la duración
+  velocidad de las líneas parecidas (`parecidas`). La 483 (primera parada a 01:00:01 y el resto con horas imposibles)
+  y otros viajes de horas absurdas no se tocan: ver #349. Es una estimación: el cociente entre la duración
   reconstruida y la real tiene mediana 1,06 y p10–p90 de 0,56 a 2,69 en líneas con horario real.
 
 Las distancias son en línea recta entre paradas consecutivas, igual en las líneas de referencia y en las
@@ -85,9 +85,6 @@ ALARGAMIENTO = 1.1
 RELLENO = ("01:00:00", "01:00:01")
 HORA_EN_ID = r"_(\d{2}):(\d{2}):\d{2}_"
 HORA_CORTA = r"_(\d{1,2})(\d{2})$"
-# la hora del `trip_id` coincide con la primera salida en el 99 % de los viajes con horario real (p99 de la
-# diferencia: 5 min); por debajo no se desplaza un viaje
-TOLERANCIA_ID_MIN = 5.0
 SEMANA = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
 
@@ -264,6 +261,8 @@ def parecidas(
 
 
 def _hhmmss(segundos: np.ndarray) -> list[str]:
+    if not (np.isfinite(segundos) & (segundos >= 0)).all():
+        raise ValueError("Segundos negativos o no finitos al escribir una hora")
     h, resto = np.divmod(segundos.astype(int), 3600)
     m, s = np.divmod(resto, 60)
     return [f"{a:02d}:{b:02d}:{c:02d}" for a, b, c in zip(h, m, s, strict=True)]
@@ -347,35 +346,6 @@ def _segundos_del_id(ids: pd.Series) -> pd.Series:
     return hm[0] * 3600 + hm[1] * 60
 
 
-def _desplazar_parciales(stop_times: pd.DataFrame, relleno: pd.Index) -> pd.DataFrame:
-    """Viajes con solo la primera salida de relleno: se desplazan a la hora de su `trip_id`, con sus tiempos de recorrido.
-
-    Es el caso de la 483 (la primera parada a 01:00:01 y las demás con su recorrido real a continuación). Solo se
-    mueve si la hora del `trip_id` difiere de esa primera salida más de `TOLERANCIA_ID_MIN`; un nocturno que sale de
-    verdad a la 01:00 lleva esa hora en el `trip_id` y queda igual, y sin hora en el `trip_id` no se toca. Sin
-    desplazamientos devuelve el mismo objeto.
-    """
-    seq = stop_times["stop_sequence"].astype(int)
-    primera = stop_times.loc[seq.groupby(stop_times["trip_id"]).idxmin()]
-    primera = primera.set_index("trip_id")["departure_time"]
-    parcial = primera[primera.isin(RELLENO) & ~primera.index.isin(relleno)]
-    if parcial.empty:
-        return stop_times
-    segundos = _segundos_del_id(parcial.index.to_series())
-    delta = segundos - pd.to_timedelta(parcial).dt.total_seconds()
-    delta = delta[delta.abs() > TOLERANCIA_ID_MIN * 60]
-    if delta.empty:
-        return stop_times
-    LOG.warning("Viajes con la primera salida de relleno, desplazados: %d", len(delta))
-    st = stop_times.copy()
-    desplazar = st["trip_id"].isin(delta.index)
-    mover = delta.reindex(st.loc[desplazar, "trip_id"]).to_numpy()
-    for columna in ("arrival_time", "departure_time"):
-        segundos_col = pd.to_timedelta(st.loc[desplazar, columna]).dt.total_seconds()
-        st.loc[desplazar, columna] = _hhmmss(np.round(segundos_col.to_numpy() + mover))
-    return st
-
-
 def _velocidades(
     trips: pd.DataFrame, reales: pd.DataFrame, xy: pd.DataFrame, largo: pd.Series
 ) -> pd.Series:
@@ -399,18 +369,16 @@ def rellenar_horarios(
     - **Todas las paradas de relleno:** la salida es la hora que lleva el `trip_id` (`..._06:56:00_...`); cada parada
       va a esa hora más su distancia acumulada en línea recta entre la velocidad mediana de las líneas parecidas de
       su red (`parecidas`, medida en viajes con horario real). Sin hora en el `trip_id` es un error, no se adivina.
-    - **Solo la primera de relleno:** `_desplazar_parciales`.
 
-    Sin viajes de relleno ni parciales que mover devuelve el mismo objeto `stop_times` (`completar_tablas` lo
-    comprueba con `is`).
+    Sin viajes de relleno devuelve el mismo objeto `stop_times` (`completar_tablas` lo comprueba con `is`). Los
+    viajes con solo la primera parada de relleno (la 483) no se tocan: ver #349.
     """
     sin_hora = (
         stop_times["departure_time"].isin(RELLENO).groupby(stop_times["trip_id"]).all()
     )
     relleno = sin_hora.index[sin_hora]
-    desplazado = _desplazar_parciales(stop_times, relleno)
     if relleno.empty:
-        return desplazado
+        return stop_times
     salida = _segundos_del_id(relleno.to_series())
     if salida.isna().any():
         raise ValueError(
@@ -421,8 +389,8 @@ def rellenar_horarios(
         raise ValueError(
             f"Viajes de relleno que no están en trips.txt: {ruta.index[ruta.isna()][:5].tolist()}"
         )
-    es = desplazado["trip_id"].isin(relleno)
-    st = desplazado[es].assign(seq=lambda d: d["stop_sequence"].astype(int))
+    es = stop_times["trip_id"].isin(relleno)
+    st = stop_times[es].assign(seq=lambda d: d["stop_sequence"].astype(int))
     st = st.sort_values(["trip_id", "seq"])
     p = xy.reindex(st["stop_id"])
     if p.isna().any(axis=None):
@@ -432,12 +400,15 @@ def rellenar_horarios(
     km = np.where(st["trip_id"].ne(st["trip_id"].shift()), 0.0, tramo)
     acum = pd.Series(km, index=st.index).groupby(st["trip_id"]).cumsum()
     largo = acum.groupby(st["trip_id"]).max().groupby(ruta).median()
-    kmh = _velocidades(trips, desplazado[~es], xy, largo)
+    kmh = _velocidades(trips, stop_times[~es], xy, largo)
     velocidad = kmh.reindex(ruta.reindex(st["trip_id"]).to_numpy()).to_numpy()
     t0 = salida.reindex(st["trip_id"]).to_numpy()
-    hora = _hhmmss(np.round(t0 + acum.to_numpy() / velocidad * 3600))
+    segundos = np.round(t0 + acum.to_numpy() / velocidad * 3600)
+    if pd.Series(segundos).groupby(st["trip_id"].to_numpy()).diff().lt(0).any():
+        raise ValueError("Horas reconstruidas que retroceden dentro de un viaje")
+    hora = _hhmmss(segundos)
     st = st.drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
-    return pd.concat([desplazado[~es], st], ignore_index=True)
+    return pd.concat([stop_times[~es], st], ignore_index=True)
 
 
 def completar_tablas(
