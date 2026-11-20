@@ -1,6 +1,6 @@
 // Lógica de la interfaz sin DOM ni MapLibre: validación del formulario, escalas de color, leyenda y textos.
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
-import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona } from "./calculo.js";
+import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona, tramoCesta } from "./calculo.js";
 
 // Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
 export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
@@ -179,6 +179,7 @@ export function contextoFicha(api, entrada, resultado, id) {
     anio: dato.anio,
     ipc: dato.factor_ipc === 1 ? null : mesIpc(api.alquiler.meta.ipc_hasta),
     ipcHasta: api.hogares.meta.ipc_hasta,
+    tramo: escenario.cesta === "tramo" ? tramoDe(api.hogares.cesta_tramos, zona.neto) : null,
     subida: entrada.escenario?.subida_alquiler ?? 0,
     // Intervalo de la estimación (€/m²) en € al mes, con la misma escala que llevó el P50 a `zona.alquiler`.
     ic: dato.ic?.length && zona.alquiler !== null ? dato.ic.map((v) => (v * zona.alquiler) / dato.p50) : null,
@@ -190,6 +191,23 @@ export function contextoFicha(api, entrada, resultado, id) {
     netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
     salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
   };
+}
+
+// Tramo de ingresos del escenario de la cesta, con el corte siguiente para nombrarlo (#312).
+function tramoDe(tramos, neto) {
+  const t = tramoCesta(tramos, neto);
+  return { ...t, hasta: tramos[tramos.indexOf(t) + 1]?.desde ?? null };
+}
+
+function fraseCesta(zona, ctx) {
+  if (ctx.tramo === null) {
+    return `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado: gasto medio de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; incluye internet y móvil)`;
+  }
+  const { desde, hasta, factor } = ctx.tramo;
+  const rango = desde === 0 ? `de menos de ${euros.format(hasta)} € al mes` : hasta === null ? `de ${euros.format(desde)} € al mes o más` : `de ${euros.format(desde)} a ${euros.format(hasta - 1)} € al mes`;
+  const pct = Math.round(Math.abs(factor - 1) * 100);
+  const frente = pct === 0 ? "lo mismo que la media" : `un ${pct} % ${factor < 1 ? "menos" : "más"} que la media`;
+  return `Cesta básica: ${euros.format(zona.cesta)} €/mes (simulación, estimado: la comida, con lo que gastan los hogares de tu tramo de ingresos (${conCentimos.format(zona.neto)} € netos al mes), ${rango}: ${frente}, sobre el gasto medio de Madrid de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; fuente: INE, EPF de España 2025. La de referencia es la media: quien gana poco puede gastar menos en comida porque no le llega; incluye internet y móvil)`;
 }
 
 function frasePrecio(zona, ref) {
@@ -250,7 +268,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
-    `Cesta básica: ${euros.format(zona.cesta)} €/mes (estimado: gasto medio de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; incluye internet y móvil)`,
+    fraseCesta(zona, ctx),
     `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
@@ -384,7 +402,7 @@ export function validar(v, api) {
 
 // --- Escenarios «¿y si…?» y estado en el enlace ------------------------------------------------
 // Campos del formulario de escenarios (todos son select o deslizador: siempre traen valor) y su valor «sin escenario».
-export const ESCENARIO_NEUTRO = { tarifas: "vigente_2026", subida: "0", cumple26: "no", dias_esc: "" };
+export const ESCENARIO_NEUTRO = { tarifas: "vigente_2026", subida: "0", cumple26: "no", dias_esc: "", cesta: "media" };
 const SUBIDA = [0, 30];
 
 /** Errores `{campo, mensaje}` de los valores del formulario de escenarios; `[]` si todos valen. */
@@ -396,6 +414,7 @@ export function erroresEscenario(v, api) {
   if (subida === null || subida < SUBIDA[0] || subida > SUBIDA[1]) falla("subida", `La subida del alquiler va de ${SUBIDA[0]} a ${SUBIDA[1]} %`);
   if (!["no", "si"].includes(v.cumple26)) falla("cumple26", "Elige sí o no");
   if (v.dias_esc !== "" && ![1, 2, 3, 4, 5].includes(entero(v.dias_esc))) falla("dias_esc", "Los días presenciales van de 1 a 5");
+  if (!["media", "tramo"].includes(v.cesta)) falla("cesta", "Elige una de las cestas de la lista");
   return errores;
 }
 
@@ -405,7 +424,7 @@ export function erroresEscenario(v, api) {
  */
 export function entradaEscenario(entrada, v, edadCumple) {
   if (Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro)) return null;
-  const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}) };
+  const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}), ...(v.cesta === "tramo" ? { cesta: "tramo" } : {}) };
   const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
   return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias })) };
 }
@@ -417,6 +436,7 @@ export function tituloEscenario(v, edadCumple) {
     ...(v.subida !== ESCENARIO_NEUTRO.subida ? [`el alquiler sube un ${v.subida} %`] : []),
     ...(v.cumple26 === "si" ? [`cumples ${edadCumple} años`] : []),
     ...(v.dias_esc !== "" ? [`${v.dias_esc} ${v.dias_esc === "1" ? "día presencial" : "días presenciales"} a la semana`] : []),
+    ...(v.cesta === "tramo" ? ["la cesta básica es la de tu tramo de ingresos (estimado)"] : []),
   ];
   return partes.length === 0 ? null : `Simulación: ${partes.join("; ")}`;
 }

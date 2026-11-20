@@ -516,16 +516,45 @@ test("el título del escenario nombra solo lo que cambia", () => {
     "Simulación: se acaba el descuento del transporte (abonos y 10 viajes); el alquiler sube un 10 %; cumples 26 años; 1 día presencial a la semana");
 });
 
+test("la cesta del tramo solo cambia la comida y se nombra en el título", () => {
+  const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ neto_mes: 1400, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
+  const sim = entradaEscenario(entrada, { ...NEUTRO, cesta: "tramo" }, EDAD);
+  assert.deepEqual(sim.escenario, { tarifas: "vigente_2026", subida_alquiler: 0, cesta: "tramo" });
+  const actual = calcular(ejemplo, entrada).zonas["28065"];
+  const tramo = calcular(ejemplo, sim).zonas["28065"];
+  assert.ok(Math.abs(ejemplo.hogares.cesta_uc.alimentacion * 0.15 - (actual.cesta - tramo.cesta)) < 1e-9);
+  assert.equal(tituloEscenario({ ...NEUTRO, cesta: "tramo" }, EDAD), "Simulación: la cesta básica es la de tu tramo de ingresos (estimado)");
+});
+
+test("la ficha dice qué cesta usa, el tramo con su diferencia y por qué la media es la referencia", () => {
+  const linea = (neto, cesta) => {
+    const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ neto_mes: neto, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
+    const sim = entradaEscenario(entrada, { ...NEUTRO, cesta }, EDAD) ?? entrada;
+    const res = calcular(ejemplo, sim);
+    return lineasFicha("Zona", res.zonas["28065"], "sobra", contextoFicha(ejemplo, sim, res, "28065")).find((l) => l.startsWith("Cesta básica"));
+  };
+  assert.match(linea(1400, "media"), /\(estimado: gasto medio de 2025 con el IPC/);
+  const baja = linea(1400, "tramo");
+  assert.match(baja, /de 1000 a 1499 € al mes: un 15 % menos que la media/);
+  assert.match(baja, /simulación, estimado/);
+  assert.match(baja, /fuente: INE, EPF de España 2025/);
+  assert.match(baja, /La de referencia es la media/);
+  assert.match(baja, /sobre el gasto medio de Madrid de 2025 con el IPC/);
+  // el neto que elige el tramo va con céntimos: 499,99 no se lee «500» junto a «menos de 500»
+  assert.match(linea(499.99, "tramo"), /\(499,99 € netos al mes\), de menos de 500 € al mes: un 30 % menos/);
+  assert.match(linea(6000, "tramo"), /de 5000 € al mes o más: un 15 % más que la media/);
+});
+
 test("los escenarios inválidos se señalan campo a campo", () => {
   assert.deepEqual(erroresEscenario(NEUTRO, real), []);
-  const mal = { tarifas: "x", subida: "31", cumple26: "tal", dias_esc: "6" };
+  const mal = { tarifas: "x", subida: "31", cumple26: "tal", dias_esc: "6", cesta: "baja" };
   assert.deepEqual(erroresEscenario({ ...NEUTRO, ...mal }, real).map((e) => e.campo), Object.keys(mal));
   assert.equal(erroresEscenario({ ...NEUTRO, subida: "-1" }, real).length, 1);
   assert.equal(erroresEscenario({ ...NEUTRO, subida: "1.5" }, real).length, 1);
 });
 
 test("escribir y leer el enlace devuelve el mismo estado, también con tildes, comas y espacios", () => {
-  const v = { ...NEUTRO, fuente: "neto", neto: "1.800,50", destino: "Alcalá de Henares", tarifas: "sin_descuento", subida: "17", cumple26: "si", dias_esc: "3", metrica: "sobra" };
+  const v = { ...NEUTRO, fuente: "neto", neto: "1.800,50", destino: "Alcalá de Henares", tarifas: "sin_descuento", subida: "17", cumple26: "si", dias_esc: "3", cesta: "tramo", metrica: "sobra" };
   const { valores, avisos: avisosEnlace } = estadoDeEnlace(estadoAEnlace(v), NEUTRO, real);
   assert.deepEqual(valores, v);
   assert.deepEqual(avisosEnlace, []);
