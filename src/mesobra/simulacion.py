@@ -114,20 +114,24 @@ Decisiones y sentido de su sesgo:
 Fin del descuento del abono (#102, ficha A §7.5), `fin_descuento`: por municipio, € al mes que pierde un adulto y
 un joven (15 a 25 años) si en 2027 no se prorroga el descuento, = coste_mes(`sin_descuento`) −
 coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con su título más barato.
-27. Norma: RDL 17/2025 (BOE-A-2025-26459), art. 8: el Estado financia un 50 % de descuento en los títulos joven y
-    un 20 % en los demás abonos y 10 viajes del 1-1 al 31-12-2026, sobre la tarifa del 30-11-2025; el art. 11
-    obliga a la Comunidad y a los ayuntamientos a cofinanciarlo. Sin prórroga para 2027 publicada a 2026-11-21.
-    Madrid añade descuento propio (41,8 % en el abono normal, BOCM-20251231-2 frente a -3): `sin_descuento` quita
-    las dos partes, así que para el adulto es la cota superior (si la Comunidad mantuviera la suya, perdería
-    menos); para el joven, el 50 % es todo el descuento.
+27. Norma: RDL 17/2025 (BOE-A-2025-26459), art. 8: descuento del 50 % en los títulos joven y del 20 % en los
+    demás abonos y 10 viajes del 1-1 al 31-12-2026, sobre la tarifa del 30-11-2025; el art. 11 obliga a la
+    Comunidad y a los ayuntamientos a cubrir la pérdida de esos porcentajes que no paga el Estado. Sin prórroga
+    para 2027 publicada a 2026-11-21 (ficha del BOE: solo la convalidación, BOE-A-2026-2025). El descuento total
+    del abono normal es del 41,8 % frente a la oficial de 2026 (32,70 frente a 56,20 €, BOCM-20251231-2 pág. 66
+    y -3 pág. 70); lo que pasa del 20 % lo pone el CRTM voluntariamente. `sin_descuento` quita todo, así que para
+    el adulto es la cota superior: la parte del RDL ronda la mitad (sin cifra hasta leer la tarifa del
+    30-11-2025 en su BOCM). Para el joven, el 50 % es todo el descuento (20,00 → 10,00 €).
 28. `sin_descuento` son las tarifas oficiales de 2026 (supuesto S5 de `transporte`): si las de 2027 suben, se
-    pierde más. La prensa da 54,60 € en la zona A (oficial de 2025); aquí, 56,20 € (oficial de 2026).
+    pierde más.
 29. Forma v1: ida y vuelta pasando por la zona A desde la corona del municipio, 5 días y 2 viajes al día, precio
     ordinario, sin ocio. Sobrestima la pérdida de quien trabaja en su corona B o C (interzonal o urbano) y la
     subestima en Cercanías: el abono de Renfe de 20 € (10 € joven; RDL 17/2025, art. 3.2.a) solo existe con
     descuento y la v1 no lo ve.
 30. € al mes = media del año: el abono se compra 335/30 veces (`transporte.ABONOS_ANIO`), así que en la corona C2
-    la pérdida es 35,20 € por abono (84,40 − 49,20) y 32,76 € de media al mes; el joven, 10,00 € y 9,30 €.
+    la pérdida es 35,20 € por abono (84,40 − 49,20) y 32,76 € de media al mes; el joven, 10,00 € y 9,30 €. Se
+    restan los `coste_mes` ya redondeados de `tarifas.json` (18,61 − 9,31; la exacta, 9,31): ±0,01 €, lo mismo
+    que ve la app. En B2 sale 26,10 y no 26,11 por el redondeo del 10 viajes de `transporte` (issue aparte).
 31. Sin hogares sobrecargados: la tabla `sobrecarga` (F3-06, #100) no se publica (señal de corte, PR #293).
     Filas de `simulacion` con `criterio` = `fin_descuento`, `perfil` = `adulto` o `joven`, `elegible` = pierde
     algo (eur_mes > 0), `pct_ocupados_elegibles` nulo (no aplica) y `estimado` = True.
@@ -666,8 +670,10 @@ CRITERIO_FIN = "fin_descuento"
 DIAS_FIN, VIAJES_FIN = 5, 2
 EDADES_FIN = {"adulto": "general", "joven": "joven"}  # perfil → edad de `tarifas.json`
 NORMA_DESCUENTO = (
-    "RDL 17/2025 (BOE-A-2025-26459), art. 8: descuento financiado por el Estado del 1-1 al 31-12-2026 "
-    "(50 % joven, 20 % resto) más el propio de la Comunidad de Madrid; sin prórroga para 2027 publicada"
+    "RDL 17/2025 (BOE-A-2025-26459), art. 8: 50 % joven y 20 % resto del 1-1 al 31-12-2026, más el "
+    "descuento voluntario del CRTM; sin prórroga para 2027 publicada. Si no se prorroga, con las tarifas "
+    "oficiales de 2026. Adulto: cota superior (quita también la parte del CRTM; la del RDL ronda la mitad). "
+    "€/mes = media del año (335/30 abonos ÷ 12): por abono, 35,20 € en C2 y 10,00 € el joven"
 )
 
 

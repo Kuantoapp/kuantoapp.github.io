@@ -582,19 +582,12 @@ def test_imputar_con_otros_minutos():
 
 
 def _api_fin(coronas: dict[str, str]) -> dict:
-    """API mínima para `fin_descuento`: `escenarios` de `tr.tabla_v1()` y una zona por municipio."""
-    esc = {}
-    for (e, joven, viajes, corona), g in tr.tabla_v1().groupby(
-        ["escenario", "joven", "viajes_dia", "corona"]
-    ):
-        edad = esc.setdefault(e, {}).setdefault("joven" if joven else "general", {})
-        edad.setdefault(str(viajes), {})[corona] = g.sort_values("dias")[
-            ["titulo", "coste_mes"]
-        ].to_dict("records")
+    """`tarifas.json` publicada (al día con `transporte`, lo comprueba test_pipeline_euros) y una zona por municipio."""
+    tarifas = calculo.leer_api(calculo.RAIZ / "app/datos")["tarifas"]
     zonas = [
         {"properties": {"municipio_id": m, "corona": c}} for m, c in coronas.items()
     ]
-    return {"tarifas": {"escenarios": esc}, "zonas": {"features": zonas}}
+    return {"tarifas": tarifas, "zonas": {"features": zonas}}
 
 
 CORONAS_FIN = {"28079": "A", "28005": "B1", "28006": "B2", "28007": "B3"}
@@ -613,8 +606,12 @@ def test_fin_descuento_control_de_la_issue():
     df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
     df = df.set_index(["perfil", "municipio_id"])["eur_mes"]
     assert float(D("35.20") * tr.ABONOS_ANIO / 12) == pytest.approx(32.76, abs=0.005)
-    assert df["adulto", "28009"] == pytest.approx(32.76, abs=0.005)
+    for m in ("28007", "28008", "28009"):  # B3, C1 y C2: el mismo abono
+        assert df["adulto", m] == pytest.approx(32.76, abs=0.005)
     assert df["joven", "28009"] == pytest.approx(9.30, abs=0.005)
+    # A y B1: 10 viajes en los dos escenarios, 227 × 2 ÷ 12 × (12,50 − 7,30) ÷ 10 (BOCM -3 pág. 72, -2 pág. 67)
+    for m in ("28079", "28005"):
+        assert df["adulto", m] == pytest.approx(19.67, abs=0.005)
 
 
 def test_fin_descuento_propiedades_y_contrato():
