@@ -166,22 +166,29 @@ def _nota_coche() -> str:
     rodeo = f"{FACTOR_RODEO}".replace(".", ",")
     return (
         "Coche: minutos de r5py sobre la red viaria de OpenStreetMap con sus velocidades, sin tráfico (no se aplica "
-        "factor de congestión: no hay fuente primaria), así que infraestiman el tiempo en hora punta; km estimados "
-        f"como línea recta × {rodeo}, no la distancia por carretera, así que el coste en coche también es estimado. coste_coche.eur_km: {eur} €/km, la cuantía de los gastos de locomoción en "
-        "vehículo propio exceptuada de gravamen en el IRPF (Orden HFP/792/2023): una compensación fiscal del uso del "
-        "vehículo (combustible y desgaste), no un coste medido. El coste en coche no incluye aparcamiento ni peajes "
-        "(supuesto declarado)."
+        "factor de congestión: no hay fuente primaria), así que infraestiman el tiempo en hora punta. km estimados: "
+        f"línea recta × {rodeo}, no la distancia por carretera, así que el coste en coche también es estimado; dentro "
+        f"de la zona, mediana de la distancia de los edificios de la zona a su centro × {rodeo}. El factor es un "
+        "supuesto sin fuente: el error es mayor en trayectos cortos urbanos y en la sierra, donde el rodeo real es "
+        "mayor, y a favor en autovía recta. "
+        f"coste_coche.eur_km: {eur} €/km, la cuantía de los gastos de locomoción en vehículo propio exceptuada de "
+        "gravamen en el IRPF (Orden HFP/792/2023), una compensación fiscal y no un coste medido. Se usa como "
+        "aproximación del coste por km del trayecto de casa al trabajo (supuesto): la norma la fija para los "
+        "desplazamientos por trabajo fuera del centro que compensa la empresa, no para ir al trabajo. El coste en "
+        "coche no incluye aparcamiento ni peajes (supuesto declarado)."
     )
 
 
 def _pivotar(
-    tabla: pd.DataFrame, columna: str, ids: pd.Series, destinos: list[str]
+    tabla: pd.DataFrame, modo: str, columna: str, ids: pd.Series, destinos: list[str]
 ) -> np.ndarray:
     """Matriz orígenes × destinos de `columna`, en el orden de `ids` y `destinos`; falla si falta un par."""
     esperados = len(ids) * len(destinos)
     # un par que falte saldría null («sin ruta») sin avisar; los duplicados ya los rechaza pivot
     if len(tabla) != esperados:
-        raise ValueError(f"Faltan pares en tiempos: {len(tabla)} de {esperados}")
+        raise ValueError(
+            f"Faltan pares en tiempos ({modo}): {len(tabla)} de {esperados}"
+        )
     matriz = tabla.pivot(index="zona_id", columns="destino_id", values=columna)
     if set(matriz.index) != set(ids) or set(matriz.columns) != set(destinos):
         raise ValueError(
@@ -211,10 +218,12 @@ def tiempos_json(
     nota = _nota_tiempos(en_tp, len(polos))
     fuentes = FUENTES_TIEMPOS
     coche = {}
-    if (en_coche := tiempos[tiempos["modo"] == "coche"]).size:
-        km = np.floor(_pivotar(en_coche, "km", ids, destinos) * 10 + 0.5) / 10
+    if not (en_coche := tiempos[tiempos["modo"] == "coche"]).empty:
+        km = np.floor(_pivotar(en_coche, "coche", "km", ids, destinos) * 10 + 0.5) / 10
         coche = {
-            "coche": _minutos_json(_pivotar(en_coche, "minutos", ids, destinos)),
+            "coche": _minutos_json(
+                _pivotar(en_coche, "coche", "minutos", ids, destinos)
+            ),
             "km_coche": [[None if np.isnan(k) else float(k) for k in f] for f in km],
             "coste_coche": {"eur_km": EUR_KM},
         }
@@ -232,7 +241,7 @@ def tiempos_json(
                 polos["destino_id"], polos["nombre"], polos["zona_id"], strict=True
             )
         ],
-        "tp": _minutos_json(_pivotar(en_tp, "minutos", ids, destinos)),
+        "tp": _minutos_json(_pivotar(en_tp, "tp", "minutos", ids, destinos)),
     } | coche
 
 
@@ -250,15 +259,15 @@ def main() -> None:
         tiempos = pd.concat(
             [tiempos, pd.read_parquet(PROCESSED / "tiempos_coche.parquet")]
         )
-    else:  # el coche es opcional: la app oculta ese modo si tiempos.json no trae la matriz
-        LOG.info(
+    else:  # la app aún no ofrece el modo coche; calculo.js falla si se pide sin matriz
+        LOG.warning(
             "Sin tiempos_coche.parquet: tiempos.json sale sin coche (python -m mesobra.coche)"
         )
     # primero las zonas: escribir comprueba los ids de tiempos.json contra el zonas.geojson de la carpeta
     api_estatica.escribir("zonas.geojson", zonas_geojson(zonas), APP_DATOS)
     lista = ubicar(leer(), zonas)
     if lejos := polos_lejos(
-        tiempos, lista
+        tiempos[tiempos["modo"] == "tp"], lista
     ):  # no se publica una columna de polo en null
         raise ValueError(
             f"Polos sin ruta o a {MAX_MINUTOS_POLO} min o más de su zona: {lejos}"

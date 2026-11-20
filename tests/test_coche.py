@@ -52,46 +52,77 @@ def test_comprobar_acepta_datos_buenos_y_nulos():
     coche.comprobar(_tabla([13.0, np.nan, 0.5], [15, np.nan, 1]), XY, POLOS)
 
 
-def test_comprobar_falla_con_km_menor_que_la_recta():
-    with pytest.raises(ValueError, match="línea recta"):
-        coche.comprobar(_tabla([9.9, 26.0, 0.5], [15, 30, 1]), XY, POLOS)
+@pytest.mark.parametrize(
+    ("km", "minutos", "causa"),
+    [
+        ([9.9, 26.0, 0.5], [15, 30, 1], "línea recta"),
+        ([13.0, 26.0, 0.5], [15, 0, 1], "tiempo <= 0"),
+        ([13.0, 26.0, 0.0], [15, 30, 1], "km <= 0"),
+        ([13.0, 60.1, 0.5], [15, 30, 1], "velocidad > 120"),
+    ],
+)
+def test_comprobar_falla_con_datos_malos(km, minutos, causa):
+    with pytest.raises(ValueError, match=causa):
+        coche.comprobar(_tabla(km, minutos), XY, POLOS)
 
 
-def test_comprobar_falla_con_tiempo_no_positivo():
-    with pytest.raises(ValueError, match="tiempo <= 0"):
-        coche.comprobar(_tabla([13.0, 26.0, 0.5], [15, 0, 1]), XY, POLOS)
+def test_comprobar_no_pone_tope_de_velocidad_a_la_diagonal():
+    coche.comprobar(_tabla([13.0, 26.0, 3.0], [15, 30, 1]), XY, POLOS)
 
 
-def test_km_rodeo_con_mediana_en_la_diagonal_y_el_polo_propio():
-    secciones = gpd.GeoDataFrame(
+def test_comprobar_falla_si_falta_una_coordenada():
+    with pytest.raises(ValueError, match="Sin coordenadas"):
+        coche.comprobar(_tabla([13.0, 26.0, 0.5], [15, 30, 1]), XY.drop("B"), POLOS)
+
+
+def test_km_rodeo_con_mediana_de_edificios_en_la_diagonal_y_el_polo_propio():
+    # A: edificios a 0 y 2 km del centro y a 3 y 1 km del polo; B: uno a 1 km de su centro
+    edificios = pd.DataFrame(
         {
+            "x": [X0 + 500, X0 + 2500, X0 + 11500],
+            "y": [Y0 + 500] * 3,
             "zona_id": ["A", "A", "B"],
-            "geometry": [
-                box(X0, Y0, X0 + 1000, Y0 + 1000),  # centroide a 0 km del centro de A
-                box(X0 + 2000, Y0, X0 + 3000, Y0 + 1000),  # a 2 km
-                box(X0 + 10000, Y0, X0 + 11000, Y0 + 1000),
-            ],
-        },
-        crs=25830,
+        }
     )
     centros = pd.DataFrame(
         {"x": [X0 + 500, X0 + 10500], "y": [Y0 + 500] * 2}, index=["A", "B"]
     )
     polo = pd.DataFrame({"x": [X0 + 3500], "y": [Y0 + 500]}, index=["polo:p"])
     lista = pd.DataFrame({"destino_id": ["polo:p"], "zona_id": ["A"]})
-    km = coche._km_rodeo(centros, pd.concat([centros, polo]), secciones, lista)
+    km = coche._km_rodeo(centros, pd.concat([centros, polo]), edificios, lista)
     r = tiempos.FACTOR_RODEO
     assert km[("A", "B")] == pytest.approx(10 * r)
     assert km[("A", "A")] == pytest.approx(1 * r)  # mediana de 0 y 2 km
-    assert km[("B", "B")] == pytest.approx(0)  # una sección en el centro
+    assert km[("B", "B")] == pytest.approx(1 * r)  # nunca 0 km
     assert km[("B", "polo:p")] == pytest.approx(
         7 * r
     )  # centro a centro, no es el polo de su zona
     assert km[("A", "polo:p")] == pytest.approx(2 * r)  # mediana de 3 y 1 km
 
 
+def test_edificios_por_zona_asigna_la_seccion_que_los_contiene():
+    secciones = gpd.GeoDataFrame(
+        {
+            "zona_id": ["A", "B"],
+            "geometry": [
+                box(X0, Y0, X0 + 1000, Y0 + 1000),
+                box(X0 + 5000, Y0, X0 + 6000, Y0 + 1000),
+            ],
+        },
+        crs=25830,
+    )
+    puntos = gpd.GeoSeries.from_xy(
+        [X0 + 10, X0 + 5500, X0 + 9000], [Y0 + 10] * 3, crs=25830
+    )
+    e = coche.edificios_por_zona(puntos, secciones)
+    assert e["zona_id"].tolist() == ["A", "B"]  # el tercero cae fuera de toda sección
+    assert e["x"].tolist() == [X0 + 10, X0 + 5500]
+
+
 def test_el_modulo_se_importa_sin_r5py(monkeypatch):
     monkeypatch.setitem(sys.modules, "r5py", None)
     recargado = importlib.reload(coche)
     with pytest.raises(ImportError):
-        recargado.matriz_r5py(pd.DataFrame(), gpd.GeoDataFrame(), pd.DataFrame())
+        recargado.matriz_r5py(
+            pd.DataFrame(), gpd.GeoDataFrame(), pd.DataFrame(), pd.DataFrame()
+        )
