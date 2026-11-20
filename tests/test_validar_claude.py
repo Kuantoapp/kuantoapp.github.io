@@ -22,9 +22,13 @@ def repo(
 ) -> Path:
     (tmp_path / ".claude/agents").mkdir(parents=True)
     (tmp_path / ".claude/skills/dm-abrir-pr").mkdir(parents=True)
-    (tmp_path / f".claude/agents/{nombre_agente}.md").write_text(agente)
-    (tmp_path / ".claude/skills/dm-abrir-pr/SKILL.md").write_text(skill)
-    (tmp_path / ".claude/README.md").write_text(indice)
+    (tmp_path / f".claude/agents/{nombre_agente}.md").write_text(
+        agente, encoding="utf-8"
+    )
+    (tmp_path / ".claude/skills/dm-abrir-pr/SKILL.md").write_text(
+        skill, encoding="utf-8"
+    )
+    (tmp_path / ".claude/README.md").write_text(indice, encoding="utf-8")
     return tmp_path
 
 
@@ -119,8 +123,8 @@ def test_reglas_de_la_guia_en_skills(tmp_path):
     base = repo(tmp_path, skill=skill)
     ref = base / ".claude/skills/dm-abrir-pr/referencia"
     ref.mkdir()
-    (ref / "detalle.md").write_text("# Detalle\n" + "línea\n" * 120)
-    (ref / "huerfano.md").write_text("# Nadie me enlaza\n")
+    (ref / "detalle.md").write_text("# Detalle\n" + "línea\n" * 120, encoding="utf-8")
+    (ref / "huerfano.md").write_text("# Nadie me enlaza\n", encoding="utf-8")
     errores = "\n".join(validar_claude.validar(base))
     assert "falta when_to_use" in errores
     assert "tercera persona" in errores

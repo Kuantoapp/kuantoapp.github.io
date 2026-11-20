@@ -58,8 +58,10 @@ def proyecto(tmp_path: Path) -> Path:
     (tmp_path / "docs/decisiones.md").write_text(DECISIONES, encoding="utf-8")
     (tmp_path / "data/raw").mkdir(parents=True)
     (tmp_path / "data/README.md").write_text(README, encoding="utf-8")
-    (tmp_path / "data/raw/paro.csv").write_text("a\n")
-    (tmp_path / "data/raw/nota.md").write_text("(verificar) en raw no cuenta\n")
+    (tmp_path / "data/raw/paro.csv").write_text("a\n", encoding="utf-8")
+    (tmp_path / "data/raw/nota.md").write_text(
+        "(verificar) en raw no cuenta\n", encoding="utf-8"
+    )
     (tmp_path / "data/processed").mkdir()
     (tmp_path / "data/processed/ine.csv").write_bytes(
         "Móstoles;(verificar)\n".encode("latin-1")
@@ -69,15 +71,15 @@ def proyecto(tmp_path: Path) -> Path:
         "Año (verificar)\n".encode("latin-1")
     )
     (tmp_path / "ideas/plan1/ficha.md").write_text(
-        "Dato A (verificar)\nDato B (Verificar año)\n"
+        "Dato A (verificar)\nDato B (Verificar año)\n", encoding="utf-8"
     )
     # Estructura libre: cualquier carpeta cuenta, salvo tests/ y las menciones entre «»
     (tmp_path / "analisis").mkdir()
     (tmp_path / "analisis/notas.md").write_text(
-        "Las marcas «(verificar)» se resuelven\n"
+        "Las marcas «(verificar)» se resuelven\n", encoding="utf-8"
     )
     (tmp_path / "tests").mkdir()
-    (tmp_path / "tests/test_x.py").write_text("x = '(verificar)'\n")
+    (tmp_path / "tests/test_x.py").write_text("x = '(verificar)'\n", encoding="utf-8")
     return tmp_path
 
 
@@ -112,7 +114,9 @@ def transcript(ruta: Path, tokens: int) -> Path:
         {"type": "assistant", "message": {"usage": uso}},
         {"type": "system", "subtype": "stop_hook_summary"},
     ]
-    ruta.write_text("\n".join(json.dumps(x) for x in lineas) + "\nlínea rota\n")
+    ruta.write_text(
+        "\n".join(json.dumps(x) for x in lineas) + "\nlínea rota\n", encoding="utf-8"
+    )
     return ruta
 
 
@@ -148,7 +152,8 @@ def test_avisa_solo_si_origin_main_te_afecta(tmp_path):
     def sube(fichero):
         (otra / fichero).parent.mkdir(exist_ok=True)
         (otra / fichero).write_text(
-            str(len(list(otra.rglob("*")))) + fichero + str(time.time_ns())
+            str(len(list(otra.rglob("*")))) + fichero + str(time.time_ns()),
+            encoding="utf-8",
         )
         (
             g(otra, "add", "."),
@@ -162,7 +167,7 @@ def test_avisa_solo_si_origin_main_te_afecta(tmp_path):
     yo, otra = tmp_path / "yo", tmp_path / "otra"
     sube("src/a.py")
     g(yo, "pull", "-q", "origin", "main")
-    (yo / "src/a.py").write_text("mio")  # yo toco a.py sin confirmar
+    (yo / "src/a.py").write_text("mio", encoding="utf-8")  # yo toco a.py sin confirmar
     assert ctx.remoto(yo) == ""  # al día
     sube("src/ajeno.py")
     assert ctx.remoto(yo) == ""  # main avanzó, pero en algo que no toco
@@ -175,7 +180,9 @@ def test_avisa_solo_si_origin_main_te_afecta(tmp_path):
     )
     g(yo, "checkout", "-q", "--", "."), g(yo, "pull", "-q", "origin", "main")
     (yo / "app").mkdir()
-    (yo / "app/mapa.py").write_text("from mesobra import renta\nfrom .otro import f\n")
+    (yo / "app/mapa.py").write_text(
+        "from mesobra import renta\nfrom .otro import f\n", encoding="utf-8"
+    )
     sube("src/mesobra/renta.py")  # lo importa mapa.py, que toco
     assert "src/mesobra/renta.py" in ctx.remoto(yo)
     g(yo, "pull", "-q", "origin", "main")
@@ -197,7 +204,7 @@ def test_sincroniza_tras_el_pr(tmp_path):
         )
 
     def commit(repo, fichero, texto, rama):
-        (repo / fichero).write_text(texto)
+        (repo / fichero).write_text(texto, encoding="utf-8")
         (
             g(repo, "add", "."),
             g(repo, "commit", "-q", "-m", fichero),
@@ -213,7 +220,7 @@ def test_sincroniza_tras_el_pr(tmp_path):
     g(yo, "checkout", "-q", "-b", "u/tema")
     assert sinc.sincronizar(yo) == ""  # al día
     commit(otra, "b.txt", "2", "main")
-    (yo / "sucio.txt").write_text("x")
+    (yo / "sucio.txt").write_text("x", encoding="utf-8")
     assert sinc.sincronizar(yo) == ""  # árbol sucio: no toca nada
     (yo / "sucio.txt").unlink()
     assert (
@@ -267,10 +274,12 @@ def git_estado(repo):
 
 def test_avisa_de_las_skills_de_la_issue(tmp_path):
     (tmp_path / ".claude/agents").mkdir(parents=True)
-    (tmp_path / ".claude/agents/dm-ag.md").write_text("---\n---\n")
+    (tmp_path / ".claude/agents/dm-ag.md").write_text("---\n---\n", encoding="utf-8")
     for n in ("dm-x", "dm-y"):
         (tmp_path / f".claude/skills/{n}/SKILL.md").parent.mkdir(parents=True)
-        (tmp_path / f".claude/skills/{n}/SKILL.md").write_text("---\n---\n")
+        (tmp_path / f".claude/skills/{n}/SKILL.md").write_text(
+            "---\n---\n", encoding="utf-8"
+        )
     linea = "- **Skills:** dm-x, dm-codigo-minimo, dm-y, dm-ag, dm-nada · **Revisores:** dm-revisor-codigo"
     aviso = sinc.avisar_skills
     for salida in (f"title\n{linea}\nfin", json.dumps(f"a\n{linea}\nb")):
@@ -286,7 +295,9 @@ def test_avisa_de_las_skills_de_la_issue(tmp_path):
 
 def test_main_avisa_de_skills_salvo_en_subagente(tmp_path, monkeypatch, capsys):
     (tmp_path / ".claude/skills/dm-x").mkdir(parents=True)
-    (tmp_path / ".claude/skills/dm-x/SKILL.md").write_text("---\n---\n")
+    (tmp_path / ".claude/skills/dm-x/SKILL.md").write_text(
+        "---\n---\n", encoding="utf-8"
+    )
     evento = {
         "tool_input": {"command": "gh issue view 89"},
         "tool_response": {"stdout": "- **Skills:** dm-x · otro"},

@@ -16,7 +16,7 @@ def principal_y_worktree(tmp_path: Path) -> tuple[Path, Path]:
     """Checkout principal (con data/raw/ine.csv) y un worktree suyo, como manda AGENTS.md."""
     principal, wt = tmp_path / "principal", tmp_path / "wt"
     (principal / "data/raw").mkdir(parents=True)
-    (principal / "data/raw/ine.csv").write_text("a\n")
+    (principal / "data/raw/ine.csv").write_text("a\n", encoding="utf-8")
     git = ["git", "-C", str(principal), "-c", "user.email=a@b", "-c", "user.name=a"]
     for a in (["init", "-q"], ["commit", "-q", "--allow-empty", "-m", "x"]):
         subprocess.run([*git, *a], check=True, capture_output=True)

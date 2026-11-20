@@ -24,7 +24,9 @@ def sin_python(tmp_path: Path) -> str:
 def python_falso(proyecto: Path, codigo: int, salida: str = "") -> None:
     exe = proyecto / ".venv/bin/python"
     exe.parent.mkdir(parents=True)
-    exe.write_text(f"#!/bin/sh\ncat >/dev/null\necho '{salida}'\nexit {codigo}\n")
+    exe.write_text(
+        f"#!/bin/sh\ncat >/dev/null\necho '{salida}'\nexit {codigo}\n", encoding="utf-8"
+    )
     exe.chmod(0o755)
 
 

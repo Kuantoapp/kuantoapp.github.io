@@ -105,7 +105,10 @@ def test_tenencia_2025_2021(tmp_path):
         encoding="utf-8-sig",
     )
     assert s.tenencia_2025_2021(ruta) == pytest.approx(26.9 / 24.0)
-    ruta.write_text("\n".join([cabecera] + [f"2021;{s.MERCADO};Otros;;;1;Porcentaje;"]))
+    ruta.write_text(
+        "\n".join([cabecera] + [f"2021;{s.MERCADO};Otros;;;1;Porcentaje;"]),
+        encoding="utf-8-sig",
+    )
     with pytest.raises(ValueError):
         s.tenencia_2025_2021(ruta)
 

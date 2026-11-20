@@ -35,7 +35,7 @@ def repo(tmp_path: Path) -> Path:
     git(tmp_path, "init", "-q", "-b", "main")
     git(tmp_path, "config", "user.email", "t@t")
     git(tmp_path, "config", "user.name", "t")
-    (tmp_path / "README.md").write_text("x\n")
+    (tmp_path / "README.md").write_text("x\n", encoding="utf-8")
     git(tmp_path, "add", ".")
     git(tmp_path, "commit", "-qm", "base")
     git(tmp_path, "update-ref", "refs/remotes/origin/main", "HEAD")
@@ -45,7 +45,7 @@ def repo(tmp_path: Path) -> Path:
 def commit(raiz: Path, ruta: str, texto: str) -> str:
     f = raiz / ruta
     f.parent.mkdir(parents=True, exist_ok=True)
-    f.write_text(texto)
+    f.write_text(texto, encoding="utf-8")
     git(raiz, "add", ".")
     git(raiz, "commit", "-qm", ruta)
     return git(raiz, "rev-parse", "--short", "HEAD")
@@ -168,13 +168,15 @@ def test_registro_resumen_y_stop(tmp_path):
     # Un agente que no es revisor no registra nada
     otro = {**evento, "agent_type": "Explore"}
     hook(base, "--registrar", otro)
-    assert len(rev.registro(base).read_text().splitlines()) == 1
+    assert len(rev.registro(base).read_text(encoding="utf-8").splitlines()) == 1
 
 
 def test_stop_no_interrumpe_mientras_se_trabaja(tmp_path):
     base = repo(tmp_path)
     commit(base, "notebooks/mapa.py", "import geopandas as gpd\n")
-    (base / "notebooks/mapa.py").write_text("import geopandas as gpd\ny = 2\n")
+    (base / "notebooks/mapa.py").write_text(
+        "import geopandas as gpd\ny = 2\n", encoding="utf-8"
+    )
     assert hook(base, "--stop", {"cwd": str(base)}).stdout == ""
 
 
@@ -188,7 +190,7 @@ def test_worktree_comparte_data_raw(tmp_path):
     git(principal, "worktree", "add", "-q", str(otro), "-b", "yo/tema")
     assert "enlazada" in raw.compartir_raw(otro)
     assert (otro / "data/raw").is_symlink()
-    (otro / "data/raw/ine.csv").write_text("a\n")
+    (otro / "data/raw/ine.csv").write_text("a\n", encoding="utf-8")
     assert (principal / "data/raw/ine.csv").exists()  # una sola copia
     assert raw.compartir_raw(otro) == ""  # idempotente
     assert raw.compartir_raw(principal) == ""  # en el principal no enlaza nada
@@ -202,7 +204,7 @@ def test_worktree_con_datos_propios_no_se_toca(tmp_path):
     otro = tmp_path / "dm-tema"
     git(principal, "worktree", "add", "-q", str(otro), "-b", "yo/tema")
     (otro / "data/raw").mkdir(parents=True)
-    (otro / "data/raw/propio.csv").write_text("a\n")
+    (otro / "data/raw/propio.csv").write_text("a\n", encoding="utf-8")
     assert "ficheros propios" in raw.compartir_raw(otro)
     assert not (otro / "data/raw").is_symlink()
 
@@ -282,7 +284,7 @@ def test_cambios_sin_confirmar_solo_invalidan_su_area(tmp_path):
         base = repo(tmp_path / carpeta)
         commit(base, "data/README.md", "fuentes\n")
         commit(base, "src/util.py", "x = 1\n")
-        (base / sin_confirmar).write_text("cambiado\n")
+        (base / sin_confirmar).write_text("cambiado\n", encoding="utf-8")
         hook(base, "--registrar", {**evento, "cwd": str(base)})
         salida = hook(base, "--resumen", {}).stdout
         assert ("dm-verificador-fuentes: APTO" in salida) is vale, sin_confirmar
