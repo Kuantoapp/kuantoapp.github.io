@@ -85,6 +85,8 @@ def test_titulares_validan_y_son_estimados():
     obj = pipeline_analisis.analisis_json(_esfuerzo(), _bono())
     api_estatica.validar("analisis.json", {**obj, "titulares": obj["titulares"] + res})
     assert all("estimado" in t["texto"] and t["fuente"] for t in res)
+    ipc = f"IPC297196) hasta {api['alquiler']['meta']['ipc_hasta']}"
+    assert all(ipc in t["fuente"] for t in res)
 
 
 def test_sin_precios_falla():

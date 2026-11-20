@@ -316,7 +316,10 @@ export function avisos(alquiler) {
   const sinDato = cuantas("sin_dato");
   if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
   // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.
-  return alquiler.meta.ejemplo === true ? lineas : [...lineas, `${fuentes(alquiler.meta)}.`];
+  // La fecha de la tabla 76137 del INE solo viaja dentro de `meta.nota`; si falta, la línea sale sin ella.
+  const fecha = alquiler.meta.nota?.match(/tabla 76137 actualizada el (\d{4}-\d{2}-\d{2})/)?.[1];
+  const fuente = `${fuentes(alquiler.meta)}${conIpc && fecha ? ` (tabla 76137 del INE actualizada el ${fecha})` : ""}.`;
+  return alquiler.meta.ejemplo === true ? lineas : [...lineas, fuente];
 }
 
 // --- Validación del formulario -----------------------------------------------------------------
