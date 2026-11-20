@@ -20,7 +20,14 @@ from mesobra import (
 )
 from mesobra import titulares as titulares_sueldos
 from mesobra.figuras import es
-from mesobra.pipeline_euros import APP_DATOS, MADRID, ORIGEN_SERPAVI, SERPAVI
+from mesobra.pipeline_euros import (
+    APP_DATOS,
+    IPC_CM,
+    IPC_INE,
+    MADRID,
+    ORIGEN_SERPAVI,
+    SERPAVI,
+)
 
 LOG = logging.getLogger(__name__)
 APP_IMG = APP_DATOS.parent / "img"
@@ -28,6 +35,8 @@ FUENTE_ESFUERZO = "SERPAVI (MIVAU) y ADRH (INE), elaboración propia"
 FUENTE_BONO = "Bono Alquiler Joven 2022, Comunidad de Madrid"
 FUENTES = [
     SERPAVI,
+    IPC_INE,
+    IPC_CM,
     {
         "nombre": "INE, Atlas de Distribución de Renta de los Hogares, tabla 31097 (renta neta media por hogar)",
         "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/31097.csv",
@@ -65,8 +74,9 @@ NOTA = (
     + " Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 31097 actualizada "
     "el 2026-10-15; tabla 68542 actualizada el 2025-12-02; tabla 28191 actualizada el 2026-05-28; tabla "
     "28186 actualizada el 2026-05-28; tabla 28201 actualizada el 2026-05-28; tabla 36850 actualizada el "
-    "2024-09-23); el INE no participa ni patrocina este proyecto. "
-    "Fuente de los datos: Comunidad de Madrid (Bono Alquiler Joven 2022, actualizado el 2026-02-03); la "
+    "2024-09-23; tabla 76137 actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
+    "Fuente de los datos: Comunidad de Madrid (Bono Alquiler Joven 2022, actualizado el 2026-02-03; IPC de "
+    "alquiler 1934665, control, actualizado el 2026-11-05); la "
     "Comunidad de Madrid no participa ni patrocina este proyecto."
 )
 

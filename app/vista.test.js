@@ -323,6 +323,7 @@ test("los avisos dicen suelo, año, zonas estimadas y sin dato, con su fuente", 
   assert.ok(!lineas.some((l) => l.startsWith("fuente:")), "con datos de ejemplo no se atribuye ninguna fuente");
   const reales = avisos(real.alquiler);
   assert.match(reales.at(-1), /^fuente: /);
+  assert.match(reales.at(-1), / Tabla 76137 del INE actualizada el \d{4}-\d{2}-\d{2}\.$/);
   assert.ok(reales.includes("41 zonas sin dato publicado de alquiler: en gris y sin cifra."));
   assert.ok(!reales.some((l) => /estimado \(borde/.test(l)));
 });
