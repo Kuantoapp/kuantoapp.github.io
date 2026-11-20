@@ -11,6 +11,13 @@ Decisión de Izan del 2026-11-15 (`docs/decisiones.md`). Para cada línea de `RU
   `FRANJA`. Frecuencia y velocidad salen de `_parecidas` (autobús) o de `HEADWAY_METRO_S` y la mediana de las demás
   líneas de Metro (línea 3).
 
+- **Líneas con horario de relleno** (#311): el CRTM publica 33 rutas (30 interurbanas y los urbanos 1A, 1B y 1 de
+  Leganés) con todas las paradas de cada viaje a las 01:00:00, y r5py no las ve en la franja de punta (lista en
+  `docs/decisiones.md`). `rellenar_horarios` toma la salida real del `trip_id` y reparte la hora por distancia con la
+  velocidad de las líneas parecidas (`parecidas`). La 483 (primera parada a 01:00:01 y el resto con horas imposibles)
+  y otros viajes de horas absurdas no se tocan: ver #349. Es una estimación: el cociente entre la duración
+  reconstruida y la real tiene mediana 1,06 y p10–p90 de 0,56 a 2,69 en líneas con horario real.
+
 Las distancias son en línea recta entre paradas consecutivas, igual en las líneas de referencia y en las
 reconstruidas, para que la velocidad medida y la aplicada sean la misma magnitud (los GTFS no traen
 `shape_dist_traveled`).
@@ -74,6 +81,10 @@ RAZON_KM = 1.33
 SERVICIO = "estimado"
 # aviso si empalmar las partes sueltas de la relación alarga el trazado más de un 10 %
 ALARGAMIENTO = 1.1
+# el CRTM publica sin horario real algunas líneas: todas las paradas de cada viaje a esta hora (#311)
+RELLENO = ("01:00:00", "01:00:01")
+HORA_EN_ID = r"_(\d{2}):(\d{2}):\d{2}_"
+HORA_CORTA = r"_(\d{1,2})(\d{2})$"
 SEMANA = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
 
@@ -87,7 +98,9 @@ def _leer(zip_path: Path, nombre: str) -> pd.DataFrame:
 
 def _paradas(stops: pd.DataFrame, usadas: set[str]) -> gpd.GeoDataFrame:
     """Paradas físicas (`location_type` 0) en EPSG:25830 con la columna `huerfana`."""
-    stops = stops[stops["location_type"].fillna("0") == "0"]
+    # sin la columna (GTFS opcional) todas son paradas, por defecto del formato
+    tipo = stops.get("location_type", "0")
+    stops = stops[pd.Series(tipo, index=stops.index).fillna("0") == "0"]
     return gpd.GeoDataFrame(
         {
             "stop_id": stops["stop_id"].to_numpy(),
@@ -248,6 +261,8 @@ def parecidas(
 
 
 def _hhmmss(segundos: np.ndarray) -> list[str]:
+    if not (np.isfinite(segundos) & (segundos >= 0)).all():
+        raise ValueError("Segundos negativos o no finitos al escribir una hora")
     h, resto = np.divmod(segundos.astype(int), 3600)
     m, s = np.divmod(resto, 60)
     return [f"{a:02d}:{b:02d}:{c:02d}" for a, b, c in zip(h, m, s, strict=True)]
@@ -317,23 +332,107 @@ def completar_viajes(
     return pd.concat([resto, *nuevas], ignore_index=True)
 
 
+def _segundos_del_id(ids: pd.Series) -> pd.Series:
+    """Segundos de la salida que lleva cada `trip_id` (NaN si no lleva hora); `ValueError` si no es una hora válida.
+
+    Larga (`..._06:56:00_...`) o corta al final (`..._1515`, `..._620`: 6:20). Los minutos van de 0 a 59 y la hora
+    hasta 47 (GTFS admite pasar de las 24 en los viajes de madrugada); `..._9975` no es una hora. Un final como
+    `..._2024` sí pasa por hora (20:24): solo se mira en viajes de relleno, donde hoy no hay ninguno así.
+    """
+    hm = ids.str.extract(HORA_EN_ID).astype(float)
+    hm = hm.fillna(ids.str.extract(HORA_CORTA).astype(float))
+    if (malas := (hm[1] >= 60) | (hm[0] >= 48)).any():
+        raise ValueError(f"Hora imposible en el trip_id: {ids[malas][:5].tolist()}")
+    return hm[0] * 3600 + hm[1] * 60
+
+
+def _velocidades(
+    trips: pd.DataFrame, reales: pd.DataFrame, xy: pd.DataFrame, largo: pd.Series
+) -> pd.Series:
+    """Velocidad (km/h) de cada ruta de `largo` (km mediano): la de sus líneas parecidas, que debe ser > 0 y finita."""
+    # shortcut: cuenta las salidas en punta de todos los servicios; las líneas de #173 usan los activos en
+    # FECHA_SALIDA, que `completar_tablas` no recibe. Usar los activos si cambian las líneas parecidas
+    ref = referencia(trips, reales, xy, set(trips["service_id"]))
+    kmh = pd.Series({r: parecidas(r, km, ref)[1] for r, km in largo.items()})
+    if (malas := ~(np.isfinite(kmh) & (kmh > 0))).any():
+        raise ValueError(
+            f"Velocidad no válida en las rutas de relleno: {kmh.index[malas].tolist()}"
+        )
+    return kmh
+
+
+def rellenar_horarios(
+    trips: pd.DataFrame, stop_times: pd.DataFrame, xy: pd.DataFrame
+) -> pd.DataFrame:
+    """`stop_times` con horas reales en los viajes con horario de relleno (`RELLENO`).
+
+    - **Todas las paradas de relleno:** la salida es la hora que lleva el `trip_id` (`..._06:56:00_...`); cada parada
+      va a esa hora más su distancia acumulada en línea recta entre la velocidad mediana de las líneas parecidas de
+      su red (`parecidas`, medida en viajes con horario real). Sin hora en el `trip_id` es un error, no se adivina.
+
+    Sin viajes de relleno devuelve el mismo objeto `stop_times` (`completar_tablas` lo comprueba con `is`). Los
+    viajes con solo la primera parada de relleno (la 483) no se tocan: ver #349.
+    """
+    sin_hora = (
+        stop_times["departure_time"].isin(RELLENO).groupby(stop_times["trip_id"]).all()
+    )
+    relleno = sin_hora.index[sin_hora]
+    if relleno.empty:
+        return stop_times
+    salida = _segundos_del_id(relleno.to_series())
+    if salida.isna().any():
+        raise ValueError(
+            f"Viajes de relleno sin hora en el trip_id: {salida.index[salida.isna()][:5].tolist()}"
+        )
+    ruta = trips.set_index("trip_id")["route_id"].reindex(relleno)
+    if ruta.isna().any():
+        raise ValueError(
+            f"Viajes de relleno que no están en trips.txt: {ruta.index[ruta.isna()][:5].tolist()}"
+        )
+    es = stop_times["trip_id"].isin(relleno)
+    st = stop_times[es].assign(seq=lambda d: d["stop_sequence"].astype(int))
+    st = st.sort_values(["trip_id", "seq"])
+    p = xy.reindex(st["stop_id"])
+    if p.isna().any(axis=None):
+        raise ValueError("Paradas de viajes de relleno sin coordenadas en stops.txt")
+    p = p.to_numpy()
+    tramo = np.r_[0.0, np.hypot(*np.diff(p, axis=0).T)] / 1000
+    km = np.where(st["trip_id"].ne(st["trip_id"].shift()), 0.0, tramo)
+    acum = pd.Series(km, index=st.index).groupby(st["trip_id"]).cumsum()
+    largo = acum.groupby(st["trip_id"]).max().groupby(ruta).median()
+    kmh = _velocidades(trips, stop_times[~es], xy, largo)
+    velocidad = kmh.reindex(ruta.reindex(st["trip_id"]).to_numpy()).to_numpy()
+    t0 = salida.reindex(st["trip_id"]).to_numpy()
+    segundos = np.round(t0 + acum.to_numpy() / velocidad * 3600)
+    if pd.Series(segundos).groupby(st["trip_id"].to_numpy()).diff().lt(0).any():
+        raise ValueError("Horas reconstruidas que retroceden dentro de un viaje")
+    hora = _hhmmss(segundos)
+    st = st.drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
+    return pd.concat([stop_times[~es], st], ignore_index=True)
+
+
 def completar_tablas(
     tablas: dict[str, bytes], secuencias: dict[str, list[str]]
 ) -> dict[str, bytes]:
-    """`completar_viajes` sobre las tablas sin procesar de un GTFS (`tiempos.preparar_gtfs`); sin esas rutas, igual."""
+    """Horas de relleno y paradas intermedias sobre las tablas de un GTFS (`tiempos.preparar_gtfs`); si no hay nada, igual."""
 
     def leer(nombre: str) -> pd.DataFrame:
         return pd.read_csv(io.BytesIO(tablas[nombre]), dtype=str, encoding="utf-8-sig")
 
-    trips = leer("trips.txt")
-    if not trips["route_id"].isin(secuencias).any():
-        return tablas
+    trips, stop_times = leer("trips.txt"), leer("stop_times.txt")
     xy = _xy(_paradas(leer("stops.txt"), set()))
-    st = completar_viajes(trips, leer("stop_times.txt"), xy, secuencias)
-    LOG.warning(
-        "Paradas intermedias estimadas en %s",
-        sorted(set(trips.loc[trips["route_id"].isin(secuencias), "route_id"])),
-    )
+    st = rellenar_horarios(trips, stop_times, xy)
+    rellenadas = st is not stop_times
+    if rellenadas:
+        LOG.warning("Horas estimadas en viajes con horario de relleno del CRTM (#311)")
+    if trips["route_id"].isin(secuencias).any():
+        st = completar_viajes(trips, st, xy, secuencias)
+        LOG.warning(
+            "Paradas intermedias estimadas en %s",
+            sorted(set(trips.loc[trips["route_id"].isin(secuencias), "route_id"])),
+        )
+    elif not rellenadas:
+        return tablas
     return {**tablas, "stop_times.txt": st.to_csv(index=False).encode()}
 
 

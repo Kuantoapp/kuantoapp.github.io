@@ -168,8 +168,101 @@ def test_completar_viajes_un_viaje_parcial_solo_recibe_su_tramo():
 
 
 def test_completar_tablas_sin_esas_rutas_no_toca_nada():
-    tablas = {"trips.txt": b"route_id,trip_id\r\nS,t1\r\n"}
+    tablas = {
+        "trips.txt": b"route_id,trip_id,service_id,direction_id\r\nS,t1,L,0\r\n",
+        "stop_times.txt": (
+            b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+            b"t1,08:00:00,08:00:00,A,0\r\nt1,08:10:00,08:10:00,B,1\r\n"
+        ),
+        # sin `location_type`, como el de Cercanías
+        "stops.txt": b"stop_id,stop_lon,stop_lat\r\nA,-3.7,40.4\r\n",
+    }
     assert le.completar_tablas(tablas, {"R": ["A", "B"]}) is tablas
+
+
+COLS = ["trip_id", "arrival_time", "departure_time", "stop_id", "stop_sequence"]
+XY3 = pd.DataFrame(
+    {"x": [X0, X0 + 3000, X0 + 7000], "y": [Y0, Y0, Y0]}, index=["p", "q", "r"]
+)
+RELLENO3 = ("01:00:00", "01:00:00", "01:00:00")
+
+
+def _viaje(trip_id: str, horas: tuple[str, ...]) -> list[tuple[str, ...]]:
+    return [
+        (trip_id, h, h, s, str(i))
+        for i, (s, h) in enumerate(zip("pqr", horas, strict=True))
+    ]
+
+
+def _escenario(*viajes: tuple[str, str, tuple[str, ...]]):
+    """Una línea real (30 km/h: 3 km en 6 min, 7 km en 14) y los viajes `(trip_id, route_id, horas)` dados."""
+    filas = _viaje("t1", ("07:40:00", "07:46:00", "07:54:00"))
+    rutas = {"t1": "8__101___"}
+    for trip_id, route_id, horas in viajes:
+        filas += _viaje(trip_id, horas)
+        rutas[trip_id] = route_id
+    trips = pd.DataFrame(
+        {
+            "trip_id": list(rutas),
+            "route_id": list(rutas.values()),
+            "service_id": "L",
+            "direction_id": "0",
+        }
+    )
+    return trips, pd.DataFrame(filas, columns=COLS)
+
+
+def _horas(st: pd.DataFrame, trip_id: str) -> list[str]:
+    q = st[st["trip_id"] == trip_id].sort_values("stop_sequence")
+    return q["departure_time"].tolist()
+
+
+def test_rellenar_horarios_usa_la_salida_del_trip_id_y_la_velocidad_de_las_parecidas():
+    largo, corto = "x_8__102___-1_06:56:00_1_-__1", "x_8__102___-1_620"
+    trips, st = _escenario(
+        (largo, "8__102___", RELLENO3), (corto, "8__102___", RELLENO3)
+    )
+    salida = le.rellenar_horarios(trips, st, XY3)
+    assert _horas(salida, largo) == ["06:56:00", "07:02:00", "07:10:00"]
+    assert _horas(salida, corto) == ["06:20:00", "06:26:00", "06:34:00"]  # hora corta
+    assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
+
+
+def test_rellenar_horarios_sin_nada_que_hacer_devuelve_el_mismo_objeto():
+    trips, st = _escenario()
+    assert le.rellenar_horarios(trips, st, XY3) is st
+
+
+def test_rellenar_horarios_falla_si_no_hay_hora_valida_o_viaje():
+    trips, st = _escenario(("x_8__102___-sin_hora", "8__102___", RELLENO3))
+    with pytest.raises(ValueError, match="sin hora"):
+        le.rellenar_horarios(trips, st, XY3)
+    for imposible in (
+        "x_8__102___-1_2075",
+        "x_8__102___-1_9915",
+        "x_8__102___-1_99:15:00_",
+    ):
+        trips, st = _escenario((imposible, "8__102___", RELLENO3))
+        with pytest.raises(ValueError, match="Hora imposible"):
+            le.rellenar_horarios(trips, st, XY3)
+    trips, st = _escenario(("x_8__102___-1_620", "8__102___", RELLENO3))
+    with pytest.raises(ValueError, match="no están en trips.txt"):
+        le.rellenar_horarios(trips[trips["trip_id"] == "t1"], st, XY3)
+
+
+def test_rellenar_horarios_no_toca_los_viajes_con_solo_la_primera_parada_de_relleno():
+    # la 483: primera parada a 01:00:01 y el resto con horas reales; es de #349, no se reconstruye
+    parcial = "x_8__483___-1_07:30:00_1_-__1"
+    recorrido = ("01:00:01", "07:30:51", "07:32:06")
+    trips, st = _escenario((parcial, "8__483___", recorrido))
+    assert le.rellenar_horarios(trips, st, XY3) is st
+
+
+def test_hhmmss_rechaza_segundos_negativos_o_no_finitos():
+    assert le._hhmmss(np.array([0.0, 3661.0])) == ["00:00:00", "01:01:01"]
+    for malo in (-4500.0, np.nan, np.inf):
+        with pytest.raises(ValueError, match="Segundos"):
+            le._hhmmss(np.array([malo]))
 
 
 def test_activos_cuenta_dia_de_la_semana_vigencia_altas_y_bajas(tmp_path):
