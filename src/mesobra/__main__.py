@@ -15,12 +15,12 @@ PASOS = ("pipeline_territorio", "pipeline_euros", "pipeline_analisis", "sdm")
 log = logging.getLogger("mesobra")
 
 
-def comprobar_fuentes(readme: Path, raw: Path, descargar: Path = DESCARGAR) -> None:
+def comprobar_fuentes(readme: Path, raw: Path) -> None:
     """Se detiene si falta una fuente de `readme` en `raw` o su SHA-256 no coincide.
 
     Reutiliza el script de `dm-nueva-fuente`, cuya `comprobar` solo avisa de los ausentes.
     """
-    spec = spec_from_file_location("descargar", descargar)
+    spec = spec_from_file_location("descargar", DESCARGAR)
     script = module_from_spec(spec)
     spec.loader.exec_module(script)
     cabecera, filas = script.tabla_fuentes(readme)
