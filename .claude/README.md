@@ -13,6 +13,7 @@ Todo lo de `.claude/` está versionado: quien abra Claude Code en este repo tien
 3. **Usa los del proyecto, no tus copias.** Si una skill personal de `~/.claude/skills/` se llama igual que una del proyecto, gana la personal. Por eso todo lo del proyecto empieza por `dm-`. Si mejoras algo, hazlo en el repo con un PR, no en tu copia.
 4. **Lo personal no se comparte:** tu `~/.claude/CLAUDE.md` y `CLAUDE.local.md` se suman a `AGENTS.md`. No metas ahí reglas que contradigan las del proyecto.
 5. **Tras un pull que cambie `.claude/`:** los agentes y skills nuevos o editados se detectan solos en unos segundos. Si alguno no aparece, ejecuta `/reload-skills` o reinicia `claude`.
+6. **Vista previa de la demo:** `.claude/launch.json` define el servidor `demo` (`uv run --no-project python -m http.server 8000 -d app`) que usa el panel de vista previa de la app de escritorio de Claude Code; sin la app, ese mismo comando desde la raíz. Sirve la `app/` de la carpeta donde se abra la sesión.
 
 ### Windows
 
