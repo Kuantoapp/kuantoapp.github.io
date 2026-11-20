@@ -45,7 +45,8 @@ Supuestos:
 10. Escenario `cesta`: `media` (por defecto, la referencia) o `tramo`, que multiplica la alimentación por
    el cociente de la EPF de España del tramo de ingresos del neto del hogar (`cesta_tramos` de
    `hogares.json`, `hogares.factores_tramo`; estimado, #312). El neto ÷ 12 equivale al ingreso mensual de la
-   EPF, que prorratea las pagas extra; en «comparte», el neto propio (la EPF cuenta aparte a quien no
+   EPF, que prorratea las pagas extra (la EPF suma además otras rentas del hogar, que aquí no entran);
+   en «comparte», el neto propio (la EPF cuenta aparte a quien no
    comparte gastos).
 """
 
