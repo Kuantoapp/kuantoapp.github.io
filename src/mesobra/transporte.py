@@ -24,8 +24,9 @@ Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (RD
 solo cuenta el abono del CRTM. Los jóvenes nacidos de 2000 a 2011 tienen uno de 10 € (art. 3.2.a).3.º), que
 se aplica a todo el colectivo joven (15 a 25 años) porque nació en esos años. Supuestos: quien nació en 2000
 y ya cumplió 26 cuenta como general y no recibe los 10 € (se sobrestima su coste en Cercanías); se supone
-nacionalidad española o residencia legal; Madrid es núcleo con tarificación zonal. Los 20 € valen para todos
-los colectivos: según Renfe (preguntas frecuentes de los abonos bonificados, consultadas el 18-11-2026) admite
+nacionalidad española o residencia legal; Madrid es núcleo con tarificación zonal. Cuesta lo mismo que el
+Abono Joven del CRTM; sale 0,14 €/mes más barato solo porque vale un mes natural (11 al año) y no 30 días.
+Los 20 € y los 10 € valen para todos los colectivos: según Renfe (preguntas frecuentes de los abonos bonificados, consultadas el 18-11-2026) admite
 el descuento de familia numerosa pero no publica su importe (cota superior para FN) y no tiene descuento por
 discapacidad. El Bonotren
 va por zonas de Renfe, que no son las coronas, y no se modela.
@@ -181,7 +182,8 @@ SENCILLO = {
 }
 # Abono mensual de Renfe Cercanías de 20 € (todos los núcleos), solo con descuento: RDL 17/2025
 # (BOE-A-2025-26459), art. 3.2.a).2.º, https://www.boe.es/eli/es/rdl/2025/12/23/17
-# Se vende hasta el 31-12-2026 y vale un mes desde su inicio, de ahí «hasta el 31-1-2027».
+# El RDL lo crea del 1-1 al 31-12-2026 y vale un mes desde su inicio; que el último llegue al 31-1-2027
+# es inferencia nuestra, no lo dice el RDL, y no cambia ninguna cifra.
 ABONO_RENFE = {("vigente_2026", c): D("20.00") for c in COLECTIVOS}
 # Abono de 10 € para nacidos de 2000 a 2011: RDL 17/2025, art. 3.2.a).3.º (misma URL)
 ABONO_RENFE_JOVEN = {("vigente_2026", c): D("10.00") for c in COLECTIVOS}
