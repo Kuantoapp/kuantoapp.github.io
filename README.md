@@ -1,6 +1,6 @@
-# ¿Me sobra?
+# Kuanto
 
-«¿Me sobra?» calcula cuánto dinero sobra al mes viviendo en cada una de las 199 zonas de la Comunidad de Madrid (los 178 municipios y los 21 distritos de Madrid capital, según `zonas.geojson`), a partir del sueldo, el alquiler y el transporte del trabajo. Al neto del sueldo se le restan el alquiler de la zona, el título de transporte más barato y una cesta de gasto del hogar, y se muestran las horas de viaje al trabajo para que se vea lo que cuesta vivir lejos. Cada cifra lleva su fuente, y las que salen de un modelo o de un supuesto se marcan como «estimado».
+Kuanto calcula cuánto dinero sobra al mes viviendo en cada una de las 199 zonas de la Comunidad de Madrid (los 178 municipios y los 21 distritos de Madrid capital, según `zonas.geojson`), a partir del sueldo, el alquiler y el transporte del trabajo. Al neto del sueldo se le restan el alquiler de la zona, el título de transporte más barato y una cesta de gasto del hogar, y se muestran las horas de viaje al trabajo para que se vea lo que cuesta vivir lejos. Cada cifra lleva su fuente, y las que salen de un modelo o de un supuesto se marcan como «estimado».
 
 Es el proyecto del equipo para DataMad 2026, el datathon de datos abiertos de la Comunidad de Madrid. Usa datos de su catálogo regional y los cruza con los del INE, el Ministerio de Vivienda, la Agencia Tributaria, el Consorcio Regional de Transportes y OpenStreetMap.
 

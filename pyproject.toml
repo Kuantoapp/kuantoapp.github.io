@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "mesobra"
 version = "0.1.0"
-description = "¿Me sobra? DataMad 2026"
+description = "Kuanto DataMad 2026"
 requires-python = "==3.14.*"
 license = "MIT"
 dependencies = ["mcp==2.3.0", "pydantic==2.14.3"]

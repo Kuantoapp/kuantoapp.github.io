@@ -1,4 +1,4 @@
-"""Servidor MCP local (stdio) de «¿Me sobra?» sobre los ficheros de la API estática.
+"""Servidor MCP local (stdio) de Kuanto sobre los ficheros de la API estática.
 
 Tres herramientas, todas sobre `mesobra.calculo` y los ficheros de `app/datos/` (los del paquete
 instalado, o los del repositorio): sin red, sin credenciales y sin que el sueldo salga del equipo.
@@ -190,7 +190,7 @@ def _claro(f: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
 servidor = MCPServer(
     "mesobra",
     instructions=(
-        "Cifras de «¿Me sobra?» (Comunidad de Madrid, 199 zonas). Todas las cifras salen de estas "
+        "Cifras de Kuanto (Comunidad de Madrid, 199 zonas). Todas las cifras salen de estas "
         "herramientas: no estimes ni completes ninguna. Da siempre las horas de viaje junto al "
         "sobrante, di la fuente y el año, y marca como estimado lo estimado. Un valor nulo no es cero: "
         "explica su motivo y sobre cuántas zonas se ha calculado. Los destinos y zonas van por código INE "

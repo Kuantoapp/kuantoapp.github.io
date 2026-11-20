@@ -1,4 +1,4 @@
-"""Cálculo de referencia de «¿Me sobra?»: sobrante, horas de viaje y precio de la hora por zona.
+"""Cálculo de referencia de Kuanto: sobrante, horas de viaje y precio de la hora por zona.
 
 Funciones puras, solo stdlib, sobre los ficheros de la API estática ya leídos, para que el servidor
 MCP se instale ligero. `api` es un dict con el contenido de `alquiler`, `hogares`, `netos`, `tarifas`
