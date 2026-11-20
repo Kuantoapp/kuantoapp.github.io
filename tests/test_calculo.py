@@ -232,7 +232,7 @@ def test_entradas_invalidas_fallan(cambios: dict, mensaje: str) -> None:
 def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
     assert (
         calculo._corona(API, "2807901", "polo:ifema") == "A"
-    )  # zona_id 2807913, corona A
+    )  # zona_id 2807913 (zona ficticia en el ejemplo: IFEMA está en Barajas), corona A
     api = copy.deepcopy(API)
     polo = next(d for d in api["tiempos"]["destinos"] if d["tipo"] == "polo")
     polo["zona_id"] = "28065"
@@ -240,6 +240,13 @@ def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
     polo["zona_id"] = "28092"  # la corona B2 no tiene tarifa en el ejemplo
     with pytest.raises(ValueError, match="sin tarifa"):
         calculo._corona(api, "2807901", "polo:ifema")
+
+
+def test_zona_id_nulo_cae_a_destino_id_como_en_js() -> None:
+    api = copy.deepcopy(API)
+    centro = next(d for d in api["tiempos"]["destinos"] if d["destino_id"] == "2807901")
+    centro["zona_id"] = None
+    assert calculo._corona(api, "2807901", "2807901") == "A"
 
 
 @pytest.mark.parametrize("edad", [16, 64])

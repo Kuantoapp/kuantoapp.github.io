@@ -172,7 +172,7 @@ def _corona(api: Api, origen: str, destino: str) -> str:
         for f in api["zonas"]["features"]
     }
     zona_destino = {
-        d["destino_id"]: d.get("zona_id", d["destino_id"])
+        d["destino_id"]: d.get("zona_id") or d["destino_id"]
         for d in api["tiempos"]["destinos"]
     }
     par = [coronas.get(origen), coronas.get(zona_destino.get(destino, destino))]
