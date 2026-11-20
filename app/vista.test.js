@@ -5,7 +5,7 @@ import { calcular } from "./calculo.js";
 import {
   CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, entradaEscenario,
   erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia, lineaTooltip,
-  lineasFicha, mejores, pintar, resolverDestino, tituloEscenario, validar,
+  lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -18,6 +18,7 @@ const real = cargar("app/datos");
 const BASE = {
   fuente: "bruto", bruto: "24000", neto: "", pagas: "12", perfil: "solo", adultos: "1", hijos: "0", edad: "30",
   m2: "69", personas: "1", destino: "Getafe", dias: "5", viajes: "2", modo: "tp",
+  fuente2: "bruto", bruto2: "24000", neto2: "", pagas2: "12", destino2: "Getafe", dias2: "5", viajes2: "2", modo2: "tp",
 };
 const campos = (cambios) => validar({ ...BASE, ...cambios }, real).errores?.map((e) => e.campo);
 
@@ -452,7 +453,7 @@ test("la zona de referencia es opcional y solo se acepta una de la lista", () =>
 });
 
 test("varios errores se devuelven juntos, cada uno con su campo", () => {
-  assert.deepEqual(campos({ bruto: "x", dias: "9", hijos: "7" }), ["bruto", "hijos", "dias"]);
+  assert.deepEqual(campos({ bruto: "x", dias: "9", hijos: "7" }), ["bruto", "dias", "hijos"]);
 });
 
 // --- Textos de fuentes ---------------------------------------------------------------------------
@@ -597,4 +598,110 @@ test("el importe que no corresponde a la fuente no se cuela desde el enlace", ()
 test("«cumples 26 años» es la primera edad sin Abono Joven: edad_max_joven + 1", () => {
   assert.equal(ejemplo.tarifas.edad_max_joven + 1, 26);
   assert.equal(real.tarifas.edad_max_joven + 1, 26);
+});
+
+// --- Modo coche, segundo sueldo y polos (#97) ----------------------------------------------------
+
+// Pareja con la segunda persona en IFEMA (polo) dos días; con los datos de ejemplo, que traen coche y polo.
+const PAREJA = { ...BASE, perfil: "pareja", adultos: "2", destino: "Centro", destino2: "IFEMA", dias2: "2" };
+// Las zonas del ejemplo que tienen tarifa a las dos ubicaciones (en las otras el ejemplo no trae corona tarifada).
+const ZONAS_EJ = ["2807913", "28065"];
+const validarEj = (cambios) => validar({ ...PAREJA, ...cambios }, ejemplo);
+
+test("el coche se ofrece solo si los datos traen su matriz, los km y el coste por km", () => {
+  assert.deepEqual(modosDisponibles(real.tiempos), ["tp"]);
+  assert.deepEqual(modosDisponibles(ejemplo.tiempos), ["tp", "coche"]);
+  for (const falta of ["coche", "km_coche", "coste_coche"]) {
+    const { [falta]: _, ...resto } = ejemplo.tiempos;
+    assert.deepEqual(modosDisponibles(resto), ["tp"], falta);
+  }
+  assert.deepEqual(campos({ modo: "coche" }), ["modo"]);
+  assert.equal(validar({ ...BASE, destino: "Centro", modo: "coche" }, ejemplo).entrada.sueldos[0].modo, "coche");
+});
+
+test("los polos con nombre son destinos válidos, por nombre o por id", () => {
+  assert.equal(resolverDestino("ifema", ejemplo.tiempos.destinos), "polo:ifema");
+  assert.equal(resolverDestino("polo:ifema", ejemplo.tiempos.destinos), "polo:ifema");
+});
+
+test("con el perfil de pareja hay dos sueldos, cada uno con su lugar, días, viajes y modo; sin él, el segundo se ignora", () => {
+  const { sueldos } = validarEj({ viajes2: "4", modo2: "coche", bruto2: "30.000" }).entrada;
+  assert.deepEqual(sueldos, [
+    { bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 2 },
+    { bruto: 30000, destino: "polo:ifema", dias: 2, modo: "coche", viajes_dia: 4 },
+  ]);
+  const solo = validarEj({ perfil: "solo", adultos: "1", destino2: "no existe", dias2: "9" });
+  assert.equal(solo.entrada.sueldos.length, 1);
+});
+
+test("los errores del segundo sueldo apuntan a sus campos y una pareja tiene dos adultos", () => {
+  const campos2 = (cambios) => validarEj(cambios).errores?.map((e) => e.campo);
+  assert.deepEqual(campos2({ destino2: "Atlantis" }), ["destino2"]);
+  assert.deepEqual(campos2({ dias2: "6", viajes2: "3", modo2: "avión" }), ["dias2", "viajes2", "modo2"]);
+  assert.deepEqual(campos2({ fuente2: "neto", neto2: "" }), ["neto2"]);
+  assert.deepEqual(campos2({ pagas2: "13", bruto2: "x" }), ["pagas2", "bruto2"]);
+  assert.deepEqual(campos2({ adultos: "1" }), ["adultos"]);
+});
+
+test("la ficha de pareja desglosa a cada persona y su suma es la del hogar", () => {
+  for (const cambios of [{}, { modo2: "coche" }, { modo: "coche", viajes: "4" }]) {
+    const { entrada } = validarEj(cambios);
+    const resultado = calcular(ejemplo, { ...structuredClone(entrada), zonas: ZONAS_EJ });
+    for (const id of ["2807913", "28065"]) {
+      const zona = resultado.zonas[id];
+      const { porPersona, personas } = contextoFicha(ejemplo, entrada, resultado, id);
+      assert.equal(personas, entrada.hogar.personas_comparten, "`personas` sigue siendo cuántos comparten el piso");
+      assert.equal(porPersona.length, 2);
+      assert.ok(Math.abs(porPersona[0].horas + porPersona[1].horas - zona.horas) < 1e-9);
+      assert.ok(Math.abs(porPersona[0].coste + porPersona[1].coste - zona.transporte) < 1e-9);
+    }
+  }
+});
+
+test("las líneas de la ficha de pareja dicen horas, coste y título de cada persona; con un sueldo no hay desglose", () => {
+  const { entrada } = validarEj({ modo2: "coche" });
+  const resultado = calcular(ejemplo, { ...structuredClone(entrada), zonas: ZONAS_EJ });
+  const ficha = lineasFicha("Zona", resultado.zonas["28065"], "sobra", contextoFicha(ejemplo, entrada, resultado, "28065"));
+  const personas = ficha.filter((l) => l.startsWith("Persona "));
+  assert.equal(personas.length, 2);
+  assert.match(personas[0], /^Persona 1 \(.+\): [\d,]+ h al mes, [\d,]+ € al mes de transporte \(estimado\)$/);
+  assert.match(personas[1], /^Persona 2 \(coche\): /);
+  assert.ok(ficha.some((l) => l.startsWith("Viaje al trabajo del hogar:")));
+  assert.equal(fichaDe(casos[0], "28065").filter((l) => l.startsWith("Persona ")).length, 0);
+  const sinCoste = { titulo: "coche", horas: 1, coste: null };
+  const lineas = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), porPersona: [sinCoste, { ...sinCoste, horas: null }] });
+  assert.ok(lineas.includes("Persona 1 (coche): 1,0 h al mes, sin coste calculable (estimado)"));
+  assert.ok(lineas.includes("Persona 2 (coche): sin ruta, sin coste calculable (estimado)"));
+  const compartido = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), personas: 3 });
+  assert.ok(compartido.some((l) => l.includes("compartido entre 3")), "el desglose por persona no pisa cuántos comparten el piso");
+});
+
+test("los avisos del formulario: el coche nunca sin su aviso del tráfico y la pareja, la edad única", () => {
+  const de = (cambios) => avisosEntrada(validarEj(cambios).entrada);
+  assert.deepEqual(de({}).length, 1);
+  assert.match(de({}).join(" "), /edad es una sola para el hogar.*Abono Joven.*las dos personas o a ninguna/);
+  for (const cambios of [{ modo: "coche" }, { modo2: "coche" }]) {
+    const lineas = de(cambios);
+    assert.equal(lineas.length, 2);
+    assert.match(lineas[0], /no incluye el tráfico.*estimación.*aparcamiento ni peajes/);
+  }
+  assert.deepEqual(avisosEntrada(validar({ ...BASE, destino: "Centro" }, ejemplo).entrada), []);
+  assert.ok(!/\d/.test(de({ modo: "coche" })[0]), "sin cifras: no necesita nota de fuente");
+});
+
+test("el enlace de una pareja con dos destinos es válido; el modo coche sin matriz se descarta con aviso", () => {
+  const porDefecto = { ...NEUTRO, destino: "Centro" };
+  const ok = estadoDeEnlace("perfil=pareja&adultos=2&destino=Centro&destino2=IFEMA&dias2=2", porDefecto, ejemplo);
+  assert.deepEqual(ok.avisos, []);
+  assert.deepEqual([ok.valores.perfil, ok.valores.destino2, ok.valores.dias2], ["pareja", "IFEMA", "2"]);
+  const coche = estadoDeEnlace("modo=coche", NEUTRO, real);
+  assert.equal(coche.valores.modo, "tp");
+  assert.equal(coche.avisos.length, 1);
+  assert.match(coche.avisos[0], /«modo»/);
+  assert.equal(estadoDeEnlace("modo=coche&destino=Centro", { ...NEUTRO, destino: "Centro" }, ejemplo).avisos.length, 0);
+});
+
+test("el importe inactivo de la segunda persona tampoco se cuela desde el enlace", () => {
+  const { valores } = estadoDeEnlace("perfil=pareja&adultos=2&fuente2=bruto&neto2=texto%20libre", NEUTRO, real);
+  assert.equal(valores.neto2, NEUTRO.neto2);
 });
