@@ -455,7 +455,7 @@ def hogares_json(
         "basuras. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es; el INE no "
         "participa ni patrocina este proyecto. Internet y móvil se reparten entre quienes comparten piso "
         "como la luz (supuesto). Sin comidas fuera de casa (restauración, 11.1: 1.852 €/UC al año en la EPF "
-        "de Madrid de 2025), ni adaptación a la renta (la media se toma como estándar: los hogares con menos "
+        "de Madrid de 2025), ni adaptación a la renta por defecto (la media se toma como estándar: los hogares con menos "
         "renta gastan menos en comida por UC porque pueden menos) ni al tamaño del piso o al clima "
         "(en la sierra la calefacción se queda corta). Escenario «cesta de tu tramo de ingresos» "
         "(estimado): la alimentación por el cociente entre la alimentación por UC del tramo de ingresos "
