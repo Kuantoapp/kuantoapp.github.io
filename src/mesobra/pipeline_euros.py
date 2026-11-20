@@ -58,6 +58,9 @@ LICENCIA_BOE = (
     "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
 )
 LICENCIA_BOCM = "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI, BOE-A-1996-8930)"
+LICENCIA_CRTM = (
+    "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)"
+)
 ORIGEN_SERPAVI = (
     "Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09; "
     "el Ministerio no participa ni patrocina este proyecto."
@@ -119,7 +122,7 @@ FUENTES_TARIFAS = (
         {
             "nombre": nombre,
             "url": url,
-            "licencia": "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)",
+            "licencia": LICENCIA_CRTM,
         }
         for nombre, url in (
             (
@@ -131,23 +134,30 @@ FUENTES_TARIFAS = (
                 "https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/",
             ),
             (
-                "Ficha del Abono +65, Consorcio Regional de Transportes de Madrid",
-                "https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/",
-            ),
-            (
                 "CoronasTarifarias Vigentes CRTM (capa de coronas, abril de 2025)",
                 "https://datos.crtm.es/datasets/crtm::coronastarifarias-vigentes-crtm",
             ),
         )
     ]
     + [
-        {
-            "nombre": "Abonos bonificados de Renfe 2026, preguntas frecuentes (Abono mensual de Cercanías)",
-            "url": "https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes",
-            "licencia": "Licencia no comprobada (verificar); solo se cita el precio del título",
-        },
+        _boe(
+            "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3: bonificación de abonos y títulos multiviaje en 2026",
+            "https://www.boe.es/boe/dias/2025/12/24/pdfs/BOE-A-2025-26459.pdf",
+        ),
     ]
 )
+FUENTES_RUTA = [
+    {
+        "nombre": "Ficha del Abono +65, Consorcio Regional de Transportes de Madrid",
+        "url": "https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/",
+        "licencia": LICENCIA_CRTM,
+    },
+    {
+        "nombre": "Abonos bonificados de Renfe 2026, preguntas frecuentes (Abono mensual de Cercanías)",
+        "url": "https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes",
+        "licencia": "Condiciones de renfe.com: reproducción prohibida salvo autorización expresa; solo se enlaza, el precio se cita del RDL 17/2025",
+    },
+]
 EPF_IDS = {
     3: "39d6f25b-e043-428f-b8f6-4a46214bf34e/resource/83b08257-b457-4fe4-a11b-0fd37a2c33f7",
     4: "87b3102d-79f3-44ab-8b33-3f347bbe048b/resource/88ed4858-b94e-40e5-aae5-8a2d786546b4",
@@ -330,7 +340,7 @@ def _matriz_claves(
 def tarifas_json(
     v1: pd.DataFrame, v2: pd.DataFrame, claves: pd.DataFrame, ids: list[str]
 ) -> dict:
-    """`tarifas.json`: la forma v1 de #80 (`escenarios`) y la v2 por ruta (`clave_tarifa`, `tarifas_ruta`).
+    """`tarifas.json`: la forma v1 (`escenarios`) y la v2 por ruta (`clave_tarifa`, `tarifas_ruta`).
 
     `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `clave_estimada`; `ids`, en el orden de `tiempos.json`.
     """
@@ -357,7 +367,12 @@ def tarifas_json(
         "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida "
         "desde 2023); el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
         "el billete sencillo de la zona A, a 1,50 € (EMT o Metro de hasta 5 estaciones). "
-        "tarifas_ruta (#162): clave_tarifa da, para cada par origen × destino, la posición en claves de su clave, que junta el rango de coronas que "
+        "escenarios: viajes_dia 2, ida y vuelta pasando por la zona A; "
+        "4, con cambio a Metro de la zona A en cada sentido. "
+        f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
+    )
+    nota_ruta = (
+        "tarifas_ruta: clave_tarifa da, para cada par origen × destino, la posición en claves de su clave, que junta el rango de coronas que "
         "atraviesa la ruta y un producto por validación; se compara el abono que cubre el rango (normal "
         "con A, interzonal sin A) con el sencillo o el 10 viajes de cada producto, el Abono Joven y el "
         "Abono +65 (gratuito; desde los 65 años, edad por verificar). Cercanías: abono del CRTM o Abono "
@@ -367,18 +382,16 @@ def tarifas_json(
         "Renfe, igual para todos. "
         + (
             "Rango de coronas estimado: coronas que cruza la recta entre los centros de las zonas, con "
-            "una validación (heurística de #161 hasta tener la ruta de r5py). Subestima el coste entre "
+            "una validación (heurística hasta tener la ruta de r5py). Subestima el coste entre "
             "periferias: la recta deja sin zona A el 79 % de esos pares, aunque en la red radial suelen pasar "
             "por Madrid, y les aplica el abono interzonal. "
             if claves["clave_estimada"].any()
             else ""
         )
-        + "escenarios (forma v1 de #80, hasta #164): viajes_dia 2, ida y vuelta pasando por la zona A; "
-        "4, con cambio a Metro de la zona A en cada sentido. "
-        f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
-    )
+    ).strip()
     return {
-        "meta": _meta(2026, FUENTES_TARIFAS, nota),
+        "meta": _meta(2026, FUENTES_TARIFAS, nota)
+        | {"nota_ruta": nota_ruta, "fuentes_ruta": FUENTES_RUTA},
         "orden_coronas": [c for c in api_estatica.CORONAS if c in set(v1["corona"])],
         "edad_max_joven": transporte.EDAD_MAX_JOVEN,
         "viajes_dia": list(api_estatica.VIAJES_DIA),

@@ -144,6 +144,8 @@ META = {
     "anio_dato": ANIO,
     "fuentes": None,
     "nota": "texto",
+    "nota_ruta": "texto",
+    "fuentes_ruta": None,
     "ipc_hasta": "mes",
     "ejemplo": "booleano",  # solo en las fixtures de tests/: la app avisa de que no son datos reales
 }
@@ -156,8 +158,16 @@ def _raiz(o, campos, opcionales=()):
         return p
     meta = o["meta"]
     fuentes = meta.get("fuentes") if isinstance(meta, dict) else None
-    p += _registro("meta", meta, META, ("nota", "ipc_hasta", "ejemplo"))
-    return p + _tabla("meta.fuentes", fuentes, FUENTE, ("nombre",))
+    p += _registro(
+        "meta",
+        meta,
+        META,
+        ("nota", "nota_ruta", "fuentes_ruta", "ipc_hasta", "ejemplo"),
+    )
+    p += _tabla("meta.fuentes", fuentes, FUENTE, ("nombre",))
+    if isinstance(meta, dict) and "fuentes_ruta" in meta:
+        p += _tabla("meta.fuentes_ruta", meta["fuentes_ruta"], FUENTE, ("nombre",))
+    return p
 
 
 # fmt: off

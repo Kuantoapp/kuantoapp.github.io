@@ -1,6 +1,7 @@
 """`pipeline_euros`: cada JSON cumple el contrato y las reglas de elección de datos."""
 
 import json
+import re
 from pathlib import Path
 
 import geopandas as gpd
@@ -210,6 +211,30 @@ def _distintas(publicada: pd.DataFrame, codigo: pd.DataFrame, claves: list[str])
         | (m["titulo_x"] != m["titulo_y"])
         | (m["coste_mes_x"] != m["coste_mes_y"])
     ]
+
+
+def _meta_tarifas():
+    return _tarifas()["meta"], json.loads(TARIFAS_APP.read_text("utf-8"))["meta"]
+
+
+def test_meta_visible_describe_solo_la_v1():
+    for meta in _meta_tarifas():
+        for v2 in ("tarifas_ruta", "Renfe", "+65", "79 %"):
+            assert v2 not in meta["nota"]
+        assert not re.search(r"#\d", meta["nota"])
+        assert not any("verificar" in f["licencia"] for f in meta["fuentes"])
+        urls = " ".join(f["url"] for f in meta["fuentes"])
+        assert "renfe.com" not in urls and "abono-plus65" not in urls
+        assert "BOE-A-2025-26459" in urls
+
+
+def test_meta_ruta_lleva_la_v2_y_sus_fuentes():
+    for meta in _meta_tarifas():
+        assert "tarifas_ruta" in meta["nota_ruta"]
+        assert not re.search(r"#\d", meta["nota_ruta"])
+        urls = " ".join(f["url"] for f in meta["fuentes_ruta"])
+        assert "abono-plus65" in urls and "renfe.com" in urls
+        assert not any("verificar" in f["licencia"] for f in meta["fuentes_ruta"])
 
 
 def test_tarifas_publicadas_v1_al_dia_con_transporte():

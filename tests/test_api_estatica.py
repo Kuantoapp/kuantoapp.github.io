@@ -106,6 +106,8 @@ FALLOS = [
     ("zona_id de un polo desconocida", "tiempos.json", "destinos.1.zona_id", "28999", "desconocidos"),
     ("NaN", "tiempos.json", "km_coche.0.0", float("nan"), "km_coche.*NaN, usa null"),
     ("sin fuentes", "netos.json", "meta.fuentes", [], "meta.fuentes: se esperaba una lista no vacía"),
+    ("clave desconocida en meta", "tarifas.json", "meta.otra", "x", r"sobran claves \['otra'\]"),
+    ("fuentes_ruta vacía", "tarifas.json", "meta.fuentes_ruta", [], "meta.fuentes_ruta: se esperaba una lista no vacía"),
     ("texto vacío", "hogares.json", "meta.fuentes.0.nombre", "  ", "se esperaba texto"),
     ("vértice en EPSG:25830", "zonas.geojson", "features.0.geometry.coordinates", UTM, "vértices fuera de la Comunidad"),
     ("bbox", "zonas.geojson", "bbox", [1, 2, 3, 4], r"sobran claves \['bbox'\]"),
@@ -158,6 +160,12 @@ def test_falla_con_su_mensaje(fichero, ruta, valor, mensaje):
 def test_fichero_fuera_del_contrato():
     with pytest.raises(ValueError, match="fuera del contrato"):
         validar("otro.json", {})
+
+
+def test_meta_acepta_nota_ruta_y_fuentes_ruta():
+    obj = _modificar("tarifas.json", "meta.nota_ruta", "tarifas_ruta: texto")
+    obj["meta"]["fuentes_ruta"] = obj["meta"]["fuentes"][:1]
+    validar("tarifas.json", obj, _leer("zonas.geojson"))
 
 
 def test_escribir_json_compacto_utf8(tmp_path):
