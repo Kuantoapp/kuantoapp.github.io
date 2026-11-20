@@ -6,6 +6,7 @@ Ejecutar con `python -m mesobra.pipeline_territorio`. Supuesto: lee las tablas q
 
 import datetime as dt
 import json
+import logging
 
 import geopandas as gpd
 import numpy as np
@@ -13,6 +14,7 @@ import pandas as pd
 import shapely
 
 from mesobra import api_estatica
+from mesobra.coche import EUR_KM, NORMA_EUR_KM
 from mesobra.pipeline_euros import APP_DATOS
 from mesobra.polos import leer, ubicar
 from mesobra.tiempos import (
@@ -27,6 +29,8 @@ from mesobra.tiempos import (
     polos_lejos,
 )
 from mesobra.zonas import PROCESSED
+
+LOG = logging.getLogger(__name__)
 
 # supuesto: la menor tolerancia que deja zonas.geojson por debajo de 1 MB (752 KB; 10 m dan 1.045 KB). Es de área
 # (Visvalingam-Whyatt), no de distancia: los bordes se mueven 10 m en mediana, 20 m en el p95 y 48 m como máximo
@@ -156,29 +160,67 @@ def _nota_tiempos(tiempos: pd.DataFrame, n_polos: int) -> str:
     )
 
 
-def tiempos_json(
-    tiempos: pd.DataFrame, zonas: pd.DataFrame, polos: pd.DataFrame
-) -> dict:
-    """`tiempos.json`: orígenes = zonas y destinos = zonas y polos; `polos` trae `destino_id`, `nombre` y `zona_id`."""
-    ids = zonas["zona_id"]
-    destinos = ids.tolist() + polos["destino_id"].tolist()
-    tiempos = tiempos[tiempos["modo"] == "tp"]
+def _nota_coche() -> str:
+    """Lo que hay que saber del modo coche: sin tráfico, km estimados, sin aparcamiento ni peajes y qué es el €/km."""
+    eur = f"{EUR_KM:.2f}".replace(".", ",")
+    rodeo = f"{FACTOR_RODEO}".replace(".", ",")
+    return (
+        "Coche: minutos de r5py sobre la red viaria de OpenStreetMap con sus velocidades, sin tráfico (no se aplica "
+        "factor de congestión: no hay fuente primaria), así que infraestiman el tiempo en hora punta; km estimados "
+        f"como línea recta × {rodeo}, no la distancia por carretera, así que el coste en coche también es estimado. coste_coche.eur_km: {eur} €/km, la cuantía de los gastos de locomoción en "
+        "vehículo propio exceptuada de gravamen en el IRPF (Orden HFP/792/2023): una compensación fiscal del uso del "
+        "vehículo (combustible y desgaste), no un coste medido. El coste en coche no incluye aparcamiento ni peajes "
+        "(supuesto declarado)."
+    )
+
+
+def _pivotar(
+    tabla: pd.DataFrame, columna: str, ids: pd.Series, destinos: list[str]
+) -> np.ndarray:
+    """Matriz orígenes × destinos de `columna`, en el orden de `ids` y `destinos`; falla si falta un par."""
     esperados = len(ids) * len(destinos)
     # un par que falte saldría null («sin ruta») sin avisar; los duplicados ya los rechaza pivot
-    if len(tiempos) != esperados:
-        raise ValueError(f"Faltan pares en tiempos: {len(tiempos)} de {esperados}")
-    matriz = tiempos.pivot(index="zona_id", columns="destino_id", values="minutos")
+    if len(tabla) != esperados:
+        raise ValueError(f"Faltan pares en tiempos: {len(tabla)} de {esperados}")
+    matriz = tabla.pivot(index="zona_id", columns="destino_id", values=columna)
     if set(matriz.index) != set(ids) or set(matriz.columns) != set(destinos):
         raise ValueError(
             "La tabla tiempos no tiene los mismos ids de origen y destino que zonas y polos"
         )
-    # floor(x + 0,5) y no round: el redondeo bancario de numpy llevaría 2,5 a 2
-    minutos = np.floor(matriz.loc[ids, destinos].to_numpy() + 0.5)
+    return matriz.loc[ids, destinos].to_numpy()
+
+
+def _minutos_json(matriz: np.ndarray) -> list[list[int | None]]:
+    """Minutos enteros (floor(x + 0,5), no round: el redondeo bancario llevaría 2,5 a 2); null si pasa de `MAX_MINUTOS`."""
+    minutos = np.floor(matriz + 0.5)
     # 120,5 redondea a 121: pasa del máximo y va como null
     minutos[minutos > MAX_MINUTOS] = np.nan
-    tp = [[None if np.isnan(m) else int(m) for m in fila] for fila in minutos]
+    return [[None if np.isnan(m) else int(m) for m in fila] for fila in minutos]
+
+
+def tiempos_json(
+    tiempos: pd.DataFrame, zonas: pd.DataFrame, polos: pd.DataFrame
+) -> dict:
+    """`tiempos.json`: orígenes = zonas y destinos = zonas y polos; `polos` trae `destino_id`, `nombre` y `zona_id`.
+
+    Con filas `modo == "coche"` (`python -m mesobra.coche`) añade `coche`, `km_coche` y `coste_coche`.
+    """
+    ids = zonas["zona_id"]
+    destinos = ids.tolist() + polos["destino_id"].tolist()
+    en_tp = tiempos[tiempos["modo"] == "tp"]
+    nota = _nota_tiempos(en_tp, len(polos))
+    fuentes = FUENTES_TIEMPOS
+    coche = {}
+    if (en_coche := tiempos[tiempos["modo"] == "coche"]).size:
+        km = np.floor(_pivotar(en_coche, "km", ids, destinos) * 10 + 0.5) / 10
+        coche = {
+            "coche": _minutos_json(_pivotar(en_coche, "minutos", ids, destinos)),
+            "km_coche": [[None if np.isnan(k) else float(k) for k in f] for f in km],
+            "coste_coche": {"eur_km": EUR_KM},
+        }
+        nota, fuentes = f"{nota} {_nota_coche()}", [*fuentes, NORMA_EUR_KM]
     return {
-        "meta": _meta(2026, FUENTES_TIEMPOS, _nota_tiempos(tiempos, len(polos))),
+        "meta": _meta(2026, fuentes, nota),
         "origenes": ids.tolist(),
         "destinos": [
             {"destino_id": z, "nombre": n, "tipo": "zona"}
@@ -190,8 +232,8 @@ def tiempos_json(
                 polos["destino_id"], polos["nombre"], polos["zona_id"], strict=True
             )
         ],
-        "tp": tp,
-    }
+        "tp": _minutos_json(_pivotar(en_tp, "minutos", ids, destinos)),
+    } | coche
 
 
 def main() -> None:
@@ -204,6 +246,14 @@ def main() -> None:
         )
     zonas = gpd.read_parquet(PROCESSED / "zonas.parquet").sort_values("zona_id")
     tiempos = pd.read_parquet(PROCESSED / "tiempos.parquet")
+    if (PROCESSED / "tiempos_coche.parquet").exists():
+        tiempos = pd.concat(
+            [tiempos, pd.read_parquet(PROCESSED / "tiempos_coche.parquet")]
+        )
+    else:  # el coche es opcional: la app oculta ese modo si tiempos.json no trae la matriz
+        LOG.info(
+            "Sin tiempos_coche.parquet: tiempos.json sale sin coche (python -m mesobra.coche)"
+        )
     # primero las zonas: escribir comprueba los ids de tiempos.json contra el zonas.geojson de la carpeta
     api_estatica.escribir("zonas.geojson", zonas_geojson(zonas), APP_DATOS)
     lista = ubicar(leer(), zonas)

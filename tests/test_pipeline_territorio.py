@@ -11,6 +11,7 @@ import shapely
 from shapely.geometry import Polygon, shape
 
 from mesobra import api_estatica
+from mesobra.coche import EUR_KM, NORMA_EUR_KM
 from mesobra.pipeline_territorio import simplificar, tiempos_json
 
 APP_DATOS = Path(__file__).parent.parent / "app" / "datos"
@@ -115,6 +116,42 @@ def test_tiempos_json_con_polos_es_rectangular_y_valida_el_contrato():
     assert {len(fila) for fila in t["tp"]} == {4}
     assert "polos de empleo" in t["meta"]["nota"]
     api_estatica.validar("tiempos.json", t)
+
+
+def test_tiempos_json_con_coche_trae_matriz_km_y_parametros():
+    tp = pd.concat([_tiempos([1.0] * 9), _tiempos_a_polo([10.0, 20.0, 30.0])])
+    coche = tp.assign(
+        modo="coche",
+        minutos=[5.4, 6.5, np.nan, 7.0, 8.0, 121.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0],
+        km=[1.04, 2.25, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0],
+        estimado=True,
+    )
+    t = tiempos_json(pd.concat([tp, coche]), _zonas(), _polos())
+    # orden de las zonas (28001, 28002, 2807901); 6,5 → 7; 121 y la ausencia de ruta → null
+    assert [fila[0] for fila in t["coche"]] == [11, None, None]
+    assert t["coche"][2][:2] == [None, 7]
+    assert t["km_coche"][2] == [3.0, 2.3, 1.0, 10.0]  # 2,25 → 2,3 y 1,04 → 1,0
+    assert t["coste_coche"] == {"eur_km": EUR_KM}
+    assert NORMA_EUR_KM in t["meta"]["fuentes"]
+    assert "sin tráfico" in t["meta"]["nota"]
+    assert "no incluye aparcamiento ni peajes" in t["meta"]["nota"]
+    api_estatica.validar("tiempos.json", t)
+
+
+def test_tiempos_json_sin_filas_de_coche_no_lo_trae():
+    t = tiempos_json(_tiempos([1.0] * 9), _zonas(), _polos().iloc[0:0])
+    assert not {"coche", "km_coche", "coste_coche"} & t.keys()
+    assert "tráfico" not in t["meta"]["nota"]
+
+
+def test_tiempos_json_con_coche_incompleto_falla():
+    tp = _tiempos([1.0] * 9)
+    with pytest.raises(ValueError, match="Faltan pares"):
+        tiempos_json(
+            pd.concat([tp, tp.iloc[1:].assign(modo="coche", km=1.0)]),
+            _zonas(),
+            _polos().iloc[0:0],
+        )
 
 
 def test_tiempos_json_falla_si_falta_un_par():
