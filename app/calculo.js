@@ -1,4 +1,4 @@
-// Cálculo de «¿Me sobra?» en el navegador: port de src/mesobra/calculo.py (supuestos en su docstring).
+// Cálculo de Kuanto en el navegador: port de src/mesobra/calculo.py (supuestos en su docstring).
 // Funciones puras, sin DOM ni imports; solo interpola y consulta lo precalculado en `api`
 // ({alquiler, hogares, netos, tarifas, tiempos, zonas}). Sin dato o sin ruta sale `null`, nunca 0.
 // Contraste con Python: tests/fixtures/casos_referencia.json (app/calculo.test.js).
