@@ -8,6 +8,7 @@ legend { padding: 0 0.25rem; font-weight: 600; }
 fieldset label { display: block; margin: 0.4rem 0; }
 fieldset label input:not([type="radio"]), fieldset label select { display: block; width: 100%; margin-top: 0.15rem; padding: 0.3rem; font: inherit; }
 .opciones { display: flex; gap: 1rem; }
+#persona2 { border-style: dashed; }
 .opciones label, #metricas label { display: flex; align-items: center; gap: 0.4rem; }
 .ayuda, .aviso { margin: 0.25rem 0; color: #555; font-size: 0.8rem; }
 [aria-invalid="true"] { border: 2px solid #8b0000; }

@@ -3,8 +3,8 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  METRICAS, avisoPrueba, avisos, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia,
-  lineaTooltip, lineasFicha, mejores, pintar, tituloEscenario, validar,
+  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia,
+  lineaTooltip, lineasFicha, mejores, modosDisponibles, pintar, tituloEscenario, validar,
 } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
@@ -48,6 +48,11 @@ function aplicarValores(valores) {
   for (const f of formularios()) for (const [clave, valor] of Object.entries(valores)) if (f.elements[clave]) f.elements[clave].value = valor;
 }
 
+// La segunda persona solo existe con el perfil de pareja.
+const mostrarSegunda = () => {
+  $("persona2").hidden = formulario().elements.perfil.value !== "pareja";
+};
+
 function rellenarPerfil(api) {
   const f = formulario().elements;
   const p = api.hogares.perfiles[f.perfil.value];
@@ -59,10 +64,14 @@ function rellenarPerfil(api) {
 
 function prepararFormulario(api) {
   const destinos = $("destinos");
-  for (const d of api.tiempos.destinos.filter((x) => x.tipo === "zona")) {
+  for (const d of api.tiempos.destinos.filter((x) => ["zona", "polo"].includes(x.tipo))) {
     const opcion = document.createElement("option");
     opcion.value = d.nombre;
     destinos.append(opcion);
+  }
+  // El coche solo se ofrece si los datos traen su matriz (`modosDisponibles`); el transporte público ya está en el HTML.
+  if (modosDisponibles(api.tiempos).includes("coche")) {
+    for (const modo of [formulario().elements.modo, formulario().elements.modo2]) modo.append(new Option("Coche", "coche"));
   }
   const metricas = $("metricas");
   for (const [clave, m] of Object.entries(METRICAS)) {
@@ -188,6 +197,7 @@ async function main() {
   // El estado de los formularios viaja en el fragmento de la URL, que no se envía a ningún servidor.
   const enlace = estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api);
   aplicarValores(enlace.valores);
+  mostrarSegunda();
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
   const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
@@ -230,6 +240,7 @@ async function main() {
     const v = valoresFormulario();
     const { entrada, errores } = validar(v, api);
     mostrarErrores(errores ?? []);
+    if (!errores) $("avisos-hogar").replaceChildren(...avisosEntrada(entrada).map((t) => elemento("li", t)));
     if (errores) {
       $("estado").textContent = "Corrige los campos marcados para recalcular el mapa.";
       return;
@@ -253,7 +264,8 @@ async function main() {
     history.replaceState(null, "", `#${estadoAEnlace(v)}`);
     estado.metrica = v.metrica;
     const algunaZona = Object.values(actual.zonas)[0];
-    if (v.fuente === "bruto") formulario().elements.neto.value = String(Math.round(algunaZona.neto));
+    // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
+    if (v.fuente === "bruto") formulario().elements.neto.value = entrada.sueldos.length === 1 ? String(Math.round(algunaZona.neto)) : "";
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
@@ -265,8 +277,11 @@ async function main() {
 
   formulario().addEventListener("input", (e) => {
     const { name } = e.target;
-    if (name === "perfil") rellenarPerfil(api);
-    if (name === "bruto" || name === "neto") formulario().elements.fuente.value = name;
+    if (name === "perfil") {
+      rellenarPerfil(api);
+      mostrarSegunda();
+    }
+    if (["bruto", "neto", "bruto2", "neto2"].includes(name)) formulario().elements[`fuente${name.endsWith("2") ? "2" : ""}`].value = name.replace("2", "");
     recalcular();
   });
   formulario().addEventListener("submit", (e) => e.preventDefault());

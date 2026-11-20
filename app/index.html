@@ -21,6 +21,7 @@
       </section>
       <section id="avisos-dato">
         <h2>Antes de leer el mapa</h2>
+        <ul id="avisos-hogar"></ul>
         <ul id="avisos"></ul>
       </section>
       <form id="formulario" novalidate autocomplete="off">
@@ -86,8 +87,43 @@
           </label>
           <p class="ayuda">En el modelo de tarifas, cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
           <label>Modo
-            <select name="modo"><option value="tp">Solo transporte público (por ahora)</option></select>
+            <select name="modo"><option value="tp">Transporte público</option></select>
           </label>
+          <p class="ayuda">En coche los viajes al día no cuentan: se supone ida y vuelta. El tiempo en coche no incluye el tráfico.</p>
+        </fieldset>
+
+        <!-- Solo con el perfil de pareja. `hidden`, no `disabled`: un control deshabilitado no sale de FormData y su valor se perdería del enlace. -->
+        <fieldset id="persona2" hidden>
+          <legend>Segunda persona</legend>
+          <div class="opciones">
+            <label><input type="radio" name="fuente2" value="bruto" checked> Doy el bruto</label>
+            <label><input type="radio" name="fuente2" value="neto"> Doy el neto</label>
+          </div>
+          <label>Bruto anual (€) <input name="bruto2" inputmode="decimal" value="24000"></label>
+          <label>Neto mensual medio (€) <input name="neto2" inputmode="decimal"></label>
+          <label>Pagas
+            <select name="pagas2">
+              <option value="12">Doce pagas</option>
+              <option value="14">Catorce pagas</option>
+            </select>
+          </label>
+          <label>Lugar de trabajo <input name="destino2" list="destinos" value="Getafe"></label>
+          <label>Días presenciales a la semana
+            <select name="dias2">
+              <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
+              <option value="4">Cuatro</option><option value="5" selected>Cinco</option>
+            </select>
+          </label>
+          <label>Viajes al día
+            <select name="viajes2">
+              <option value="2">Dos: ida y vuelta directa</option>
+              <option value="4">Cuatro: cambias de operador en cada sentido</option>
+            </select>
+          </label>
+          <label>Modo
+            <select name="modo2"><option value="tp">Transporte público</option></select>
+          </label>
+          <p class="ayuda">La edad es una sola para el hogar: el Abono Joven se aplica a las dos personas o a ninguna.</p>
         </fieldset>
 
         <fieldset id="metricas">
@@ -132,7 +168,7 @@
               </select>
             </label>
             <p class="ayuda">La referencia es lo que gasta en comida de media un hogar de Madrid. Con tu tramo, la comida se ajusta a lo que gastan los hogares que ingresan como el tuyo (estimado, fuente: INE, Encuesta de Presupuestos Familiares de España). Quien gana poco puede gastar menos en comida porque no le llega: por eso la media es la referencia.</p>
-            <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
+            <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian, y con dos sueldos los días valen para las dos personas. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
             <p class="ayuda">La dirección de la página guarda el formulario y los escenarios, sueldo incluido. No sale de tu navegador, pero queda en su historial. No la compartas si no quieres que se vea tu sueldo.</p>
           </fieldset>
         </form>
