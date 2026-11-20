@@ -444,11 +444,18 @@ PERFIL = {
 # fmt: on
 PERFILES = ["solo", "comparte", "pareja", "monoparental"]
 CESTA_UC = {"alimentacion": POS, "suministros": POS, "comunicaciones": POS}
+# Cociente de la EPF tramo/media (#312): en 2025 va de 0,73 a 1,14; fuera de [0,5, 2] es un error de datos.
+TRAMO = {"desde": ENT, "factor": ("decimal", 0.5, 2)}
 
 
 def _hogares(o):
-    p = _raiz(o, {"perfiles": None, "cesta_uc": None})
+    p = _raiz(o, {"perfiles": None, "cesta_uc": None, "cesta_tramos": None})
     p += _registro("cesta_uc", o.get("cesta_uc"), CESTA_UC)
+    tramos = _tabla("cesta_tramos", o.get("cesta_tramos"), TRAMO, ("desde",))
+    desde = [] if tramos else [t["desde"] for t in o["cesta_tramos"]]
+    if desde and (desde[0] != 0 or desde != sorted(desde)):
+        tramos.append("cesta_tramos: desde empieza en 0 y crece")
+    p += tramos
     return p + _mapa(
         "perfiles", o.get("perfiles"), PERFILES, lambda r, v: _registro(r, v, PERFIL)
     )

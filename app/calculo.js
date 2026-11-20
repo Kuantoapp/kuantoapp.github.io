@@ -10,7 +10,8 @@ export const REFERENCIA = "referencia";
 const EDAD_MIN = 16;
 const EDAD_MAX = 64;
 const MODOS = ["tp", "coche"];
-const ESCENARIO = ["tarifas", "subida_alquiler", "edad"];
+const ESCENARIO = ["tarifas", "subida_alquiler", "edad", "cesta"];
+const CESTAS = ["media", "tramo"];
 
 const falta = (v) => v === null || v === undefined;
 const tiene = (obj, clave) => obj !== null && typeof obj === "object" && Object.hasOwn(obj, clave);
@@ -54,10 +55,15 @@ export function netoMes(netos, bruto, hogar) {
   return (y0 + t * (y1 - y0)) / 12;
 }
 
-export function cesta(cestaUc, hogar) {
+// Tramo de ingresos de la EPF del neto €/mes del hogar: el último con `desde` ≤ neto (estimado, #312).
+export function tramoCesta(tramos, neto) {
+  return tramos[tramos.filter((t) => t.desde <= neto).length - 1];
+}
+
+export function cesta(cestaUc, hogar, factor) {
   const uc = 1 + 0.5 * (hogar.adultos - 1) + 0.3 * hogar.hijos;
   const p = hogar.personas_comparten;
-  return cestaUc.alimentacion * uc + ((cestaUc.suministros + cestaUc.comunicaciones) * (uc + 0.5 * (p - 1))) / p;
+  return cestaUc.alimentacion * factor * uc + ((cestaUc.suministros + cestaUc.comunicaciones) * (uc + 0.5 * (p - 1))) / p;
 }
 
 export function alquiler(zona, hogar, subida) {
@@ -114,7 +120,8 @@ function calcularZona(api, hogar, sueldos, zona, escenario) {
   const alq = alquiler(api.alquiler.zonas[zona], hogar, escenario.subida_alquiler);
   const viajes = sueldos.map((s) => viaje(api, s, zona, escenario));
   const transporte = suma(viajes.map((v) => v[1]));
-  const cestaMes = cesta(api.hogares.cesta_uc, hogar);
+  const factor = escenario.cesta === "tramo" ? tramoCesta(api.hogares.cesta_tramos, neto).factor : 1;
+  const cestaMes = cesta(api.hogares.cesta_uc, hogar, factor);
   const fijo = alq === null || transporte === null ? null : neto - transporte - cestaMes;
   return {
     origen: api.alquiler.zonas[zona].origen,
@@ -156,7 +163,7 @@ function prepararHogar(api, entrada) {
   const extra = Object.keys(pedido).filter((k) => !ESCENARIO.includes(k));
   if (extra.length) throw new Error(`escenario con claves desconocidas: ${JSON.stringify(extra.sort())}`);
   entero("edad", hogar.edad, EDAD_MIN, EDAD_MAX);
-  const esc = { tarifas: "vigente_2026", subida_alquiler: 0, edad: hogar.edad };
+  const esc = { tarifas: "vigente_2026", subida_alquiler: 0, edad: hogar.edad, cesta: "media" };
   for (const [k, v] of Object.entries(pedido)) if (!falta(v)) esc[k] = v;
   numero("subida_alquiler", esc.subida_alquiler, -100);
   entero("edad", esc.edad, EDAD_MIN, EDAD_MAX);
@@ -167,6 +174,7 @@ function prepararHogar(api, entrada) {
   if (typeof esc.tarifas !== "string" || !tiene(api.tarifas.escenarios, esc.tarifas)) {
     throw new Error(`escenario ${JSON.stringify(esc.tarifas)} inválido`);
   }
+  if (!CESTAS.includes(esc.cesta)) throw new Error(`cesta = ${JSON.stringify(esc.cesta)}: debe ser ${CESTAS.join(" o ")}`);
   return [hogar, esc];
 }
 

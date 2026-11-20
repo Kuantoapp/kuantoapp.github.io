@@ -15,7 +15,7 @@ Entrada de `calcular` (un dict):
   `bruto` (€/año) o `neto_mes` (€/mes, neto anual ÷ 12; con 14 pagas, suma de las nóminas del año ÷ 12), y
   opcional `viajes_dia` (2 o 4; por defecto 2).
 - Opcionales: `escenario` (`tarifas`: `vigente_2026` o `sin_descuento`; `subida_alquiler` en %;
-  `edad`, que sustituye a la del hogar), `zonas` (por defecto, los orígenes de `tiempos.json`) y
+  `edad`, que sustituye a la del hogar; `cesta`: `media` o `tramo`), `zonas` (por defecto, los orígenes de `tiempos.json`) y
   `ref` (zona de referencia).
 
 Salida: `{"ref", "escenario" (el aplicado, con sus valores por defecto), "zonas": {zona_id: {...}}}`.
@@ -42,6 +42,12 @@ Supuestos:
    la propia referencia lleva `etiqueta` «referencia». Una `ref` pedida sin sobrante u horas da error.
    Sin ruta (minutos nulos), el viaje no tiene horas ni coste, y la zona queda sin sobrante.
 9. Cesta por unidades de consumo OCDE modificada con el hogar del visitante (#180, `hogares.py`).
+10. Escenario `cesta`: `media` (por defecto, la referencia) o `tramo`, que multiplica la alimentación por
+   el cociente de la EPF de España del tramo de ingresos del neto del hogar (`cesta_tramos` de
+   `hogares.json`, `hogares.factores_tramo`; estimado, #312). El neto ÷ 12 equivale al ingreso mensual de la
+   EPF, que prorratea las pagas extra (la EPF suma además otras rentas del hogar, que aquí no entran);
+   en «comparte», el neto propio (la EPF cuenta aparte a quien no
+   comparte gastos).
 """
 
 import json
@@ -61,7 +67,8 @@ REFERENCIA = "referencia"
 # el mínimo por edad de más de 65 años (LIRPF art. 57.2, BOE-A-2006-20764; #183).
 EDAD_MIN, EDAD_MAX = 16, 64
 MODOS = ("tp", "coche")
-ESCENARIO = {"tarifas", "subida_alquiler", "edad"}
+ESCENARIO = {"tarifas", "subida_alquiler", "edad", "cesta"}
+CESTAS = ("media", "tramo")
 
 Api = dict[str, Any]
 
@@ -106,12 +113,17 @@ def neto_mes(netos: dict, bruto: float, hogar: dict) -> float:
     return (y0 + t * (y1 - y0)) / 12
 
 
-def cesta(cesta_uc: dict, hogar: dict) -> float:
-    """Alimentación propia más la parte de suministros y comunicaciones del piso, €/mes."""
+def tramo_cesta(tramos: list[dict], neto: float) -> dict:
+    """Tramo de ingresos de la EPF del neto €/mes del hogar: el último con `desde` ≤ neto (estimado, #312)."""
+    return tramos[bisect_right([t["desde"] for t in tramos], neto) - 1]
+
+
+def cesta(cesta_uc: dict, hogar: dict, factor: float) -> float:
+    """Alimentación propia (× `factor` del tramo de ingresos) más la parte de suministros y comunicaciones del piso, €/mes."""
     uc = 1 + 0.5 * (hogar["adultos"] - 1) + 0.3 * hogar["hijos"]
     p = hogar["personas_comparten"]
     return (
-        cesta_uc["alimentacion"] * uc
+        cesta_uc["alimentacion"] * factor * uc
         + (cesta_uc["suministros"] + cesta_uc["comunicaciones"])
         * (uc + 0.5 * (p - 1))
         / p
@@ -208,7 +220,12 @@ def calcular_zona(
     alq = alquiler(api["alquiler"]["zonas"][zona], hogar, escenario["subida_alquiler"])
     horas, costes = zip(*(viaje(api, s, zona, escenario) for s in sueldos), strict=True)
     transporte = _suma(list(costes))
-    cesta_mes = cesta(api["hogares"]["cesta_uc"], hogar)
+    factor = (
+        tramo_cesta(api["hogares"]["cesta_tramos"], neto)["factor"]
+        if escenario["cesta"] == "tramo"
+        else 1.0
+    )
+    cesta_mes = cesta(api["hogares"]["cesta_uc"], hogar, factor)
     fijo = None if alq is None or transporte is None else neto - transporte - cesta_mes
     return {
         "origen": api["alquiler"]["zonas"][zona]["origen"],
@@ -275,7 +292,12 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     if extra := set(pedido) - ESCENARIO:
         raise ValueError(f"escenario con claves desconocidas: {sorted(extra)}")
     _entero("edad", hogar.get("edad"), range(EDAD_MIN, EDAD_MAX + 1))
-    esc = {"tarifas": "vigente_2026", "subida_alquiler": 0.0, "edad": hogar["edad"]}
+    esc = {
+        "tarifas": "vigente_2026",
+        "subida_alquiler": 0.0,
+        "edad": hogar["edad"],
+        "cesta": "media",
+    }
     esc |= {k: v for k, v in pedido.items() if v is not None}
     _numero("subida_alquiler", esc["subida_alquiler"], -100)
     _entero("edad", esc["edad"], range(EDAD_MIN, EDAD_MAX + 1))
@@ -291,6 +313,8 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
         or esc["tarifas"] not in api["tarifas"]["escenarios"]
     ):
         raise ValueError(f"escenario {esc['tarifas']!r} inválido")
+    if esc["cesta"] not in CESTAS:
+        raise ValueError(f"cesta = {esc['cesta']!r}: debe ser {' o '.join(CESTAS)}")
     return hogar, esc
 
 

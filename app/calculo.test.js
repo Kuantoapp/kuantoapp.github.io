@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { calcular, corona, precioHora } from "./calculo.js";
+import { calcular, corona, precioHora, tramoCesta } from "./calculo.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../tests/${ruta}`, import.meta.url), "utf8"));
 const api = Object.fromEntries(
@@ -116,4 +116,13 @@ test("una entrada rota falla con error, no con un resultado", () => {
 test("calculo.js es puro: ni imports ni DOM", () => {
   const fuente = readFileSync(new URL("./calculo.js", import.meta.url), "utf8");
   assert.doesNotMatch(fuente, /^\s*import\b|\bdocument\b|\bwindow\b/m);
+});
+
+test("el tramo de la cesta cambia justo en cada corte de la EPF, ni un céntimo antes", () => {
+  const cortes = [
+    [0.01, 0.7], [499.99, 0.7], [500, 0.8], [999.99, 0.8], [1000, 0.85], [1499.99, 0.85], [1500, 0.95],
+    [1999.99, 0.95], [2000, 0.9], [2499.99, 0.9], [2500, 0.97], [2999.99, 0.97], [3000, 1.02],
+    [4999.99, 1.02], [5000, 1.15], [90000, 1.15],
+  ];
+  for (const [neto, factor] of cortes) assert.equal(tramoCesta(api.hogares.cesta_tramos, neto).factor, factor, `neto ${neto}`);
 });
