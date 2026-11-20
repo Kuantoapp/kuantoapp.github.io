@@ -47,7 +47,7 @@ Desde un clon del repositorio, `uvx --from . mesobra-mcp` arranca el mismo servi
 
 ## Datos, licencias y fuentes
 
-- **Datos derivados** (`app/datos/*.json` y `zonas.geojson`): CC BY 4.0. Cada fichero lista en `meta.fuentes` sus fuentes con su licencia y en `meta.nota` su método. La licencia va por fichero: lo derivado de OpenStreetMap lleva ODbL 1.0, que hoy es `tiempos.json`, y las condiciones de cada fuente de terceros se mantienen. Decisiones en [`docs/decisiones.md`](docs/decisiones.md) (16-11-2026).
+- **Datos derivados** (`app/datos/*.json` y `zonas.geojson`): CC BY 4.0. Cada fichero lista en `meta.fuentes` sus fuentes con su licencia y en `meta.nota` su método. La licencia va por fichero: los tres que usan datos de OpenStreetMap (`tiempos.json`, `zonas.geojson` y `alquiler.json`) llevan ODbL 1.0, y las condiciones de cada fuente de terceros se mantienen. Decisiones en [`docs/decisiones.md`](docs/decisiones.md) (16-11-2026 y 20-11-2026).
 - **Código**: MIT ([`LICENSE`](LICENSE)).
 
 Fuentes y cita que exige cada licencia. El detalle por fichero descargado, con URL y SHA-256, está en [`data/README.md`](data/README.md).
