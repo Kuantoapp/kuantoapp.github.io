@@ -5,11 +5,18 @@ Lee el Excel una vez, se queda con la Comunidad de Madrid y guarda un intermedio
 Las celdas que el SERPAVI no publica (pocos testigos) quedan nulas, nunca en cero.
 """
 
+import html
+import logging
+import re
 from pathlib import Path
 
+import geopandas as gpd
+import numpy as np
 import pandas as pd
 
-from mesobra import contratos
+from mesobra import contratos, paso_secciones, zonas
+
+LOG = logging.getLogger(__name__)
 
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw/serpavi_bd_2011_2024_2026-11-15.xlsx"
@@ -21,6 +28,13 @@ SERIE_IPC = (
     "04.1 Alquiler de vivienda",
     "Índice",
 )  # IPC297196
+# AEAT, Estadística de viviendas declaradas en el IRPF 2024: comparativa con los nuevos contratos (#251)
+RAW_AEAT = {
+    k: RAIZ / f"data/raw/aeat_irpfvivienda2024_nuevos_{k}_2026-11-19.html"
+    for k in ("municipios", "cp", "cp_viviendas")
+} | {
+    "tramo": RAIZ / "data/raw/aeat_irpfvivienda2024_nuevos_tramo_20_50_2026-11-20.html"
+}
 
 # clave -> (hoja, columna de código, ancho del código INE)
 HOJAS = {
@@ -169,6 +183,8 @@ def leer_ipc(ruta: Path = RAW_IPC, ruta_cm: Path = RAW_IPC_CM) -> pd.Series:
 
 def actualizar_ipc(zona: pd.DataFrame, ipc: pd.Series) -> pd.DataFrame:
     """`factor_ipc` = índice del último mes ÷ media anual del año de cada fila (ficha §6.2, #94); p25/p50/p75 no cambian."""
+    # `iloc[-1]` tiene que ser el último mes aunque la serie llegue desordenada
+    ipc = ipc.sort_index()
     anios = ipc.index.str[:4].astype(int)
     medias = ipc.groupby(anios).agg(["mean", "size"])
     medias = medias.loc[medias["size"] == 12, "mean"]
@@ -178,6 +194,152 @@ def actualizar_ipc(zona: pd.DataFrame, ipc: pd.Series) -> pd.DataFrame:
     df["factor_ipc"] = ipc.iloc[-1] / df["anio"].map(medias)
     df.attrs["ipc_hasta"] = f"{ipc.index[-1][:4]}-{ipc.index[-1][5:]}"
     contratos.validar(df, "alquiler_zona")
+    return df
+
+
+def leer_aeat(ruta: Path) -> pd.DataFrame:
+    """Tabla HTML de la estadística de viviendas del IRPF de la AEAT: una fila por territorio, columnas numéricas.
+
+    La tabla de detalle por código postal trae dos filas de cabecera; la comparativa, una.
+    """
+    texto = ruta.read_text(encoding="utf-8")
+    filas = [
+        [
+            " ".join(html.unescape(re.sub(r"<[^>]+>", " ", c)).split())
+            for c in re.findall(r"(?s)<t[hd][^>]*>.*?</t[hd]>", fila)
+        ]
+        for fila in re.findall(r"(?s)<tr.*?</tr>", texto)
+    ]
+    filas = [f for f in filas if f]
+    ancho = max(len(f) for f in filas)
+    dos = len(filas[0]) < ancho
+    cabecera = filas[0][:1] + filas[1] if dos else filas[0]
+    datos = filas[2 if dos else 1 :]
+    if cabecera[0] != "Localización de la vivienda" or {len(cabecera)} | {
+        len(f) for f in datos
+    } != {ancho}:
+        raise ValueError(f"{ruta.name}: la tabla no tiene el formato esperado")
+    df = pd.DataFrame(datos, columns=cabecera).set_index(cabecera[0])
+    # «1.167» son miles y «6,2» decimales: formato español sin excepciones
+    return df.apply(
+        lambda s: pd.to_numeric(
+            s.str.replace(".", "", regex=False).str.replace(",", ".", regex=False),
+            errors="raise",
+        )
+    )
+
+
+def factor_nuevos(df: pd.DataFrame) -> pd.Series:
+    """€/m² de los contratos formalizados en el año ÷ €/m² de todos, con las medias de alquiler y m² de la AEAT."""
+    nuevos = (
+        df["Alquiler medio mensual (nuevos contratos)"]
+        / df["m2 medios (nuevos contratos)"]
+    )
+    return nuevos / (df["Alquiler medio mensual"] / df["m2 medios"])
+
+
+def leer_brecha(rutas: dict[str, Path] = RAW_AEAT) -> dict:
+    """Factores de la AEAT: `municipio` (código INE), `cp` (factor y viviendas arrendadas) y `tramo` (mediana de los
+    municipios de la Comunidad de 20.001 a 50.000 habitantes, el tamaño más cercano al de los que no tienen dato).
+    """
+    mun = factor_nuevos(leer_aeat(rutas["municipios"]))
+    mun = mun[mun.index.str.contains(r"-28\d{3}$")]
+    mun.index = mun.index.str[-5:]
+    cp = leer_aeat(rutas["cp"])
+    cp = cp[cp.index.str.match(r"28\d{3}-")]
+    viviendas = leer_aeat(rutas["cp_viviendas"])["Número viviendas arrendadas"]
+    viviendas = viviendas[viviendas.index.str.match(r"28\d{3}-")]
+    if set(viviendas.index) != set(cp.index):
+        raise ValueError(
+            "Los códigos postales de la comparativa y del detalle no coinciden"
+        )
+    cp = pd.DataFrame({"factor": factor_nuevos(cp), "viviendas": viviendas})
+    cp.index = cp.index.str[:5]
+    tramo = leer_aeat(rutas["tramo"])
+    # la mediana de sus municipios, no la fila agregada, que pesa más las zonas con más contratos nuevos (#320)
+    tramo = factor_nuevos(tramo[tramo.index.str.contains(r"-28\d{3}$")])
+    if tramo.empty or mun.index.has_duplicates or cp.index.has_duplicates:
+        raise ValueError("Territorios repetidos o ausentes en las tablas de la AEAT")
+    return {"municipio": mun, "cp": cp, "tramo": float(tramo.median())}
+
+
+def leer_portales(ruta: Path = zonas.OSM) -> gpd.GeoDataFrame:
+    """Portales de OpenStreetMap (con número y código postal 280xx), como puntos en EPSG:25830, con su `cp`."""
+    capas = []
+    for capa in ("points", "multipolygons"):
+        g = gpd.read_file(
+            ruta,
+            layer=capa,
+            columns=["other_tags"],
+            where="other_tags LIKE '%addr:postcode%'",
+        )
+        g["cp"] = g["other_tags"].str.extract(r'"addr:postcode"=>"(280\d\d)"')[0]
+        con_numero = g["other_tags"].str.contains('"addr:housenumber"', regex=False)
+        g = g[g["cp"].notna() & con_numero].to_crs(paso_secciones.CRS_METRICO)
+        capas.append(g.assign(geometry=g.geometry.representative_point()))
+    portales = pd.concat(capas, ignore_index=True)[["cp", "geometry"]]
+    if portales.empty:
+        raise ValueError(f"{ruta.name} no tiene portales con código postal 280xx")
+    return portales
+
+
+def tabla_paso_cp(
+    portales: gpd.GeoDataFrame, secciones: gpd.GeoDataFrame
+) -> pd.DataFrame:
+    """Tabla código postal → distrito de Madrid (`origen, destino, peso, peso_destino, metodo`) contando portales.
+
+    Los portales de un código postal que caen fuera del municipio de Madrid no cuentan: el dato de la AEAT por
+    código postal es solo el de Madrid capital. Esa cobertura se registra en el log.
+    """
+    madrid = secciones[secciones["CUMUN"] == zonas.MADRID]
+    dentro = gpd.sjoin(portales, madrid[["CDIS", "geometry"]], predicate="within")
+    cobertura = dentro.groupby("cp").size() / portales.groupby("cp").size()
+    LOG.info(
+        "códigos postales con menos del 99 %% de sus portales en Madrid: %s",
+        cobertura[cobertura.fillna(0) < 0.99].round(3).to_dict(),
+    )
+    pares = (
+        dentro.assign(destino=zonas.MADRID + dentro["CDIS"])
+        .groupby(["cp", "destino"])
+        .size()
+        .rename("n")
+        .reset_index()
+        .rename(columns={"cp": "origen"})
+    )
+    pares["peso"] = pares["n"] / pares.groupby("origen")["n"].transform("sum")
+    pares["peso_destino"] = pares["n"] / pares.groupby("destino")["n"].transform("sum")
+    pares["metodo"] = "portales"
+    tabla = pares.drop(columns="n")
+    paso_secciones.comprobar_tabla(tabla)
+    return tabla
+
+
+def brecha_por_zona(
+    zona: pd.DataFrame, brecha: dict, tabla_cp: pd.DataFrame
+) -> pd.DataFrame:
+    """`zona` con `factor_brecha`, `brecha_ambito` y `brecha_pureza` (ficha §6.2, #251, #320): el del municipio en
+    la AEAT; en un distrito, el de sus códigos postales (media ponderada por viviendas arrendadas × peso de
+    portales), con su pureza; si no, el del tramo de 20.001 a 50.000 habitantes. Es de 2024 en todas las filas.
+    """
+    cp = brecha["cp"]
+    LOG.info(
+        "códigos postales con portales y sin dato de la AEAT, fuera del reparto: %s",
+        sorted(set(tabla_cp["origen"]) - set(cp.index)),
+    )
+    distritos = paso_secciones.pasar_intensiva(tabla_cp, cp["factor"], cp["viviendas"])
+    pureza = paso_secciones.pureza(tabla_cp, cp["factor"], cp["viviendas"])
+    LOG.info(
+        "pureza de los distritos (código postal entero): %s", pureza.round(2).to_dict()
+    )
+    factor = zona["zona_id"].map(distritos)
+    # un distrito sin código postal con dato toma el de su municipio (28079), no el de la Comunidad
+    mun = zona["zona_id"].str[:5].map(brecha["municipio"])
+    df = zona.copy()
+    df["brecha_ambito"] = np.select(
+        [factor.notna(), mun.notna()], ["codigo_postal", "municipio"], "tramo"
+    )
+    df["factor_brecha"] = factor.fillna(mun).fillna(brecha["tramo"])
+    df["brecha_pureza"] = zona["zona_id"].map(pureza).where(factor.notna())
     return df
 
 

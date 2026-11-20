@@ -125,6 +125,7 @@ CONTRATOS: dict[str, dict] = {
             "personas_comparten": "entero",  # personas que reparten el alquiler
             "alimentacion": "decimal",  # €/mes
             "suministros": "decimal",  # €/mes
+            "comunicaciones": "decimal",  # €/mes
             "anio": "entero",
         },
     },
@@ -177,6 +178,7 @@ CONTRATOS: dict[str, dict] = {
             "elegible": "booleano",
             "eur_mes": "decimal",  # €/mes
             "estimado": "booleano",
+            "pct_ocupados_elegibles": "decimal",  # % de los ocupados de la zona, 0-100
         },
     },
 }

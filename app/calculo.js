@@ -57,7 +57,7 @@ export function netoMes(netos, bruto, hogar) {
 export function cesta(cestaUc, hogar) {
   const uc = 1 + 0.5 * (hogar.adultos - 1) + 0.3 * hogar.hijos;
   const p = hogar.personas_comparten;
-  return cestaUc.alimentacion * uc + (cestaUc.suministros * (uc + 0.5 * (p - 1))) / p;
+  return cestaUc.alimentacion * uc + ((cestaUc.suministros + cestaUc.comunicaciones) * (uc + 0.5 * (p - 1))) / p;
 }
 
 export function alquiler(zona, hogar, subida) {
@@ -80,7 +80,9 @@ function celda(tiempos, matriz, origen, destino) {
 export function corona(api, origen, destino) {
   const orden = api.tarifas.orden_coronas;
   const coronas = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.corona]));
-  const par = [coronas[origen], coronas[destino]];
+  // la corona de un polo es la de la zona en la que cae (zona_id), como en calculo.py
+  const zonaDestino = Object.fromEntries(api.tiempos.destinos.map((d) => [d.destino_id, d.zona_id ?? d.destino_id]));
+  const par = [coronas[origen], coronas[zonaDestino[destino] ?? destino]];
   if (par.some((c) => !orden.includes(c))) {
     throw new Error(`${origen} → ${destino}: coronas ${JSON.stringify(par)} sin tarifa (orden_coronas ${JSON.stringify(orden)})`);
   }

@@ -14,14 +14,17 @@ import shapely
 
 from mesobra import api_estatica
 from mesobra.pipeline_euros import APP_DATOS
+from mesobra.polos import leer, ubicar
 from mesobra.tiempos import (
     FACTOR_RODEO,
     FECHA_SALIDA,
     HORA_SALIDA,
     MAX_MINUTOS,
+    MAX_MINUTOS_POLO,
     MIN_INTERNO,
     VELOCIDAD_KMH,
     VENTANA,
+    polos_lejos,
 )
 from mesobra.zonas import PROCESSED
 
@@ -124,7 +127,7 @@ def zonas_geojson(zonas: gpd.GeoDataFrame) -> dict:
     }
 
 
-def _nota_tiempos(tiempos: pd.DataFrame) -> str:
+def _nota_tiempos(tiempos: pd.DataFrame, n_polos: int) -> str:
     estimados = tiempos["estimado"]
     if estimados.all():
         rodeo = f"{FACTOR_RODEO}".replace(".", ",")
@@ -147,33 +150,45 @@ def _nota_tiempos(tiempos: pd.DataFrame) -> str:
     return (
         "Minutos puerta a puerta en transporte público del centro de población de la zona de origen al de la de "
         f"destino; dentro de la zona, mediana desde sus secciones, con un mínimo de {MIN_INTERNO:.0f} min. null: "
-        f"más de {MAX_MINUTOS} min o sin ruta. {origen} Datos de OpenStreetMap (© OpenStreetMap contributors, "
-        "ODbL). Powered by CRTM."
+        f"más de {MAX_MINUTOS} min o sin ruta. Además, {n_polos} polos de empleo con nombre (destinos `polo:`, lista "
+        "propia: supuesto declarado) con el mismo cálculo hasta su punto de OpenStreetMap (desde su propia zona, mediana desde las secciones de la zona, como el tiempo interno); su corona tarifaria es la de "
+        f"su `zona_id`. {origen} Datos de OpenStreetMap (© OpenStreetMap contributors, ODbL). Powered by CRTM."
     )
 
 
-def tiempos_json(tiempos: pd.DataFrame, zonas: pd.DataFrame) -> dict:
+def tiempos_json(
+    tiempos: pd.DataFrame, zonas: pd.DataFrame, polos: pd.DataFrame
+) -> dict:
+    """`tiempos.json`: orígenes = zonas y destinos = zonas y polos; `polos` trae `destino_id`, `nombre` y `zona_id`."""
     ids = zonas["zona_id"]
+    destinos = ids.tolist() + polos["destino_id"].tolist()
     tiempos = tiempos[tiempos["modo"] == "tp"]
+    esperados = len(ids) * len(destinos)
     # un par que falte saldría null («sin ruta») sin avisar; los duplicados ya los rechaza pivot
-    if len(tiempos) != len(ids) ** 2:
-        raise ValueError(f"Faltan pares en tiempos: {len(tiempos)} de {len(ids) ** 2}")
+    if len(tiempos) != esperados:
+        raise ValueError(f"Faltan pares en tiempos: {len(tiempos)} de {esperados}")
     matriz = tiempos.pivot(index="zona_id", columns="destino_id", values="minutos")
-    if set(matriz.index) != set(ids) or set(matriz.columns) != set(ids):
+    if set(matriz.index) != set(ids) or set(matriz.columns) != set(destinos):
         raise ValueError(
-            "La tabla tiempos no tiene los mismos ids de origen y destino que zonas"
+            "La tabla tiempos no tiene los mismos ids de origen y destino que zonas y polos"
         )
     # floor(x + 0,5) y no round: el redondeo bancario de numpy llevaría 2,5 a 2
-    minutos = np.floor(matriz.loc[ids, ids].to_numpy() + 0.5)
+    minutos = np.floor(matriz.loc[ids, destinos].to_numpy() + 0.5)
     # 120,5 redondea a 121: pasa del máximo y va como null
     minutos[minutos > MAX_MINUTOS] = np.nan
     tp = [[None if np.isnan(m) else int(m) for m in fila] for fila in minutos]
     return {
-        "meta": _meta(2026, FUENTES_TIEMPOS, _nota_tiempos(tiempos)),
+        "meta": _meta(2026, FUENTES_TIEMPOS, _nota_tiempos(tiempos, len(polos))),
         "origenes": ids.tolist(),
         "destinos": [
             {"destino_id": z, "nombre": n, "tipo": "zona"}
             for z, n in zip(ids, zonas["nombre"], strict=True)
+        ]
+        + [
+            {"destino_id": d, "nombre": n, "tipo": "polo", "zona_id": z}
+            for d, n, z in zip(
+                polos["destino_id"], polos["nombre"], polos["zona_id"], strict=True
+            )
         ],
         "tp": tp,
     }
@@ -191,7 +206,16 @@ def main() -> None:
     tiempos = pd.read_parquet(PROCESSED / "tiempos.parquet")
     # primero las zonas: escribir comprueba los ids de tiempos.json contra el zonas.geojson de la carpeta
     api_estatica.escribir("zonas.geojson", zonas_geojson(zonas), APP_DATOS)
-    api_estatica.escribir("tiempos.json", tiempos_json(tiempos, zonas), APP_DATOS)
+    lista = ubicar(leer(), zonas)
+    if lejos := polos_lejos(
+        tiempos, lista
+    ):  # no se publica una columna de polo en null
+        raise ValueError(
+            f"Polos sin ruta o a {MAX_MINUTOS_POLO} min o más de su zona: {lejos}"
+        )
+    api_estatica.escribir(
+        "tiempos.json", tiempos_json(tiempos, zonas, lista), APP_DATOS
+    )
 
 
 if __name__ == "__main__":

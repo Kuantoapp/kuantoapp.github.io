@@ -37,8 +37,8 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
     tienen pocos destinos).
 14. «Ejes» = corona del origen (A = Madrid capital).
     # shortcut: mezcla ejes distintos dentro de una corona, definir corredores cuando existan.
-15. Los destinos `polo` se excluyen: sin corona, `calcular` da error hasta que haya polos con corona
-    (F3-01).
+15. Los destinos `polo` se excluyen: son una lista elegida a mano (F3-01) y no destinos que cualquier
+    zona pueda tener, así que no entran en la mediana por zona.
 """
 
 import pandas as pd
@@ -49,7 +49,7 @@ from mesobra.figuras import es
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
 FUENTE_CALCULO = (
-    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF, tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
+    "elaboración propia con mesobra.calculo (alquiler del SERPAVI, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
     "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
 )
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"
@@ -119,7 +119,7 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
         f["properties"]["zona_id"]: f["properties"]["corona"]
         for f in api["zonas"]["features"]
     }
-    # Los polos no tienen corona: `calcular` fallaría (hasta F3-01); solo los destinos de zona.
+    # Los polos son una lista elegida a mano y no entran en la mediana por zona (nota 15); solo los de zona.
     destinos = [
         d["destino_id"] for d in api["tiempos"]["destinos"] if d["tipo"] == "zona"
     ]

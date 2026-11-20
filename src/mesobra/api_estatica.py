@@ -238,15 +238,24 @@ def _zonas(o):
     return p + (q or _coherencia_zonas(props))
 
 
-DESTINO = {"destino_id": "destino", "nombre": "texto", "tipo": ["zona", "polo"]}
+DESTINO = {
+    "destino_id": "destino",
+    "nombre": "texto",
+    "tipo": ["zona", "polo"],
+    "zona_id": "zona",  # solo los polos: la zona en la que caen, que da su corona tarifaria (F3-01)
+}
 
 
 def _destinos(destinos):
-    p = _tabla("destinos", destinos, DESTINO, ("destino_id",))
+    p = _tabla("destinos", destinos, DESTINO, ("destino_id",), ("zona_id",))
     return p or [
         f"destinos[{i}]: tipo {d['tipo']!r} no casa con {d['destino_id']!r}"
         for i, d in enumerate(destinos)
         if (d["tipo"] == "polo") != d["destino_id"].startswith("polo:")
+    ] + [
+        f"destinos[{i}]: zona_id es obligatorio en los polos y no va en las zonas"
+        for i, d in enumerate(destinos)
+        if (d["tipo"] == "polo") != ("zona_id" in d)
     ]
 
 
@@ -271,6 +280,9 @@ ALQUILER = {
     "anio": ("entero?", 2000, 2100), "p25": PCT, "p50": PCT, "p75": PCT, "m2": POS_N,
     "factor_ipc": ("decimal", 0.5, 2), "ic": None,
     "origen": ["observado", "estimado", "sin_dato"],
+    "factor_brecha": ("decimal", 0.5, 2),
+    "brecha_ambito": ["municipio", "codigo_postal", "tramo"],
+    "brecha_pureza": ("decimal?", 0, 1),
 }
 # fmt: on
 
@@ -427,10 +439,11 @@ def _tarifas(o):
 PERFIL = {
     "adultos": ("entero", 1, 10), "hijos": ("entero", 0, 10), "m2": ("decimal", 10, 300),
     "personas_comparten": ("entero", 1, 10), "alimentacion": POS, "suministros": POS,
+    "comunicaciones": POS,
 }
 # fmt: on
 PERFILES = ["solo", "comparte", "pareja", "monoparental"]
-CESTA_UC = {"alimentacion": POS, "suministros": POS}
+CESTA_UC = {"alimentacion": POS, "suministros": POS, "comunicaciones": POS}
 
 
 def _hogares(o):
@@ -455,6 +468,7 @@ SOBRECARGA["cobertura"] = ("decimal?", 0, 1)
 SIMULACION = {
     "perfil": PERFILES, "municipio_id": "municipio", "criterio": "texto",
     "elegible": "booleano", "eur_mes": POS, "estimado": "booleano",
+    "pct_ocupados_elegibles": ("decimal", 0, 100),
 }
 # bloque -> (columnas, clave); sobrecarga y simulacion son opcionales
 BLOQUES = {
@@ -488,7 +502,8 @@ def _referencias(nombre, o):
     """Ids que el fichero toma de las zonas."""
     if nombre == "tiempos.json":
         return o["origenes"] + [
-            d["destino_id"] for d in o["destinos"] if d["tipo"] == "zona"
+            d["destino_id"] if d["tipo"] == "zona" else d["zona_id"]
+            for d in o["destinos"]
         ]
     if nombre == "alquiler.json":
         return list(o["zonas"])

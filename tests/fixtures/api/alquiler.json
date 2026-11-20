@@ -3,14 +3,15 @@
     "ejemplo": true,
     "generado": "2026-11-15",
     "anio_dato": 2024,
+    "ipc_hasta": "2026-10",
     "fuentes": [{"nombre":"Comunidad de Madrid, datos abiertos","url":"https://datos.comunidad.madrid/","licencia":"CC BY 4.0"},{"nombre":"INE","url":"https://www.ine.es/","licencia":"Reutilización con cita de la fuente (INE)"}],
     "nota": "Ejemplo inventado para tests; no son datos."
   },
   "zonas": {
-    "2807901": {"anio":2024,"p25":16.8,"p50":19.6,"p75":22.9,"m2":62.0,"factor_ipc":1.0,"origen":"observado","ic":null},
-    "2807913": {"anio":2024,"p25":13.2,"p50":15.1,"p75":17.4,"m2":58.0,"factor_ipc":1.0,"origen":"observado","ic":null},
-    "28065": {"anio":2024,"p25":11.0,"p50":12.6,"p75":14.3,"m2":70.0,"factor_ipc":1.035,"origen":"observado","ic":null},
-    "28092": {"anio":2024,"p25":10.2,"p50":11.8,"p75":13.5,"m2":68.0,"factor_ipc":1.0,"origen":"estimado","ic":[10.3,13.4]},
-    "28001": {"anio":2024,"p25":null,"p50":null,"p75":null,"m2":null,"factor_ipc":1.0,"origen":"sin_dato","ic":null}
+    "2807901": {"anio":2024,"p25":16.8,"p50":19.6,"p75":22.9,"m2":62.0,"factor_ipc":1.0,"origen":"observado","ic":null,"factor_brecha":1.19,"brecha_ambito":"codigo_postal","brecha_pureza":0.6},
+    "2807913": {"anio":2024,"p25":13.2,"p50":15.1,"p75":17.4,"m2":58.0,"factor_ipc":1.0,"origen":"observado","ic":null,"factor_brecha":1.2,"brecha_ambito":"codigo_postal","brecha_pureza":0.6},
+    "28065": {"anio":2024,"p25":11.0,"p50":12.6,"p75":14.3,"m2":70.0,"factor_ipc":1.035,"origen":"observado","ic":null,"factor_brecha":1.19,"brecha_ambito":"municipio","brecha_pureza":null},
+    "28092": {"anio":2024,"p25":10.2,"p50":11.8,"p75":13.5,"m2":68.0,"factor_ipc":1.0,"origen":"estimado","ic":[10.3,13.4],"factor_brecha":1.18,"brecha_ambito":"municipio","brecha_pureza":null},
+    "28001": {"anio":2024,"p25":null,"p50":null,"p75":null,"m2":null,"factor_ipc":1.0,"origen":"sin_dato","ic":null,"factor_brecha":1.19,"brecha_ambito":"tramo","brecha_pureza":null}
   }
 }

@@ -4,6 +4,7 @@ No calcula nada nuevo: solo da forma al contrato de `api_estatica`. Ejecutar con
 `python -m mesobra.pipeline_euros`. Todos los valores salen en tipos nativos de Python.
 """
 
+import logging
 from datetime import date
 from pathlib import Path
 
@@ -37,6 +38,20 @@ IPC_CM = {
     "nombre": "IPC de la vivienda en alquiler, base 2025 (catálogo de datos abiertos de la Comunidad de Madrid, 1934665), usado como control. Fuente de los datos: Comunidad de Madrid",
     "url": "https://datos.comunidad.madrid/dataset/fc22e79d-c04b-4537-8b4b-fe92516b989e/resource/3d1f3acc-98cc-4356-b9e1-4b9e5d999787/download/indice-de-precios-de-consumo.-vivienda-en-alquiler-base-2025.csv",
     "licencia": "CC BY 4.0",
+}
+AEAT_VIVIENDAS = {
+    "nombre": "Estadística de viviendas declaradas en el IRPF 2024, comparativa con los nuevos contratos por "
+    "municipio, código postal y tramo de población. Fuente: Agencia Tributaria",
+    "url": "https://sede.agenciatributaria.gob.es/AEAT/Contenidos_Comunes/La_Agencia_Tributaria/Estadisticas/"
+    "Publicaciones/sites/irpfvivienda/2024/home.html",
+    "licencia": "Reutilización autorizada citando la fuente y sin desnaturalizar (aviso legal de la sede de la AEAT)",
+}
+# mismo extracto que `pipeline_territorio.OSM`, que importa este módulo
+OSM_PORTALES = {
+    "nombre": "OpenStreetMap, extracto de Geofabrik de la Comunidad de Madrid del 2026-11-13 (portales con "
+    "código postal). © OpenStreetMap contributors",
+    "url": "https://download.geofabrik.de/europe/spain/madrid-261113.osm.pbf",
+    "licencia": "ODbL 1.0 (https://www.openstreetmap.org/copyright)",
 }
 LICENCIA_BOE = (
     "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
@@ -144,7 +159,19 @@ FUENTES_HOGARES = [
         "licencia": "CC BY 4.0",
     }
     for d, i in EPF_IDS.items()
-] + [SERPAVI]
+] + [
+    SERPAVI,
+    {
+        "nombre": "INE, IPC base 2025 por comunidades autónomas y subgrupos ECOICOP (tabla 76137), subgrupos 01.1, 01.2, 04.5 y 08.3 de la Comunidad de Madrid. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+        "url": IPC_INE["url"],
+        "licencia": "CC BY 4.0",
+    },
+    {
+        "nombre": "INE, IPC base 2025 nacional por clases ECOICOP (tabla 76127), clase 04.4.1 Suministro de agua. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es",
+        "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/76127.csv",
+        "licencia": "CC BY 4.0",
+    },
+]
 
 
 def _meta(
@@ -166,14 +193,23 @@ def _ultimo_anio(zona: pd.DataFrame) -> pd.DataFrame:
 
 def alquiler_json(zona: pd.DataFrame) -> dict:
     ultimo = _ultimo_anio(zona).set_index("zona_id")
+    brecha = zona.drop_duplicates("zona_id").set_index("zona_id")
     zonas = {}
     for zid in sorted(set(zona["zona_id"]) - {MADRID}):
+        b = brecha.loc[zid]
+        zonas[zid] = {
+            "factor_brecha": float(b["factor_brecha"]),
+            "brecha_ambito": b["brecha_ambito"],
+            "brecha_pureza": None
+            if pd.isna(b["brecha_pureza"])
+            else float(b["brecha_pureza"]),
+        }
         if zid not in ultimo.index:
-            zonas[zid] = dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
+            zonas[zid] |= dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
             zonas[zid] |= {"factor_ipc": 1.0, "origen": "sin_dato"}
             continue
         f = ultimo.loc[zid]
-        zonas[zid] = {
+        zonas[zid] |= {
             "anio": int(f["anio"]),
             "p25": float(f["eur_m2_p25"]),
             "p50": float(f["eur_m2_p50"]),
@@ -200,9 +236,27 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "sin_dato. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 76137 "
         "actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
         "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
-        "usado como control). " + ORIGEN_SERPAVI
+        "usado como control). "
+        + ORIGEN_SERPAVI
+        + " factor_brecha (estimado) lleva ese precio al de los "
+        "contratos formalizados en 2024: €/m² de los nuevos contratos ÷ €/m² de todos, con las medias de "
+        "alquiler mensual y de m² de la Estadística de viviendas declaradas en el IRPF 2024 (misma base "
+        "fiscal que el SERPAVI, pero medias y no medianas). brecha_ambito dice de dónde sale: municipio "
+        "(los de más de 20.000 habitantes), codigo_postal (los distritos de Madrid, desde sus códigos "
+        "postales ponderados por viviendas arrendadas y repartidos por portales de OpenStreetMap, que "
+        "cruzan límites de distrito; brecha_pureza es la parte de su peso que viene de códigos postales "
+        "enteros, y con pureza baja el valor depende del reparto) o tramo (en los municipios sin dato "
+        "propio, la mediana de los municipios de la Comunidad de 20.001 a 50.000 habitantes, el tamaño más "
+        "parecido; entre ellos va de 1,05 a 1,26, y esa es su incertidumbre). "
+        "El de distrito mide la brecha dentro de cada código postal; los de municipio y tramo incluyen además que los "
+        "contratos nuevos se concentran en las zonas caras, y por eso tienden a ser algo mayores (en "
+        "Madrid capital, 1,20 frente a 1,17 con sus códigos postales). p50 × factor_ipc es el "
+        "precio de contrato y × factor_brecha el de contrato nuevo, que sigue siendo un suelo: el IPC de "
+        "alquiler sigue los contratos en vigor, y los nuevos suben más. Fuente: Agencia Tributaria (la "
+        "tabla no publica fecha de actualización; consultada el 2026-11-19 y la del tramo el 2026-11-20). © OpenStreetMap contributors "
+        "(extracto de Geofabrik actualizado el 2026-11-13, ODbL 1.0)."
     )
-    fuentes = [SERPAVI, IPC_INE, IPC_CM]
+    fuentes = [SERPAVI, IPC_INE, IPC_CM, AEAT_VIVIENDAS, OSM_PORTALES]
     if n := int((zona["origen"] == "estimado").sum()):
         nota += (
             f" {n} zonas sin dato publicado llevan origen estimado: €/m² de vivienda colectiva de {anio} "
@@ -358,7 +412,16 @@ def rutas() -> tuple[pd.DataFrame, list[str]]:
 
 
 def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
-    columnas = ["adultos", "hijos", "personas_comparten", "alimentacion", "suministros"]
+    columnas = [
+        "adultos",
+        "hijos",
+        "personas_comparten",
+        "alimentacion",
+        "suministros",
+        "comunicaciones",
+    ]
+    if not (mes := tabla.attrs.get("ipc_hasta")):
+        raise ValueError("La tabla de hogares no trae attrs['ipc_hasta']")
     perfiles = {
         f["perfil"]: {"m2": m2, **{c: f[c] for c in columnas}}
         for f in tabla.to_dict("records")
@@ -369,21 +432,35 @@ def hogares_json(tabla: pd.DataFrame, cesta: pd.Series, m2: int) -> dict:
         "testigos; el formulario permite cambiarlo. Un mismo m² para todos sobreestima el alquiler de "
         "quien vive solo. EPF del catálogo de la Comunidad de Madrid actualizada el 2026-11-05 "
         "(fuente de los datos: Comunidad de Madrid); alimentación = 01.1 + 01.2 y suministros = "
-        "04.5 + 04.4.1, gasto anual por unidad de consumo entre 12. " + ORIGEN_SERPAVI
+        "04.5 + 04.4.1 y comunicaciones = 08.2.1 (telefonía e Internet; en el IPC, subgrupo 08.3), gasto anual por unidad de consumo "
+        f"entre 12 y actualizado con el IPC de Madrid de cada subgrupo (precios medios de los 12 meses hasta {mes} "
+        "entre la media de 2025; tabla 76137 actualizada el 2026-11-13), salvo el agua, con la clase nacional "
+        "04.4.1 (tabla 76127 actualizada el 2026-11-13), porque el 04.4 de Madrid incluye la recogida de "
+        "basuras. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es; el INE no "
+        "participa ni patrocina este proyecto. Internet y móvil se reparten entre quienes comparten piso "
+        "como la luz (supuesto). Sin comidas fuera de casa (restauración, 11.1: 1.852 €/UC al año en la EPF "
+        "de Madrid de 2025), ni adaptación a la renta (la media se toma como estándar: los hogares con menos "
+        "renta gastan menos en comida por UC porque pueden menos) ni al tamaño del piso o al clima "
+        "(en la sierra la calefacción se queda corta). " + ORIGEN_SERPAVI
     )
     return {
-        "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota),
+        "meta": _meta(int(tabla["anio"].iloc[0]), FUENTES_HOGARES, nota)
+        | {"ipc_hasta": mes},
         "perfiles": perfiles,
         "cesta_uc": {k: float(v) for k, v in cesta.items()},
     }
 
 
 def main() -> None:
+    # cobertura y pureza de la tabla de paso de código postal a distrito
+    logging.basicConfig(level=logging.INFO)
     claves, ids = rutas()
     zona = alquiler.actualizar_ipc(
         alquiler.alquiler_zona(alquiler.leer_serpavi()), alquiler.leer_ipc()
     )
     zona = imputacion.imputar(zona, *imputacion.leer_entradas())
+    tabla_cp = alquiler.tabla_paso_cp(alquiler.leer_portales(), zonas.leer_secciones())
+    zona = alquiler.brecha_por_zona(zona, alquiler.leer_brecha(), tabla_cp)
     salidas = {
         "alquiler.json": alquiler_json(zona),
         "netos.json": netos_json(neto.rejilla()),
