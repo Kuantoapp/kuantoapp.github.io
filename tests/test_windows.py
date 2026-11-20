@@ -41,13 +41,13 @@ entorno_win = cargar(HOOKS / "entorno_windows.py")
 def proyecto(tmp_path: Path) -> Path:
     (tmp_path / "data/raw").mkdir(parents=True)
     (tmp_path / "data/processed").mkdir()
-    (tmp_path / "data/raw/ine.csv").write_text("a\n")
+    (tmp_path / "data/raw/ine.csv").write_text("a\n", encoding="utf-8")
     return tmp_path
 
 
 def ejecutable(ruta: Path, cuerpo: str) -> None:
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    ruta.write_text("#!/bin/sh\n" + cuerpo + "\n")
+    ruta.write_text("#!/bin/sh\n" + cuerpo + "\n", encoding="utf-8")
     ruta.chmod(0o755)
 
 
@@ -234,7 +234,7 @@ def test_hook_windows_sigue_protegido_con_cwd_en_otro_repo(tmp_path):
 
 @simulado
 def test_entorno_windows(tmp_path):
-    (tmp_path / ".python-version").write_text("3.14\n")
+    (tmp_path / ".python-version").write_text("3.14\n", encoding="utf-8")
     assert any("no hay .venv" in a for a in entorno_win.avisos(tmp_path))
     scripts = tmp_path / ".venv/Scripts"
     ejecutable(scripts / "python.exe", "echo 3.14")
@@ -278,8 +278,8 @@ def test_py_windows_usa_scripts_utf8_y_version_windows(tmp_path):
         tmp_path / ".venv/Scripts/python.exe",
         'cat >/dev/null; echo "utf8=$PYTHONUTF8 $*"',
     )
-    (tmp_path / "x.py").write_text("")
-    (tmp_path / "x_windows.py").write_text("")
+    (tmp_path / "x.py").write_text("", encoding="utf-8")
+    (tmp_path / "x_windows.py").write_text("", encoding="utf-8")
     r = lanzar(
         "py-windows", tmp_path, "{}", str(tmp_path / "x.py"), path=path_minimo(tmp_path)
     )
@@ -314,7 +314,7 @@ def test_py_delega_en_py_windows_en_git_bash(tmp_path):
 @sin_sh
 @simulado
 def test_formatear_windows(tmp_path):
-    (tmp_path / "a.py").write_text("x=1\n")
+    (tmp_path / "a.py").write_text("x=1\n", encoding="utf-8")
     ruff = tmp_path / ".venv/Scripts/ruff.exe"
     ejecutable(ruff, '[ "$1" = check ] && { echo "E999 fallo" >&2; exit 1; }; exit 0')
     ejecutable(tmp_path / ".venv/Scripts/python.exe", f'exec "{sys.executable}" "$@"')

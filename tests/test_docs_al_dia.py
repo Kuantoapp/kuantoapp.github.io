@@ -36,11 +36,12 @@ def test_url_nueva_exige_data_readme():
 
 def test_referencias_rotas(tmp_path):
     (tmp_path / "src").mkdir()
-    (tmp_path / "src/existe.py").write_text("")
+    (tmp_path / "src/existe.py").write_text("", encoding="utf-8")
     (tmp_path / "AGENTS.md").write_text(
         "Usa `src/existe.py` y `src/borrado.py`; plantilla `src/<paquete>/x.py`.\n"
         "Ver [guía](docs/guia.md) y [web](https://x.es).\n"
-        "```\ncat src/en_codigo.py\n```\n"
+        "```\ncat src/en_codigo.py\n```\n",
+        encoding="utf-8",
     )
     errores = docs.referencias_rotas(tmp_path)
     assert len(errores) == 2
@@ -54,12 +55,12 @@ def test_hook_stop_recuerda_una_vez(tmp_path):
     git("init", "-q", "-b", "main")
     git("config", "user.email", "t@t")
     git("config", "user.name", "t")
-    (tmp_path / "AGENTS.md").write_text("Reglas.\n")
+    (tmp_path / "AGENTS.md").write_text("Reglas.\n", encoding="utf-8")
     git("add", ".")
     git("commit", "-qm", "base")
     git("update-ref", "refs/remotes/origin/main", "HEAD")
     (tmp_path / ".claude/hooks").mkdir(parents=True)
-    (tmp_path / ".claude/hooks/nuevo.py").write_text("")
+    (tmp_path / ".claude/hooks/nuevo.py").write_text("", encoding="utf-8")
     entorno = {**os.environ, "CLAUDE_PROJECT_DIR": str(tmp_path)}
     entorno.pop("GITHUB_BASE_REF", None)
 
@@ -101,7 +102,7 @@ def test_hook_stop_usa_el_cwd_del_evento(tmp_path):
         git(carpeta, "update-ref", "refs/remotes/origin/main", "HEAD")
     (repo / "src").mkdir()
     (repo / ".claude/hooks").mkdir(parents=True)
-    (repo / ".claude/hooks/nuevo.py").write_text("")  # sin documentar
+    (repo / ".claude/hooks/nuevo.py").write_text("", encoding="utf-8")  # sin documentar
     entorno = {
         **os.environ,
         "CLAUDE_PROJECT_DIR": str(otra),

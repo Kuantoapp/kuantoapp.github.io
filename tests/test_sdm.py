@@ -114,7 +114,7 @@ def test_sobrecarga_es_un_intervalo(salida):
 
 
 def test_escribir_deja_ficheros_validos_y_borra_los_viejos(tmp_path):
-    (tmp_path / "viejo.json").write_text("[]")
+    (tmp_path / "viejo.json").write_text("[]", encoding="utf-8")
     sdm.escribir(ANALISIS, ALQUILER, tmp_path, ESQUEMA)
     assert not (tmp_path / "viejo.json").exists()
     assert sorted(p.name for p in tmp_path.glob("*.json")) == sorted(
@@ -171,7 +171,7 @@ def leeme_real(tmp_path):
     ],
 )
 def test_sin_una_cita_obligatoria_falla_sin_escribir(tmp_path, quitar, error):
-    (tmp_path / "viejo.json").write_text("[]")
+    (tmp_path / "viejo.json").write_text("[]", encoding="utf-8")
     analisis = _con_nota("analisis.json", CITAS.replace(quitar, ""))
     with pytest.raises(ValueError, match=error):
         sdm.escribir(analisis, ALQUILER, tmp_path, ESQUEMA)

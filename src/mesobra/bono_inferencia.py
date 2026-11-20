@@ -590,7 +590,7 @@ def main() -> None:
     )
     texto = json.dumps(resultado, indent=1, default=float)
     LOG.info("Inferencia del Bono:\n%s", texto)
-    SALIDA.write_text(texto)
+    SALIDA.write_text(texto, encoding="utf-8")
 
 
 if __name__ == "__main__":

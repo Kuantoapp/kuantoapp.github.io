@@ -324,9 +324,9 @@ def aviso_contexto(evento: dict) -> str:
         marca.unlink(missing_ok=True)  # tras compactar, se vuelve a avisar si crece
         return ""
     tramo = tokens // 100_000
-    if marca.exists() and int(marca.read_text() or 0) >= tramo:
+    if marca.exists() and int(marca.read_text(encoding="utf-8") or 0) >= tramo:
         return ""
-    marca.write_text(str(tramo))
+    marca.write_text(str(tramo), encoding="utf-8")
     return json.dumps(
         {
             "systemMessage": f"Contexto de unos {tokens // 1000} mil tokens, y cada turno lo reenvía. "
