@@ -148,7 +148,7 @@ FUENTES_TARIFAS = (
     ]
     + [
         {
-            "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), capítulo III (arts. 5 a 9): ayudas a los descuentos de abonos y títulos multiviaje del transporte autonómico y local en 2026",
+            "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), capítulo III (arts. 5 a 17): ayudas del Estado a los descuentos de abonos y títulos multiviaje del transporte autonómico y local en 2026",
             "url": URL_RDL,
             "licencia": LICENCIA_RDL,
         },

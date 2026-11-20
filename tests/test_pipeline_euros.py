@@ -225,7 +225,11 @@ def test_meta_visible_describe_solo_la_v1():
         assert "2023" not in meta["nota"]
         assert "ordinario" in meta["nota"] and "sin ocio" in meta["nota"]
         nombres = " ".join(f["nombre"] for f in meta["fuentes"])
-        assert "capítulo III" in nombres and "art. 3" not in nombres
+        assert (
+            "capítulo III" in nombres
+            and "arts. 5 a 17" in nombres
+            and "art. 3" not in nombres
+        )
         assert not any("verificar" in f["licencia"] for f in meta["fuentes"])
         fichas = [
             f for f in meta["fuentes"] if "crtm.es/billetes-y-tarifas" in f["url"]
