@@ -168,8 +168,48 @@ def test_completar_viajes_un_viaje_parcial_solo_recibe_su_tramo():
 
 
 def test_completar_tablas_sin_esas_rutas_no_toca_nada():
-    tablas = {"trips.txt": b"route_id,trip_id\r\nS,t1\r\n"}
+    tablas = {
+        "trips.txt": b"route_id,trip_id,service_id,direction_id\r\nS,t1,L,0\r\n",
+        "stop_times.txt": (
+            b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+            b"t1,08:00:00,08:00:00,A,0\r\nt1,08:10:00,08:10:00,B,1\r\n"
+        ),
+        "stops.txt": b"stop_id,stop_lon,stop_lat,location_type\r\nA,-3.7,40.4,0\r\n",
+    }
     assert le.completar_tablas(tablas, {"R": ["A", "B"]}) is tablas
+
+
+def test_rellenar_horarios_usa_la_salida_del_trip_id_y_la_velocidad_de_las_parecidas():
+    xy = pd.DataFrame(
+        {"x": [X0, X0 + 3000, X0 + 7000], "y": [Y0, Y0, Y0]}, index=["p", "q", "r"]
+    )
+    real, relleno = "8__101___", "8__102___"
+    viaje = f"x_{relleno}_1_06:56:00_1_-__1"
+    trips = pd.DataFrame(
+        {
+            "trip_id": ["t1", viaje],
+            "route_id": [real, relleno],
+            "service_id": "L",
+            "direction_id": "0",
+        }
+    )
+    horas = ("07:40:00", "07:46:00", "07:54:00")  # 30 km/h: 3 km en 6 min, 7 km en 14
+    filas = [
+        ("t1", h, h, s, str(i))
+        for i, (s, h) in enumerate(zip("pqr", horas, strict=True))
+    ]
+    filas += [(viaje, "01:00:00", "01:00:00", s, str(i)) for i, s in enumerate("pqr")]
+    cols = ["trip_id", "arrival_time", "departure_time", "stop_id", "stop_sequence"]
+    st = pd.DataFrame(filas, columns=cols)
+    salida = le.rellenar_horarios(trips, st, xy)
+    nuevo = salida[salida["trip_id"] == viaje].sort_values("stop_sequence")
+    assert nuevo["departure_time"].tolist() == ["06:56:00", "07:02:00", "07:10:00"]
+    assert salida[salida["trip_id"] == "t1"]["departure_time"].tolist() == list(horas)
+    sin_hora = trips.assign(trip_id=["t1", "malo"])
+    with pytest.raises(ValueError, match="sin hora"):
+        le.rellenar_horarios(
+            sin_hora, st.assign(trip_id=st["trip_id"].replace(viaje, "malo")), xy
+        )
 
 
 def test_activos_cuenta_dia_de_la_semana_vigencia_altas_y_bajas(tmp_path):
