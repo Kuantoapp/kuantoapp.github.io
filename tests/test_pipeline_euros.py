@@ -222,7 +222,12 @@ def test_meta_visible_describe_solo_la_v1():
         for v2 in ("tarifas_ruta", "Renfe", "+65", "79 %"):
             assert v2 not in meta["nota"]
         assert not re.search(r"#\d", meta["nota"])
+        assert "2023" not in meta["nota"]
         assert not any("verificar" in f["licencia"] for f in meta["fuentes"])
+        fichas = [
+            f for f in meta["fuentes"] if "crtm.es/billetes-y-tarifas" in f["url"]
+        ]
+        assert fichas and not any("datos abiertos" in f["licencia"] for f in fichas)
         urls = " ".join(f["url"] for f in meta["fuentes"])
         assert "renfe.com" not in urls and "abono-plus65" not in urls
         assert "BOE-A-2025-26459" in urls

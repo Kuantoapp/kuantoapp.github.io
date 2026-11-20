@@ -58,8 +58,9 @@ LICENCIA_BOE = (
     "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
 )
 LICENCIA_BOCM = "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI, BOE-A-1996-8930)"
-LICENCIA_CRTM = (
-    "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)"
+LICENCIA_WEB_CRTM = (
+    "Aviso legal de crtm.es (https://www.crtm.es/aviso-legal/): reutilización citando la fuente, "
+    "sin alterar el contenido ni dar a entender patrocinio del CRTM; extraída el 2026-11-20"
 )
 ORIGEN_SERPAVI = (
     "Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09; "
@@ -122,7 +123,7 @@ FUENTES_TARIFAS = (
         {
             "nombre": nombre,
             "url": url,
-            "licencia": LICENCIA_CRTM,
+            "licencia": LICENCIA_WEB_CRTM,
         }
         for nombre, url in (
             (
@@ -133,24 +134,29 @@ FUENTES_TARIFAS = (
                 "Ficha de sencillos y 10 viajes (validez del 10 viajes), Consorcio Regional de Transportes de Madrid",
                 "https://www.crtm.es/billetes-y-tarifas/buscador/sencillos-y-10-viajes/",
             ),
-            (
-                "CoronasTarifarias Vigentes CRTM (capa de coronas, abril de 2025)",
-                "https://datos.crtm.es/datasets/crtm::coronastarifarias-vigentes-crtm",
-            ),
         )
     ]
     + [
-        _boe(
-            "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3: bonificación de abonos y títulos multiviaje en 2026",
-            "https://www.boe.es/boe/dias/2025/12/24/pdfs/BOE-A-2025-26459.pdf",
-        ),
+        {
+            "nombre": "CoronasTarifarias Vigentes CRTM (capa de coronas, abril de 2025)",
+            "url": "https://datos.crtm.es/datasets/crtm::coronastarifarias-vigentes-crtm",
+            # literal: pipeline_territorio.CRTM importa este módulo (import circular)
+            "licencia": "Licencia de datos abiertos del CRTM (https://www.crtm.es/licencia-de-uso/)",
+        },
+    ]
+    + [
+        {
+            "nombre": "Real Decreto-ley 17/2025 (BOE-A-2025-26459), art. 3: bonificación de abonos y títulos multiviaje en 2026",
+            "url": "https://www.boe.es/boe/dias/2025/12/24/pdfs/BOE-A-2025-26459.pdf",
+            "licencia": f"{LICENCIA_BOCM}; reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia Estatal Boletín Oficial del Estado",
+        },
     ]
 )
 FUENTES_RUTA = [
     {
         "nombre": "Ficha del Abono +65, Consorcio Regional de Transportes de Madrid",
         "url": "https://www.crtm.es/billetes-y-tarifas/buscador/abono-plus65/",
-        "licencia": LICENCIA_CRTM,
+        "licencia": LICENCIA_WEB_CRTM,
     },
     {
         "nombre": "Abonos bonificados de Renfe 2026, preguntas frecuentes (Abono mensual de Cercanías)",
@@ -364,8 +370,8 @@ def tarifas_json(
         "oficiales. coste_mes es la media mensual del año (1/12), estimada con supuestos: 227 días de "
         "trabajo al año (calendario laboral de 2026 de la Comunidad de Madrid, Decreto 75/2025; supuestos: "
         "2 festivos locales en laborable y 22 laborables de vacaciones en un bloque); el Abono 30 días y "
-        "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida "
-        "desde 2023); el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
+        "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida); "
+        "el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
         "el billete sencillo de la zona A, a 1,50 € (EMT o Metro de hasta 5 estaciones). "
         "escenarios: viajes_dia 2, ida y vuelta pasando por la zona A; "
         "4, con cambio a Metro de la zona A en cada sentido. "
