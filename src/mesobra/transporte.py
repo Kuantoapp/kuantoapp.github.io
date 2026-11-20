@@ -24,7 +24,9 @@ Cercanías: vale el abono del CRTM de la corona, o el Abono mensual de Renfe (RD
 solo cuenta el abono del CRTM. Los jóvenes nacidos de 2000 a 2011 tienen uno de 10 € (art. 3.2.a).3.º), que
 se aplica a todo el colectivo joven (15 a 25 años) porque nació en esos años. Supuestos: quien nació en 2000
 y ya cumplió 26 cuenta como general y no recibe los 10 € (se sobrestima su coste en Cercanías); se supone
-nacionalidad española o residencia legal; Madrid es núcleo con tarificación zonal. Cuesta lo mismo que el
+nacionalidad española o residencia legal. Madrid es núcleo con tarificación zonal (comprobado el 21-11-2026:
+las tarifas de Cercanías Madrid de Renfe van por zonas, de 1 a 7, y sus preguntas frecuentes dan los abonos
+mensual y joven por válidos en todas las zonas de todos los núcleos desde el 1-1-2026; #363). Cuesta lo mismo que el
 Abono Joven del CRTM; sale 0,14 €/mes más barato solo porque vale un mes natural (11 al año) y no 30 días.
 Los 20 € y los 10 € valen para todos los colectivos: según Renfe (preguntas frecuentes de los abonos bonificados, consultadas el 18-11-2026) admite
 el descuento de familia numerosa pero no publica su importe (cota superior para FN) y no tiene descuento por
