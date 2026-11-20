@@ -27,7 +27,7 @@ y ya cumplió 26 cuenta como general y no recibe los 10 € (se sobrestima su co
 nacionalidad española o residencia legal. Madrid es núcleo con tarificación zonal (comprobado el 21-11-2026:
 las tarifas de Cercanías Madrid de Renfe van por zonas, de 1 a 7, y sus preguntas frecuentes dan los abonos
 mensual y joven por válidos en todas las zonas de todos los núcleos desde el 1-1-2026; #363). Cuesta lo mismo que el
-Abono Joven del CRTM; sale 0,14 €/mes más barato solo porque vale un mes natural (11 al año) y no 30 días.
+Abono Joven del CRTM; sale 0,14 €/mes más barato solo porque vale un mes (11 al año) y no 30 días.
 Los 20 € y los 10 € valen para todos los colectivos: según Renfe (preguntas frecuentes de los abonos bonificados, consultadas el 18-11-2026) admite
 el descuento de familia numerosa pero no publica su importe (cota superior para FN) y no tiene descuento por
 discapacidad. El Bonotren
@@ -190,7 +190,7 @@ ABONO_RENFE = {("vigente_2026", c): D("20.00") for c in COLECTIVOS}
 # Abono de 10 € para nacidos de 2000 a 2011: RDL 17/2025, art. 3.2.a).3.º (misma URL)
 ABONO_RENFE_JOVEN = {("vigente_2026", c): D("10.00") for c in COLECTIVOS}
 ANIOS_NACIMIENTO_RENFE_JOVEN = (2000, 2011)  # RDL 17/2025, art. 3.2.a).3.º
-ABONOS_RENFE_ANIO = 11  # vale un mes natural desde su inicio: 11 al año con 30 días de vacaciones en bloque
+ABONOS_RENFE_ANIO = 11  # «validez de un mes desde la fecha de inicio de vigencia» (RDL 17/2025, art. 3.2.a)): 335 / 30,44 ≈ 11 al año
 
 
 def _i(corona: str) -> int:

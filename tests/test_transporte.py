@@ -144,12 +144,12 @@ def test_edades():
 
 
 def test_cercanias():
-    # mes natural: 11 al año con las vacaciones en bloque, 20 × 11 / 12
+    # vale un mes desde su inicio: 11 al año con las vacaciones en bloque, 20 × 11 / 12
     assert coste("A-C2|cercanias", 5) == ("Abono Renfe", D("18.33"))
     # sin descuento no hay precio de Renfe: solo el abono del CRTM
     assert coste("A-C2|cercanias", 5, esc=S) == ("Abono 30 días", D("78.54"))
     # joven: 10 × 11 / 12 = 9,17 < Abono Joven del CRTM, 10 × 335/30 / 12 = 9,31 (mismo precio, otra
-    # validez: mes natural frente a 30 días); sin descuento no hay abono de Renfe
+    # validez: un mes frente a 30 días); sin descuento no hay abono de Renfe
     assert coste("A-C2|cercanias", 5, edad="joven") == ("Abono Renfe Joven", D("9.17"))
     assert coste("B1-B1|cercanias", 5, edad="joven") == ("Abono Renfe Joven", D("9.17"))
     # FN especial: su Abono Joven del CRTM, 5 × 335/30 / 12 = 4,65, gana a los 10 € de Renfe
