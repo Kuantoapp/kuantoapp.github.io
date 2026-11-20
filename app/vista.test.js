@@ -649,10 +649,11 @@ test("la ficha de pareja desglosa a cada persona y su suma es la del hogar", () 
     const resultado = calcular(ejemplo, { ...structuredClone(entrada), zonas: ZONAS_EJ });
     for (const id of ["2807913", "28065"]) {
       const zona = resultado.zonas[id];
-      const { personas } = contextoFicha(ejemplo, entrada, resultado, id);
-      assert.equal(personas.length, 2);
-      assert.ok(Math.abs(personas[0].horas + personas[1].horas - zona.horas) < 1e-9);
-      assert.ok(Math.abs(personas[0].coste + personas[1].coste - zona.transporte) < 1e-9);
+      const { porPersona, personas } = contextoFicha(ejemplo, entrada, resultado, id);
+      assert.equal(personas, entrada.hogar.personas_comparten, "`personas` sigue siendo cuántos comparten el piso");
+      assert.equal(porPersona.length, 2);
+      assert.ok(Math.abs(porPersona[0].horas + porPersona[1].horas - zona.horas) < 1e-9);
+      assert.ok(Math.abs(porPersona[0].coste + porPersona[1].coste - zona.transporte) < 1e-9);
     }
   }
 });
@@ -668,9 +669,11 @@ test("las líneas de la ficha de pareja dicen horas, coste y título de cada per
   assert.ok(ficha.some((l) => l.startsWith("Viaje al trabajo del hogar:")));
   assert.equal(fichaDe(casos[0], "28065").filter((l) => l.startsWith("Persona ")).length, 0);
   const sinCoste = { titulo: "coche", horas: 1, coste: null };
-  const lineas = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), personas: [sinCoste, { ...sinCoste, horas: null }] });
+  const lineas = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), porPersona: [sinCoste, { ...sinCoste, horas: null }] });
   assert.ok(lineas.includes("Persona 1 (coche): 1,0 h al mes, sin coste calculable (estimado)"));
   assert.ok(lineas.includes("Persona 2 (coche): sin ruta, sin coste calculable (estimado)"));
+  const compartido = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), personas: 3 });
+  assert.ok(compartido.some((l) => l.includes("compartido entre 3")), "el desglose por persona no pisa cuántos comparten el piso");
 });
 
 test("los avisos del formulario: el coche nunca sin su aviso del tráfico y la pareja, la edad única", () => {

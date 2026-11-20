@@ -188,7 +188,7 @@ export function contextoFicha(api, entrada, resultado, id) {
     personas: hogar.personas_comparten,
     titulos: zona.transporte === null ? [] : entrada.sueldos.map(titulo),
     // Con dos sueldos, el viaje de cada persona (el mismo `viaje` y escenario que suman en `zona`); con uno, la ficha no lo desglosa.
-    personas: n > 1 ? entrada.sueldos.map((s) => {
+    porPersona: n > 1 ? entrada.sueldos.map((s) => {
       const [horas, coste] = viaje(api, { viajes_dia: 2, ...s }, id, escenario);
       return { titulo: titulo(s), horas, coste };
     }) : null,
@@ -280,8 +280,8 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseAlquiler(zona, ctx),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
-    `Viaje al trabajo${ctx.personas ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
-    ...(ctx.personas ?? []).map(frasePersona),
+    `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
+    ...(ctx.porPersona ?? []).map(frasePersona),
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
     `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ctx.ipc !== null ? " (estimado)" : ""}`,
@@ -341,7 +341,7 @@ export function avisos(alquiler) {
 export function avisosEntrada(entrada) {
   return [
     ...(entrada.sueldos.some((s) => s.modo === "coche")
-      ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes."]
+      ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes. Los viajes al día no cuentan en coche: se supone ida y vuelta."]
       : []),
     ...(entrada.sueldos.length > 1 ? ["Con dos sueldos, la edad es una sola para el hogar: el Abono Joven se aplica a las dos personas o a ninguna, según la edad indicada."] : []),
   ];
