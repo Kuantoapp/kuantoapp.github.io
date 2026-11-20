@@ -328,6 +328,9 @@ def _reglas_alquiler(ruta, z):
 
 def _alquiler(o):
     p = _raiz(o, {"zonas": None})
+    # sin el umbral la app no marcaría ninguna zona imprecisa, sin fallar
+    if isinstance(o.get("meta"), dict) and "min_testigos" not in o["meta"]:
+        p.append("meta.min_testigos: obligatorio en alquiler.json")
     zonas = o.get("zonas")
     if not isinstance(zonas, dict) or not zonas:
         return p + ["zonas: se esperaba un objeto no vacío"]
