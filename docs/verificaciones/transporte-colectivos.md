@@ -61,7 +61,7 @@ Evidencia de [#163](https://github.com/yeraybc/DataMad-hackaton-2026/issues/163)
 **Estado: VERIFICADO.** No tiene precio por colectivo.
 
 - **Precio:** el RDL 17/2025 ([BOE-A-2025-26459](https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-26459)), art. 3.2.a.2.º, fija una «tarifa única 20 euros»; las preguntas frecuentes de Renfe (`https://www.renfe.com/es/es/promociones/abonos-renfe/abonos-bonificados/preguntas-frecuentes`; sin enlace ni cita, sus condiciones lo prohíben) dan el mismo importe.
-- **Familia numerosa:** de los descuentos, «se podrá aplicar únicamente el de Familia Numerosa», pero no se publica su importe.
+- **Familia numerosa:** según las preguntas frecuentes de Renfe (sin cita), de los descuentos solo se puede aplicar el de familia numerosa, y no se publica su importe.
 - **Discapacidad:** no tiene descuento.
 - **Consecuencia:** el código usa 20 € para todos los colectivos. Para familia numerosa es una cota superior.
 
