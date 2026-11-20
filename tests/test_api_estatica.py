@@ -136,6 +136,8 @@ FALLOS = [
     ("matriz mal dimensionada", "tiempos.json", "tp.0", [9], r"tp\[0\]: se esperaban 2 columnas"),
     ("p25 > p50", "alquiler.json", "zonas.28065.p25", 13.0, "p25 <= p50 <= p75"),
     ("sin_dato con percentiles", "alquiler.json", "zonas.28065.origen", "sin_dato", "origen: sin_dato si y solo si"),
+    ("testigos en una zona sin_dato", "alquiler.json", "zonas.28001.testigos", 5, "testigos: solo y siempre si origen es observado"),
+    ("observada sin testigos", "alquiler.json", "zonas.28065.testigos", None, "testigos: solo y siempre si origen es observado"),
     ("neto mayor que el bruto", "netos.json", "neto_anual.0.0", 16000.0, "mayor que el bruto 15000"),
     ("corona que falta", "tarifas.json", "escenarios.vigente_2026.general.2.B1", ..., r"faltan claves \['B1'\]"),
     ("viajes_dia que falta", "tarifas.json", "escenarios.vigente_2026.general.4", ..., r"faltan claves \['4'\]"),

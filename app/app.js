@@ -3,7 +3,7 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, leyenda, licencias, lineaDiferencia,
+  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia,
   lineaTooltip, lineasFicha, mejores, modosDisponibles, pintar, tituloEscenario, validar,
 } from "./vista.js";
 
@@ -112,6 +112,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const { alquiler, hogares, netos, tarifas, tiempos, zonas } = api;
   const metas = [zonas.meta, alquiler.meta, tiempos.meta, hogares.meta, netos.meta, tarifas.meta];
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
+  const hayImprecisas = imprecisas(alquiler).size > 0;
   const usaAlquiler = m.datos.includes("alquiler");
   const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
@@ -123,7 +124,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     fila.append(muestra, elemento("span", texto));
     cont.append(fila);
   }
-  cont.append(elemento("p", `${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
+  cont.append(elemento("p", `${hayImprecisas ? "Borde punteado: pocos contratos (impreciso). " : ""}${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
   const detalle = document.createElement("details");
   const ejemplo = avisoPrueba(metas) !== null; // datos inventados: no se atribuyen a ninguna fuente
   const notas = [
@@ -171,6 +172,9 @@ function crearMapa(zonas) {
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
     mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"] } });
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#444", "line-width": 0.6 } });
+    // Fondo blanco bajo el punteado: sin él no se ve sobre la clase más oscura.
+    mapa.addLayer({ id: "zonas-imprecisas-fondo", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#fff", "line-width": 3 } });
+    mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
     mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: ["==", ["get", "estimado"], true], paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
     mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: ["==", ["get", "referencia"], true], paint: { "line-color": "#000", "line-width": 3 } });
     pendiente = null;
@@ -222,7 +226,7 @@ async function main() {
   };
   function pintarMejores() {
     $("mejores-titulo").textContent = `Las diez mejores zonas: ${METRICAS[estado.metrica].titulo.toLowerCase()} (estimado)`;
-    const items = mejores(estado.resultado, estado.metrica, nombres).map(({ zona_id, texto }) => {
+    const items = mejores(estado.resultado, estado.metrica, nombres, imprecisas(api.alquiler)).map(({ zona_id, texto }) => {
       const boton = elemento("button", texto);
       boton.type = "button";
       boton.addEventListener("click", () => {
@@ -266,7 +270,7 @@ async function main() {
     const algunaZona = Object.values(actual.zonas)[0];
     // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
     if (v.fuente === "bruto") formulario().elements.neto.value = entrada.sueldos.length === 1 ? String(Math.round(algunaZona.neto)) : "";
-    const pintado = pintar(api.zonas, estado.resultado, estado.metrica);
+    const pintado = pintar(api.zonas, estado.resultado, estado.metrica, imprecisas(api.alquiler));
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
     const simulacion = tituloEscenario(v, api.tarifas.edad_max_joven + 1);

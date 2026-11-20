@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 from shapely import Point
 
-from mesobra import imputacion, neto, pipeline_euros, transporte
+from mesobra import alquiler, imputacion, neto, pipeline_euros, transporte
 from mesobra.api_estatica import COLECTIVOS, validar
 from mesobra.pipeline_euros import (
     alquiler_json,
@@ -53,6 +53,12 @@ def test_alquiler_ultimo_anio_sin_madrid_y_sin_dato():
     assert (z["28002"]["anio"], z["28002"]["p50"]) == (2024, 9.0)
     assert z["28003"]["origen"] == "sin_dato"
     assert z["28003"]["anio"] is None
+    assert (z["28001"]["testigos"], z["28002"]["testigos"], z["28003"]["testigos"]) == (
+        20,
+        20,
+        None,
+    )
+    assert obj["meta"]["min_testigos"] == alquiler.MIN_TESTIGOS
     assert obj["meta"]["anio_dato"] == 2024
 
 
@@ -90,6 +96,7 @@ def test_estimado_sin_m2_y_fuera_del_m2_por_defecto():
     obj = alquiler_json(zona)
     validar("alquiler.json", obj)
     assert obj["zonas"]["28002"]["m2"] is None
+    assert obj["zonas"]["28002"]["testigos"] is None
     assert m2_por_defecto(zona) == 40
 
 
