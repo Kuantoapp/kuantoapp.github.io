@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "demo", "runtimeExecutable": "uv", "runtimeArgs": ["run", "--no-project", "python", "-m", "http.server", "8000", "-d", "app"], "port": 8000 }
+  ]
+}
