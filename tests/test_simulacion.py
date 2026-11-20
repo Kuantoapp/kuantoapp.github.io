@@ -173,6 +173,12 @@ def test_lgss_salario_menos_coste_bajo_el_smi(criterio):
     assert _fallos(_fila(ingresos_bruto=smi, transporte=0.01), criterio) == []
 
 
+def test_lgss_solo_el_smi_sin_pasar_el_20_por_ciento():
+    # 18.000 ÷ 12 = 1.500; SMI ÷ 12 = 1.424,50: con 76 € queda en 1.424 (< SMI) y 76 < 300 (20 %); con 75,50, no
+    assert _fallos(_fila(ingresos_bruto=18000.0, transporte=76.0), "lgss_2015") == []
+    assert _fallos(_fila(ingresos_bruto=18000.0, transporte=75.5), "lgss_2015")
+
+
 def test_sin_transporte_ni_horas_coinciden_las_alternativas():
     for renta in RENTAS:
         a, h = (

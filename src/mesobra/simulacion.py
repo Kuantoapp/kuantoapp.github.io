@@ -61,8 +61,7 @@ Decisiones y sentido de su sesgo:
     marcado, y los criterios de #296 como sensibilidad (`simulacion_296`).
 15. VTT = 0,325 × coste laboral total por hora de la Comunidad de Madrid (INE, ETCL4391, media de 2025T3–2026T2:
     30,0175 €/h) = 9,76 €/h. 0,325 es el punto medio de la banda 0,25 a 0,40 (7,50 a 12,01 €/h), no un valor de la
-    fuente: CE CBA Guide 2014, p. 90, y Vademécum 2021-2027, p. 55 (HEATCO, 30 a 42 %, según la nota 90 de la CBA
-    Guide). El coste laboral
+    fuente: CE CBA Guide 2014, p. 91 y nota 90 (HEATCO, 30 a 42 %), y Vademécum 2021-2027, p. 55. El coste laboral
     total incluye la parte del empleador (cotizaciones), y el VTT se compara con el neto del hogar: el numerador va
     inflado frente a un valor del tiempo sobre el salario neto, así que sobreestima el esfuerzo y los elegibles de
     `horas_viaje`. Madrid y no la media nacional (ETCL4443, 25,8225 €/h → 8,39 €/h) porque el producto se ofrece en
@@ -94,11 +93,12 @@ Decisiones y sentido de su sesgo:
 21. Sensibilidad parcial: regla histórica de colocación adecuada del art. 301 LGSS (RDLeg 8/2015, redacción original;
     la sustituyó el 02-03-2023 la Ley 3/2023, que no fija criterios de desplazamiento): ida y vuelta mayor del 25 % de
     la jornada diaria (8 h), coste del desplazamiento mayor del 20 % del salario mensual, o salario menos ese coste
-    por debajo del SMI (de 2026). Texto original leído en el BOE el 20-11-2026 (BOE-A-2015-11724, en vigor del
+    por debajo del SMI (la norma remite al SMI sin cuantía: se toma el del año simulado, 17.094 €, RD 126/2026,
+    art. 3.1, BOE-A-2026-3815). Texto original leído en el BOE el 20-11-2026 (BOE-A-2015-11724, en vigor del
     02-01-2016 al 01-03-2023, https://www.boe.es/buscar/doc.php?id=BOE-A-2015-11724; lo sustituye la DF 4.11 de la
     Ley 3/2023, BOE-A-2023-5365). La norma pide el tiempo mínimo y se usa el mediano de 7:30 a 8:30, que es mayor:
-    sobreestima los desplazamientos largos. No aplica el radio de 30 km (fuera de él tampoco es adecuada: subestima
-    los largos) ni el alojamiento. «Salario mensual» = bruto del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14
+    sobreestima los desplazamientos largos. No aplica el radio de 30 km (fuera de él no rige la presunción de
+    adecuación; aplicar las excepciones sin radio subestima los largos) ni el alojamiento. «Salario mensual» = bruto del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14
     (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es el de un solo trabajador, T ÷ n.º de sueldos
     (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la tabla de sensibilidades, no al contrato.
 22. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
@@ -147,7 +147,7 @@ UMBRAL_296 = 0.30  # corte de `sobrecarga_30` (#100), el de #296
 # por hora, media de 2025T3 a 2026T2) y ETCL4443 (nacional, mismo periodo).
 COSTE_LABORAL_HORA_MADRID = 30.0175
 COSTE_LABORAL_HORA_NACIONAL = 25.8225
-# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 90 y Vademécum 2021-2027 p. 55 (banda 0,25 a 0,40).
+# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 91 (nota 90) y Vademécum 2021-2027 p. 55 (banda 0,25 a 0,40).
 PROPORCION_COMMUTING = 0.325
 BANDA_PROPORCION = (0.25, 0.40)
 VTT = PROPORCION_COMMUTING * COSTE_LABORAL_HORA_MADRID  # €/h
@@ -362,8 +362,8 @@ def tabla_pares(
 ) -> pd.DataFrame:
     """Una fila por (variante, zona con alquiler, destino de zona) con alquiler, transporte, neto, horas, minutos,
     `horas_extra` (H), `imputado` y el peso `w` (0 si el municipio no tiene flujo a ese destino). `api` es la de
-    `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d (no 0: la diagonal d → d es una
-    mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin transporte, horas o neto."""
+    `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d, sin los pares imputados (no 0: la
+    diagonal d → d es una mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin transporte, horas o neto."""
     zona_mun = {
         f["properties"]["zona_id"]: f["properties"]["municipio_id"]
         for f in api["zonas"]["features"]
