@@ -84,9 +84,9 @@ Decisiones y sentido de su sesgo:
     imputados. Como `calcular` da con ello transporte y horas, no hace falta código de tarifas aparte. Los pares con
     w = 0 se quedan sin tiempo.
 19. ref(d) = la zona con menos minutos observados hacia d, sin los imputados (el mínimo observado, no 0: la diagonal
-    d → d es una mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los destinos cuya ref no
-    es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible: sobreestima H si
-    nadie puede vivir allí. H = 0 para la propia ref.
+    d → d es una mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los
+    destinos cuya ref no es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible:
+    sobreestima H si nadie puede vivir allí. H = 0 para la propia ref.
 20. `elegible` del municipio = pct ≥ 50 % (`PCT_MINIMO`), la mayoría de sus ocupados; es un convenio de lectura, no
     de la norma. El municipio es la mediana de sus zonas: en Madrid pesa 1 cada distrito, sin ponderar por población,
     y `pct_mediano` de los logs es la mediana entre municipios, que pesan 1 cada uno.
@@ -98,9 +98,10 @@ Decisiones y sentido de su sesgo:
     02-01-2016 al 01-03-2023, https://www.boe.es/buscar/doc.php?id=BOE-A-2015-11724; lo sustituye la DF 4.11 de la
     Ley 3/2023, BOE-A-2023-5365). La norma pide el tiempo mínimo y se usa el mediano de 7:30 a 8:30, que es mayor:
     sobreestima los desplazamientos largos. No aplica el radio de 30 km (fuera de él no rige la presunción de
-    adecuación; aplicar las excepciones sin radio subestima los largos) ni el alojamiento. «Salario mensual» = bruto del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14
-    (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es el de un solo trabajador, T ÷ n.º de sueldos
-    (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la tabla de sensibilidades, no al contrato.
+    adecuación; aplicar las excepciones sin radio subestima los largos) ni el alojamiento. «Salario mensual» = bruto
+    del primer sueldo ÷ 12 (`lgss_2015`); con ÷ 14 (`lgss_2015_14`) el umbral baja (SMI, de 285 a 244 €). El coste es
+    el de un solo trabajador, T ÷ n.º de sueldos (la pareja, con 5/2 días, subestima el de quien va 5 días). Va a la
+    tabla de sensibilidades, no al contrato.
 22. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
     transporte barato). El de 23 años usa el Abono Joven (hasta 25 años), tarifa plana por corona.
 23. Horas trabajadas al mes = `semanas_mes` × 5 × 8 por sueldo (151,3 h; solo en `simulacion_296`). Pares sin alquiler
@@ -147,7 +148,8 @@ UMBRAL_296 = 0.30  # corte de `sobrecarga_30` (#100), el de #296
 # por hora, media de 2025T3 a 2026T2) y ETCL4443 (nacional, mismo periodo).
 COSTE_LABORAL_HORA_MADRID = 30.0175
 COSTE_LABORAL_HORA_NACIONAL = 25.8225
-# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 91 (nota 90) y Vademécum 2021-2027 p. 55 (banda 0,25 a 0,40).
+# VTT como proporción del coste laboral: CE CBA Guide 2014 p. 91 (nota 90) y Vademécum 2021-2027 p. 55
+# (banda 0,25 a 0,40).
 PROPORCION_COMMUTING = 0.325
 BANDA_PROPORCION = (0.25, 0.40)
 VTT = PROPORCION_COMMUTING * COSTE_LABORAL_HORA_MADRID  # €/h
@@ -363,7 +365,8 @@ def tabla_pares(
     """Una fila por (variante, zona con alquiler, destino de zona) con alquiler, transporte, neto, horas, minutos,
     `horas_extra` (H), `imputado` y el peso `w` (0 si el municipio no tiene flujo a ese destino). `api` es la de
     `imputar_tiempos`. ref(d) = la zona con menos minutos observados hacia d, sin los pares imputados (no 0: la
-    diagonal d → d es una mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin transporte, horas o neto."""
+    diagonal d → d es una mediana intrazona), con desempate por `zona_id`. Falla si un par con w > 0 queda sin
+    transporte, horas o neto."""
     zona_mun = {
         f["properties"]["zona_id"]: f["properties"]["municipio_id"]
         for f in api["zonas"]["features"]
