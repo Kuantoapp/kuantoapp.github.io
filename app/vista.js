@@ -1,6 +1,6 @@
 // Lógica de la interfaz sin DOM ni MapLibre: validación del formulario, escalas de color, leyenda y textos.
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
-import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona, tramoCesta } from "./calculo.js";
+import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona, tramoCesta, viaje } from "./calculo.js";
 
 // Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
 export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
@@ -187,6 +187,11 @@ export function contextoFicha(api, entrada, resultado, id) {
     m2: hogar.m2,
     personas: hogar.personas_comparten,
     titulos: zona.transporte === null ? [] : entrada.sueldos.map(titulo),
+    // Con dos sueldos, el viaje de cada persona (el mismo `viaje` y escenario que suman en `zona`); con uno, la ficha no lo desglosa.
+    porPersona: n > 1 ? entrada.sueldos.map((s) => {
+      const [horas, coste] = viaje(api, { viajes_dia: 2, ...s }, id, escenario);
+      return { titulo: titulo(s), horas, coste };
+    }) : null,
     sueldos: n,
     netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
     salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
@@ -208,6 +213,12 @@ function fraseCesta(zona, ctx) {
   const pct = Math.round(Math.abs(factor - 1) * 100);
   const frente = pct === 0 ? "lo mismo que la media" : `un ${pct} % ${factor < 1 ? "menos" : "más"} que la media`;
   return `Cesta básica: ${euros.format(zona.cesta)} €/mes (simulación, estimado: la comida, con lo que gastan los hogares de tu tramo de ingresos (${conCentimos.format(zona.neto)} € netos al mes), ${rango}: ${frente}, sobre el gasto medio de Madrid de 2025 con el IPC hasta ${mesIpc(ctx.ipcHasta)}; fuente: INE, EPF de España 2025. La de referencia es la media: quien gana poco puede gastar menos en comida porque no le llega; incluye internet y móvil)`;
+}
+
+function frasePersona({ titulo, horas, coste }, i) {
+  const h = horas === null ? "sin ruta" : `${unDecimal.format(horas)} h al mes`;
+  const c = coste === null ? "sin coste calculable" : `${conCentimos.format(coste)} € al mes de transporte`;
+  return `Persona ${i + 1} (${titulo}): ${h}, ${c} (estimado)`;
 }
 
 function frasePrecio(zona, ref) {
@@ -269,7 +280,8 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseAlquiler(zona, ctx),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
-    `Viaje al trabajo: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
+    `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
+    ...(ctx.porPersona ?? []).map(frasePersona),
     zona.etiqueta === null ? frasePrecio(zona, ctx.ref) : CATEGORIAS[zona.etiqueta].texto,
     `${quien} ${unDecimal.format(ctx.salarioHora)} € netos la hora (estimado, jornada de ${JORNADA_SEMANA} h a la semana)`,
     `El alquiler se lleva el ${euros.format(zona.esfuerzo * 100)} % del neto${Math.round(zona.esfuerzo * 100) > ESFUERZO_RECOMENDADO * 100 ? `, más del ${ESFUERZO_RECOMENDADO * 100} % que esta herramienta toma como referencia` : ""}${ctx.subida > 0 ? " (simulación, estimado)" : ctx.ipc !== null ? " (estimado)" : ""}`,
@@ -322,6 +334,19 @@ export function avisos(alquiler) {
   return alquiler.meta.ejemplo === true ? lineas : [...lineas, fuente];
 }
 
+/**
+ * Avisos que dependen de lo que se ha escrito en el formulario (`entrada` ya validada), no de los datos:
+ * el coche y la edad única de la pareja.
+ */
+export function avisosEntrada(entrada) {
+  return [
+    ...(entrada.sueldos.some((s) => s.modo === "coche")
+      ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes. Los viajes al día no cuentan en coche: se supone ida y vuelta."]
+      : []),
+    ...(entrada.sueldos.length > 1 ? ["Con dos sueldos, la edad es una sola para el hogar: el Abono Joven se aplica a las dos personas o a ninguna, según la edad indicada."] : []),
+  ];
+}
+
 // --- Validación del formulario -----------------------------------------------------------------
 // shortcut: 16 y 64 repiten EDAD_MIN y EDAD_MAX de calculo.js (no se exportan); cuando se exporten, importarlos.
 const EDAD = [16, 64];
@@ -334,12 +359,15 @@ const importe = (t) => numero(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(sinEspacios(t)) 
 const entero = (t) => (/^-?\d+$/.test(sinEspacios(t)) ? Number(sinEspacios(t)) : null);
 const miles = formateador(0);
 
-/** Destino por nombre (sin mayúsculas ni tildes) o por id; `null` si no existe o hay dos con ese nombre. */
+/** Modos de viaje que dan los datos: el transporte público siempre; el coche solo si `tiempos` trae sus tres tablas. */
+export const modosDisponibles = (tiempos) => ["tp", ...(["coche", "km_coche", "coste_coche"].every((k) => tiempos[k] != null) ? ["coche"] : [])];
+
+/** Destino (zona o polo) por nombre (sin mayúsculas ni tildes) o por id; `null` si no existe o hay dos con ese nombre. */
 export function resolverDestino(texto, destinos) {
   const limpio = (s) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
   const t = limpio(String(texto ?? ""));
   if (t === "") return null;
-  const encontrados = destinos.filter((d) => d.tipo === "zona" && (d.destino_id === t || limpio(d.nombre) === t));
+  const encontrados = destinos.filter((d) => ["zona", "polo"].includes(d.tipo) && (d.destino_id === t || limpio(d.nombre) === t));
   return encontrados.length === 1 ? encontrados[0].destino_id : null;
 }
 
@@ -361,45 +389,52 @@ export function validar(v, api) {
   const [brutoMin, brutoMax] = [brutos[0], brutos.at(-1)];
   const maxHijos = Math.max(...configuraciones.map((c) => c.hijos));
 
-  const pagas = entero(v.pagas);
-  if (![12, 14].includes(pagas)) falla("pagas", "Las pagas son 12 o 14");
-  const sueldo = {};
-  if (v.fuente === "bruto") {
-    const bruto = importe(v.bruto);
-    if (bruto === null) falla("bruto", "El sueldo bruto anual debe ser un número, sin letras ni signos");
-    else if (bruto < brutoMin || bruto > brutoMax) {
-      falla("bruto", `Para sueldos fuera de ${miles.format(brutoMin)}–${miles.format(brutoMax)} € brutos al año, introduce tu neto mensual medio`);
-    } else sueldo.bruto = bruto;
-  } else if (v.fuente === "neto") {
-    // Neto mensual medio = neto anual ÷ 12 (`neto_mes` en la entrada de `calcular`). No se convierte desde la nómina: con 14 pagas
-    // la paga extra ya cotiza prorrateada, así que nómina × 14 ÷ 12 no da el neto anual.
-    const neto = importe(v.neto);
-    const tope = brutoMax / 12; // el neto medio mensual no puede pasar del bruto mensual máximo
-    if (neto === null || neto <= 0 || neto > tope) {
-      falla("neto", `El neto mensual medio debe ser un número mayor que 0 y de como máximo ${miles.format(tope)} €`);
-    } else sueldo.neto_mes = neto;
-  } else falla("fuente", "Elige si das el bruto anual o el neto");
+  const modos = modosDisponibles(api.tiempos);
+  // `n` es el sufijo de los campos de una persona: «» la primera, «2» la segunda (solo con el perfil de pareja).
+  const persona = (n) => {
+    const c = (campo) => `${campo}${n}`;
+    const sueldo = {};
+    const pagas = entero(v[c("pagas")]);
+    if (![12, 14].includes(pagas)) falla(c("pagas"), "Las pagas son 12 o 14");
+    if (v[c("fuente")] === "bruto") {
+      const bruto = importe(v[c("bruto")]);
+      if (bruto === null) falla(c("bruto"), "El sueldo bruto anual debe ser un número, sin letras ni signos");
+      else if (bruto < brutoMin || bruto > brutoMax) {
+        falla(c("bruto"), `Para sueldos fuera de ${miles.format(brutoMin)}–${miles.format(brutoMax)} € brutos al año, introduce tu neto mensual medio`);
+      } else sueldo.bruto = bruto;
+    } else if (v[c("fuente")] === "neto") {
+      // Neto mensual medio = neto anual ÷ 12 (`neto_mes` en la entrada de `calcular`). No se convierte desde la nómina: con 14 pagas
+      // la paga extra ya cotiza prorrateada, así que nómina × 14 ÷ 12 no da el neto anual.
+      const neto = importe(v[c("neto")]);
+      const tope = brutoMax / 12; // el neto medio mensual no puede pasar del bruto mensual máximo
+      if (neto === null || neto <= 0 || neto > tope) {
+        falla(c("neto"), `El neto mensual medio debe ser un número mayor que 0 y de como máximo ${miles.format(tope)} €`);
+      } else sueldo.neto_mes = neto;
+    } else falla(c("fuente"), "Elige si das el bruto anual o el neto");
+    const destino = resolverDestino(v[c("destino")], api.tiempos.destinos);
+    if (destino === null) falla(c("destino"), "Elige un lugar de trabajo de la lista");
+    const dias = enRango(c("dias"), v[c("dias")], [1, 5], "Los días presenciales van de 1 a 5");
+    const viajes = entero(v[c("viajes")]);
+    if (!api.tarifas.viajes_dia.includes(viajes)) falla(c("viajes"), `Los viajes al día son ${api.tarifas.viajes_dia.join(" o ")}`);
+    if (!modos.includes(v[c("modo")])) falla(c("modo"), "Elige uno de los modos de la lista");
+    return { ...sueldo, destino, dias, modo: v[c("modo")], viajes_dia: viajes };
+  };
+  const pareja = v.perfil === "pareja";
+  const sueldos = [persona(""), ...(pareja ? [persona("2")] : [])];
 
   if (typeof v.perfil !== "string" || !Object.hasOwn(api.hogares.perfiles, v.perfil)) falla("perfil", "Elige uno de los perfiles de hogar");
-  const adultos = enRango("adultos", v.adultos, [1, 2]);
+  const adultos = enRango("adultos", v.adultos, pareja ? [2, 2] : [1, 2], pareja ? "Con dos sueldos hay dos adultos" : undefined);
   const hijos = enRango("hijos", v.hijos, [0, maxHijos], `Hasta ${maxHijos} hijos`);
   const edad = enRango("edad", v.edad, EDAD, `La edad va de ${EDAD[0]} a ${EDAD[1]} años`);
   const personas = enRango("personas", v.personas, PERSONAS, `Cuenta los hogares del piso, el tuyo incluido: de ${PERSONAS[0]} (no compartes piso) a ${PERSONAS[1]}`);
   const m2 = numero(v.m2);
   if (m2 === null || m2 < M2[0] || m2 > M2[1]) falla("m2", `La vivienda va de ${M2[0]} a ${M2[1]} m²`);
 
-  const destino = resolverDestino(v.destino, api.tiempos.destinos);
-  if (destino === null) falla("destino", "Elige un lugar de trabajo de la lista");
-  const dias = enRango("dias", v.dias, [1, 5], "Los días presenciales van de 1 a 5");
-  const viajes = entero(v.viajes);
-  if (!api.tarifas.viajes_dia.includes(viajes)) falla("viajes", `Los viajes al día son ${api.tarifas.viajes_dia.join(" o ")}`);
-  if (v.modo !== "tp") falla("modo", "Por ahora solo hay transporte público");
   const ref = sinEspacios(v.ref);
   if (ref !== "" && !Object.hasOwn(api.alquiler.zonas, ref)) falla("ref", "Elige una zona de referencia de la lista");
 
   if (errores.length > 0) return { errores };
   const hogar = { perfil: v.perfil, adultos, hijos, edad, personas_comparten: personas, m2 };
-  const sueldos = [{ ...sueldo, destino, dias, modo: "tp", viajes_dia: viajes }];
   return { entrada: { hogar, sueldos, ...(ref === "" ? {} : { ref }) } };
 }
 
@@ -472,8 +507,10 @@ export function estadoDeEnlace(texto, porDefecto, api) {
   }
   if (desconocidos > 0) avisos.push(`El enlace trae ${desconocidos} ${desconocidos === 1 ? "dato desconocido" : "datos desconocidos"}: se ignoran.`);
   // El importe que no corresponde a `fuente` no se valida ni se usa: vuelve a su valor por defecto en vez de colarse en el formulario.
-  const inactivo = valores.fuente === "bruto" ? "neto" : valores.fuente === "neto" ? "bruto" : null;
-  if (inactivo !== null) valores[inactivo] = porDefecto[inactivo];
+  for (const n of ["", "2"]) {
+    const inactivo = valores[`fuente${n}`] === "bruto" ? "neto" : valores[`fuente${n}`] === "neto" ? "bruto" : null;
+    if (inactivo !== null) valores[inactivo + n] = porDefecto[inactivo + n];
+  }
   const malos = (v) => [
     ...(validar(v, api).errores ?? []),
     ...erroresEscenario(v, api),
