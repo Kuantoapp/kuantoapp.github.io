@@ -15,11 +15,11 @@ from matplotlib.colors import BoundaryNorm, ListedColormap
 from matplotlib.patches import Patch
 
 from mesobra import esfuerzo as esf
+from mesobra.alquiler import MIN_TESTIGOS
 from mesobra.zonas import MADRID
 
 ZONAS = Path(__file__).resolve().parents[2] / "app/datos/zonas.geojson"
 CRS = 25830  # UTM 30N: se dibuja en metros, sin deformar la Comunidad
-MIN_TESTIGOS = 50  # con menos contratos declarados el valor de la zona es impreciso
 FUENTE_MAPAS = "Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia."
 FUENTE_BONO = (
     "Fuente: Bono Alquiler Joven 2022 (Comunidad de Madrid), Censo anual (INE), SERPAVI (MIVAU) y ADRH (INE), "

@@ -237,7 +237,9 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             else float(b["brecha_pureza"]),
         }
         if zid not in ultimo.index:
-            zonas[zid] |= dict.fromkeys(["anio", "p25", "p50", "p75", "m2", "ic"])
+            zonas[zid] |= dict.fromkeys(
+                ["anio", "p25", "p50", "p75", "m2", "testigos", "ic"]
+            )
             zonas[zid] |= {"factor_ipc": 1.0, "origen": "sin_dato"}
             continue
         f = ultimo.loc[zid]
@@ -247,6 +249,7 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "p50": float(f["eur_m2_p50"]),
             "p75": float(f["eur_m2_p75"]),
             "m2": None if pd.isna(f["m2_p50"]) else float(f["m2_p50"]),
+            "testigos": int(f["testigos"]) if f["origen"] == "observado" else None,
             "factor_ipc": float(f["factor_ipc"]),
             "origen": f["origen"],
             "ic": [float(f["ic_inf"]), float(f["ic_sup"])]
@@ -270,7 +273,10 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
         "Fuente de los datos: Comunidad de Madrid (IPC de alquiler 1934665, actualizado el 2026-11-05, "
         "usado como control). "
         + ORIGEN_SERPAVI
-        + " factor_brecha (estimado) lleva ese precio al de los "
+        + " testigos son los inmuebles de vivienda colectiva con alquiler declarado del año de la zona "
+        "(solo en las de origen observado); con menos de min_testigos la mediana de la zona es imprecisa, "
+        "porque unos pocos alquileres la mueven (fuente: SERPAVI, MIVAU)."
+        " factor_brecha (estimado) lleva ese precio al de los "
         "contratos formalizados en 2024: €/m² de los nuevos contratos ÷ €/m² de todos, con las medias de "
         "alquiler mensual y de m² de la Estadística de viviendas declaradas en el IRPF 2024 (misma base "
         "fiscal que el SERPAVI, pero medias y no medianas). brecha_ambito dice de dónde sale: municipio "
@@ -299,7 +305,10 @@ def alquiler_json(zona: pd.DataFrame) -> dict:
             "medianos observados. Sin cuantía mensual, así que esas zonas no tienen esfuerzo."
         )
         fuentes.append(imputacion.FUENTE_ADRH)
-    meta = _meta(anio, fuentes, nota) | {"ipc_hasta": mes}
+    meta = _meta(anio, fuentes, nota) | {
+        "ipc_hasta": mes,
+        "min_testigos": alquiler.MIN_TESTIGOS,
+    }
     return {"meta": meta, "zonas": zonas}
 
 

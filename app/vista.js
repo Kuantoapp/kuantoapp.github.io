@@ -111,8 +111,14 @@ export function categoria(zona, metrica) {
   return sinAlquiler && sinRuta ? "ambos" : sinAlquiler ? "alquiler" : "ruta";
 }
 
-/** Pone `color`, `valor`, `categoria` (texto de por qué falta), `referencia` y `estimado` en cada zona. */
-export function pintar(zonas, resultado, metrica) {
+/** Zonas con menos testigos del SERPAVI que `meta.min_testigos`: su mediana es imprecisa. Único sitio de la comparación. */
+export function imprecisas(alquiler) {
+  const { min_testigos: min } = alquiler.meta;
+  return new Set(Object.entries(alquiler.zonas).filter(([, z]) => z.testigos != null && z.testigos < min).map(([id]) => id));
+}
+
+/** Pone `color`, `valor`, `categoria` (texto de por qué falta), `referencia`, `estimado` e `impreciso` (si está en `pocas`) en cada zona. */
+export function pintar(zonas, resultado, metrica, pocas = new Set()) {
   if (!Array.isArray(zonas?.features) || typeof resultado?.zonas !== "object" || resultado.zonas === null) {
     throw new Error("Formato inesperado: faltan zonas.features o resultado.zonas");
   }
@@ -123,6 +129,7 @@ export function pintar(zonas, resultado, metrica) {
     return zona;
   };
   const escala = METRICAS[metrica].divergente ? escalaDivergente : escalaSecuencial;
+  const usaAlquiler = METRICAS[metrica].datos.includes("alquiler");
   const clases = escala(zonas.features.map((f) => de(f)[metrica]));
   const usadas = new Set();
   const features = zonas.features.map((f) => {
@@ -139,6 +146,7 @@ export function pintar(zonas, resultado, metrica) {
         color: clave === null ? colorPara(valor, clases) : CATEGORIAS[clave].color,
         referencia: zona.etiqueta === REFERENCIA,
         estimado: zona.origen === "estimado",
+        impreciso: usaAlquiler && pocas.has(f.properties.zona_id), // en horas el alquiler no cuenta
       },
     };
   });
@@ -177,6 +185,9 @@ export function contextoFicha(api, entrada, resultado, id) {
   const n = entrada.sueldos.length;
   return {
     anio: dato.anio,
+    testigos: dato.testigos,
+    minTestigos: api.alquiler.meta.min_testigos,
+    impreciso: imprecisas(api.alquiler).has(id),
     ipc: dato.factor_ipc === 1 ? null : mesIpc(api.alquiler.meta.ipc_hasta),
     ipcHasta: api.hogares.meta.ipc_hasta,
     tramo: escenario.cesta === "tramo" ? tramoDe(api.hogares.cesta_tramos, zona.neto) : null,
@@ -278,6 +289,7 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
     fraseBanda(zona.sobra_banda),
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
+    ...(ctx.impreciso ? [`Impreciso: pocos alquileres declarados (${ctx.testigos} en ${ctx.anio}, menos de ${ctx.minTestigos}): unos pocos mueven la cifra (fuente: SERPAVI, MIVAU)`] : []),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
     `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
@@ -294,15 +306,16 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
  * Las diez mejores zonas según la métrica: más € por hora, más sobrante o menos horas. En el precio de la hora solo
  * entran las zonas con más horas que la referencia: con menos, el signo se invierte y no se pueden ordenar juntas.
  */
-export function mejores(resultado, metrica, nombres) {
+export function mejores(resultado, metrica, nombres, pocas = new Set()) {
   const ref = resultado.ref === null ? null : resultado.zonas[resultado.ref];
   const f = formateador(METRICAS[metrica].decimales);
   const signo = metrica === "horas" ? 1 : -1;
+  const usaAlquiler = METRICAS[metrica].datos.includes("alquiler");
   return Object.entries(resultado.zonas)
     .filter(([, z]) => esNumero(z[metrica]) && (metrica !== "precio_hora" || z.horas > ref.horas))
     .sort(([, a], [, b]) => signo * (a[metrica] - b[metrica]))
     .slice(0, MEJORES)
-    .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}` }));
+    .map(([id, z]) => ({ zona_id: id, texto: `${nombres[id]}: ${f.format(z[metrica])} ${METRICAS[metrica].corta}${usaAlquiler && pocas.has(id) ? " (impreciso: pocos alquileres declarados)" : ""}` }));
 }
 
 /** Aviso de que los ficheros cargados son de ejemplo, según `meta.ejemplo` (`null` si son datos reales). */
@@ -325,6 +338,8 @@ export function avisos(alquiler) {
   const estimadas = cuantas("estimado");
   const zonasN = (n) => `${n} ${n === 1 ? "zona" : "zonas"}`;
   if (estimadas > 0) lineas.push(`${zonasN(estimadas)} con el alquiler estimado (borde discontinuo): su ficha da el intervalo de la estimación.`);
+  const pocas = imprecisas(alquiler).size;
+  if (pocas > 0) lineas.push(`${zonasN(pocas)} con pocos alquileres declarados (menos de ${alquiler.meta.min_testigos}): borde punteado; su ficha lo avisa.`);
   const sinDato = cuantas("sin_dato");
   if (sinDato > 0) lineas.push(`${zonasN(sinDato)} sin dato publicado de alquiler: en gris y sin cifra.`);
   // Datos de ejemplo: sin fuente, para no atribuir datos inventados a quien publica los reales.

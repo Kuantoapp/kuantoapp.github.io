@@ -147,6 +147,7 @@ META = {
     "nota_ruta": "texto",
     "fuentes_ruta": None,
     "ipc_hasta": "mes",
+    "min_testigos": ("entero", 1, 1000),
     "ejemplo": "booleano",  # solo en las fixtures de tests/: la app avisa de que no son datos reales
 }
 FUENTE = {"nombre": "texto", "url": "url", "licencia": "texto"}
@@ -162,7 +163,7 @@ def _raiz(o, campos, opcionales=()):
         "meta",
         meta,
         META,
-        ("nota", "nota_ruta", "fuentes_ruta", "ipc_hasta", "ejemplo"),
+        ("nota", "nota_ruta", "fuentes_ruta", "ipc_hasta", "min_testigos", "ejemplo"),
     )
     p += _tabla("meta.fuentes", fuentes, FUENTE, ("nombre",))
     if isinstance(meta, dict) and "fuentes_ruta" in meta:
@@ -288,6 +289,7 @@ def _tiempos(o):
 # fmt: off
 ALQUILER = {
     "anio": ("entero?", 2000, 2100), "p25": PCT, "p50": PCT, "p75": PCT, "m2": POS_N,
+    "testigos": ("entero?", 1, 10_000_000),
     "factor_ipc": ("decimal", 0.5, 2), "ic": None,
     "origen": ["observado", "estimado", "sin_dato"],
     "factor_brecha": ("decimal", 0.5, 2),
@@ -316,6 +318,8 @@ def _reglas_alquiler(ruta, z):
     p = []
     if (z["origen"] == "sin_dato") != all(x is None for x in pct):
         p.append(f"{ruta}.origen: sin_dato si y solo si los tres percentiles son null")
+    if (z["testigos"] is None) == (z["origen"] == "observado"):
+        p.append(f"{ruta}.testigos: solo y siempre si origen es observado")
     dados = [x for x in pct if x is not None]
     if dados != sorted(dados):
         p.append(f"{ruta}: se exige p25 <= p50 <= p75")
@@ -324,6 +328,9 @@ def _reglas_alquiler(ruta, z):
 
 def _alquiler(o):
     p = _raiz(o, {"zonas": None})
+    # sin el umbral la app no marcaría ninguna zona imprecisa, sin fallar
+    if isinstance(o.get("meta"), dict) and "min_testigos" not in o["meta"]:
+        p.append("meta.min_testigos: obligatorio en alquiler.json")
     zonas = o.get("zonas")
     if not isinstance(zonas, dict) or not zonas:
         return p + ["zonas: se esperaba un objeto no vacío"]
