@@ -16,7 +16,9 @@ ocupados sobre todo de la afiliación a la Seguridad Social (el 94,2 % de los de
 abril de 2026): el lugar de trabajo puede ser la sede de la empresa y no el centro real (sin comprobar).
 """
 
+import json
 import logging
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
@@ -28,6 +30,9 @@ RAW = (
     calculo.RAIZ / "data/raw/ine_censo_anual_matriz_residencia_trabajo_2026-11-19.xlsb"
 )
 PROCESSED = calculo.RAIZ / "data/processed/matriz_trabajo_2023.csv"
+DISTRITOS = calculo.RAIZ / "data/raw/cm_colectivo_empresarial_distrito_2026-11-19.csv"
+ZONAS = calculo.RAIZ / "app/datos/zonas.geojson"
+MUNICIPIO_MADRID = "28079"
 HOJA = "C23"
 MADRID = "28"
 MUNICIPIOS = 179  # municipios de la Comunidad de Madrid
@@ -79,6 +84,73 @@ def leer_matriz(ruta: Path = RAW) -> pd.DataFrame:
             f"la matriz trae {n} municipios de residencia de la Comunidad, no {MUNICIPIOS}"
         )
     return df
+
+
+def _clave(nombre: str) -> str:
+    """Nombre sin tildes, en minúsculas y sin guiones: «Fuencarral - El Pardo» = «Fuencarral-El Pardo»."""
+    sin = unicodedata.normalize("NFD", nombre.lower().replace("-", " "))
+    return " ".join("".join(c for c in sin if not unicodedata.combining(c)).split())
+
+
+def leer_cuotas_distritos(ruta: Path = DISTRITOS, zonas: Path = ZONAS) -> pd.Series:
+    """Cuota de los ocupados de 2023 de cada distrito de Madrid (`zona_id` 2807901…) en el Colectivo Empresarial
+    (Total, sin «no consta distrito»). Falla si no salen los 21 distritos de `zonas`."""
+    props = [f["properties"] for f in json.loads(zonas.read_text("utf-8"))["features"]]
+    ids = {
+        _clave(p["nombre"]): p["zona_id"]
+        for p in props
+        if p["municipio_id"] == MUNICIPIO_MADRID and p["tipo"] == "distrito"
+    }
+    df = pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
+    df = df[
+        (df["Medida"] == "Ocupados")
+        & (df["Estrato Empleo"] == "Total")
+        & (df["Año"] == "2023")
+    ]
+    nombre = df["Concepto"].str.extract(
+        r"en el distrito de (.+) del municipio de Madrid$"
+    )[0]
+    if nombre.isna().any():
+        raise ValueError(
+            "el Colectivo Empresarial trae conceptos sin distrito de Madrid"
+        )
+    ocupados = pd.to_numeric(df["Valor"].set_axis(nombre.map(_clave)), errors="raise")
+    ocupados = ocupados.drop(_clave("las que no consta distrito"), errors="ignore")
+    if sorted(ocupados.index) != sorted(ids) or ocupados.index.duplicated().any():
+        raise ValueError(
+            f"no salen los {len(ids)} distritos de Madrid: {sorted(ocupados.index)}"
+        )
+    cuotas = ocupados.rename(index=ids)
+    return (cuotas / cuotas.sum()).sort_index()
+
+
+def ocupados_observados(m: pd.DataFrame) -> pd.Series:
+    """Por origen, ocupados que trabajan en la Comunidad con municipio conocido: la base de los pesos."""
+    dentro = m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
+    return dentro.groupby("origen")["ocupados"].sum()
+
+
+def pesos(m: pd.DataFrame, cuotas: pd.Series) -> tuple[pd.DataFrame, pd.Series]:
+    """(w, excluida): `w` con columnas `origen`, `destino` (código de municipio, o `zona_id` de distrito si es Madrid)
+    y `w` = ocupados ÷ total de los que trabajan en la Comunidad con municipio conocido, que suma 1 por origen;
+    `excluida`, por origen, la fracción de sus ocupados que queda fuera (otras provincias o «No consta»).
+    Las celdas suprimidas no se imputan: no se distinguen de los ceros."""
+    dentro = m[(m["prov_destino"] == MADRID) & m["destino"].notna()]
+    dentro = dentro.groupby(["origen", "destino"], as_index=False)["ocupados"].sum()
+    por_origen = dentro.groupby("origen")["ocupados"].sum()
+    excluida = (
+        1
+        - por_origen.reindex(m["origen"].unique(), fill_value=0)
+        / m.groupby("origen")["ocupados"].sum()
+    )
+    dentro["w"] = dentro["ocupados"] / dentro["origen"].map(por_origen)
+    madrid = dentro["destino"] == MUNICIPIO_MADRID
+    reparto = dentro[madrid].merge(
+        cuotas.rename("cuota").rename_axis("zona").reset_index(), how="cross"
+    )
+    reparto = reparto.assign(destino=reparto["zona"], w=reparto["w"] * reparto["cuota"])
+    w = pd.concat([dentro[~madrid], reparto], ignore_index=True)
+    return w[["origen", "destino", "w"]], excluida.rename("excluida")
 
 
 def main() -> None:
