@@ -183,6 +183,7 @@ def matriz_r5py(
     # sin ruta en 120 min no hay km: el par queda nulo en las dos columnas
     tabla["km"] = km.reindex(clave).to_numpy()
     tabla["km"] = tabla["km"].where(tabla["minutos"].notna())
+    tabla["minutos"] = _minimo_interno(tabla, polos)
     tabla = tabla.assign(modo="coche", estimado=True)[
         list(contratos.CONTRATOS["tiempos"]["columnas"])
     ].astype(contratos.dtypes("tiempos"))
@@ -190,13 +191,30 @@ def matriz_r5py(
     return tabla
 
 
+def _es_interno(tabla: pd.DataFrame, polos: pd.DataFrame) -> pd.Series:
+    """Pares de una zona consigo misma o con un polo de su propia zona."""
+    en_zona = tabla["destino_id"].map(polos.set_index("destino_id")["zona_id"])
+    return (tabla["zona_id"] == tabla["destino_id"]) | (en_zona == tabla["zona_id"])
+
+
+def _minimo_interno(tabla: pd.DataFrame, polos: pd.DataFrame) -> pd.Series:
+    """Minutos, y en los pares internos nunca menos que recorrer sus km a `VELOCIDAD_MAX_KMH`.
+
+    Con una sola sección r5py no mide el trayecto interno (su punto coincide con el centro) y el suelo de 1 min
+    contradice los km; en el resto de pares los minutos de r5py contrastan los km sin tocarlos.
+    """
+    minimo = tabla["km"] / VELOCIDAD_MAX_KMH * 60
+    return tabla["minutos"].where(
+        ~_es_interno(tabla, polos), np.maximum(tabla["minutos"], minimo)
+    )
+
+
 def comprobar(tabla: pd.DataFrame, xy: pd.DataFrame, polos: pd.DataFrame) -> None:
     """Falla si falta una coordenada, un tiempo o un km no nulo es <= 0, un km baja de la recta o la velocidad pasa de `VELOCIDAD_MAX_KMH`.
 
-    `xy` trae `x` e `y` en metros (EPSG:25830) de zonas y polos; `polos`, `destino_id` y `zona_id`. La diagonal y el
-    polo de la propia zona se miden con medianas de métodos distintos (minutos desde los puntos de población de las
-    secciones, km desde los edificios), así que no se comparan con la recta ni se les pone tope de velocidad: en 5
-    zonas el tiempo interno es el suelo de 1 min y el km pasa de 2 (velocidad implícita de hasta 372 km/h).
+    `xy` trae `x` e `y` en metros (EPSG:25830) de zonas y polos; `polos`, `destino_id` y `zona_id`. El tope de
+    velocidad vale para todas las filas, también la diagonal y el polo de la propia zona; «km >= recta» solo para los
+    pares comparables, porque esas dos se miden como mediana desde los edificios y no centro a centro.
     """
     o = xy.reindex(tabla["zona_id"]).to_numpy()
     d = xy.reindex(tabla["destino_id"]).to_numpy()
@@ -206,17 +224,15 @@ def comprobar(tabla: pd.DataFrame, xy: pd.DataFrame, polos: pd.DataFrame) -> Non
             f"Sin coordenadas para {int(sin_xy.sum())} pares, p. ej. "
             f"{tabla.loc[sin_xy, ['zona_id', 'destino_id']].head(3).values.tolist()}"
         )
-    propio = tabla["zona_id"] == tabla["destino_id"]
-    en_zona = tabla["destino_id"].map(polos.set_index("destino_id")["zona_id"])
-    comparable = ~propio & (en_zona != tabla["zona_id"])
+    comparable = ~_es_interno(tabla, polos)
     recta = np.hypot(o[:, 0] - d[:, 0], o[:, 1] - d[:, 1]) / 1000
     km, minutos = tabla["km"], tabla["minutos"]
     causas = {
         "tiempo <= 0": minutos <= 0,
         "km <= 0": km <= 0,
         "km por debajo de la línea recta": comparable & (km < recta - TOLERANCIA_KM),
-        f"velocidad > {VELOCIDAD_MAX_KMH:.0f} km/h": comparable
-        & (km / (minutos / 60) > VELOCIDAD_MAX_KMH),
+        f"velocidad > {VELOCIDAD_MAX_KMH:.0f} km/h": km / (minutos / 60)
+        > VELOCIDAD_MAX_KMH * (1 + 1e-9),
     }
     if malos := {c: m for c, m in causas.items() if m.any()}:
         detalle = "; ".join(

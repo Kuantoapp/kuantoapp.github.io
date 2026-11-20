@@ -66,8 +66,21 @@ def test_comprobar_falla_con_datos_malos(km, minutos, causa):
         coche.comprobar(_tabla(km, minutos), XY, POLOS)
 
 
-def test_comprobar_no_pone_tope_de_velocidad_a_la_diagonal():
-    coche.comprobar(_tabla([13.0, 26.0, 3.0], [15, 30, 1]), XY, POLOS)
+def test_comprobar_pone_tope_de_velocidad_tambien_a_la_diagonal():
+    with pytest.raises(ValueError, match="velocidad > 120"):
+        coche.comprobar(_tabla([13.0, 26.0, 3.0], [15, 30, 1]), XY, POLOS)
+
+
+def test_minimo_interno_solo_sube_las_filas_internas():
+    # 3 km en 1 min son 180 km/h: la diagonal sube a 1,5 min (120 km/h); A → B no se toca aunque sea imposible
+    t = _tabla([300.0, 26.0, 3.0], [15, 30, 1])
+    m = coche._minimo_interno(t, POLOS)
+    assert m.tolist() == pytest.approx([15, 30, 1.5])
+    t.loc[2, "km"] = 0.5  # ya a menos de 120 km/h: igual
+    assert coche._minimo_interno(t, POLOS).iloc[2] == 1
+    coche.comprobar(
+        t.assign(minutos=coche._minimo_interno(t, POLOS)).iloc[[1, 2]], XY, POLOS
+    )
 
 
 def test_comprobar_falla_si_falta_una_coordenada():
