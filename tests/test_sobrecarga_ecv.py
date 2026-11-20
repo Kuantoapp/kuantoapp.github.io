@@ -251,7 +251,8 @@ UMBRAL_METODO = 3.7
 
 def _cuantil(x, w, q):
     """Cuantil ponderado: interpolación sobre el peso acumulado en el punto medio (como `wq` de #193)."""
-    o = np.argsort(x)
+    # estable: con empates (alquiler de 1.000 €), el orden por defecto cambia con la plataforma y mueve el P75 (#333)
+    o = np.argsort(x, kind="stable")
     x, w = np.asarray(x, dtype=float)[o], np.asarray(w, dtype=float)[o]
     return np.interp(q, (np.cumsum(w) - w / 2) / w.sum(), x)
 
