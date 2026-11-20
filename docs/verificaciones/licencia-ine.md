@@ -13,7 +13,7 @@ Sigue a [#147](https://github.com/yeraybc/DataMad-hackaton-2026/issues/147); la 
 
 Remisión desde el cuerpo del aviso: «quien desee reutilizar cualquier contenido de este sitio web deberá atenerse a lo dispuesto en el apartado "Reutilización de la información contenida en este sitio web" de este aviso legal». En «Derechos de propiedad intelectual» se exige autorización escrita para reutilizar «el diseño de este sitio web y su código fuente, como los logos, marcas y demás signos distintivos»: se refiere al diseño, el código y los logos, no a los datos.
 
-SHA-256 del texto extraído: `9450eccd93b3aa9d64448bf7ea86806004d91c085d3a9b3a2e35e3d9d69c72d5`. Sirve para comparar en la próxima relectura (comprobado de nuevo el 2026-11-16). Para reproducirlo:
+SHA-256 del texto extraído: `9450eccd93b3aa9d64448bf7ea86806004d91c085d3a9b3a2e35e3d9d69c72d5`. Sirve para comparar en la próxima relectura (comprobado de nuevo el 2026-11-16; releído el 2026-11-21 antes de publicar, mismo SHA-256, sin cambios: [#198](https://github.com/yeraybc/DataMad-hackaton-2026/issues/198)). Para reproducirlo:
 
 ```sh
 curl -sL 'https://www.ine.es/dyngs/AYU/es/index.htm?cid=125' | python3 -I -c 'import sys,re,html,hashlib;t=re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]+>"," ",sys.stdin.read())));i=t.find("La licencia de uso general");j=t.find("Legislación aplicable");print(hashlib.sha256((t[i:j].strip()+"\n").encode()).hexdigest() if i>=0<j else "NO ENCONTRADO: el aviso ha cambiado")'
