@@ -43,6 +43,10 @@
             </select>
           </label>
           <p class="ayuda">Las pagas no cambian el cálculo: el neto anual es el mismo con doce o con catorce. Con catorce, suma las nóminas del año y divide entre doce.</p>
+          <label>Edad de quien trabaja (decide el Abono Joven) <input name="edad" type="number" inputmode="numeric" value="30"></label>
+          <label>Discapacidad del 65 % o más
+            <select name="disc"><option value="no">No</option><option value="si">Sí</option></select>
+          </label>
         </fieldset>
 
         <fieldset>
@@ -62,7 +66,17 @@
           <label>Hijos <span id="max-hijos">(hasta 2 hijos)</span>
             <select name="hijos"><option value="0">Ninguno</option><option value="1">Uno</option><option value="2">Dos</option></select>
           </label>
-          <label>Edad (decide el Abono Joven) <input name="edad" type="number" inputmode="numeric" value="30"></label>
+          <div id="edades-hijos" hidden>
+            <p class="ayuda">Edad de cada hijo (opcional: pon la de todos o déjalas vacías). Los de 15 a 25 años suman un Abono Joven; los menores de 15 no pagan. Sin las edades, solo cuenta el transporte de quien trabaja.</p>
+          </div>
+          <label>Familia numerosa
+            <select name="familia">
+              <option value="ordinario">No</option>
+              <option value="fn_general">Sí, de categoría general</option>
+              <option value="fn_especial">Sí, de categoría especial</option>
+            </select>
+          </label>
+          <p class="ayuda">Con dos hijos solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003 (por ejemplo, un hijo con discapacidad); con tres o más lo es sin más requisitos. Aplica los precios de familia numerosa del BOCM a todo el hogar.</p>
           <label>Vivienda (m²) <input name="m2" type="number" inputmode="decimal"></label>
           <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
           <label>Hogares que pagáis el alquiler, el tuyo incluido <input name="personas" type="number" inputmode="numeric"></label>
@@ -89,6 +103,14 @@
           <label>Modo
             <select name="modo"><option value="tp">Transporte público</option></select>
           </label>
+          <label>Viajes al mes de ocio y fin de semana
+            <select name="nolab">
+              <option value="0">Ninguno</option>
+              <option value="8">Unos 8</option>
+              <option value="16">Unos 16</option>
+            </select>
+          </label>
+          <p class="ayuda">Se suponen por la misma ruta del trabajo y se pagan con el título más barato del mes.</p>
         </fieldset>
 
         <!-- Solo con el perfil de pareja. `hidden`, no `disabled`: un control deshabilitado no sale de FormData y su valor se perdería del enlace. -->
@@ -105,6 +127,10 @@
               <option value="12">Doce pagas</option>
               <option value="14">Catorce pagas</option>
             </select>
+          </label>
+          <label>Edad de la segunda persona (decide su Abono Joven) <input name="edad2" type="number" inputmode="numeric" value="30"></label>
+          <label>Discapacidad del 65 % o más
+            <select name="disc2"><option value="no">No</option><option value="si">Sí</option></select>
           </label>
           <label>Lugar de trabajo <input name="destino2" list="destinos" value="Getafe"></label>
           <label>Días presenciales a la semana
