@@ -352,14 +352,14 @@ export function avisos(alquiler) {
 
 /**
  * Avisos que dependen de lo que se ha escrito en el formulario (`entrada` ya validada), no de los datos:
- * el coche y la edad única de la pareja.
+ * el coche y los hijos sin edad.
  */
 export function avisosEntrada(entrada) {
   return [
     ...(entrada.sueldos.some((s) => s.modo === "coche")
       ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes. Los viajes al día no cuentan en coche: se supone ida y vuelta."]
       : []),
-    ...(entrada.sueldos.length > 1 ? ["Con dos sueldos, la edad es una sola para el hogar: el Abono Joven se aplica a las dos personas o a ninguna, según la edad indicada."] : []),
+    ...(entrada.hogar.hijos > 0 && !entrada.hogar.edades_hijos?.length ? ["Sin las edades de los hijos, el transporte cuenta solo a quien trabaja: pon sus edades para sumar el Abono Joven de los de 15 a 25 años (fuente: ficha del Abono Joven del CRTM)."] : []),
   ];
 }
 
@@ -430,10 +430,12 @@ export function validar(v, api) {
     const destino = resolverDestino(v[c("destino")], api.tiempos.destinos);
     if (destino === null) falla(c("destino"), "Elige un lugar de trabajo de la lista");
     const dias = enRango(c("dias"), v[c("dias")], [1, 5], "Los días presenciales van de 1 a 5");
+    const edad = enRango(c("edad"), v[c("edad")], EDAD, `La edad va de ${EDAD[0]} a ${EDAD[1]} años`);
+    if (!["no", "si"].includes(v[c("disc")])) falla(c("disc"), "Elige sí o no");
     const viajes = entero(v[c("viajes")]);
     if (!api.tarifas.viajes_dia.includes(viajes)) falla(c("viajes"), `Los viajes al día son ${api.tarifas.viajes_dia.join(" o ")}`);
     if (!modos.includes(v[c("modo")])) falla(c("modo"), "Elige uno de los modos de la lista");
-    return { ...sueldo, destino, dias, modo: v[c("modo")], viajes_dia: viajes };
+    return { ...sueldo, destino, dias, modo: v[c("modo")], viajes_dia: viajes, edad, ...(v[c("disc")] === "si" ? { discapacidad: true } : {}) };
   };
   const pareja = v.perfil === "pareja";
   const sueldos = [persona(""), ...(pareja ? [persona("2")] : [])];
@@ -441,7 +443,16 @@ export function validar(v, api) {
   if (typeof v.perfil !== "string" || !Object.hasOwn(api.hogares.perfiles, v.perfil)) falla("perfil", "Elige uno de los perfiles de hogar");
   const adultos = enRango("adultos", v.adultos, pareja ? [2, 2] : [1, 2], pareja ? "Con dos sueldos hay dos adultos" : undefined);
   const hijos = enRango("hijos", v.hijos, [0, maxHijos], `Hasta ${maxHijos} hijos`);
-  const edad = enRango("edad", v.edad, EDAD, `La edad va de ${EDAD[0]} a ${EDAD[1]} años`);
+  const edadMaxHijo = api.tarifas.edad_max_joven;
+  const textosHijos = Array.from({ length: hijos ?? 0 }, (_, i) => sinEspacios(v[`hijo${i + 1}`]));
+  const edadesHijos = textosHijos.every((t) => t === "")
+    ? []
+    : textosHijos.map((t, i) => enRango(`hijo${i + 1}`, t, [0, edadMaxHijo], `La edad del hijo va de 0 a ${edadMaxHijo} años (pon la de todos o déjalas vacías)`));
+  const familia = v.familia;
+  if (!["ordinario", "fn_general", "fn_especial"].includes(familia)) falla("familia", "Elige una de las opciones de familia numerosa");
+  else if (familia !== "ordinario" && (hijos ?? 0) < 2) falla("familia", "La familia numerosa pide dos hijos o más");
+  const noLaborables = entero(v.nolab);
+  if (!api.tarifas.no_laborables.includes(noLaborables)) falla("nolab", `Los viajes de ocio al mes son ${api.tarifas.no_laborables.join(", ")}`);
   const personas = enRango("personas", v.personas, PERSONAS, `Cuenta los hogares del piso, el tuyo incluido: de ${PERSONAS[0]} (no compartes piso) a ${PERSONAS[1]}`);
   const m2 = numero(v.m2);
   if (m2 === null || m2 < M2[0] || m2 > M2[1]) falla("m2", `La vivienda va de ${M2[0]} a ${M2[1]} m²`);
@@ -450,7 +461,12 @@ export function validar(v, api) {
   if (ref !== "" && !Object.hasOwn(api.alquiler.zonas, ref)) falla("ref", "Elige una zona de referencia de la lista");
 
   if (errores.length > 0) return { errores };
-  const hogar = { perfil: v.perfil, adultos, hijos, edad, personas_comparten: personas, m2 };
+  const hogar = {
+    perfil: v.perfil, adultos, hijos, edad: sueldos[0].edad, personas_comparten: personas, m2,
+    ...(edadesHijos.length > 0 ? { edades_hijos: edadesHijos } : {}),
+    ...(familia !== "ordinario" ? { familia } : {}),
+    ...(noLaborables !== 0 ? { no_laborables: noLaborables } : {}),
+  };
   return { entrada: { hogar, sueldos, ...(ref === "" ? {} : { ref }) } };
 }
 
@@ -485,7 +501,9 @@ export function entradaEscenario(entrada, v, edadCumple) {
   if (!hayEscenario(v)) return null;
   const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}), ...(v.cesta === "tramo" ? { cesta: "tramo" } : {}) };
   const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
-  return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias })) };
+  // Con «cumples 26» nadie tiene menos: la edad de cada sueldo es la suya o 26, la mayor (la edad del sueldo manda sobre la del escenario).
+  const edad = (s) => (v.cumple26 === "si" ? { edad: Math.max(s.edad ?? entrada.hogar.edad, edadCumple) } : {});
+  return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias, ...edad(s) })) };
 }
 
 /** Qué simula el mapa, en una línea; `null` si no hay escenario. */

@@ -48,6 +48,13 @@ const mostrarSegunda = () => {
   $("persona2").hidden = formulario().elements.perfil.value !== "pareja";
 };
 
+// Un campo de edad por hijo, solo los que hay.
+const mostrarHijos = () => {
+  const n = Number(formulario().elements.hijos.value);
+  $("edades-hijos").hidden = !(n > 0);
+  for (const etiqueta of $("edades-hijos").querySelectorAll("label")) etiqueta.hidden = Number(etiqueta.dataset.hijo) > n;
+};
+
 function rellenarPerfil(api) {
   const f = formulario().elements;
   const p = api.hogares.perfiles[f.perfil.value];
@@ -292,10 +299,17 @@ async function main() {
   const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
   prepararFormulario(api);
+  for (let i = 1; i <= maxHijos; i++) {
+    const etiqueta = elemento("label", `Edad del hijo ${i} `);
+    etiqueta.dataset.hijo = String(i);
+    etiqueta.append(Object.assign(document.createElement("input"), { name: `hijo${i}`, type: "number", inputMode: "numeric" }));
+    $("edades-hijos").append(etiqueta);
+  }
   // El estado de los formularios viaja en el fragmento de la URL, que no se envía a ningún servidor.
   const enlace = estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api);
   aplicarValores(enlace.valores);
   mostrarSegunda();
+  mostrarHijos();
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas, fondo);
   prepararVista(mapa);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
@@ -383,6 +397,9 @@ async function main() {
     if (name === "perfil") {
       rellenarPerfil(api);
       mostrarSegunda();
+    }
+    if (["perfil", "hijos"].includes(name)) {
+      mostrarHijos();
     }
     if (["bruto", "neto", "bruto2", "neto2"].includes(name)) formulario().elements[`fuente${name.endsWith("2") ? "2" : ""}`].value = name.replace("2", "");
     recalcular();
