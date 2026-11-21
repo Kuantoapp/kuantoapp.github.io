@@ -131,7 +131,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     `Alquiler: ${alquiler.meta.nota}`,
     `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"}`,
     `Hogar y cesta: ${hogares.meta.nota}`,
-    `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""}`,
+    `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""} ${tarifas.meta.nota_ruta ?? ""}`,
   ];
   if (ejemplo) todas.append(elemento("summary", "Notas"));
   else {
