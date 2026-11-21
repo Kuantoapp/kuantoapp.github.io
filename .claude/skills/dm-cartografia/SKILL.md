@@ -1,5 +1,5 @@
 ---
-description: "Prepara y cruza datos geográficos con geopandas y diseña los mapas finales: CRS y reproyección (medir en EPSG:25830 u otro UTM, publicar en 4326 o 3857), uniones por código oficial (INE, sección censal, barrio, distrito), sjoin, distancias, áreas y coropletas de presentación. No hace tablas de paso entre unidades que no coinciden (dm-tablas-de-paso), ni busca patrones (dm-eda-espacial) ni modela (dm-modelado-espacial)."
+description: "Prepara y cruza datos geográficos con geopandas y diseña los mapas finales: CRS y reproyección (medir en EPSG:25830 u otro UTM, publicar en 4326 o 3857), uniones por código oficial (INE, sección censal, barrio, distrito), sjoin, distancias, áreas y coropletas de presentación. No hace tablas de paso entre unidades que no coinciden (dm-tablas-de-paso), ni busca patrones (dm-eda-espacial), ni modela (dm-modelado-espacial) ni diseña la página que rodea al mapa (dm-diseno-web)."
 when_to_use: "Leer un shapefile, GeoJSON o GeoParquet; comprobar o cambiar el CRS; hacer un merge o sjoin por municipio o sección; averiguar por qué una unión pierde zonas; medir distancias a servicios; elegir clasificación, paleta y leyenda de un mapa o un cartograma."
 ---
 
