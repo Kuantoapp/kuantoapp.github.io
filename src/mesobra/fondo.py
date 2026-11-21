@@ -1,7 +1,7 @@
 """Escribe `app/mapa/fondo.geojson`: el mapa base propio de la herramienta, que funciona sin red (#382).
 
 Provincias de España y países vecinos de Natural Earth 10m (dominio público), recortados a la caja de España y
-simplificados. Solo contornos: los nombres de Natural Earth usan exónimos («Lérida», «Gerona») y no se pintan.
+simplificados, más un punto por provincia con su nombre oficial (Natural Earth usa exónimos como «Lérida»: `OFICIALES`).
 Va en `app/mapa/` y no en `app/datos/`: es un fondo de pantalla, no un fichero del contrato de la API.
 Ejecutar con `python -m mesobra.fondo`.
 """
@@ -34,6 +34,20 @@ CAJA = (
 # la Comunidad de Madrid, que dibuja su propio contorno con las zonas
 TOLERANCIA_M = 500
 PRECISION_GRADOS = 1e-4  # unos 11 m: de sobra para un fondo simplificado a 500 m
+# Nombres oficiales (los del INE) donde Natural Earth da el exónimo; el resto sale de su `name_es`, que ya coincide.
+OFICIALES = {
+    "ES-C": "A Coruña",
+    "ES-OR": "Ourense",
+    "ES-GI": "Girona",
+    "ES-L": "Lleida",
+    "ES-PM": "Illes Balears",
+    "ES-BI": "Bizkaia",
+    "ES-SS": "Gipuzkoa",
+    "ES-VI": "Araba/Álava",
+    "ES-V": "Valencia/València",
+    "ES-A": "Alicante/Alacant",
+    "ES-CS": "Castellón/Castelló",
+}
 LICENCIA = "Dominio público (https://www.naturalearthdata.com/about/terms-of-use/)"
 FUENTES = [
     {
@@ -68,12 +82,14 @@ def fondo(provincias: gpd.GeoDataFrame, paises: gpd.GeoDataFrame) -> dict:
     vecinos = vecinos.assign(geometry=recortados)[~recortados.is_empty]
     if vecinos.empty:
         raise ValueError(f"Ningún país de {VECINOS} en la caja de España")
+    metros = espana.geometry.to_crs(25830)
+    nombres = espana["iso_3166_2"].map(OFICIALES).fillna(espana["name_es"]).values
     # las provincias como cobertura: al simplificar no se abren huecos entre vecinas
     capas = [
-        _capa(
-            espana.geometry.to_crs(25830).simplify_coverage(TOLERANCIA_M), "provincia"
-        ),
+        _capa(metros.simplify_coverage(TOLERANCIA_M), "provincia"),
         _capa(vecinos.geometry.to_crs(25830).simplify(TOLERANCIA_M), "pais"),
+        # un punto por provincia para su nombre: en un polígono MapLibre lo repetiría por tesela
+        _capa(metros.representative_point(), "etiqueta").assign(nombre=nombres),
     ]
     geo = json.loads(pd.concat(capas, ignore_index=True).to_json(drop_id=True))
     nota = (

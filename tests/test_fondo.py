@@ -14,7 +14,11 @@ from mesobra import fondo
 def capas() -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Dos provincias vecinas de España, una de Portugal, Francia a caballo de la caja y Alemania fuera."""
     provincias = gpd.GeoDataFrame(
-        {"adm0_a3": ["ESP", "ESP", "PRT"]},
+        {
+            "adm0_a3": ["ESP", "ESP", "PRT"],
+            "iso_3166_2": ["ES-L", "ES-M", "PT-05"],
+            "name_es": ["Lérida", "Madrid", "Castelo Branco"],
+        },
         geometry=[box(-4, 40, -3, 41), box(-3, 40, -2, 41), box(-8, 40, -7, 41)],
         crs=4326,
     )
@@ -29,11 +33,8 @@ def capas() -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
 def test_provincias_de_espana_y_vecinos_recortados(capas):
     objeto = fondo.fondo(*capas)
     tipos = [f["properties"]["tipo"] for f in objeto["features"]]
-    assert tipos == [
-        "provincia",
-        "provincia",
-        "pais",
-    ]  # sin Portugal-provincia, Alemania ni la propia España
+    # sin Portugal-provincia, Alemania ni la propia España; un punto de nombre por provincia
+    assert tipos == ["provincia", "provincia", "pais", "etiqueta", "etiqueta"]
     oeste, sur, este, norte = fondo.CAJA
     francia = shapely.geometry.shape(objeto["features"][2]["geometry"])
     assert francia.bounds[2] <= este and francia.bounds[3] <= norte
@@ -76,3 +77,16 @@ def test_nombres_de_zona_caben_en_los_glifos_del_mapa():
     ]
     assert fuera == []
     assert (fondo.RAIZ / "app/mapa/glifos/Noto Sans Regular/0-255.pbf").exists()
+
+
+def test_nombres_oficiales_y_punto_dentro_de_su_provincia(capas):
+    features = fondo.fondo(*capas)["features"]
+    etiquetas = [f for f in features if f["properties"]["tipo"] == "etiqueta"]
+    assert [f["properties"]["nombre"] for f in etiquetas] == [
+        "Lleida",
+        "Madrid",
+    ]  # el exónimo se corrige
+    for etiqueta, provincia in zip(etiquetas, features[:2], strict=True):
+        assert shapely.geometry.shape(provincia["geometry"]).contains(
+            shapely.geometry.shape(etiqueta["geometry"])
+        )
