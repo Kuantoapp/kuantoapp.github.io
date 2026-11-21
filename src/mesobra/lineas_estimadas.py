@@ -88,7 +88,8 @@ RELLENO = ("01:00:00", "01:00:01")
 # horas imposibles (#349): velocidad media máxima en recta entre paradas, por red (primer trozo del route_id: 8
 # interurbanos, 9 urbanos). La recta es menos que la carretera (~1,2 veces): 80 km/h en recta son ~96 de media con
 # paradas, más de lo que hace un autobús interurbano, y un urbano no pasa de 60 (medido: la 9__3__006_ y la 9__1__006_
-# van a 65-77). Metro, Cercanías y EMT (sin prefijo) usan 90: Cercanías llega a 73 km/h con trenes reales.
+# van a 65-77); las nocturnas son `8_N_…` y `9_i_…`, de ahí el `split("_")`. Metro (4), Metro Ligero (10), Cercanías y
+# EMT usan 90: Cercanías llega a 73 km/h con trenes reales.
 # El retroceso admite 60 s porque el CRTM pone +1 s a la primera parada de muchos viajes reales. El horario tiene
 # resolución de 1 min: un viaje de duración 0 con 3 km o menos (31 interurbanos y 124 urbanos) es redondeo y no se marca.
 VELOCIDAD_MAX = 90.0
@@ -405,7 +406,7 @@ def _con_horas_imposibles(
     resto = d["tramo"].where(d["n"] >= 2, 0.0).groupby(viaje).sum()
     segunda = pd.Series(d["hora"].to_numpy(), index=viaje)[d["n"].to_numpy() == 1]
     horas = (g["hora"].last() - segunda) / 3600
-    red = trips.set_index("trip_id")["route_id"].str.split("__").str[0]
+    red = trips.set_index("trip_id")["route_id"].str.split("_").str[0]
     limite = red.map(VELOCIDAD_POR_RED).reindex(resto.index).fillna(VELOCIDAD_MAX)
     rapido = (resto > RECORRIDO_MIN) & (resto > limite * horas)
     return resto.index[(retro | rapido).to_numpy()]

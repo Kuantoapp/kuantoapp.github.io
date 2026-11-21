@@ -341,6 +341,7 @@ def test_horas_imposibles_usa_la_velocidad_maxima_de_su_red():
         "urbano_70": ("9__3__006_", "07:33:55"),
         "interurbano_70": ("8__102___", "07:33:55"),
         "interurbano_85": ("8__102___", "07:33:20"),
+        "nocturno_85": ("8_N_303___", "07:33:20"),
         "tren_70": ("10T0001C1", "07:33:55"),
         "tren_95": ("10T0001C1", "07:33:00"),  # 4 km en 150 s = 96 km/h
     }
@@ -355,7 +356,12 @@ def test_horas_imposibles_usa_la_velocidad_maxima_de_su_red():
         {"trip_id": list(viajes), "route_id": [r for r, _ in viajes.values()]}
     )
     marcados = le._con_horas_imposibles(trips, pd.DataFrame(filas, columns=COLS), XY3)
-    assert sorted(marcados) == ["interurbano_85", "tren_95", "urbano_70"]
+    assert sorted(marcados) == [
+        "interurbano_85",
+        "nocturno_85",
+        "tren_95",
+        "urbano_70",
+    ]
 
 
 def test_depurar_tablas_quita_los_viajes_de_relleno_y_los_imposibles():
