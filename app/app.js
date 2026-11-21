@@ -166,15 +166,15 @@ const VELO = { type: "Feature", properties: {}, geometry: { type: "Polygon", coo
 // Colores del mapa (no de la web) en cada tema. Los de las clases no cambian: son los datos. `marca` y `bajoMarca` son las
 // líneas de zona imprecisa, estimada, de referencia y elegida, y el halo que las separa de la clase de debajo.
 const TEMAS = {
-  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
-  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
+  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", textoProvincia: "#5c6069", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
+  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", textoProvincia: "#a9b0ba", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
 };
 // [capa, propiedad de pintura, color de TEMAS]
 const PINTURA_TEMA = [
   ["mar", "background-color", "mar"], ["vecinos", "fill-color", "vecino"], ["provincias", "fill-color", "provincia"],
   ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"],
   ["comunidad", "line-color", "contorno"], ["zonas-borde", "line-color", "bordeZona"], ["zonas-nombre", "text-color", "texto"],
-  ["zonas-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
+  ["zonas-nombre", "text-halo-color", "halo"], ["provincias-nombre", "text-color", "textoProvincia"], ["provincias-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
   ["zonas-elegida", "line-color", "marca"], ["zonas-imprecisas-fondo", "line-color", "bajoMarca"], ["zonas-imprecisas", "line-color", "marca"],
   ["zonas-estimadas", "line-color", "marca"], ["zonas-referencia", "line-color", "marca"], ["zonas-encima-halo", "line-color", "bajoMarca"],
   ["zonas-estimadas-fondo", "line-color", "bajoMarca"], ["zonas-referencia-fondo", "line-color", "bajoMarca"],
@@ -224,14 +224,14 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "provincias", type: "fill", source: "fondo", filter: deTipo("provincia"), paint: { "fill-color": t.provincia } });
     mapa.addLayer({ id: "vecinos-borde", type: "line", source: "fondo", filter: deTipo("pais"), paint: { "line-color": t.lineaPais, "line-width": 0.8 } });
     // Solo de lejos: de cerca se vería, junto al contorno de las zonas, el borde de Madrid de Natural Earth (hasta 3,7 km de desfase)
-    mapa.addLayer({ id: "provincias-borde", type: "line", source: "fondo", maxzoom: 8.5, filter: deTipo("provincia"), paint: { "line-color": t.lineaProvincia, "line-width": 0.6 } });
+    mapa.addLayer({ id: "provincias-borde", type: "line", source: "fondo", maxzoom: 8.5, filter: deTipo("provincia"), paint: { "line-color": t.lineaProvincia, "line-width": 1 } });
     // Fuera de la Comunidad, un velo claro: es el único sitio donde la herramienta tiene datos.
     mapa.addSource("velo", { type: "geojson", data: VELO });
     mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
     mapa.addSource("comunidad", { type: "geojson", data: { type: "Feature", properties: {}, geometry: contorno(zonas.features) } });
     mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.85 } });
-    mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 0.8 } });
+    mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 1.4 } });
     mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
     // Al pasar por encima, la zona se recorta con la línea de marca; la elegida (ficha abierta), además con halo.
     const siEncima = (ancho) => ["case", ["boolean", ["feature-state", "encima"], false], ancho, 0];
@@ -250,6 +250,16 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: estimada, paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
     mapa.addLayer({ id: "zonas-referencia-fondo", type: "line", source: "zonas", filter: referencia, paint: { "line-color": "#fff", "line-width": 5 } });
     mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: referencia, paint: { "line-color": "#000", "line-width": 3 } });
+    // Nombres oficiales de provincia de lejos; al acercarse los sustituyen los de las zonas.
+    mapa.addLayer({
+      id: "provincias-nombre",
+      type: "symbol",
+      source: "fondo",
+      maxzoom: 8.5,
+      filter: deTipo("etiqueta"),
+      layout: { "text-field": ["get", "nombre"], "text-font": FUENTE_ETIQUETAS, "text-size": 11, "text-max-width": 7 },
+      paint: { "text-color": t.textoProvincia, "text-halo-color": t.halo, "text-halo-width": 1.5 },
+    });
     // Nombres de zona al acercarse, encima de todo.
     mapa.addLayer({
       id: "zonas-nombre",
@@ -467,23 +477,48 @@ async function main() {
   encuadrar();
 }
 
-/** Pestañas «Filtros» y «Mapa completo» (pliega el panel) y el botón del tema del mapa. No tocan el cálculo. */
+/**
+ * Menús de la barra de filtros, pestaña del panel lateral, «Mapa completo» y tema del mapa. No tocan el cálculo.
+ * Los menús se abren al pasar el ratón o con el foco (CSS) y también al pulsar (`aria-expanded`), para el móvil y el teclado.
+ */
 function prepararVista(mapa) {
-  const plegar = (plegado) => {
-    const main = document.querySelector("main");
-    if (main.classList.contains("panel-plegado") === plegado) return; // ya estaba así: el foco no se mueve
-    main.classList.toggle("panel-plegado", plegado);
-    $("ver-filtros").setAttribute("aria-pressed", String(!plegado));
-    $("ver-mapa").setAttribute("aria-pressed", String(plegado));
-    $("mostrar-filtros").hidden = !plegado;
-    (plegado ? $("mostrar-filtros") : $("ver-mapa")).focus(); // el foco no se queda en un panel escondido
-    requestAnimationFrame(() => mapa.resize()); // sin transición (movimiento reducido) el tamaño cambia ya
+  const botonesMenu = [...document.querySelectorAll(".menu-boton")];
+  const cerrarMenus = (salvo) => {
+    for (const b of botonesMenu) if (b !== salvo) b.setAttribute("aria-expanded", "false");
   };
-  $("ver-mapa").addEventListener("click", () => plegar(true));
-  $("ver-filtros").addEventListener("click", () => plegar(false));
-  $("mostrar-filtros").addEventListener("click", () => plegar(false));
-  $("panel").addEventListener("transitionend", (e) => {
-    if (e.target === e.currentTarget) mapa.resize(); // con transición, al acabar
+  for (const b of botonesMenu) {
+    b.addEventListener("click", () => {
+      const abrir = b.getAttribute("aria-expanded") !== "true";
+      cerrarMenus(b);
+      b.setAttribute("aria-expanded", String(abrir));
+    });
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".menu")) cerrarMenus(null); // pulsar fuera cierra el desplegable
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const abierto = botonesMenu.find((b) => b.closest(".menu").contains(document.activeElement));
+    cerrarMenus(null);
+    abierto?.focus(); // el foco vuelve al botón de su menú
+  });
+  // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también sin transición o al acabarla.
+  const ajustar = () => requestAnimationFrame(() => mapa.resize());
+  for (const id of ["panel", "barra-filtros"]) $(id).addEventListener("transitionend", (e) => e.target === e.currentTarget && mapa.resize());
+  const pestana = $("plegar-panel");
+  pestana.addEventListener("click", () => {
+    const abierto = pestana.getAttribute("aria-expanded") === "true";
+    pestana.setAttribute("aria-expanded", String(!abierto));
+    document.body.classList.toggle("panel-plegado", abierto);
+    ajustar();
+  });
+  const completo = $("mapa-completo");
+  completo.addEventListener("click", () => {
+    const activo = completo.getAttribute("aria-pressed") !== "true";
+    completo.setAttribute("aria-pressed", String(activo));
+    document.body.classList.toggle("mapa-completo", activo);
+    cerrarMenus(null);
+    ajustar();
   });
   const boton = $("tema-mapa");
   const ponerTema = (tema) => {
