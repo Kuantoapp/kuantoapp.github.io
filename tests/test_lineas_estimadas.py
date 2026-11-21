@@ -335,6 +335,50 @@ def test_completar_tablas_quita_de_trips_los_viajes_descartados():
     assert set(horas["trip_id"]) == {"t1"}
 
 
+def test_horas_imposibles_usa_la_velocidad_maxima_de_su_red():
+    # 4 km entre la 2.ª parada y la última: 205 s = 70 km/h; 170 s = 85 km/h
+    viajes = {
+        "urbano_70": ("9__3__006_", "07:33:55"),
+        "interurbano_70": ("8__102___", "07:33:55"),
+        "interurbano_85": ("8__102___", "07:33:20"),
+        "tren_70": ("10T0001C1", "07:33:55"),
+        "tren_95": ("10T0001C1", "07:33:00"),  # 4 km en 150 s = 96 km/h
+    }
+    filas = [
+        (t, h, h, s, str(i))
+        for t, (_, fin) in viajes.items()
+        for i, (s, h) in enumerate(
+            zip("pqr", ("07:30:00", "07:30:30", fin), strict=True)
+        )
+    ]
+    trips = pd.DataFrame(
+        {"trip_id": list(viajes), "route_id": [r for r, _ in viajes.values()]}
+    )
+    marcados = le._con_horas_imposibles(trips, pd.DataFrame(filas, columns=COLS), XY3)
+    assert sorted(marcados) == ["interurbano_85", "tren_95", "urbano_70"]
+
+
+def test_depurar_tablas_quita_los_viajes_de_relleno_y_los_imposibles():
+    cabecera = b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+    bueno = b"t1,07:40:00,07:40:00,p,0\r\nt1,07:47:00,07:47:00,q,1\r\nt1,07:56:00,07:56:00,r,2\r\n"
+    tablas = {
+        "trips.txt": (
+            b"route_id,trip_id,service_id,direction_id\r\n"
+            b"8__101___,t1,L,0\r\n8__102___,relleno,L,0\r\n8__102___,veloz,L,0\r\n"
+        ),
+        "stop_times.txt": cabecera
+        + bueno
+        + b"relleno,01:00:00,01:00:00,p,0\r\nrelleno,01:00:00,01:00:00,q,1\r\n"
+        + b"veloz,07:30:00,07:30:00,p,0\r\nveloz,07:30:30,07:30:30,q,1\r\nveloz,07:31:30,07:31:30,r,2\r\n",
+        "stops.txt": b"stop_id,stop_lon,stop_lat\r\np,-3.70,40.4\r\nq,-3.66,40.4\r\nr,-3.61,40.4\r\n",
+    }
+    salida = le.depurar_tablas(tablas)
+    assert pd.read_csv(io.BytesIO(salida["trips.txt"]))["trip_id"].tolist() == ["t1"]
+    horas = pd.read_csv(io.BytesIO(salida["stop_times.txt"]), dtype=str)
+    assert set(horas["trip_id"]) == {"t1"}
+    assert le.depurar_tablas(salida) is salida  # nada más que quitar
+
+
 def test_hhmmss_rechaza_segundos_negativos_o_no_finitos():
     assert le._hhmmss(np.array([0.0, 3661.0])) == ["00:00:00", "01:01:01"]
     for malo in (-4500.0, np.nan, np.inf):

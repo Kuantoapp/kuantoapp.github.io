@@ -265,9 +265,11 @@ def preparar_gtfs(
 ) -> list[Path]:
     """Reempaqueta los GTFS del CRTM para que r5py los acepte y devuelve las rutas de los nuevos.
 
-    Siempre reconstruye las horas de relleno o imposibles del CRTM (#311, #349), también sin `completar`, para que las
-    dos matrices partan de lo mismo. Con `completar` (`route_id` → paradas en orden, de `lineas_estimadas.construir`),
-    los viajes de esas rutas llevan además las paradas intermedias (`lineas_estimadas.completar_tablas`).
+    Los viajes del CRTM con horario de relleno o imposible (#311, #349) no se dejan tal cual: sin `completar` se quitan
+    (`lineas_estimadas.depurar_tablas`, matriz «sin estimadas»: un viaje falsamente rápido no puede ganar) y con
+    `completar` (`route_id` → paradas en orden, de `lineas_estimadas.construir`) se reconstruyen y sus rutas llevan
+    además las paradas intermedias (`lineas_estimadas.completar_tablas`), así los pares que mejoran por ellos salen
+    `estimado` en `marcar_estimados`.
 
     Quita las tablas vacías y `feed_info.txt` (r5py los rechaza), saca los ficheros de subcarpetas y, si el
     calendario ya ha caducado en `FECHA_SALIDA` (Metro, hasta 2026-05-27), lo prolonga hasta `FIN_CALENDARIO`:
@@ -286,7 +288,11 @@ def preparar_gtfs(
             for n, d in tablas.items()
             if n != "feed_info.txt" and d.strip().count(b"\n") > 0
         }
-        tablas = lineas_estimadas.completar_tablas(tablas, completar or {})
+        tablas = (
+            lineas_estimadas.depurar_tablas(tablas)
+            if completar is None
+            else lineas_estimadas.completar_tablas(tablas, completar)
+        )
         cal = pd.read_csv(
             io.BytesIO(tablas["calendar.txt"]), dtype=str, encoding="utf-8-sig"
         )
