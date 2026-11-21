@@ -99,6 +99,7 @@ def test_tiempos_json_redondea_y_ordena():
     # filas y columnas en el orden de las zonas: 28001 era la tercera de _tiempos; 120,5 → 121 → null
     assert t["tp"] == [[120, 7, 6], [None, 4, 3], [None, 3, 1]]
     assert "r5py" in t["meta"]["nota"] and "7:30 y las 8:30" in t["meta"]["nota"]
+    assert "no significa que no haya transporte" in t["meta"]["nota"]
 
 
 def test_la_nota_da_los_estimados_sobre_los_pares_con_ruta():

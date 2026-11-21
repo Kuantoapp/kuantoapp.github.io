@@ -21,6 +21,12 @@ const BASE = {
   fuente2: "bruto", bruto2: "24000", neto2: "", pagas2: "12", destino2: "Getafe", dias2: "5", viajes2: "2", modo2: "tp", edad2: "30", disc2: "no",
 };
 const campos = (cambios) => validar({ ...BASE, ...cambios }, real).errores?.map((e) => e.campo);
+// Los datos reales sin las tres tablas del coche: el caso «los datos no traen coche».
+const sinCoche = (api) => {
+  const { coche: _c, km_coche: _k, coste_coche: _e, ...tiempos } = api.tiempos;
+  return { ...api, tiempos };
+};
+const camposSinCoche = (cambios) => validar({ ...BASE, ...cambios }, sinCoche(real)).errores?.map((e) => e.campo);
 
 // --- Escalas y color ---------------------------------------------------------------------------
 
@@ -79,22 +85,25 @@ test("una zona sin cifra no se pinta con color de clase ni se escribe como cero,
   // Con los datos reales: sin cifra no es cero, y el color es el del motivo.
   const props = pintar(real.zonas, calcular(real, SOLO), "sobra").zonas.features.map((f) => f.properties);
   const sinCifra = props.filter((p) => p.valor === null);
-  assert.equal(sinCifra.length, 97);
+  assert.equal(sinCifra.length, 100);
   assert.ok(sinCifra.every((p) => Object.values(CATEGORIAS).some((c) => c.texto === p.categoria && c.color === p.color)));
   assert.equal(props.filter((p) => p.valor === 0).length, 0);
 });
 
-test("Getafe con datos reales: 102 zonas con cifra, 56 solo sin ruta y 41 sin alquiler y sin ruta", () => {
+test("Getafe con datos reales: 99 zonas con cifra, 59 solo sin ruta, 1 solo sin alquiler y 40 sin alquiler y sin ruta", () => {
   const resultado = calcular(real, SOLO);
   const { zonas, categorias } = pintar(real.zonas, resultado, "sobra");
   const props = zonas.features.map((f) => f.properties);
   const cuenta = (texto) => props.filter((p) => p.categoria === texto).length;
   assert.equal(props.length, 199);
-  assert.equal(props.filter((p) => p.valor !== null).length, 102);
-  assert.equal(cuenta(CATEGORIAS.ruta.texto), 56);
-  assert.equal(cuenta(CATEGORIAS.alquiler.texto), 0);
-  assert.equal(cuenta(CATEGORIAS.ambos.texto), 41);
-  assert.deepEqual(categorias.map((c) => c.texto).sort(), [CATEGORIAS.ambos.texto, CATEGORIAS.ruta.texto].sort());
+  assert.equal(props.filter((p) => p.valor !== null).length, 99);
+  assert.equal(cuenta(CATEGORIAS.ruta.texto), 59);
+  assert.equal(cuenta(CATEGORIAS.alquiler.texto), 1);
+  assert.equal(cuenta(CATEGORIAS.ambos.texto), 40);
+  assert.deepEqual(
+    categorias.map((c) => c.texto).sort(),
+    [CATEGORIAS.alquiler.texto, CATEGORIAS.ambos.texto, CATEGORIAS.ruta.texto].sort(),
+  );
   assert.ok(props.filter((p) => p.valor === null).every((p) => p.color !== SIN_DATO || p.categoria !== null));
   assert.notEqual(CATEGORIAS.alquiler.texto, CATEGORIAS.ruta.texto);
 });
@@ -499,7 +508,7 @@ test("hijos solo de 0 a 2, edad de 16 a 64, y el resto de campos con su rango", 
   assert.deepEqual(campos({ perfil: "castillo" }), ["perfil"]);
   assert.deepEqual(campos({ perfil: "__proto__" }), ["perfil"]);
   assert.deepEqual(campos({ viajes: "3" }), ["viajes"]);
-  assert.deepEqual(campos({ modo: "coche" }), ["modo"]);
+  assert.deepEqual(camposSinCoche({ modo: "coche" }), ["modo"]);
   assert.equal(campos({ viajes: "4" }), undefined);
 });
 
@@ -691,13 +700,14 @@ const ZONAS_EJ = ["2807913", "28065"];
 const validarEj = (cambios) => validar({ ...PAREJA, ...cambios }, ejemplo);
 
 test("el coche se ofrece solo si los datos traen su matriz, los km y el coste por km", () => {
-  assert.deepEqual(modosDisponibles(real.tiempos), ["tp"]);
+  assert.deepEqual(modosDisponibles(real.tiempos), ["tp", "coche"]);
+  assert.deepEqual(modosDisponibles(sinCoche(real).tiempos), ["tp"]);
   assert.deepEqual(modosDisponibles(ejemplo.tiempos), ["tp", "coche"]);
   for (const falta of ["coche", "km_coche", "coste_coche"]) {
     const { [falta]: _, ...resto } = ejemplo.tiempos;
     assert.deepEqual(modosDisponibles(resto), ["tp"], falta);
   }
-  assert.deepEqual(campos({ modo: "coche" }), ["modo"]);
+  assert.deepEqual(camposSinCoche({ modo: "coche" }), ["modo"]);
   assert.equal(validar({ ...BASE, destino: "Centro", modo: "coche" }, ejemplo).entrada.sueldos[0].modo, "coche");
 });
 
@@ -778,7 +788,7 @@ test("el enlace de una pareja con dos destinos es válido; el modo coche sin mat
   const ok = estadoDeEnlace("perfil=pareja&adultos=2&destino=Centro&destino2=IFEMA&dias2=2", porDefecto, ejemplo);
   assert.deepEqual(ok.avisos, []);
   assert.deepEqual([ok.valores.perfil, ok.valores.destino2, ok.valores.dias2], ["pareja", "IFEMA", "2"]);
-  const coche = estadoDeEnlace("modo=coche", NEUTRO, real);
+  const coche = estadoDeEnlace("modo=coche", NEUTRO, sinCoche(real));
   assert.equal(coche.valores.modo, "tp");
   assert.equal(coche.avisos.length, 1);
   assert.match(coche.avisos[0], /«modo»/);

@@ -156,7 +156,8 @@ def _nota_tiempos(tiempos: pd.DataFrame, n_polos: int) -> str:
     return (
         "Minutos puerta a puerta en transporte público del centro de población de la zona de origen al de la de "
         f"destino; dentro de la zona, mediana desde sus secciones, con un mínimo de {MIN_INTERNO:.0f} min. null: "
-        f"más de {MAX_MINUTOS} min o sin ruta. Además, {n_polos} polos de empleo con nombre (destinos `polo:`, lista "
+        f"más de {MAX_MINUTOS} min, sin ruta o sin horario utilizable en el GTFS del CRTM (puede faltar el horario de una "
+        f"línea: no significa que no haya transporte). Además, {n_polos} polos de empleo con nombre (destinos `polo:`, lista "
         "propia: supuesto declarado) con el mismo cálculo hasta su punto de OpenStreetMap (desde su propia zona, mediana desde las secciones de la zona, como el tiempo interno); su corona tarifaria es la de "
         f"su `zona_id`. {origen} Datos de OpenStreetMap (© OpenStreetMap contributors, ODbL). Powered by CRTM."
     )
