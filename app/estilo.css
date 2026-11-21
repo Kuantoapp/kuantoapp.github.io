@@ -1,46 +1,113 @@
+/* Tokens de Kuanto (dirección de #382 en docs/decisiones.md). El informe (#383) reutiliza los mismos. */
+:root {
+  --fondo: #f5f5f7;
+  --superficie: #ffffff;
+  --elevado: #ebedf0;
+  --linea: rgb(29 29 31 / 10%);
+  --linea-control: #8a8d94;
+  --texto: #1d1d1f;
+  --texto-2: #474a52;
+  --texto-3: #5c6069;
+  --acento: #0b4f9c;
+  --acento-suave: rgb(11 79 156 / 8%);
+  --error: #a4161a;
+  --diferencia: #7a3b00;
+  --sombra: 0 1px 2px rgb(29 29 31 / 6%), 0 8px 24px rgb(29 29 31 / 6%);
+  --r-1: 8px;
+  --r-2: 12px;
+  --r-3: 16px;
+  --curva: cubic-bezier(0.2, 0, 0, 1);
+  --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  accent-color: var(--acento);
+}
+
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: #222; }
+[hidden] { display: none !important; }
+::selection { background: rgb(11 79 156 / 18%); }
+html, body { height: 100%; margin: 0; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
 main { display: flex; height: 100%; }
-aside { flex: 0 0 24rem; max-width: 45%; overflow-y: auto; padding: 0 1rem; font-size: 0.9rem; }
+aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); }
 aside:not(:has(:not(:empty))) { display: none; }
-fieldset { margin: 0.75rem 0; padding: 0.5rem 0.75rem; border: 1px solid #bbb; border-radius: 0.25rem; }
-legend { padding: 0 0.25rem; font-weight: 600; }
-fieldset label { display: block; margin: 0.4rem 0; }
-fieldset label input:not([type="radio"]), fieldset label select { display: block; width: 100%; margin-top: 0.15rem; padding: 0.3rem; font: inherit; }
-.opciones { display: flex; gap: 1rem; }
-#persona2 { border-style: dashed; }
-.opciones label, #metricas label { display: flex; align-items: center; gap: 0.4rem; }
-.ayuda, .aviso { margin: 0.25rem 0; color: #555; font-size: 0.8rem; }
-[aria-invalid="true"] { border: 2px solid #8b0000; }
-.error { display: block; margin-top: 0.15rem; color: #8b0000; font-weight: 600; font-size: 0.8rem; }
-#ficha { position: sticky; top: 0; z-index: 1; margin: 0 -1rem; padding: 0.5rem 1rem; background: #fff; border-bottom: 2px solid #222; }
+h2 { margin: 32px 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+
+/* Formulario: cada fieldset es una tarjeta con su titular dentro. */
+fieldset { margin: 16px 0; padding: 16px 20px 20px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+legend { float: left; width: 100%; margin: 0 0 8px; padding: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+legend + * { clear: both; }
+#persona2 { border-style: dashed; border-color: var(--linea-control); }
+fieldset label { display: block; margin: 12px 0 0; color: var(--texto-2); font-size: 14px; }
+fieldset label input:not([type="radio"], [type="range"]), fieldset label select {
+  display: block; width: 100%; min-height: 44px; margin-top: 4px; padding: 8px 12px;
+  border: 1px solid var(--linea-control); border-radius: var(--r-2); background: var(--superficie);
+  color: var(--texto); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s var(--curva), box-shadow 0.15s var(--curva);
+}
+fieldset label input:hover, fieldset label select:hover { border-color: var(--texto-2); }
+input[type="range"] { display: block; width: 100%; min-height: 44px; margin: 0; }
+.opciones { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.opciones label, #metricas label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: var(--texto); font-size: 15px; }
+input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ayuda, .aviso { margin: 8px 0 0; color: var(--texto-3); font-size: 13px; }
+.aviso { margin: 24px 0 0; }
+[aria-invalid="true"] { border: 2px solid var(--error) !important; }
+.error { display: block; margin-top: 4px; color: var(--error); font-weight: 600; font-size: 13px; }
+
+/* Foco visible en todo lo que se puede alcanzar con Tab. */
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+fieldset label input:focus-visible, fieldset label select:focus-visible { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px rgb(11 79 156 / 35%); }
+
+/* Ficha de la zona: el momento de la pantalla. Nombre, cifra grande y lo que sobra; el desglose en filas. */
+#ficha { position: sticky; top: 0; z-index: 1; max-height: 60%; overflow-y: auto; margin: 24px 0 0; padding: 20px 24px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-variant-numeric: tabular-nums; }
 #ficha:empty { display: none; }
-#ficha p { margin: 0.2rem 0; }
-#ficha p:first-child, #ficha .diferencia { font-weight: 600; }
-#ficha .diferencia { color: #7a3b00; }footer { margin: 1rem 0; color: #555; font-size: 0.8rem; }
-#mejores h2, #avisos-dato h2 { margin: 0.75rem 0 0.25rem; font-size: 0.95rem; }
-#mejores ol { margin: 0; padding-left: 1.6rem; }
-#mejores button { padding: 0.1rem 0; border: none; background: none; color: #0b4f9c; font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }
-#mejores button:focus-visible { outline: 2px solid #0b4f9c; outline-offset: 2px; }
-#avisos { margin: 0; padding-left: 1.1rem; color: #555; font-size: 0.8rem; }
-#avisos li { margin: 0.15rem 0; }
+#ficha p { margin: 0; padding: 8px 0; border-top: 1px solid var(--linea); color: var(--texto-2); font-size: 14px; }
+#ficha p:first-child { padding: 0; border: 0; color: var(--texto-3); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+#ficha p:nth-child(2) { padding: 4px 0 8px; border: 0; color: var(--texto); font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+#ficha p:nth-child(3) { color: var(--acento); font-size: 16px; font-weight: 600; }
+#ficha p.diferencia { color: var(--diferencia); font-weight: 600; }
+
+/* Las diez mejores: filas de 44 px, el puesto en gris y tabular. */
+#mejores ol { margin: 0; padding-left: 32px; }
+#mejores li { border-bottom: 1px solid var(--linea); }
+#mejores li::marker { color: var(--texto-3); font-variant-numeric: tabular-nums; }
+#mejores button { display: block; width: 100%; min-height: 44px; padding: 10px 8px; border: 0; border-radius: var(--r-1); background: none; color: var(--texto); font: inherit; font-variant-numeric: tabular-nums; text-align: left; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
+#mejores button:hover { background: var(--acento-suave); color: var(--acento); }
+#mejores button:active { background: var(--elevado); }
+#mejores .ayuda { margin-top: 12px; }
+#avisos-hogar, #avisos { margin: 0; padding-left: 20px; color: var(--texto-2); font-size: 13px; }
+#avisos-hogar li, #avisos li { margin: 4px 0; }
+#avisos li:last-child { color: var(--texto-3); }
+footer { margin: 24px 0 0; color: var(--texto-3); font-size: 13px; }
+a { color: var(--acento); text-underline-offset: 2px; }
+
+/* Mapa y lo que flota sobre él. */
 #mapa-contenedor { position: relative; flex: 1; min-width: 0; }
 #mapa { position: absolute; inset: 0; }
-#leyenda { position: absolute; left: 0.75rem; bottom: 0.75rem; width: 16rem; max-height: 60%; overflow-y: auto; padding: 0.5rem 0.75rem; background: rgb(255 255 255 / 92%); border-radius: 0.25rem; font-size: 0.8rem; }
-#leyenda { overflow-wrap: anywhere; }
-#leyenda p { margin: 0.25rem 0 0; }
-#leyenda summary { margin-top: 0.25rem; cursor: pointer; }
-#leyenda .titulo { margin: 0 0 0.25rem; font-weight: 600; }
-#leyenda .fila { display: flex; align-items: center; gap: 0.5rem; }
-#leyenda .muestra { flex: none; width: 1.1rem; height: 0.8rem; border: 1px solid #666; }
-#tooltip { position: absolute; z-index: 2; padding: 0.25rem 0.5rem; background: #222; color: #fff; border-radius: 0.25rem; font-size: 0.85rem; pointer-events: none; white-space: nowrap; }
-#estado { position: absolute; top: 0.75rem; left: 0.75rem; right: 0.75rem; margin: 0; color: #8b0000; font-weight: 600; }
+#leyenda { position: absolute; left: 16px; bottom: 16px; width: 17rem; max-height: 60%; overflow-y: auto; overflow-wrap: anywhere; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-2); box-shadow: var(--sombra); color: var(--texto-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+#leyenda p { margin: 8px 0 0; }
+#leyenda summary { min-height: 44px; margin-top: 4px; padding: 12px 0; color: var(--acento); cursor: pointer; }
+#leyenda .titulo { margin: 0 0 8px; color: var(--texto); font-weight: 600; }
+#leyenda .fila { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+#leyenda .muestra { flex: none; width: 20px; height: 12px; border: 1px solid rgb(29 29 31 / 35%); border-radius: 3px; }
+#tooltip { position: absolute; z-index: 2; padding: 4px 8px; background: var(--texto); color: var(--superficie); border-radius: var(--r-1); font-size: 13px; font-variant-numeric: tabular-nums; pointer-events: none; white-space: nowrap; }
+#estado { position: absolute; top: 16px; left: 16px; right: 16px; margin: 0; color: var(--error); font-weight: 600; }
+#estado:not(:empty) { padding: 12px 16px; background: var(--superficie); border-radius: var(--r-2); box-shadow: var(--sombra); }
+
+/* Movimiento solo para explicar un cambio: la ficha y la leyenda aparecen al cambiar de zona o de métrica. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes aparece { from { opacity: 0; transform: translateY(4px); } }
+  #ficha p, #leyenda .fila { animation: aparece 0.24s var(--curva) both; }
+}
+
 /* Pantalla estrecha: el mapa arriba, la leyenda debajo (fuera del mapa, con las entradas en línea) y el panel al fondo. */
 @media (max-width: 40rem) {
   main { flex-direction: column-reverse; }
-  aside { flex: none; max-width: none; max-height: 50%; }
+  aside { flex: none; max-width: none; max-height: 50%; padding: 0 16px 16px; border-right: 0; border-top: 1px solid var(--linea); }
+  #ficha { margin-top: 16px; padding: 16px; }
+  #ficha p:nth-child(2) { font-size: 24px; }
+  fieldset { padding: 16px; }
   #mapa-contenedor { display: flex; flex-direction: column; flex: 1; min-height: 0; }
   #mapa { position: relative; inset: auto; flex: 1; min-height: 12rem; }
-  #leyenda { position: static; width: auto; max-height: 35%; border-top: 1px solid #bbb; border-radius: 0; }
-  #leyenda .fila { display: inline-flex; margin-right: 0.75rem; }
+  #leyenda { position: static; width: auto; max-height: 35%; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
+  #leyenda .fila { display: inline-flex; margin-right: 12px; }
 }
