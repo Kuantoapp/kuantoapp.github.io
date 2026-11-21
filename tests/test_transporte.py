@@ -410,6 +410,9 @@ def test_el_combinado_paga_el_suplemento_y_el_ocio_no():
     assert coste("A-B1|combinado_aeropuerto", 1) == ("10 viajes", D("30.95"))
     # el ocio (8 viajes) se paga sin suplemento: gana el abono, 30,43 + 8 × 0,73 / 12 = 30,92
     assert coste("A-A|metro_aeropuerto", 1, 8) == ("Abono 30 días", D("30.92"))
+    # el ocio también sin suplemento en el pago por viaje: 28,22 + 8 × 0,73 = 34,06 (con suplemento, 58,06)
+    por_viaje = t._por_viaje(V, "A-A|metro_aeropuerto", 1, 8, "general")[1]
+    assert por_viaje.quantize(D("0.01")) == D("34.06")
     # 2 días: 15,13 viajes × 3,73 = 56,45 > 30,43
     assert coste("A-A|metro_aeropuerto", 2) == ("Abono 30 días", D("30.43"))
     # FN especial: 7,567 × (3,60 + 15,00) / 10 = 14,07, bajo su abono (15,17)
