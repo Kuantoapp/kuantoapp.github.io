@@ -33,10 +33,13 @@ el descuento de familia numerosa pero no publica su importe (cota superior para 
 discapacidad. El Bonotren
 va por zonas de Renfe, que no son las coronas, y no se modela.
 Suplemento Aeropuerto de Metro (BOCM-20251231-2 pág. 68: 3,00 € por viaje en el ordinario, con columna por colectivo,
-sin bonificación del RDL): se suma al sencillo y al 10 viajes de Metro con validación en el aeropuerto, y los abonos
-no lo pagan (según el auditor de #95; el BOCM da el importe, no a quién alcanza). `con_aeropuerto` lo aplica a una
-clave con Metro de la zona A: se supone que su última validación es en la estación del aeropuerto, y una clave sin
-Metro (autobús interurbano) no lo paga. Sin tarificar: la línea Exprés Aeropuerto de la EMT (5,00 €).
+sin bonificación del RDL): se suma al sencillo y al 10 viajes de Metro y de Combinado Metro que llegan a las terminales;
+los abonos que incluyen la zona A no lo pagan y la EMT, el interurbano y Cercanías tampoco (ficha del CRTM,
+https://www.crtm.es/billetes-transporte-publico-aeropuerto-madrid, consultada el 21-11-2026; el BOCM da el importe, no
+a quién alcanza). `con_aeropuerto` lo aplica a la clave de una ruta con Metro: se supone que su última validación es en
+la estación del aeropuerto y que se paga en los dos viajes del día (la ficha dice «viajas en Metro a alguna de las
+terminales»; el cobro a la vuelta no está comprobado en la fuente), y una clave sin Metro no lo paga. El ocio no lo
+paga: no se supone que acabe en el aeropuerto. Sin tarificar: la línea Exprés Aeropuerto de la EMT (5,00 €).
 Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna norma fija si basta con 65
 cumplidos (verificar).
 Viajes al mes por producto = 2 × días × semanas al mes por cada validación; los viajes no laborables
@@ -107,7 +110,8 @@ ESCENARIOS = ("vigente_2026", "sin_descuento")
 SISTEMAS = ("cercanias", "emt", "interurbano", "metro", "metro_ligero", "urbano")
 # en orden de prioridad: el primero de una ruta es su producto principal
 PRODUCTOS = (
-    "interurbano", "cercanias", "combinado", "metro_b", "tfm_mlo", "metro_aeropuerto", "metro_a", "urbano",
+    "interurbano", "cercanias", "combinado_aeropuerto", "combinado", "metro_b", "tfm_mlo",
+    "metro_aeropuerto", "metro_a", "urbano",
 )  # fmt: skip
 
 
@@ -169,6 +173,11 @@ DIEZ_VIAJES = {
 DIEZ_VIAJES["metro_aeropuerto"] = {
     k: p + 10 * SUPLEMENTO_AEROPUERTO[k] for k, p in DIEZ_VIAJES["metro_a"].items()
 }
+DIEZ_VIAJES["combinado_aeropuerto"] = {
+    k: p + 10 * SUPLEMENTO_AEROPUERTO[k] for k, p in DIEZ_VIAJES["combinado"].items()
+}
+# producto con suplemento → el mismo sin él
+SIN_SUPLEMENTO = {"metro_aeropuerto": "metro_a", "combinado_aeropuerto": "combinado"}
 # autobús interurbano por par de zonas, según los saltos de corona; 0 = dentro de una zona B1-C2
 DIEZ_VIAJES_INTERURBANO = [
     UNA_ZONA,
@@ -188,6 +197,9 @@ SENCILLO = {
     "metro_a": SENCILLO_150,
     "metro_aeropuerto": {
         k: SENCILLO_150[k] + SUPLEMENTO_AEROPUERTO[k] for k in SENCILLO_150
+    },
+    "combinado_aeropuerto": {
+        k: SENCILLO_300[k] + SUPLEMENTO_AEROPUERTO[k] for k in SENCILLO_300
     },
     "metro_b": SENCILLO_150,
     "tfm_mlo": _p(*["2.00 1.60 1.60 1.00 1.20 0.60"] * 2),
@@ -315,7 +327,9 @@ def _por_viaje(
     viajes = dict.fromkeys(productos, D(0))
     for p in productos:
         viajes[p] += 2 * dias * SEMANAS_MES
-    viajes[productos[0]] += no_laborables
+    if no_laborables:  # el ocio no va al aeropuerto: se paga sin suplemento
+        principal = SIN_SUPLEMENTO.get(productos[0], productos[0])
+        viajes[principal] = viajes.get(principal, D(0)) + no_laborables
     titulos, total = set(), D(0)
     for p, v in viajes.items():
         opciones = _opciones(p, v, cmin, cmax, tarifa)
@@ -371,7 +385,8 @@ def coste_mes(
     cmin, cmax, productos = _partes(clave)
     # el mes sin abono (vacaciones) el ocio se paga por viaje en el producto principal
     # shortcut: con Cercanías de principal no hay precio por viaje y ese ocio no se cobra
-    ocio = _opciones(productos[0], D(no_laborables), cmin, cmax, tarifa)
+    principal = SIN_SUPLEMENTO.get(productos[0], productos[0])
+    ocio = _opciones(principal, D(no_laborables), cmin, cmax, tarifa)
     ocio_vacaciones = min(ocio.values(), default=D(0)) / 12
     candidatos = {
         **dict([_por_viaje(tarifa, clave, dias, no_laborables, edad)]),
@@ -468,12 +483,13 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
 
 
 def con_aeropuerto(clave: str) -> str:
-    """La clave de una ruta cuya última validación es en el aeropuerto: su Metro de la zona A paga el
-    suplemento. Sin Metro de la zona A (autobús interurbano) queda igual."""
+    """La clave de una ruta cuya última validación es en el aeropuerto: su Metro (zona A o combinado) paga
+    el suplemento. Sin Metro (autobús interurbano) queda igual."""
     cmin, cmax, productos = _partes(clave)
-    if "metro_a" not in productos:
+    con = {v: k for k, v in SIN_SUPLEMENTO.items()}
+    if not (metro := [p for p in productos if p in con]):
         return clave
-    productos[productos.index("metro_a")] = "metro_aeropuerto"
+    productos[productos.index(metro[0])] = con[metro[0]]
     return f"{cmin}-{cmax}|" + "+".join(sorted(productos, key=PRODUCTOS.index))
 
 

@@ -69,7 +69,7 @@ def coronas_distintas(
     """`destino_id` de los polos cuyo punto no cae en la corona CRTM de su zona (`corona` de `zonas`).
 
     `polos` ya trae `zona_id` (`ubicar`); `coronas`, `corona` y polígono. Un polo fuera de toda corona o
-    en el borde de dos cuenta como distinto: la zona no puede decir cuál es la suya.
+    en el borde de dos (una de sus filas no coincide) cuenta como distinto: la zona no puede decir cuál es la suya.
     """
     puntos = gpd.GeoDataFrame(
         {"destino_id": polos["destino_id"]},
@@ -78,6 +78,5 @@ def coronas_distintas(
     ).to_crs(coronas.crs)
     union = gpd.sjoin(puntos, coronas[["corona", "geometry"]], how="left")
     de_la_zona = polos["zona_id"].map(zonas.set_index("zona_id")["corona"])
-    una_sola = ~union.index.duplicated(keep=False)
-    igual = union["corona"].eq(de_la_zona.loc[union.index]) & una_sola
+    igual = union["corona"].eq(de_la_zona.loc[union.index])
     return sorted(union.loc[~igual, "destino_id"].unique())

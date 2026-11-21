@@ -347,12 +347,12 @@ def test_rutas_cobra_el_suplemento_solo_a_la_clave_del_aeropuerto(
     aero = pipeline_euros.AEROPUERTO
     pd.DataFrame(
         {
-            "zona_id": ["28065", "28065", "28092", "28092"],
-            "destino_id": ["28092", aero, "28065", aero],
+            "zona_id": ["28065", "28065", "28092", "28092", "28092"],
+            "destino_id": ["28092", aero, "28065", aero, aero],
             "modo": "tp",
             "corona_min": "A",
             "corona_max": "A",
-            "sistemas": ["metro", "metro", "metro", "interurbano"],
+            "sistemas": ["metro", "metro", "metro", "interurbano", None],
             "validaciones": 1,
         }
     ).to_parquet(tmp_path / "tiempos.parquet")
@@ -363,6 +363,7 @@ def test_rutas_cobra_el_suplemento_solo_a_la_clave_del_aeropuerto(
         "A-A|metro_aeropuerto",
         "A-A|metro_a",
         "A-A|metro_a",  # interurbano dentro de A se paga con el billete de Metro y EMT
+        "A-A|metro_aeropuerto",  # sin `sistemas` se supone Metro en la zona A
     ]
 
 

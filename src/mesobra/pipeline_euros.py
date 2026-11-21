@@ -388,7 +388,9 @@ def tarifas_json(
     `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `clave_estimada`; `ids`, los orígenes en el orden de
     `tiempos.json`; los destinos son `ids` y los polos de `claves`, en su orden.
     """
-    destinos = ids + [d for d in dict.fromkeys(claves["destino_id"]) if d not in ids]
+    destinos = ids + [
+        d for d in dict.fromkeys(claves["destino_id"]) if d.startswith("polo:")
+    ]
     escenarios = {}
     for (esc, joven, viajes, corona), g in v1.groupby(
         ["escenario", "joven", "viajes_dia", "corona"]

@@ -402,9 +402,26 @@ def test_el_aeropuerto_encarece_el_10_viajes_y_no_el_abono():
     assert coste("A-A|metro_aeropuerto", 1, edad="joven") == ("Abono Joven", D("9.31"))
 
 
+def test_el_combinado_paga_el_suplemento_y_el_ocio_no():
+    assert t.SENCILLO["combinado_aeropuerto"][V] == D("6.00")  # 3,00 + 3,00
+    assert t.DIEZ_VIAJES["combinado_aeropuerto"][V] == D("40.90")  # 10,90 + 10 × 3,00
+    assert t.DIEZ_VIAJES["combinado_aeropuerto"][S] == D("48.80")  # 18,80 + 10 × 3,00
+    # 1 día: 7,567 × 4,09 = 30,95 frente al abono B1, 38,20 × 335/360 = 35,55
+    assert coste("A-B1|combinado_aeropuerto", 1) == ("10 viajes", D("30.95"))
+    # el ocio (8 viajes) se paga sin suplemento: gana el abono, 30,43 + 8 × 0,73 / 12 = 30,92
+    assert coste("A-A|metro_aeropuerto", 1, 8) == ("Abono 30 días", D("30.92"))
+    # 2 días: 15,13 viajes × 3,73 = 56,45 > 30,43
+    assert coste("A-A|metro_aeropuerto", 2) == ("Abono 30 días", D("30.43"))
+    # FN especial: 7,567 × (3,60 + 15,00) / 10 = 14,07, bajo su abono (15,17)
+    assert t.coste_mes(
+        ("vigente_2026", "fn_especial"), "general", "A-A|metro_aeropuerto", 1, 0
+    ) == ("10 viajes", D("14.07"))
+
+
 @pytest.mark.parametrize(
     ("clave", "esperada"),
     [
+        ("A-B1|combinado", "A-B1|combinado_aeropuerto"),
         ("A-A|metro_a", "A-A|metro_aeropuerto"),
         ("A-B2|interurbano+metro_a", "A-B2|interurbano+metro_aeropuerto"),
         ("A-A|metro_a+metro_a", "A-A|metro_aeropuerto+metro_a"),

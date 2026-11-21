@@ -140,15 +140,17 @@ def _nota_tiempos(tiempos: pd.DataFrame, n_polos: int) -> str:
             "todos los tiempos son estimados."
         )
     else:
-        # cifras en formato español: 1.076 pares (2,7 %)
+        # cifras en formato español: 2.407 de los 11.176 pares con ruta (21,5 %)
+        con_ruta = tiempos["minutos"].notna()
         n = f"{estimados.sum():,}".replace(",", ".")
-        pct = f"{100 * estimados.mean():.1f}".replace(".", ",")
+        m = f"{con_ruta.sum():,}".replace(",", ".")
+        pct = f"{100 * estimados.sum() / con_ruta.sum():.1f}".replace(".", ",")
         fin = (dt.datetime.combine(FECHA_SALIDA, HORA_SALIDA) + VENTANA).time()
         origen = (
             "Calculado con r5py (a pie + transporte público), mediana de las salidas entre las "
             f"{HORA_SALIDA.hour}:{HORA_SALIDA.minute:02d} y las {fin.hour}:{fin.minute:02d} del martes "
-            f"{FECHA_SALIDA}. Estimado: {n} pares ({pct} %) mejoran con líneas que el CRTM publica sin viajes, "
-            "reconstruidas con el trazado de OpenStreetMap (#173); el fichero no dice cuáles. Supuesto (estimado): "
+            f"{FECHA_SALIDA}. Estimado: {n} de los {m} pares con ruta ({pct} %) mejoran con líneas u horarios que "
+            "el CRTM publica sin viajes o con horas imposibles, reconstruidos (#173, #311, #349); el fichero no dice cuáles. Supuesto (estimado): "
             "el calendario del GTFS de Metro, caducado el 2026-05-27, se prolonga hasta el 2027-12-31."
         )
     return (
