@@ -38,7 +38,8 @@ los abonos que incluyen la zona A no lo pagan y la EMT, el interurbano y Cercan�
 https://www.crtm.es/billetes-transporte-publico-aeropuerto-madrid, consultada el 21-11-2026; el BOCM da el importe, no
 a quién alcanza). `con_aeropuerto` lo aplica a la clave de una ruta con Metro: se supone que su última validación es en
 la estación del aeropuerto y que se paga en los dos viajes del día (la ficha dice «viajas en Metro a alguna de las
-terminales»; el cobro a la vuelta no está comprobado en la fuente), y una clave sin Metro no lo paga. El ocio no lo
+terminales»; la ficha de Metro del CRTM, consultada el 21-11-2026, lo pone bajo «Billete con origen - destino Aeropuerto»,
+pero ninguna fuente leída dice expresamente que se cobre al salir), y una clave sin Metro no lo paga. El ocio no lo
 paga: no se supone que acabe en el aeropuerto. Sin tarificar: la línea Exprés Aeropuerto de la EMT (5,00 €).
 Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna norma fija si basta con 65
 cumplidos (verificar).
