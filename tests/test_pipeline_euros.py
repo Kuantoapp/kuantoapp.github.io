@@ -336,3 +336,67 @@ def test_tarifas_publicadas_controles_oficial_y_colectivo():
         "titulo": "10 viajes",
         "coste_mes": 18.16,
     }
+
+
+def test_rutas_cobra_el_suplemento_solo_a_la_clave_del_aeropuerto(
+    tmp_path, monkeypatch
+):
+    ids = ["28065", "28092"]
+    zonas = gpd.GeoDataFrame({"zona_id": ids}, geometry=[Point(0, 0)] * 2, crs=25830)
+    zonas.to_parquet(tmp_path / "zonas.parquet")
+    aero = pipeline_euros.AEROPUERTO
+    pd.DataFrame(
+        {
+            "zona_id": ["28065", "28065", "28092", "28092"],
+            "destino_id": ["28092", aero, "28065", aero],
+            "modo": "tp",
+            "corona_min": "A",
+            "corona_max": "A",
+            "sistemas": ["metro", "metro", "metro", "interurbano"],
+            "validaciones": 1,
+        }
+    ).to_parquet(tmp_path / "tiempos.parquet")
+    monkeypatch.setattr(pipeline_euros, "PROCESSED", tmp_path)
+    claves, _ = pipeline_euros.rutas()
+    assert claves["clave_tarifa"].tolist() == [
+        "A-A|metro_a",
+        "A-A|metro_aeropuerto",
+        "A-A|metro_a",
+        "A-A|metro_a",  # interurbano dentro de A se paga con el billete de Metro y EMT
+    ]
+
+
+def test_con_polos_copia_la_ruta_de_la_zona_del_polo():
+    tp = pd.DataFrame(
+        {
+            "zona_id": ["1", "1", "2", "2"],
+            "destino_id": ["1", "2", "1", "2"],
+            "corona_min": ["A", "A", "A", "B1"],
+        }
+    )
+    lista = pd.DataFrame({"zona_id": ["2", "2"], "destino_id": ["polo:x", "polo:y"]})
+    nuevo = pipeline_euros._con_polos(tp, lista)
+    assert len(nuevo) == 4 + 2 * 2
+    de_x = nuevo[nuevo["destino_id"] == "polo:x"].set_index("zona_id")["corona_min"]
+    assert de_x.to_dict() == {"1": "A", "2": "B1"}  # la de cada origen a la zona 2
+
+
+def test_matriz_de_claves_con_columnas_de_polo():
+    claves = pd.DataFrame(
+        {
+            "zona_id": ["1", "1", "2", "2"],
+            "destino_id": ["1", "polo:x", "1", "polo:x"],
+            "clave_tarifa": [
+                "A-A|metro_a",
+                "A-A|metro_aeropuerto",
+                None,
+                "A-A|metro_a",
+            ],
+        }
+    )
+    m = pipeline_euros._matriz_claves(
+        claves, ["1", "2"], ["1", "polo:x"], ["A-A|metro_a", "A-A|metro_aeropuerto"]
+    )
+    assert m == [[0, 1], [None, 0]]
+    with pytest.raises(ValueError, match="mismos ids"):
+        pipeline_euros._matriz_claves(claves, ["1", "2"], ["1"], [])

@@ -32,6 +32,11 @@ Los 20 € y los 10 € valen para todos los colectivos: según Renfe (preguntas
 el descuento de familia numerosa pero no publica su importe (cota superior para FN) y no tiene descuento por
 discapacidad. El Bonotren
 va por zonas de Renfe, que no son las coronas, y no se modela.
+Suplemento Aeropuerto de Metro (BOCM-20251231-2 pág. 68: 3,00 € por viaje en el ordinario, con columna por colectivo,
+sin bonificación del RDL): se suma al sencillo y al 10 viajes de Metro con validación en el aeropuerto, y los abonos
+no lo pagan (según el auditor de #95; el BOCM da el importe, no a quién alcanza). `con_aeropuerto` lo aplica a una
+clave con Metro de la zona A: se supone que su última validación es en la estación del aeropuerto, y una clave sin
+Metro (autobús interurbano) no lo paga. Sin tarificar: la línea Exprés Aeropuerto de la EMT (5,00 €).
 Abono +65 desde los 65 años: el CRTM escribe «más de 65 años» y ninguna norma fija si basta con 65
 cumplidos (verificar).
 Viajes al mes por producto = 2 × días × semanas al mes por cada validación; los viajes no laborables
@@ -102,7 +107,7 @@ ESCENARIOS = ("vigente_2026", "sin_descuento")
 SISTEMAS = ("cercanias", "emt", "interurbano", "metro", "metro_ligero", "urbano")
 # en orden de prioridad: el primero de una ruta es su producto principal
 PRODUCTOS = (
-    "interurbano", "cercanias", "combinado", "metro_b", "tfm_mlo", "metro_a", "urbano",
+    "interurbano", "cercanias", "combinado", "metro_b", "tfm_mlo", "metro_aeropuerto", "metro_a", "urbano",
 )  # fmt: skip
 
 
@@ -148,6 +153,8 @@ ABONO_JOVEN = _p("10.00 8.00 8.00 5.00 6.00 3.00", "20.00 16.00 16.00 10.00 12.0
 ABONO_65 = _p("0 0 0 0 0 0", "0 0 0 0 0 0")
 # BOCM-20251231-2 pág. 67 y BOCM-20251231-3 pág. 72
 UNA_ZONA = _p("5.10 4.00 4.00 2.50 3.00 1.50", "8.70 6.90 6.90 4.30 5.20 2.60")
+# BOCM-20251231-2 pág. 68, misma fila en -3 pág. 71; por viaje, con columna por colectivo
+SUPLEMENTO_AEROPUERTO = _p(*["3.00 2.40 2.40 1.50 1.80 0.90"] * 2)
 DIEZ_VIAJES = {
     # Metro zona A, EMT y ML1
     "metro_a": _p("7.30 5.80 5.80 3.60 4.30 2.10", "12.50 10.00 10.00 6.20 7.50 3.70"),
@@ -159,6 +166,9 @@ DIEZ_VIAJES = {
     "combinado": _p("10.90 8.70 8.70 5.40 6.50 3.20", "18.80 15.00 15.00 9.40 11.20 5.60"),
     "urbano": UNA_ZONA,  # fila de una sola zona; dentro de A vale el de Metro y EMT
 }  # fmt: skip
+DIEZ_VIAJES["metro_aeropuerto"] = {
+    k: p + 10 * SUPLEMENTO_AEROPUERTO[k] for k, p in DIEZ_VIAJES["metro_a"].items()
+}
 # autobús interurbano por par de zonas, según los saltos de corona; 0 = dentro de una zona B1-C2
 DIEZ_VIAJES_INTERURBANO = [
     UNA_ZONA,
@@ -176,6 +186,9 @@ SENCILLO_150 = _p(*["1.50 1.20 1.20 0.70 0.90 0.40"] * 2)
 SENCILLO_300 = _p(*["3.00 2.40 2.40 1.50 1.80 0.90"] * 2)
 SENCILLO = {
     "metro_a": SENCILLO_150,
+    "metro_aeropuerto": {
+        k: SENCILLO_150[k] + SUPLEMENTO_AEROPUERTO[k] for k in SENCILLO_150
+    },
     "metro_b": SENCILLO_150,
     "tfm_mlo": _p(*["2.00 1.60 1.60 1.00 1.20 0.60"] * 2),
     "combinado": SENCILLO_300,
@@ -191,6 +204,12 @@ ABONO_RENFE = {("vigente_2026", c): D("20.00") for c in COLECTIVOS}
 ABONO_RENFE_JOVEN = {("vigente_2026", c): D("10.00") for c in COLECTIVOS}
 ANIOS_NACIMIENTO_RENFE_JOVEN = (2000, 2011)  # RDL 17/2025, art. 3.2.a).3.º
 ABONOS_RENFE_ANIO = 11  # «validez de un mes desde la fecha de inicio de vigencia» (RDL 17/2025, art. 3.2.a)): 335 / 30,44 ≈ 11 al año
+
+
+METRO_A = {
+    "metro_a",
+    "metro_aeropuerto",
+}  # el abono que los cubre debe llegar a la zona A
 
 
 def _i(corona: str) -> int:
@@ -321,7 +340,7 @@ def _abono(tarifa: tuple[str, str], clave: str) -> tuple[str, D]:
     """El abono más barato que cubre el rango de coronas de la clave; con Metro de la zona A, desde la A
     (un interzonal sin A, como B2-C1, no cubre esa validación)."""
     cmin, cmax, productos = _partes(clave)
-    if "metro_a" in productos:
+    if METRO_A & set(productos):
         cmin = "A"
     cubren = {
         (a, b): p
@@ -446,6 +465,16 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
     """Clave de la forma v1 (#80): ida por la corona pasando por A; con 4 viajes, más Metro de A."""
     clave = clave_tarifa("A", corona)
     return clave + "+metro_a" * (viajes_dia == 4)
+
+
+def con_aeropuerto(clave: str) -> str:
+    """La clave de una ruta cuya última validación es en el aeropuerto: su Metro de la zona A paga el
+    suplemento. Sin Metro de la zona A (autobús interurbano) queda igual."""
+    cmin, cmax, productos = _partes(clave)
+    if "metro_a" not in productos:
+        return clave
+    productos[productos.index("metro_a")] = "metro_aeropuerto"
+    return f"{cmin}-{cmax}|" + "+".join(sorted(productos, key=PRODUCTOS.index))
 
 
 def clave_transbordo(clave: str) -> str:

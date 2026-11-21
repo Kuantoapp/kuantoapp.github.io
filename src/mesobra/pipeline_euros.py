@@ -18,12 +18,16 @@ from mesobra import (
     hogares,
     imputacion,
     neto,
+    polos,
     transporte,
     zonas,
 )
 
 APP_DATOS = Path(__file__).resolve().parents[2] / "app/datos"
 PROCESSED = Path(__file__).resolve().parents[2] / "data/processed"
+AEROPUERTO = (
+    "polo:aeropuerto-t4"  # el destino del Suplemento Aeropuerto de Metro (polos.csv)
+)
 MADRID = "28079"
 SERPAVI = {
     "nombre": "SERPAVI, Ministerio de Vivienda y Agenda Urbana. Origen de los datos: Ministerio de Vivienda y Agenda Urbana",
@@ -356,15 +360,17 @@ def _filas(g: pd.DataFrame) -> list[dict]:
 
 
 def _matriz_claves(
-    claves: pd.DataFrame, ids: list[str], lista: list[str]
+    claves: pd.DataFrame, ids: list[str], destinos: list[str], lista: list[str]
 ) -> list[list[int | None]]:
-    """Posición en `lista` de la clave de cada origen (filas) × destino (columnas), en el orden de `ids`."""
+    """Posición en `lista` de la clave de cada origen (filas, `ids`) × destino (columnas, `destinos`)."""
     if claves.duplicated(["zona_id", "destino_id"]).any():
         raise ValueError("pares origen-destino repetidos en las claves de tarifa")
     m = claves.pivot(index="zona_id", columns="destino_id", values="clave_tarifa")
-    if set(m.index) != set(ids) or set(m.columns) != set(ids):
-        raise ValueError("las claves de tarifa no tienen los mismos ids que las zonas")
-    m = m.loc[ids, ids]
+    if set(m.index) != set(ids) or set(m.columns) != set(destinos):
+        raise ValueError(
+            "las claves de tarifa no tienen los mismos ids que las zonas y los polos"
+        )
+    m = m.loc[ids, destinos]
     pos = {c: i for i, c in enumerate(lista)}
     return [[None if pd.isna(c) else pos[c] for c in fila] for fila in m.to_numpy()]
 
@@ -379,8 +385,10 @@ def tarifas_json(
 ) -> dict:
     """`tarifas.json`: la forma v1 (`escenarios`) y la v2 por ruta (`clave_tarifa`, `tarifas_ruta`).
 
-    `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `clave_estimada`; `ids`, en el orden de `tiempos.json`.
+    `claves`: `zona_id`, `destino_id`, `clave_tarifa` y `clave_estimada`; `ids`, los orígenes en el orden de
+    `tiempos.json`; los destinos son `ids` y los polos de `claves`, en su orden.
     """
+    destinos = ids + [d for d in dict.fromkeys(claves["destino_id"]) if d not in ids]
     escenarios = {}
     for (esc, joven, viajes, corona), g in v1.groupby(
         ["escenario", "joven", "viajes_dia", "corona"]
@@ -442,7 +450,7 @@ def tarifas_json(
         "escenarios": escenarios,
         "clave_estimada": bool(claves["clave_estimada"].any()),
         "origenes": ids,
-        "destinos": ids,
+        "destinos": destinos,
         "claves": lista,
         "colectivos": list(api_estatica.COLECTIVOS),
         "edades": list(api_estatica.EDADES),
@@ -451,22 +459,40 @@ def tarifas_json(
             lista.index(g) if (g := transporte.clave_transbordo(c)) in lista else None
             for c in lista
         ],
-        "clave_tarifa": _matriz_claves(claves, ids, lista),
+        "clave_tarifa": _matriz_claves(claves, ids, destinos, lista),
         "tarifas_ruta": ruta,
     }
 
 
+def _con_polos(tp: pd.DataFrame, lista: pd.DataFrame) -> pd.DataFrame:
+    """`tp` más la ruta a cada polo: la de su zona, porque su corona es la de su zona (#95)."""
+    pares = lista[["zona_id", "destino_id"]].set_axis(["destino_id", "polo"], axis=1)
+    delpolo = tp.merge(pares, on="destino_id").drop(columns="destino_id")
+    return pd.concat([tp, delpolo.rename(columns={"polo": "destino_id"})])
+
+
 def rutas() -> tuple[pd.DataFrame, list[str]]:
-    """Clave de tarifa de cada par de zonas: con las columnas de #161 si `tiempos` ya las trae; si no, la heurística."""
+    """Clave de tarifa de cada par de zonas y de zona a polo: con las columnas de #161 si `tiempos` ya las trae;
+    si no, la heurística (que da la ruta a cada polo copiando la de su zona). La clave al aeropuerto paga el suplemento."""
     z = gpd.read_parquet(PROCESSED / "zonas.parquet").sort_values("zona_id")
     tiempos = PROCESSED / "tiempos.parquet"
     tp = pd.read_parquet(tiempos).query("modo == 'tp'") if tiempos.exists() else None
     # la columna `estimado` de tiempos es otra cosa (línea base o líneas reconstruidas, #173)
     estimada = tp is None or "corona_min" not in tp
     if estimada:
-        tp = transporte.rango_coronas(z, zonas.leer_coronas())
+        tp = _con_polos(
+            transporte.rango_coronas(z, zonas.leer_coronas()),
+            polos.ubicar(polos.leer(), z),
+        )
     tp = tp.reset_index(drop=True)
     tp["clave_tarifa"] = transporte.claves(tp)
+    # sin `sistemas` (la heurística) la zona A se supone en Metro; con él, solo si hay Metro (no EMT ni ML1)
+    sistemas = tp["sistemas"] if "sistemas" in tp else pd.Series(None, tp.index)
+    en_metro = sistemas.isna() | sistemas.fillna("").str.contains(r"\bmetro\b")
+    aero = tp["destino_id"].eq(AEROPUERTO) & tp["clave_tarifa"].notna() & en_metro
+    tp.loc[aero, "clave_tarifa"] = tp.loc[aero, "clave_tarifa"].map(
+        transporte.con_aeropuerto
+    )
     tp["clave_estimada"] = estimada
     return tp, z["zona_id"].tolist()
 

@@ -64,17 +64,42 @@ def test_la_corona_del_polo_es_la_de_su_zona():
         )
     capa = gpd.read_file(ZONAS_GEOJSON)
     lista = polos.ubicar(polos.leer(), capa)
-    puntos = gpd.GeoDataFrame(
-        lista[["destino_id"]],
-        geometry=gpd.points_from_xy(lista["lon"], lista["lat"], crs=4326),
-    ).to_crs(25830)
-    del_punto = gpd.sjoin(puntos, zonas.leer_coronas(), predicate="intersects")[
-        "corona"
+    assert polos.coronas_distintas(lista, capa, zonas.leer_coronas()) == []
+
+
+def _coronas() -> gpd.GeoDataFrame:
+    """`A` (x de 0 a 1,2) y `B1` (x de 1,2 a 3), en EPSG:4326 como las zonas de prueba."""
+    return gpd.GeoDataFrame(
+        {"corona": ["A", "B1"]},
+        geometry=[box(0, 0, 1.2, 1), box(1.2, 0, 3, 1)],
+        crs=4326,
+    )
+
+
+def test_coronas_distintas_avisa_del_polo_en_otra_corona_o_fuera_de_toda_corona(
+    tmp_path,
+):
+    capa = _zonas().assign(corona=["A", "B1"])
+    filas = [_fila("igual", 0.5), _fila("otra", 1.1), _fila("fuera", 5.0)]
+    lista = polos.leer(_csv(tmp_path, filas)).assign(zona_id=["A", "B", "B"])
+    # `otra` cae en la corona A y su zona B es B1; `fuera` no cae en ninguna corona
+    assert polos.coronas_distintas(lista, capa, _coronas()) == [
+        "polo:fuera",
+        "polo:otra",
     ]
-    # un polo fuera de toda corona desaparecería del sjoin y `.all()` de una serie vacía da True
-    assert len(del_punto) == len(lista) and del_punto.index.is_unique
-    de_la_zona = lista["zona_id"].map(capa.set_index("zona_id")["corona"])
-    assert (del_punto == de_la_zona.loc[del_punto.index]).all()
+    assert polos.coronas_distintas(lista.iloc[:1], capa, _coronas()) == []
+
+
+def test_coronas_distintas_avisa_del_polo_en_el_borde_de_dos_coronas(tmp_path):
+    capa = _zonas().assign(corona=["A", "B1"])
+    lista = polos.leer(_csv(tmp_path, [_fila("borde", 1.2)])).assign(zona_id=["A"])
+    assert polos.coronas_distintas(lista, capa, _coronas()) == ["polo:borde"]
+
+
+def test_el_aeropuerto_de_los_polos_es_el_del_suplemento():
+    from mesobra import pipeline_euros
+
+    assert pipeline_euros.AEROPUERTO in polos.leer()["destino_id"].tolist()
 
 
 def test_leer_rechaza_slug_repetido(tmp_path):

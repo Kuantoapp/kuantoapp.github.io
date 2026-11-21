@@ -16,7 +16,7 @@ import shapely
 from mesobra import api_estatica
 from mesobra.coche import EUR_KM, NORMA_EUR_KM, VELOCIDAD_MAX_KMH
 from mesobra.pipeline_euros import APP_DATOS
-from mesobra.polos import leer, ubicar
+from mesobra.polos import coronas_distintas, leer, ubicar
 from mesobra.tiempos import (
     FACTOR_RODEO,
     FECHA_SALIDA,
@@ -28,7 +28,7 @@ from mesobra.tiempos import (
     VENTANA,
     polos_lejos,
 )
-from mesobra.zonas import PROCESSED
+from mesobra.zonas import PROCESSED, leer_coronas
 
 LOG = logging.getLogger(__name__)
 
@@ -273,6 +273,8 @@ def main() -> None:
         raise ValueError(
             f"Polos sin ruta o a {MAX_MINUTOS_POLO} min o más de su zona: {lejos}"
         )
+    if distintas := coronas_distintas(lista, zonas, leer_coronas()):
+        raise ValueError(f"Polos en otra corona CRTM que su zona: {distintas}")
     api_estatica.escribir(
         "tiempos.json", tiempos_json(tiempos, zonas, lista), APP_DATOS
     )
