@@ -1,6 +1,6 @@
 // Lógica de la interfaz sin DOM ni MapLibre: validación del formulario, escalas de color, leyenda y textos.
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
-import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, corona, tramoCesta, viaje } from "./calculo.js";
+import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, colectivo, hijosJovenes, tarifa, tramoCesta, viaje } from "./calculo.js";
 
 // Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
 export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
@@ -171,15 +171,15 @@ const conCentimos = formateador(2);
 
 /** Lo que la ficha necesita además de la zona: año del alquiler, zona de referencia, hogar, títulos y salario por hora. */
 export function contextoFicha(api, entrada, resultado, id) {
-  const hogar = { ...api.hogares.perfiles[entrada.hogar.perfil], ...entrada.hogar };
+  const hogar = { familia: "ordinario", no_laborables: 0, edades_hijos: [], ...api.hogares.perfiles[entrada.hogar.perfil], ...entrada.hogar };
   const { escenario } = resultado;
-  const edad = escenario.edad <= api.tarifas.edad_max_joven ? "joven" : "general";
-  const titulo = (s) => {
-    if (s.modo === "coche") return "coche";
-    // shortcut: el 2 repite el `viajes_dia` por defecto de calculo.js; el formulario siempre lo da.
-    const tabla = api.tarifas.escenarios[escenario.tarifas][edad][String(s.viajes_dia ?? 2)];
-    return tabla[corona(api, id, s.destino)][s.dias - 1].titulo;
+  // shortcut: los valores por defecto repiten los de calculo.js; el formulario siempre da `viajes_dia`.
+  const preparado = (s) => {
+    const sueldo = { viajes_dia: 2, edad: escenario.edad, discapacidad: false, ...s, no_laborables: hogar.no_laborables };
+    return { ...sueldo, colectivo: colectivo(hogar, sueldo) };
   };
+  const titulo = (s) => (s.modo === "coche" ? "coche" : tarifa(api, id, s.destino, preparado(s), escenario.tarifas).titulo);
+  const hijos = hijosJovenes(api, hogar);
   const zona = resultado.zonas[id];
   const dato = api.alquiler.zonas[id];
   const n = entrada.sueldos.length;
@@ -197,10 +197,10 @@ export function contextoFicha(api, entrada, resultado, id) {
     ref: resultado.ref === null ? null : resultado.zonas[resultado.ref],
     m2: hogar.m2,
     personas: hogar.personas_comparten,
-    titulos: zona.transporte === null ? [] : entrada.sueldos.map(titulo),
+    titulos: zona.transporte === null ? [] : [...entrada.sueldos.map(titulo), ...(hijos > 0 ? [`Abono Joven de ${hijos} ${hijos === 1 ? "hijo" : "hijos"}`] : [])],
     // Con dos sueldos, el viaje de cada persona (el mismo `viaje` y escenario que suman en `zona`); con uno, la ficha no lo desglosa.
     porPersona: n > 1 ? entrada.sueldos.map((s) => {
-      const [horas, coste] = viaje(api, { viajes_dia: 2, ...s }, id, escenario);
+      const [horas, coste] = viaje(api, preparado(s), id, escenario);
       return { titulo: titulo(s), horas, coste };
     }) : null,
     sueldos: n,
@@ -540,15 +540,18 @@ export function estadoDeEnlace(texto, porDefecto, api) {
   return { valores, avisos };
 }
 
-/** Licencias de los `meta.fuentes` sin repetir, separadas por «; ». */
+// Fuentes de un meta: las de siempre y, en tarifas.json, las de la ruta (`fuentes_ruta`, #306).
+const fuentesDe = (m) => [...(m?.fuentes ?? []), ...(m?.fuentes_ruta ?? [])];
+
+/** Licencias de los `meta.fuentes` (y `fuentes_ruta`) sin repetir, separadas por «; ». */
 export function licencias(...metas) {
-  const textos = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.licencia)));
+  const textos = new Set(metas.flatMap((m) => fuentesDe(m).map((f) => f.licencia)));
   return [...textos].join("; ");
 }
 
 /** «fuente: A, B» sin repetir, a partir de los `meta.fuentes` de los ficheros cargados. */
 export function fuentes(...metas) {
-  const nombres = new Set(metas.flatMap((m) => (m?.fuentes ?? []).map((f) => f.nombre)));
+  const nombres = new Set(metas.flatMap((m) => fuentesDe(m).map((f) => f.nombre)));
   return `fuente: ${[...nombres].join(", ")}`;
 }
 

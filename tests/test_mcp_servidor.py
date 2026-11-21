@@ -42,6 +42,10 @@ def test_calcular_sobrante_igual_que_calculo() -> None:
     assert r["zona"]["estimado"] is False
     assert r["unidades"]["sobra"].startswith("€/mes")
     assert r["fuentes"]["alquiler.json"]["fuentes"]
+    # las cifras de transporte (v2) llevan su fuente y su nota (#306)
+    tarifas = r["fuentes"]["tarifas.json"]
+    assert "tarifas_ruta" in tarifas["supuestos"]
+    assert any("Renfe" in f["nombre"] for f in tarifas["fuentes"])
 
 
 def test_escenario_y_dos_sueldos_igual_que_calculo() -> None:

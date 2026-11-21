@@ -94,9 +94,10 @@ def _fuentes(*nombres: str) -> dict[str, Any]:
             "anio_dato": m["anio_dato"],
             "fuentes": [
                 {k: f.get(k) for k in ("nombre", "url", "licencia")}
-                for f in m["fuentes"]
+                for f in [*m["fuentes"], *m.get("fuentes_ruta", [])]
             ],
-            "supuestos": m.get("nota"),
+            "supuestos": " ".join(filter(None, [m.get("nota"), m.get("nota_ruta")]))
+            or None,
         }
     return salida
 

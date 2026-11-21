@@ -389,6 +389,15 @@ def _tarifas_ruta(o):
     claves, nl = o["claves"], [str(n) for n in NO_LABORABLES]
     posicion = ("entero?", 0, len(claves) - 1)  # posición en `claves`
     p += _matriz("clave_tarifa", o.get("clave_tarifa"), filas, cols, posicion)
+    tb = o.get(
+        "transbordo"
+    )  # clave con cambio de operador de cada clave (#164), o null
+    if not isinstance(tb, list) or len(tb) != len(claves):
+        p.append(f"transbordo: se esperaban {len(claves)} posiciones, una por clave")
+    else:
+        p += [
+            m for i, v in enumerate(tb) for m in _campo(f"transbordo[{i}]", v, posicion)
+        ]
 
     def por_clave(ruta, t):
         return _mapa(ruta, t, claves, lambda r, c: _mapa(r, c, nl, _dias))
@@ -419,12 +428,11 @@ def _tarifas(o):
             "edades",
             "no_laborables",
             "clave_tarifa",
+            "transbordo",
             "tarifas_ruta",
         ]
     )
-    # shortcut: los bloques v2 son opcionales hasta que #164 regenere app/datos/tarifas.json; si
-    # viene uno, se exigen todos
-    p = _raiz(o, {**campos, **v2, "viajes_dia": None, "escenarios": None}, tuple(v2))
+    p = _raiz(o, {**campos, **v2, "viajes_dia": None, "escenarios": None})
     p += _campo("viajes_dia", o.get("viajes_dia"), [VIAJES_DIA])
     ordenadas = _lista("orden_coronas", o.get("orden_coronas"), CORONAS)
     if ordenadas:
@@ -437,10 +445,10 @@ def _tarifas(o):
     def coronas(ruta, t):
         return _mapa(ruta, t, o["orden_coronas"], _dias)
 
-    # escenarios: forma v1 de #80, la que lee calculo.py hasta #164
+    # escenarios: forma v1 de #80, solo la lee simulacion.py desde #164
     return (
         p
-        + (_tarifas_ruta(o) if any(k in o for k in v2) else [])
+        + _tarifas_ruta(o)
         + _mapa(
             "escenarios",
             o.get("escenarios"),

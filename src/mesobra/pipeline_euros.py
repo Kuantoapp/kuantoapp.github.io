@@ -5,6 +5,7 @@ No calcula nada nuevo: solo da forma al contrato de `api_estatica`. Ejecutar con
 """
 
 import logging
+from collections.abc import Iterable
 from datetime import date
 from pathlib import Path
 
@@ -368,6 +369,11 @@ def _matriz_claves(
     return [[None if pd.isna(c) else pos[c] for c in fila] for fila in m.to_numpy()]
 
 
+def _con_transbordo(claves: Iterable[str]) -> list[str]:
+    """Las claves de ruta y la de cada una con cambio de operador (4 viajes al día), sin repetir."""
+    return sorted({k for c in claves for k in (c, transporte.clave_transbordo(c))})
+
+
 def tarifas_json(
     v1: pd.DataFrame, v2: pd.DataFrame, claves: pd.DataFrame, ids: list[str]
 ) -> dict:
@@ -411,6 +417,8 @@ def tarifas_json(
         "mensual de Renfe (RDL 17/2025, art. 3.2.a; solo con descuento): 20 €, o 10 € para jóvenes nacidos de "
         f"{transporte.ANIOS_NACIMIENTO_RENFE_JOVEN[0]} a {transporte.ANIOS_NACIMIENTO_RENFE_JOVEN[1]}, que incluye "
         f"a todo el Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años. "
+        "transbordo: para cada clave, la posición de la misma ruta con cambio de operador en cada sentido "
+        "(4 viajes al día: una validación más, con Metro de la zona A). "
         "no_laborables: viajes de ocio al mes, cobrados en el "
         "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "
         "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); los abonos de "
@@ -439,6 +447,10 @@ def tarifas_json(
         "colectivos": list(api_estatica.COLECTIVOS),
         "edades": list(api_estatica.EDADES),
         "no_laborables": list(api_estatica.NO_LABORABLES),
+        "transbordo": [
+            lista.index(g) if (g := transporte.clave_transbordo(c)) in lista else None
+            for c in lista
+        ],
         "clave_tarifa": _matriz_claves(claves, ids, lista),
         "tarifas_ruta": ruta,
     }
@@ -523,7 +535,7 @@ def main() -> None:
         "netos.json": netos_json(neto.rejilla()),
         "tarifas.json": tarifas_json(
             transporte.tabla_v1(),
-            transporte.tabla(claves["clave_tarifa"].dropna().unique().tolist()),
+            transporte.tabla(_con_transbordo(claves["clave_tarifa"].dropna().unique())),
             claves,
             ids,
         ),

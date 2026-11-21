@@ -445,11 +445,17 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
     return clave + "+metro_a" * (viajes_dia == 4)
 
 
+def clave_transbordo(clave: str) -> str:
+    """Clave de la misma ruta con cambio de operador en cada sentido (4 viajes al día, #164): una
+    validación más, con Metro de la zona A, como en `clave_v1`."""
+    return clave + "+metro_a"
+
+
 def tabla_v1() -> pd.DataFrame:
     """Forma v1 de `tarifas` (escenario × joven × corona × días × viajes al día) que lee `calculo.py`,
     con el precio ordinario.
 
-    shortcut: se mantiene hasta que #164 lea la v2; entonces se borra.
+    shortcut: solo la lee `simulacion.py` desde #164; se borra al migrarla a la v2 (issue de seguimiento).
     """
     filas = [
         (
