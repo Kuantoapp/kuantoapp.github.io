@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- El hash es el del bloque de estilos: si cambia el estilo, tests/test_csp_informe.py da el nuevo. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'sha256-klayEcGmL/G8fvZPEH8kWmzLD1tfylUMAwincPz/+rc='; base-uri 'none'; form-action 'none'">
   <title>Kuanto · Informe de esfuerzo y Bono</title>
   <link rel="icon" href="data:,">
   <style>
