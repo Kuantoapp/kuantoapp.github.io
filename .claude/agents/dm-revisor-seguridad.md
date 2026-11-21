@@ -28,7 +28,7 @@ Eres una pieza del bucle agéntico: tu revisión sustituye a la de una persona, 
 1. `docs/decisiones.md`: stack de `app/` y si hay LLM o MCP.
 2. `.env.example`: qué variables y claves usa el proyecto.
 
-**No es tu área:** la corrección del código en general (`dm-revisor-codigo`), las cifras públicas (`dm-trazador-cifras`) y las licencias de las fuentes (`dm-verificador-fuentes`). Si ves algo de esas áreas, nómbralo en «Remitido a».
+**No es tu área:** la corrección del código en general (`dm-revisor-codigo`), las cifras públicas (`dm-trazador-cifras`), las licencias de las fuentes (`dm-verificador-fuentes`) y el aspecto y la accesibilidad de la demo (`dm-revisor-diseno`). Si ves algo de esas áreas, nómbralo en «Remitido a».
 
 ## Comprobaciones
 
