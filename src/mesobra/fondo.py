@@ -23,7 +23,7 @@ PAISES = RAW / "naturalearth_paises_2026-11-21.zip"
 SALIDA = RAIZ / "app/mapa/fondo.geojson"
 VERSION = "5.1.1"  # la de los ficheros VERSION.txt de los dos ZIP
 ESPANA = "ESP"
-VECINOS = ["PRT", "FRA", "AND", "GIB", "MAR", "DZA"]
+VECINOS = ["PRT", "FRA", "AND", "GIB", "MAR", "DZA", "SAH", "MRT"]
 CAJA = (
     -19.5,
     26.8,
@@ -66,6 +66,8 @@ def fondo(provincias: gpd.GeoDataFrame, paises: gpd.GeoDataFrame) -> dict:
     vecinos = paises[paises["ADM0_A3"].isin(VECINOS)]
     recortados = vecinos.clip_by_rect(*CAJA)
     vecinos = vecinos.assign(geometry=recortados)[~recortados.is_empty]
+    if vecinos.empty:
+        raise ValueError(f"Ningún país de {VECINOS} en la caja de España")
     # las provincias como cobertura: al simplificar no se abren huecos entre vecinas
     capas = [
         _capa(

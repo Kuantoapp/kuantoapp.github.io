@@ -60,6 +60,8 @@ def test_rechaza_otro_crs_o_sin_espana(capas):
     provincias, paises = capas
     with pytest.raises(ValueError, match="EPSG:4326"):
         fondo.fondo(provincias.to_crs(25830), paises)
+    with pytest.raises(ValueError, match="Ningún país"):
+        fondo.fondo(provincias, paises[paises["ADM0_A3"] == "DEU"])
     with pytest.raises(ValueError, match="Ninguna provincia"):
         fondo.fondo(provincias[provincias["adm0_a3"] == "PRT"], paises)
 

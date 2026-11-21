@@ -66,6 +66,8 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .barra [aria-pressed="true"], .flotante[aria-pressed="true"] { border-color: var(--acento); background: var(--acento); color: var(--superficie); }
 #quitar-escenario { margin-top: 4px; }
 .flotante { position: absolute; z-index: 2; box-shadow: var(--sombra); }
+/* Sobre el mapa oscuro el anillo del acento no llega a 3:1: un aro blanco entre botón y anillo lo separa del fondo. */
+.flotante:focus-visible { box-shadow: 0 0 0 4px var(--superficie), var(--sombra); }
 #mostrar-filtros { top: 16px; left: 16px; }
 #tema-mapa { top: 116px; right: 10px; } /* bajo los botones de zoom de MapLibre (10 px de margen y 2 × 44 px) */
 output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }

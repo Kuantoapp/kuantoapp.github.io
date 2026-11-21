@@ -176,7 +176,8 @@ const PINTURA_TEMA = [
   ["comunidad", "line-color", "contorno"], ["zonas-borde", "line-color", "bordeZona"], ["zonas-nombre", "text-color", "texto"],
   ["zonas-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
   ["zonas-elegida", "line-color", "marca"], ["zonas-imprecisas-fondo", "line-color", "bajoMarca"], ["zonas-imprecisas", "line-color", "marca"],
-  ["zonas-estimadas", "line-color", "marca"], ["zonas-referencia", "line-color", "marca"],
+  ["zonas-estimadas", "line-color", "marca"], ["zonas-referencia", "line-color", "marca"], ["zonas-encima-halo", "line-color", "bajoMarca"],
+  ["zonas-estimadas-fondo", "line-color", "bajoMarca"], ["zonas-referencia-fondo", "line-color", "bajoMarca"],
 ];
 
 const CLAVE_TEMA = "kuanto.temaMapa";
@@ -222,7 +223,8 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "vecinos", type: "fill", source: "fondo", filter: deTipo("pais"), paint: { "fill-color": t.vecino } });
     mapa.addLayer({ id: "provincias", type: "fill", source: "fondo", filter: deTipo("provincia"), paint: { "fill-color": t.provincia } });
     mapa.addLayer({ id: "vecinos-borde", type: "line", source: "fondo", filter: deTipo("pais"), paint: { "line-color": t.lineaPais, "line-width": 0.8 } });
-    mapa.addLayer({ id: "provincias-borde", type: "line", source: "fondo", filter: deTipo("provincia"), paint: { "line-color": t.lineaProvincia, "line-width": 0.6 } });
+    // Solo de lejos: de cerca se vería, junto al contorno de las zonas, el borde de Madrid de Natural Earth (hasta 3,7 km de desfase)
+    mapa.addLayer({ id: "provincias-borde", type: "line", source: "fondo", maxzoom: 8.5, filter: deTipo("provincia"), paint: { "line-color": t.lineaProvincia, "line-width": 0.6 } });
     // Fuera de la Comunidad, un velo claro: es el único sitio donde la herramienta tiene datos.
     mapa.addSource("velo", { type: "geojson", data: VELO });
     mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
@@ -232,15 +234,22 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 0.8 } });
     mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
     // Al pasar por encima, la zona se recorta con la línea de marca; la elegida (ficha abierta), además con halo.
-    mapa.addLayer({ id: "zonas-encima", type: "line", source: "zonas", paint: { "line-color": "#1d1d1f", "line-width": ["case", ["boolean", ["feature-state", "encima"], false], 2, 0] } });
+    const siEncima = (ancho) => ["case", ["boolean", ["feature-state", "encima"], false], ancho, 0];
+    mapa.addLayer({ id: "zonas-encima-halo", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": siEncima(4) } });
+    mapa.addLayer({ id: "zonas-encima", type: "line", source: "zonas", paint: { "line-color": "#1d1d1f", "line-width": siEncima(2) } });
     // Halo blanco bajo una línea casi negra: se ve sobre cualquier clase, clara u oscura.
     mapa.addLayer({ id: "zonas-elegida-halo", type: "line", source: "zonas", filter: ["==", ["get", "zona_id"], ""], paint: { "line-color": "#ffffff", "line-width": 6 } });
     mapa.addLayer({ id: "zonas-elegida", type: "line", source: "zonas", filter: ["==", ["get", "zona_id"], ""], paint: { "line-color": "#1d1d1f", "line-width": 3 } });
     // Fondo blanco bajo el punteado: sin él no se ve sobre la clase más oscura.
     mapa.addLayer({ id: "zonas-imprecisas-fondo", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#fff", "line-width": 3 } });
     mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
-    mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: ["==", ["get", "estimado"], true], paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
-    mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: ["==", ["get", "referencia"], true], paint: { "line-color": "#000", "line-width": 3 } });
+    // Cada marca lleva su halo (`bajoMarca`) para verse sobre clases claras y oscuras en los dos temas.
+    const estimada = ["==", ["get", "estimado"], true];
+    const referencia = ["==", ["get", "referencia"], true];
+    mapa.addLayer({ id: "zonas-estimadas-fondo", type: "line", source: "zonas", filter: estimada, paint: { "line-color": "#fff", "line-width": 4 } });
+    mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: estimada, paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
+    mapa.addLayer({ id: "zonas-referencia-fondo", type: "line", source: "zonas", filter: referencia, paint: { "line-color": "#fff", "line-width": 5 } });
+    mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: referencia, paint: { "line-color": "#000", "line-width": 3 } });
     // Nombres de zona al acercarse, encima de todo.
     mapa.addLayer({
       id: "zonas-nombre",
@@ -251,7 +260,8 @@ function crearMapa(zonas, fondo) {
       paint: { "text-color": t.texto, "text-halo-color": t.halo, "text-halo-width": 1.5 },
     });
     pendiente = null;
-    aplicarTema(mapa, temaActual());
+    // El botón manda: si se pulsó antes de cargar y no hay almacenamiento, `temaActual` ya no diría lo mismo.
+    aplicarTema(mapa, $("tema-mapa").getAttribute("aria-pressed") === "true" ? "oscuro" : "claro");
   });
   return {
     mapa,
@@ -385,6 +395,7 @@ async function main() {
     $("quitar-escenario").disabled = !hayEscenario(valoresFormulario());
   };
   const guardarPaso = () => {
+    actualizarBotones(); // también si el paso no se guarda (errores o sin cambios): «Quitar el escenario» sigue al formulario
     const valores = valoresFormulario();
     // Un paso con errores no se guarda: al volver a él, el enlace lo descartaría y «Deshacer» parecería no hacer nada.
     if (validar(valores, api).errores) return;
@@ -459,7 +470,9 @@ async function main() {
 /** Pestañas «Filtros» y «Mapa completo» (pliega el panel) y el botón del tema del mapa. No tocan el cálculo. */
 function prepararVista(mapa) {
   const plegar = (plegado) => {
-    document.querySelector("main").classList.toggle("panel-plegado", plegado);
+    const main = document.querySelector("main");
+    if (main.classList.contains("panel-plegado") === plegado) return; // ya estaba así: el foco no se mueve
+    main.classList.toggle("panel-plegado", plegado);
     $("ver-filtros").setAttribute("aria-pressed", String(!plegado));
     $("ver-mapa").setAttribute("aria-pressed", String(plegado));
     $("mostrar-filtros").hidden = !plegado;
