@@ -1,5 +1,5 @@
 ---
-description: "Reescribe en español textos que suenan a IA para que suenen a quien los firma, sin cambiar lo que dicen ni tocar cifras, fuentes ni marcas de estimado: guion y diapositivas del pitch, textos de la app, nota metodológica, README y descripciones de PR. Detecta contrastes «no es X, es Y», frases de cierre, tríadas forzadas, rayas, palabras infladas, negritas y restos de chat. No comprueba cifras (dm-trazador-cifras)."
+description: "Reescribe en español textos que suenan a IA para que suenen a quien los firma, sin cambiar lo que dicen ni tocar cifras, fuentes ni marcas de estimado: guion y diapositivas del pitch, textos de la app, nota metodológica, README y descripciones de PR. Detecta contrastes «no es X, es Y», frases de cierre, tríadas forzadas, rayas, palabras infladas, negritas y restos de chat. No comprueba cifras (dm-trazador-cifras) ni diseña pantallas o diapositivas (dm-diseno-web, dm-presentacion)."
 when_to_use: "Esto suena a ChatGPT; humaniza este texto; repasa el guion del pitch; mejora la redacción de la app o de la nota metodológica; quita el tono de IA; ¿se nota que lo ha escrito una IA?; deja el README más natural"
 ---
 
