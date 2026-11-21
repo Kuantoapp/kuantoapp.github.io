@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { calcular, corona, precioHora, tramoCesta } from "./calculo.js";
+import { calcular, precioHora, tarifa, tramoCesta } from "./calculo.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../tests/${ruta}`, import.meta.url), "utf8"));
 const api = Object.fromEntries(
@@ -32,22 +32,75 @@ for (const caso of casos) {
 
 test("hay 12 o más casos y los de error fallan, no devuelven vacío", () => {
   assert.ok(casos.length >= 12);
-  assert.equal(casos.filter((c) => "error" in c).length, 2);
+  assert.equal(casos.filter((c) => "error" in c).length, 3);
 });
 
-test("la corona de un polo es la de su zona", () => {
-  const polo = (zona) => ({
-    ...api,
-    tiempos: {
-      ...api.tiempos,
-      destinos: api.tiempos.destinos.map((d) => (d.tipo === "polo" ? { ...d, zona_id: zona } : d)),
-    },
-  });
-  assert.equal(corona(api, "2807901", "polo:ifema"), "A"); // zona_id 2807913 (ficticia en el ejemplo: IFEMA está en Barajas), corona A
-  assert.equal(corona(polo("28065"), "2807901", "polo:ifema"), "B1");
-  assert.throws(() => corona(polo("28092"), "2807901", "polo:ifema"), /sin tarifa/); // B2: sin tarifa en el ejemplo
-  const sinZona = { ...api, tiempos: { ...api.tiempos, destinos: api.tiempos.destinos.map((d) => ({ ...d, zona_id: null })) } };
-  assert.equal(corona(sinZona, "2807901", "2807901"), "A");
+// Copia de `api` con la clave de tarifa del par origen-destino; `null` la quita (como _con_clave de test_calculo.py).
+function conClave(origen, destino, clave) {
+  const a = structuredClone(api);
+  const t = a.tarifas;
+  t.clave_tarifa[t.origenes.indexOf(origen)][t.destinos.indexOf(destino)] = clave === null ? null : t.claves.indexOf(clave);
+  return a;
+}
+
+test("la clave de un polo sale de su columna de tarifas.json", () => {
+  const polo = { ...CENTRO, destino: "polo:ifema" };
+  assert.equal(zona("2807901", entrada({ sueldos: [polo] })).transporte, 16.57);
+  const a = conClave("2807901", "polo:ifema", "A-C2|interurbano");
+  assert.equal(zona("2807901", entrada({ sueldos: [polo] }), a).transporte, 45.78);
+});
+
+test("4 viajes al día en un par sin zona A (B1 a B2) cuentan la A: abono A-B2, 40,20 €", () => {
+  const sueldo = { dias: 5, viajes_dia: 4, edad: 30, colectivo: "ordinario", no_laborables: 0 };
+  assert.equal(tarifa(api, "28065", "28092", sueldo, "vigente_2026").coste_mes, 40.2);
+  assert.ok(tarifa(api, "28065", "28092", { ...sueldo, viajes_dia: 2 }, "vigente_2026").coste_mes < 40.2);
+});
+
+test("4 viajes al día dentro de una zona (C2) pagan el interurbano de una zona más el Metro de A: 18,77 €", () => {
+  const sueldo = { dias: 2, viajes_dia: 4, edad: 30, colectivo: "ordinario", no_laborables: 0 };
+  assert.equal(tarifa(api, "28001", "28001", sueldo, "vigente_2026").coste_mes, 18.77);
+});
+
+test("el Abono Joven del hijo no lleva viajes no laborables, también desde una zona lejana", () => {
+  const h = { perfil: "solo", edad: 33, hijos: 1, no_laborables: 16 };
+  const t = (hogar) => zona("28001", entrada({ hogar, zonas: ["28001"] })).transporte;
+  igual(t({ ...h, edades_hijos: [18] }), t(h) + 9.31, "hijo de 18 años");
+});
+
+test("un par sin clave falla con error claro", () => {
+  assert.throws(() => calcular(conClave("2807901", "2807901", null), entrada()), /sin clave de tarifa/);
+});
+
+test("edad y colectivo por sueldo, y Abono Joven de los hijos de 15 a 25 años", () => {
+  const cinco = { ...CENTRO, dias: 5 };
+  const pareja = { perfil: "pareja", edad: 30 };
+  const t = (hogar, sueldos, escenario = {}) => zona("2807901", entrada({ hogar, sueldos, escenario })).transporte;
+  igual(t(pareja, [{ ...cinco, edad: 24 }, cinco]), 9.31 + 27.62, "joven y general");
+  igual(t(pareja, [{ ...cinco, edad: 24, discapacidad: true }, cinco]), 7.44 + 27.62, "discapacidad");
+  igual(t(pareja, [{ ...cinco, edad: 24 }, cinco], { edad: 26 }), 9.31 + 27.62, "el escenario es el valor por defecto");
+  const dos = { perfil: "solo", edad: 33, hijos: 2 };
+  assert.equal(t(dos, [cinco]), 27.62, "sin edades_hijos no se cuentan");
+  igual(t({ ...dos, edades_hijos: [3, 14] }, [cinco]), 27.62, "menores de 15 gratis");
+  igual(t({ ...dos, edades_hijos: [14, 15] }, [cinco]), 27.62 + 9.31, "15 años ya paga");
+  igual(t({ ...dos, edades_hijos: [15, 25] }, [cinco]), 27.62 + 2 * 9.31, "hasta edad_max_joven");
+  igual(t({ ...dos, perfil: "pareja", familia: "fn_general" }, [cinco]), 21.94, "familia numerosa general");
+});
+
+test("las entradas de transporte inválidas fallan con error", () => {
+  const malas = [
+    [{ edades_hijos: [7] }, {}, /edades_hijos/],
+    [{ hijos: 1, edades_hijos: [26] }, {}, /edades_hijos/],
+    [{ familia: "fn_general" }, {}, /familia numerosa con 0 hijos/],
+    [{ familia: "grande" }, {}, /familia = "grande"/],
+    [{ no_laborables: 4 }, {}, /no_laborables/],
+    [{ no_laborables: false }, {}, /no_laborables/],
+    [{}, { discapacidad: 1 }, /discapacidad/],
+    [{}, { edad: 15 }, /edad = 15/],
+  ];
+  for (const [hogar, sueldo, mensaje] of malas) {
+    const e = entrada({ hogar: { perfil: "solo", edad: 30, ...hogar }, sueldos: [{ ...CENTRO, ...sueldo }] });
+    assert.throws(() => calcular(api, e), (err) => err.constructor === Error && mensaje.test(err.message));
+  }
 });
 
 test("sin dato o sin ruta sale null, nunca cero", () => {

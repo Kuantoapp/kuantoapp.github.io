@@ -10,10 +10,13 @@ regeneran (las entradas no se tocan) con:
 
 Entrada de `calcular` (un dict):
 - `hogar`: `perfil` y `edad`; opcionales `adultos`, `hijos`, `personas_comparten` y `m2` (por
-  defecto, los del perfil de `hogares.json`).
+  defecto, los del perfil de `hogares.json`), `edades_hijos` (vacía, o una edad de 0 a `edad_max_joven`
+  por hijo), `familia` (`ordinario`, `fn_general` o `fn_especial`; las numerosas piden 2 hijos o más) y
+  `no_laborables` (viajes de ocio al mes: 0, 8 o 16; por defecto 0).
 - `sueldos`: 1 o 2, cada uno con `destino` (`destino_id`), `dias` (1 a 5), `modo` (`tp` o `coche`),
   `bruto` (€/año) o `neto_mes` (€/mes, neto anual ÷ 12; con 14 pagas, suma de las nóminas del año ÷ 12), y
-  opcional `viajes_dia` (2 o 4; por defecto 2).
+  opcionales `viajes_dia` (2 o 4; por defecto 2), `edad` (por defecto, la del escenario, que por defecto
+  es la del hogar) y `discapacidad` (`true`: grado igual o superior al 65 %; por defecto `false`).
 - Opcionales: `escenario` (`tarifas`: `vigente_2026` o `sin_descuento`; `subida_alquiler` en %;
   `edad`, que sustituye a la del hogar; `cesta`: `media` o `tramo`), `zonas` (por defecto, los orígenes de `tiempos.json`) y
   `ref` (zona de referencia).
@@ -29,11 +32,19 @@ Supuestos:
    da un solo valor.
 4. Neto: interpolación lineal en `brutos` de `netos.json`; fuera de la tabla, `ValueError` (no se
    extrapola). Monoparental = 1 adulto con hijos; cada sueldo usa los hijos del hogar (#183).
-5. Transporte público: tabla de `tarifas.json` con la corona más exterior entre origen y destino; tarifa
-   joven si edad ≤ `edad_max_joven`. La corona de un polo es la de su `zona_id` (F3-01); un destino sin corona
-   conocida da error.
-   shortcut: una sola edad (la del visitante) para los dos sueldos, aunque el Abono Joven es personal;
-   pasar a `edad` por sueldo con el selector «edad de quien trabaja» (F3-14, #164).
+5. Transporte público de todo el hogar (#164), con la v2 de `tarifas.json`: la clave de la ruta
+   (`clave_tarifa` del par origen-destino; con 4 viajes al día, la de la misma ruta con cambio de
+   operador, `transbordo`), los viajes no laborables, la edad y el colectivo de cada sueldo
+   (`tarifas_ruta`). Tarifa joven si edad ≤ `edad_max_joven`. El colectivo es el de la familia más la
+   discapacidad de la persona. Un par sin clave da error. Cada hijo de 15 a `edad_max_joven` años
+   suma un Abono Joven (a 5 días, en la ruta del primer sueldo: es plano) con el colectivo de la
+   familia, sin viajes no laborables (precio plano); los menores de 15 años no pagan (de 7 a 14, BOCM-20251231-2,
+   pág. 66; hasta 6, gratuidad infantil del RDL 17/2025, art. 8.a). Sin `edades_hijos` no se cuentan. Supuestos del
+   hijo: compra el Abono Joven todos los meses con el calendario laboral (sesgo al alza para un estudiante), no
+   se modela su discapacidad, y con 2 hijos la familia solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003
+   (ver `transporte.py`).
+   shortcut: la edad mayor de 64 (Abono +65) no se calcula, porque el neto supone menores de 65 años;
+   cuando se admita, `tarifa` ya pide la edad `mayor_65` (verificar si basta con 65 cumplidos).
 6. Coche: 2 × km × días × semanas_mes × `eur_km`, sin aparcamiento ni congestión (F3-02, #96).
 7. Horas al mes = Σ sueldos de minutos de ida × 2 × días × `semanas_mes` ÷ 60, con `semanas_mes` del
    calendario laboral de `tarifas.json` (3,7833 en 2026, #197), no 4,33.
@@ -69,6 +80,8 @@ EDAD_MIN, EDAD_MAX = 16, 64
 MODOS = ("tp", "coche")
 ESCENARIO = {"tarifas", "subida_alquiler", "edad", "cesta"}
 CESTAS = ("media", "tramo")
+FAMILIAS = ("ordinario", "fn_general", "fn_especial")
+EDAD_MIN_JOVEN = 15  # BOCM-20251231-2, pág. 66: de 7 a 14 años el abono es gratuito
 
 Api = dict[str, Any]
 
@@ -164,23 +177,20 @@ def _celda(tiempos: dict, matriz: str, origen: str, destino: str) -> float | Non
     return tiempos[matriz][tiempos["origenes"].index(origen)][destinos.index(destino)]
 
 
-def _corona(api: Api, origen: str, destino: str) -> str:
-    """La corona más exterior entre origen y destino; la de un polo es la de la zona en la que cae."""
-    orden = api["tarifas"]["orden_coronas"]
-    coronas = {
-        f["properties"]["zona_id"]: f["properties"]["corona"]
-        for f in api["zonas"]["features"]
-    }
-    zona_destino = {
-        d["destino_id"]: d.get("zona_id") or d["destino_id"]
-        for d in api["tiempos"]["destinos"]
-    }
-    par = [coronas.get(origen), coronas.get(zona_destino.get(destino, destino))]
-    if any(c not in orden for c in par):
-        raise ValueError(
-            f"{origen} → {destino}: coronas {par} sin tarifa (orden_coronas {orden})"
-        )
-    return max(par, key=orden.index)
+def tarifa(api: Api, origen: str, destino: str, sueldo: dict, escenario: str) -> dict:
+    """Título y coste del mes (`{titulo, coste_mes}`) de la ruta de `origen` a `destino` en transporte
+    público para un `sueldo` ya preparado (`dias`, `viajes_dia`, `edad`, `colectivo`, `no_laborables`)."""
+    t = api["tarifas"]
+    if origen not in t["origenes"] or destino not in t["destinos"]:
+        raise ValueError(f"tarifas.json no tiene la ruta {origen} → {destino}")
+    k = t["clave_tarifa"][t["origenes"].index(origen)][t["destinos"].index(destino)]
+    if k is not None and sueldo["viajes_dia"] == 4:
+        k = t["transbordo"][k]
+    if k is None:
+        raise ValueError(f"{origen} → {destino}: sin clave de tarifa")
+    edad = "joven" if sueldo["edad"] <= t["edad_max_joven"] else "general"
+    por_clave = t["tarifas_ruta"][escenario][sueldo["colectivo"]][edad][t["claves"][k]]
+    return por_clave[str(sueldo["no_laborables"])][sueldo["dias"] - 1]
 
 
 def viaje(
@@ -200,12 +210,34 @@ def viaje(
             else 2 * km * dias * semanas * tiempos["coste_coche"]["eur_km"]
         )
     else:
-        edad = "joven" if escenario["edad"] <= tarifas["edad_max_joven"] else "general"
-        tabla = tarifas["escenarios"][escenario["tarifas"]][edad][
-            str(sueldo["viajes_dia"])
-        ]
-        coste = tabla[_corona(api, origen, destino)][dias - 1]["coste_mes"]
+        coste = tarifa(api, origen, destino, sueldo, escenario["tarifas"])["coste_mes"]
     return minutos * 2 * dias * semanas / 60, coste
+
+
+def hijos_jovenes(api: Api, hogar: dict) -> int:
+    """Hijos con Abono Joven: de `EDAD_MIN_JOVEN` a `edad_max_joven` años."""
+    return sum(
+        EDAD_MIN_JOVEN <= e <= api["tarifas"]["edad_max_joven"]
+        for e in hogar["edades_hijos"]
+    )
+
+
+def coste_hijos(
+    api: Api, hogar: dict, sueldos: list[dict], zona: str, escenario: dict
+) -> float:
+    """Abonos Jóvenes de los hijos, €/mes: a 5 días y en la ruta del primer sueldo (el precio es plano)."""
+    n = hijos_jovenes(api, hogar)
+    if n == 0:
+        return 0.0
+    hijo = {
+        "dias": 5,
+        "viajes_dia": 2,
+        "edad": EDAD_MIN_JOVEN,
+        "colectivo": hogar["familia"],
+        "no_laborables": 0,  # Abono Joven plano, 9,31 €: el ocio de los hijos no se modela (#164)
+    }
+    destino = sueldos[0]["destino"]
+    return n * tarifa(api, zona, destino, hijo, escenario["tarifas"])["coste_mes"]
 
 
 def _suma(valores: list[float | None]) -> float | None:
@@ -219,7 +251,7 @@ def calcular_zona(
     neto = sum(s["neto_mes"] for s in sueldos)
     alq = alquiler(api["alquiler"]["zonas"][zona], hogar, escenario["subida_alquiler"])
     horas, costes = zip(*(viaje(api, s, zona, escenario) for s in sueldos), strict=True)
-    transporte = _suma(list(costes))
+    transporte = _suma([*costes, coste_hijos(api, hogar, sueldos, zona, escenario)])
     factor = (
         tramo_cesta(api["hogares"]["cesta_tramos"], neto)["factor"]
         if escenario["cesta"] == "tramo"
@@ -279,6 +311,30 @@ def _estructura(entrada: Any) -> None:
         raise ValueError("cada sueldo debe ser un objeto, y zonas y ref, textos")
 
 
+def _transporte_hogar(api: Api, hogar: dict) -> None:
+    """Valida `edades_hijos`, `familia` y `no_laborables` del hogar."""
+    edades = hogar["edades_hijos"]
+    if not isinstance(edades, list) or len(edades) not in (0, hogar["hijos"]):
+        raise ValueError(
+            f"edades_hijos = {edades!r}: debe estar vacía o tener una edad por hijo ({hogar['hijos']})"
+        )
+    for e in edades:
+        _entero("edades_hijos", e, range(api["tarifas"]["edad_max_joven"] + 1))
+    if hogar["familia"] not in FAMILIAS:
+        raise ValueError(
+            f"familia = {hogar['familia']!r}: debe ser {' o '.join(FAMILIAS)}"
+        )
+    if hogar["familia"] != "ordinario" and hogar["hijos"] < 2:
+        raise ValueError(f"familia numerosa con {hogar['hijos']} hijos: pide 2 o más")
+    if (
+        type(hogar["no_laborables"]) is not int
+        or hogar["no_laborables"] not in api["tarifas"]["no_laborables"]
+    ):
+        raise ValueError(
+            f"no_laborables = {hogar['no_laborables']!r}: debe ser {api['tarifas']['no_laborables']}"
+        )
+
+
 def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     """Hogar con los valores del perfil por defecto y escenario completo, validados."""
     h = entrada["hogar"]
@@ -287,7 +343,13 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
         or h["perfil"] not in api["hogares"]["perfiles"]
     ):
         raise ValueError(f"perfil desconocido: {h.get('perfil')!r}")
-    hogar = {**api["hogares"]["perfiles"][h["perfil"]], **h}
+    hogar = {
+        "edades_hijos": [],
+        "familia": "ordinario",
+        "no_laborables": 0,
+        **api["hogares"]["perfiles"][h["perfil"]],
+        **h,
+    }
     pedido = entrada.get("escenario", {})
     if extra := set(pedido) - ESCENARIO:
         raise ValueError(f"escenario con claves desconocidas: {sorted(extra)}")
@@ -308,9 +370,10 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     )  # la rejilla de netos llega a 2 (#183)
     _entero("personas_comparten", hogar["personas_comparten"], range(1, 21))
     _numero("m2", hogar["m2"], 0)
+    _transporte_hogar(api, hogar)
     if (
         type(esc["tarifas"]) is not str
-        or esc["tarifas"] not in api["tarifas"]["escenarios"]
+        or esc["tarifas"] not in api["tarifas"]["tarifas_ruta"]
     ):
         raise ValueError(f"escenario {esc['tarifas']!r} inválido")
     if esc["cesta"] not in CESTAS:
@@ -318,8 +381,19 @@ def _hogar(api: Api, entrada: dict) -> tuple[dict, dict]:
     return hogar, esc
 
 
-def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
-    """Sueldos validados, con `viajes_dia` y `neto_mes`."""
+def _colectivo(hogar: dict, sueldo: dict) -> str:
+    """Colectivo de `tarifas.json` de una persona: su familia más su discapacidad del 65 % o más."""
+    if not sueldo["discapacidad"]:
+        return hogar["familia"]
+    return (
+        "discapacidad"
+        if hogar["familia"] == "ordinario"
+        else f"{hogar['familia']}_discapacidad"
+    )
+
+
+def _sueldos(api: Api, entrada: dict, hogar: dict, escenario: dict) -> list[dict]:
+    """Sueldos validados, con `viajes_dia`, `neto_mes`, `edad`, `colectivo` y `no_laborables`."""
     sueldos = entrada["sueldos"]
     if not 1 <= len(sueldos) <= hogar["adultos"]:
         raise ValueError(f"{len(sueldos)} sueldos para {hogar['adultos']} adultos")
@@ -327,8 +401,15 @@ def _sueldos(api: Api, entrada: dict, hogar: dict) -> list[dict]:
     for s in sueldos:
         if faltan := {"destino", "dias", "modo"} - s.keys():
             raise ValueError(f"sueldo sin {sorted(faltan)}")
-        s = {"viajes_dia": 2, **s}
+        s = {"viajes_dia": 2, "edad": escenario["edad"], "discapacidad": False, **s}
         _entero("dias", s["dias"], range(1, 6))
+        _entero("edad", s["edad"], range(EDAD_MIN, EDAD_MAX + 1))
+        if type(s["discapacidad"]) is not bool:
+            raise ValueError(
+                f"discapacidad = {s['discapacidad']!r}: debe ser verdadero o falso"
+            )
+        s["colectivo"] = _colectivo(hogar, s)
+        s["no_laborables"] = hogar["no_laborables"]
         if (
             s["modo"] not in MODOS
             or type(s["viajes_dia"]) is not int
@@ -351,7 +432,7 @@ def calcular(api: Api, entrada: dict) -> dict:
     """Resultado por zona con `precio_hora` frente a la referencia (ver el docstring del módulo)."""
     _estructura(entrada)
     hogar, escenario = _hogar(api, entrada)
-    sueldos = _sueldos(api, entrada, hogar)
+    sueldos = _sueldos(api, entrada, hogar, escenario)
     ref = entrada.get("ref")
     zonas = list(
         dict.fromkeys(

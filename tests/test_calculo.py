@@ -49,9 +49,9 @@ def test_un_sueldo_a_mano() -> None:
     neto = (13447.5 + 7000 / 15000 * (23795.0 - 13447.5)) / 12
     assert z["neto"] == pytest.approx(neto)
     assert z["alquiler"] == pytest.approx(19.6 * 45)
-    assert z["transporte"] == 21.9
+    assert z["transporte"] == 16.57  # 10 viajes prorrateado, A-A 3 días
     assert z["cesta"] == pytest.approx(275.37 + 81.08 + 43.72)
-    assert z["sobra"] == pytest.approx(neto - 19.6 * 45 - 21.9 - 400.17)
+    assert z["sobra"] == pytest.approx(neto - 19.6 * 45 - 16.57 - 400.17)
     assert z["horas"] == pytest.approx(9 * 2 * 3 * 3.7833 / 60)
     assert z["esfuerzo"] == pytest.approx(19.6 * 45 / neto)
 
@@ -82,16 +82,16 @@ def test_dos_sueldos_suman_neto_horas_y_transporte() -> None:
 
 def test_abono_joven_y_escenarios() -> None:
     joven = {"perfil": "solo", "edad": 25}
-    assert _zona(_entrada(hogar=joven), "28065")["transporte"] == 10.0
+    assert _zona(_entrada(hogar=joven), "28065")["transporte"] == 9.31
     assert (
         _zona(_entrada(hogar=joven, escenario={"tarifas": "sin_descuento"}), "28065")[
             "transporte"
         ]
-        == 20.0
+        == 18.61
     )
     assert (
         _zona(_entrada(hogar=joven, escenario={"edad": 26}), "28065")["transporte"]
-        == 21.9
+        == 16.57
     )
     base, caro = (
         _zona(_entrada(escenario={"subida_alquiler": s}), "28065") for s in (0, 10)
@@ -99,7 +99,7 @@ def test_abono_joven_y_escenarios() -> None:
     assert caro["alquiler"] == pytest.approx(base["alquiler"] * 1.1)
     assert (
         _zona(_entrada(sueldos=[CENTRO | {"viajes_dia": 4}]), "2807901")["transporte"]
-        == 32.7
+        == 30.43
     )
 
 
@@ -196,7 +196,6 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
         ({"escenario": {"cesta": "baja"}}, "cesta"),
         ({"sueldos": [CENTRO | {"dias": 6}]}, "dias = 6"),
         ({"sueldos": [CENTRO | {"modo": "bici"}]}, "modo 'bici'"),
-        ({"zonas": ["28092"]}, "sin tarifa"),
         ({"hogar": {"perfil": "otro", "edad": 30}}, "perfil desconocido"),
         ({"sueldos": [CENTRO | {"neto_mes": 1500}]}, "uno de los dos"),
         (
@@ -229,24 +228,102 @@ def test_entradas_invalidas_fallan(cambios: dict, mensaje: str) -> None:
         calculo.calcular(API, _entrada(**cambios))
 
 
-def test_la_corona_de_un_polo_es_la_de_su_zona() -> None:
-    assert (
-        calculo._corona(API, "2807901", "polo:ifema") == "A"
-    )  # zona_id 2807913 (zona ficticia en el ejemplo: IFEMA está en Barajas), corona A
-    api = copy.deepcopy(API)
-    polo = next(d for d in api["tiempos"]["destinos"] if d["tipo"] == "polo")
-    polo["zona_id"] = "28065"
-    assert calculo._corona(api, "2807901", "polo:ifema") == "B1"
-    polo["zona_id"] = "28092"  # la corona B2 no tiene tarifa en el ejemplo
-    with pytest.raises(ValueError, match="sin tarifa"):
-        calculo._corona(api, "2807901", "polo:ifema")
+def _con_clave(api: dict, origen: str, destino: str, clave: str | None) -> dict:
+    """Copia de `api` con la clave de tarifa del par; `None` la quita."""
+    api = copy.deepcopy(api)
+    t = api["tarifas"]
+    k = None if clave is None else t["claves"].index(clave)
+    t["clave_tarifa"][t["origenes"].index(origen)][t["destinos"].index(destino)] = k
+    return api
 
 
-def test_zona_id_nulo_cae_a_destino_id_como_en_js() -> None:
-    api = copy.deepcopy(API)
-    centro = next(d for d in api["tiempos"]["destinos"] if d["destino_id"] == "2807901")
-    centro["zona_id"] = None
-    assert calculo._corona(api, "2807901", "2807901") == "A"
+def test_la_clave_de_un_polo_sale_de_su_columna() -> None:
+    polo = CENTRO | {"destino": "polo:ifema"}
+    assert _zona(_entrada(sueldos=[polo]), "2807901")["transporte"] == 16.57
+    api = _con_clave(API, "2807901", "polo:ifema", "A-C2|interurbano")
+    assert _zona(_entrada(sueldos=[polo]), "2807901", api)["transporte"] == 45.78
+
+
+def test_un_par_sin_clave_falla_claro() -> None:
+    api = _con_clave(API, "2807901", "2807901", None)
+    with pytest.raises(ValueError, match="sin clave de tarifa"):
+        calculo.calcular(api, _entrada())
+
+
+def test_edad_por_sueldo_y_colectivo_de_cada_persona() -> None:
+    h = {"perfil": "pareja", "edad": 30}
+    joven = CENTRO | {"edad": 24, "dias": 5}
+    gral = CENTRO | {"dias": 5}
+    z = _zona(_entrada(hogar=h, sueldos=[joven, gral]), "2807901")
+    assert z["transporte"] == pytest.approx(9.31 + 27.62)  # Abono Joven + 10 viajes
+    z = _zona(
+        _entrada(hogar=h, sueldos=[joven | {"discapacidad": True}, gral]), "2807901"
+    )
+    assert z["transporte"] == pytest.approx(7.44 + 27.62)  # discapacidad ≥ 65 %: BOCM
+    # el escenario de edad es el valor por defecto de quien no tiene la suya
+    z = _zona(
+        _entrada(hogar=h, sueldos=[joven, gral], escenario={"edad": 26}), "2807901"
+    )
+    assert z["transporte"] == pytest.approx(9.31 + 27.62)
+
+
+def test_hijos_por_edad_suman_abono_joven_solo_de_15_a_25() -> None:
+    cinco = CENTRO | {"dias": 5}
+    h = {"perfil": "solo", "edad": 33, "hijos": 2}
+    base = _zona(_entrada(hogar=h, sueldos=[cinco]), "2807901")["transporte"]
+    assert base == 27.62  # sin edades_hijos no se cuentan
+    for edades, extra in [([3, 14], 0), ([14, 15], 9.31), ([15, 25], 2 * 9.31)]:
+        z = _zona(
+            _entrada(hogar=h | {"edades_hijos": edades}, sueldos=[cinco]), "2807901"
+        )
+        assert z["transporte"] == pytest.approx(base + extra)
+
+
+def test_el_abono_joven_del_hijo_no_lleva_viajes_no_laborables() -> None:
+    # desde una zona lejana (A-C2) el Abono Joven con 16 viajes de ocio costaría más de 9,31 €
+    h = {"perfil": "solo", "edad": 33, "hijos": 1, "no_laborables": 16}
+    sin, con = (
+        _zona(_entrada(hogar=h | extra, zonas=["28001"]), "28001")["transporte"]
+        for extra in ({}, {"edades_hijos": [18]})
+    )
+    assert con == pytest.approx(sin + 9.31)
+
+
+def test_viajes_no_laborables_y_familia_numerosa() -> None:
+    cinco = CENTRO | {"dias": 5}
+    z = _zona(
+        _entrada(
+            hogar={"perfil": "solo", "edad": 30, "no_laborables": 16}, sueldos=[cinco]
+        ),
+        "2807901",
+    )
+    assert z["transporte"] > 27.62
+    h = {"perfil": "pareja", "edad": 40, "hijos": 2, "familia": "fn_general"}
+    z = _zona(_entrada(hogar=h, sueldos=[cinco]), "2807901")
+    assert z["transporte"] == 21.94  # columna de familia numerosa general del BOCM
+
+
+@pytest.mark.parametrize(
+    ("hogar", "sueldo", "mensaje"),
+    [
+        ({"edades_hijos": [7]}, {}, "edades_hijos"),
+        ({"hijos": 1, "edades_hijos": [26]}, {}, "edades_hijos"),
+        ({"familia": "fn_general"}, {}, "familia numerosa con 0 hijos"),
+        ({"familia": "grande"}, {}, "familia = 'grande'"),
+        ({"no_laborables": 4}, {}, "no_laborables"),
+        ({"no_laborables": False}, {}, "no_laborables"),
+        ({}, {"discapacidad": 1}, "discapacidad"),
+        ({}, {"edad": 15}, "edad = 15"),
+    ],
+)
+def test_entradas_de_transporte_invalidas(
+    hogar: dict, sueldo: dict, mensaje: str
+) -> None:
+    entrada = _entrada(
+        hogar={"perfil": "solo", "edad": 30, **hogar}, sueldos=[CENTRO | sueldo]
+    )
+    with pytest.raises(ValueError, match=mensaje):
+        calculo.calcular(API, entrada)
 
 
 @pytest.mark.parametrize("edad", [16, 64])
@@ -349,3 +426,55 @@ def test_neto_cuadra_con_neto_py(bruto: int, hogar: dict, tolerancia: float) -> 
     assert calculo.neto_mes(netos, bruto, hogar) == pytest.approx(
         exacto, abs=tolerancia
     )
+
+
+def test_cuatro_viajes_en_un_par_sin_zona_a_cuenta_la_a() -> None:
+    # B1 → B2 a 5 días: con Metro de A el abono tiene que cubrir desde A: A-B2 (43,20 € × 335/360 = 40,20)
+    sueldo = {
+        "dias": 5,
+        "viajes_dia": 4,
+        "edad": 30,
+        "colectivo": "ordinario",
+        "no_laborables": 0,
+    }
+    cuatro = calculo.tarifa(API, "28065", "28092", sueldo, "vigente_2026")
+    assert cuatro["coste_mes"] == 40.2
+    dos = calculo.tarifa(
+        API, "28065", "28092", sueldo | {"viajes_dia": 2}, "vigente_2026"
+    )
+    assert dos["coste_mes"] < cuatro["coste_mes"]
+
+
+def test_cuatro_viajes_dentro_de_una_zona_pagan_por_viaje_el_rango_real() -> None:
+    # C2 → C2, 2 días: 15,13 viajes × (0,51 interurbano de una zona + 0,73 Metro de A) = 18,77 €
+    # (BOCM-20251231-2, pág. 67); el abono desde A (A-C2) saldría a 45,78 €
+    sueldo = {
+        "dias": 2,
+        "viajes_dia": 4,
+        "edad": 30,
+        "colectivo": "ordinario",
+        "no_laborables": 0,
+    }
+    z = calculo.tarifa(API, "28001", "28001", sueldo, "vigente_2026")
+    assert z["coste_mes"] == 18.77
+
+
+@pytest.mark.parametrize(("edad", "coste"), [(25, 9.31), (26, 27.62)])
+def test_edad_de_un_sueldo_en_el_borde_del_abono_joven(edad: int, coste: float) -> None:
+    sueldo = CENTRO | {"edad": edad, "dias": 5}
+    z = _zona(
+        _entrada(hogar={"perfil": "pareja", "edad": 30}, sueldos=[sueldo]), "2807901"
+    )
+    assert z["transporte"] == coste
+
+
+def test_hijos_de_familia_numerosa_especial_pagan_su_abono_joven() -> None:
+    h = {"perfil": "pareja", "edad": 40, "hijos": 2, "familia": "fn_especial"}
+    cinco = [CENTRO | {"dias": 5}]
+    sin = _zona(_entrada(hogar=h, sueldos=cinco), "2807901")["transporte"]
+    con = _zona(
+        _entrada(hogar=h | {"edades_hijos": [15, 16]}, sueldos=cinco), "2807901"
+    )["transporte"]
+    assert con == pytest.approx(
+        sin + 2 * 4.65
+    )  # 5,00 € × 335/30 ÷ 12 (BOCM-20251231-2, pág. 66)

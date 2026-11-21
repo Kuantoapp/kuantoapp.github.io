@@ -138,7 +138,10 @@ def _tarifas():
     )
     lista = ["B1-B1|interurbano", "B1-B2|interurbano"]
     return tarifas_json(
-        transporte.tabla_v1(), transporte.tabla(lista), claves, ["28065", "28092"]
+        transporte.tabla_v1(),
+        transporte.tabla(pipeline_euros._con_transbordo(lista)),
+        claves,
+        ["28065", "28092"],
     )
 
 
@@ -179,8 +182,14 @@ def test_rutas_usa_la_ruta_de_161_sin_marcarla_estimada(tmp_path, monkeypatch):
 
 def test_tarifas_matriz_de_claves():
     o = _tarifas()
-    assert o["claves"] == ["B1-B1|interurbano", "B1-B2|interurbano"]
-    assert o["clave_tarifa"] == [[0, 1], [1, None]]
+    # cada clave de ruta lleva al lado su gemela con cambio de operador (4 viajes al día, #164)
+    assert o["claves"] == [
+        "B1-B1|interurbano",
+        "B1-B1|interurbano+metro_a",
+        "B1-B2|interurbano",
+        "B1-B2|interurbano+metro_a",
+    ]
+    assert o["clave_tarifa"] == [[0, 2], [2, None]]
     assert o["clave_estimada"]
     assert o["colectivos"] == COLECTIVOS
     por_colectivo = o["tarifas_ruta"]["vigente_2026"]
@@ -190,6 +199,22 @@ def test_tarifas_matriz_de_claves():
     # 14,30 € del interzonal para FN especial (BOCM-20251231-2 pág. 66) × 335/30 / 12
     cinco = por_colectivo["fn_especial"]["general"]["B1-B2|interurbano"]["0"][4]
     assert cinco == {"titulo": "Abono 30 días B1-B2", "coste_mes": 13.31}
+
+
+def test_tarifas_transbordo_apunta_a_la_clave_con_cambio_de_operador():
+    claves = ["B1-B1|interurbano", "B1-B2|interurbano"]
+    gemelas = [transporte.clave_transbordo(c) for c in claves]
+    assert gemelas == ["B1-B1|interurbano+metro_a", "B1-B2|interurbano+metro_a"]
+    o = _tarifas()
+    assert o["claves"] == sorted(claves + gemelas)
+    posicion = {c: i for i, c in enumerate(o["claves"])}
+    assert [o["transbordo"][posicion[c]] for c in claves] == [
+        posicion[g] for g in gemelas
+    ]
+    assert [o["transbordo"][posicion[g]] for g in gemelas] == [
+        None,
+        None,
+    ]  # el transbordo no se encadena
 
 
 TARIFAS_APP = Path(__file__).parent.parent / "app" / "datos" / "tarifas.json"

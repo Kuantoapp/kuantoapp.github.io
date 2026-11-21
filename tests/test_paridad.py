@@ -8,7 +8,7 @@ Casos fijos (hogar y sueldo bruto anual; el resto, por defecto):
 - GETAFE: perfil `solo`, 30 años, 24.000 €, trabaja en Getafe (28065), 5 días, 2 viajes al día, transporte público.
   Es el caso de la nota del 16-11 de #77: deja zonas sin alquiler y sin ruta, así que prueba los nulos.
 - CUATRO_VIAJES: perfil `comparte`, 30 años (tarifa general: el Abono Joven es plano), 30.000 €, trabaja en el distrito Centro (2807901),
-  3 días, 4 viajes al día (cambio de operador en cada sentido): usa la fila `"4"` de `tarifas.json`.
+  3 días, 4 viajes al día (cambio de operador en cada sentido): usa la clave con cambio de operador (`transbordo`) de `tarifas.json`.
 """
 
 import json

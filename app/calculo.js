@@ -12,6 +12,8 @@ const EDAD_MAX = 64;
 const MODOS = ["tp", "coche"];
 const ESCENARIO = ["tarifas", "subida_alquiler", "edad", "cesta"];
 const CESTAS = ["media", "tramo"];
+const FAMILIAS = ["ordinario", "fn_general", "fn_especial"];
+const EDAD_MIN_JOVEN = 15; // BOCM-20251231-2, pág. 66: de 7 a 14 años el abono es gratuito
 
 const falta = (v) => v === null || v === undefined;
 const tiene = (obj, clave) => obj !== null && typeof obj === "object" && Object.hasOwn(obj, clave);
@@ -83,16 +85,19 @@ function celda(tiempos, matriz, origen, destino) {
   return tiempos[matriz][i][j] ?? null;
 }
 
-export function corona(api, origen, destino) {
-  const orden = api.tarifas.orden_coronas;
-  const coronas = Object.fromEntries(api.zonas.features.map((f) => [f.properties.zona_id, f.properties.corona]));
-  // la corona de un polo es la de la zona en la que cae (zona_id), como en calculo.py
-  const zonaDestino = Object.fromEntries(api.tiempos.destinos.map((d) => [d.destino_id, d.zona_id ?? d.destino_id]));
-  const par = [coronas[origen], coronas[zonaDestino[destino] ?? destino]];
-  if (par.some((c) => !orden.includes(c))) {
-    throw new Error(`${origen} → ${destino}: coronas ${JSON.stringify(par)} sin tarifa (orden_coronas ${JSON.stringify(orden)})`);
-  }
-  return par.reduce((a, b) => (orden.indexOf(b) > orden.indexOf(a) ? b : a));
+// {titulo, coste_mes} de la ruta de `origen` a `destino` en transporte público para un `sueldo` ya preparado
+// (dias, viajes_dia, edad, colectivo, no_laborables): como `tarifa` de calculo.py.
+export function tarifa(api, origen, destino, sueldo, escenario) {
+  const t = api.tarifas;
+  const i = t.origenes.indexOf(origen);
+  const j = t.destinos.indexOf(destino);
+  if (i < 0 || j < 0) throw new Error(`tarifas.json no tiene la ruta ${origen} → ${destino}`);
+  let k = t.clave_tarifa[i][j];
+  if (k !== null && sueldo.viajes_dia === 4) k = t.transbordo[k];
+  if (k === null) throw new Error(`${origen} → ${destino}: sin clave de tarifa`);
+  const edad = sueldo.edad <= t.edad_max_joven ? "joven" : "general";
+  const porClave = t.tarifas_ruta[escenario][sueldo.colectivo][edad][t.claves[k]];
+  return porClave[String(sueldo.no_laborables)][sueldo.dias - 1];
 }
 
 // [horas al mes, coste €/mes] del viaje de un sueldo; [null, null] si no hay ruta.
@@ -106,11 +111,20 @@ export function viaje(api, sueldo, origen, escenario) {
     const km = celda(tiempos, "km_coche", origen, destino);
     coste = km === null ? null : 2 * km * dias * tarifas.semanas_mes * tiempos.coste_coche.eur_km;
   } else {
-    const edad = escenario.edad <= tarifas.edad_max_joven ? "joven" : "general";
-    const tabla = tarifas.escenarios[escenario.tarifas][edad][String(sueldo.viajes_dia)];
-    coste = tabla[corona(api, origen, destino)][dias - 1].coste_mes;
+    coste = tarifa(api, origen, destino, sueldo, escenario.tarifas).coste_mes;
   }
   return [(minutos * 2 * dias * tarifas.semanas_mes) / 60, coste];
+}
+
+// Hijos con Abono Joven: de EDAD_MIN_JOVEN a edad_max_joven años.
+export const hijosJovenes = (api, hogar) => hogar.edades_hijos.filter((e) => e >= EDAD_MIN_JOVEN && e <= api.tarifas.edad_max_joven).length;
+
+// Abonos Jóvenes de los hijos de 15 a edad_max_joven años, €/mes: a 5 días y en la ruta del primer sueldo (el precio es plano).
+function costeHijos(api, hogar, sueldos, zona, escenario) {
+  const n = hijosJovenes(api, hogar);
+  if (n === 0) return 0;
+  const hijo = { dias: 5, viajes_dia: 2, edad: EDAD_MIN_JOVEN, colectivo: hogar.familia, no_laborables: 0 };
+  return n * tarifa(api, zona, sueldos[0].destino, hijo, escenario.tarifas).coste_mes;
 }
 
 const suma = (valores) => (valores.some(falta) ? null : valores.reduce((a, b) => a + b, 0));
@@ -119,7 +133,7 @@ function calcularZona(api, hogar, sueldos, zona, escenario) {
   const neto = suma(sueldos.map((s) => s.neto_mes));
   const alq = alquiler(api.alquiler.zonas[zona], hogar, escenario.subida_alquiler);
   const viajes = sueldos.map((s) => viaje(api, s, zona, escenario));
-  const transporte = suma(viajes.map((v) => v[1]));
+  const transporte = suma([...viajes.map((v) => v[1]), costeHijos(api, hogar, sueldos, zona, escenario)]);
   const factor = escenario.cesta === "tramo" ? tramoCesta(api.hogares.cesta_tramos, neto).factor : 1;
   const cestaMes = cesta(api.hogares.cesta_uc, hogar, factor);
   const fijo = alq === null || transporte === null ? null : neto - transporte - cestaMes;
@@ -153,12 +167,26 @@ function estructura(entrada) {
   }
 }
 
+// Valida edades_hijos, familia y no_laborables del hogar.
+function transporteHogar(api, hogar) {
+  const edades = hogar.edades_hijos;
+  if (!Array.isArray(edades) || ![0, hogar.hijos].includes(edades.length)) {
+    throw new Error(`edades_hijos = ${JSON.stringify(edades)}: debe estar vacía o tener una edad por hijo (${hogar.hijos})`);
+  }
+  for (const e of edades) entero("edades_hijos", e, 0, api.tarifas.edad_max_joven);
+  if (!FAMILIAS.includes(hogar.familia)) throw new Error(`familia = ${JSON.stringify(hogar.familia)}: debe ser ${FAMILIAS.join(" o ")}`);
+  if (hogar.familia !== "ordinario" && hogar.hijos < 2) throw new Error(`familia numerosa con ${hogar.hijos} hijos: pide 2 o más`);
+  if (!Number.isInteger(hogar.no_laborables) || !api.tarifas.no_laborables.includes(hogar.no_laborables)) {
+    throw new Error(`no_laborables = ${JSON.stringify(hogar.no_laborables)}: debe ser ${JSON.stringify(api.tarifas.no_laborables)}`);
+  }
+}
+
 function prepararHogar(api, entrada) {
   const h = entrada.hogar;
   if (typeof h.perfil !== "string" || !tiene(api.hogares.perfiles, h.perfil)) {
     throw new Error(`perfil desconocido: ${JSON.stringify(h.perfil)}`);
   }
-  const hogar = { ...api.hogares.perfiles[h.perfil], ...h };
+  const hogar = { edades_hijos: [], familia: "ordinario", no_laborables: 0, ...api.hogares.perfiles[h.perfil], ...h };
   const pedido = entrada.escenario ?? {};
   const extra = Object.keys(pedido).filter((k) => !ESCENARIO.includes(k));
   if (extra.length) throw new Error(`escenario con claves desconocidas: ${JSON.stringify(extra.sort())}`);
@@ -171,14 +199,18 @@ function prepararHogar(api, entrada) {
   entero("hijos", hogar.hijos, 0, Math.max(...api.netos.configuraciones.map((c) => c.hijos)));
   entero("personas_comparten", hogar.personas_comparten, 1, 20);
   numero("m2", hogar.m2, 0);
-  if (typeof esc.tarifas !== "string" || !tiene(api.tarifas.escenarios, esc.tarifas)) {
+  transporteHogar(api, hogar);
+  if (typeof esc.tarifas !== "string" || !tiene(api.tarifas.tarifas_ruta, esc.tarifas)) {
     throw new Error(`escenario ${JSON.stringify(esc.tarifas)} inválido`);
   }
   if (!CESTAS.includes(esc.cesta)) throw new Error(`cesta = ${JSON.stringify(esc.cesta)}: debe ser ${CESTAS.join(" o ")}`);
   return [hogar, esc];
 }
 
-function prepararSueldos(api, entrada, hogar) {
+// Colectivo de tarifas.json de una persona: su familia más su discapacidad del 65 % o más.
+export const colectivo = (hogar, sueldo) => (!sueldo.discapacidad ? hogar.familia : hogar.familia === "ordinario" ? "discapacidad" : `${hogar.familia}_discapacidad`);
+
+function prepararSueldos(api, entrada, hogar, escenario) {
   const { sueldos } = entrada;
   if (sueldos.length < 1 || sueldos.length > hogar.adultos) {
     throw new Error(`${sueldos.length} sueldos para ${hogar.adultos} adultos`);
@@ -186,8 +218,12 @@ function prepararSueldos(api, entrada, hogar) {
   return sueldos.map((original) => {
     const faltan = ["destino", "dias", "modo"].filter((k) => !(k in original));
     if (faltan.length) throw new Error(`sueldo sin ${JSON.stringify(faltan)}`);
-    const s = { viajes_dia: 2, ...original };
+    const s = { viajes_dia: 2, edad: escenario.edad, discapacidad: false, ...original };
     entero("dias", s.dias, 1, 5);
+    entero("edad", s.edad, EDAD_MIN, EDAD_MAX);
+    if (typeof s.discapacidad !== "boolean") throw new Error(`discapacidad = ${JSON.stringify(s.discapacidad)}: debe ser verdadero o falso`);
+    s.colectivo = colectivo(hogar, s);
+    s.no_laborables = hogar.no_laborables;
     if (!MODOS.includes(s.modo) || !api.tarifas.viajes_dia.includes(s.viajes_dia)) {
       throw new Error(`modo ${JSON.stringify(s.modo)} o viajes_dia ${JSON.stringify(s.viajes_dia)} inválido`);
     }
@@ -201,7 +237,7 @@ function prepararSueldos(api, entrada, hogar) {
 export function calcular(api, entrada) {
   estructura(entrada);
   const [hogar, escenario] = prepararHogar(api, entrada);
-  const sueldos = prepararSueldos(api, entrada, hogar);
+  const sueldos = prepararSueldos(api, entrada, hogar, escenario);
   let ref = entrada.ref ?? null;
   // Se recorre el array, no un objeto: los ids numéricos («28079») reordenarían las claves.
   const ids = [...new Set([...(entrada.zonas ?? api.tiempos.origenes), ...(ref === null ? [] : [ref])])];

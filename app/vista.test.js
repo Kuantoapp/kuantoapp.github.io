@@ -260,10 +260,10 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
   assert.deepEqual(fichaDe(casos[0], "28065"), [
     "Zona",
     "24,4 € por hora extra (estimado)",
-    "Te sobran entre 435 € y 589 € al mes (estimado)",
+    "Te sobran entre 440 € y 594 € al mes (estimado)",
     "Neto del hogar: 1523 € al mes (estimado)",
     "Alquiler: entre 512 y 666 € al mes (contratos de 2024 actualizados con el IPC de alquiler hasta octubre de 2026, tómalo como un suelo; estimado)",
-    "Transporte: 21,90 € al mes (10 viajes) (estimado)",
+    "Transporte: 16,57 € al mes (10 viajes) (estimado)",
     "Cesta básica: 400 €/mes (estimado: gasto medio de 2025 con el IPC hasta octubre de 2026; incluye internet y móvil)",
     "Viaje al trabajo: 15,5 h al mes, ida y vuelta (estimado)",
     "Vivir aquí te paga 24,4 € por cada hora de viaje de más (estimado)",
@@ -273,7 +273,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
   ]);
   // 10,1 € la hora = 1.523,03 € ÷ (40 h × 3,7833 semanas); 35 m² = 30 % × 1.523,03 € × 45 m² (perfil solo) ÷ 586,84 €.
   assert.ok(Math.abs(contextoFicha(ejemplo, casos[0].entrada, casos[0].salida, "28065").salarioHora - 10.064) < 0.001);
-  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
+  assert.ok(fichaDe(casos[1], "28065").includes("Transporte: 9,31 € al mes (Abono Joven) (estimado)"));
 });
 
 test("el título de la ficha es el de la celda que paga el cálculo: borde de 25/26 años y 4 viajes al día", () => {
@@ -284,16 +284,16 @@ test("el título de la ficha es el de la celda que paga el cálculo: borde de 25
     const resultado = calcular(ejemplo, structuredClone(entrada));
     return lineasFicha("Zona", resultado.zonas["28065"], "sobra", contextoFicha(ejemplo, entrada, resultado, "28065"));
   };
-  assert.ok(conEdad(25).includes("Transporte: 10,00 € al mes (Abono Joven) (estimado)"));
-  assert.ok(conEdad(26).includes("Transporte: 21,90 € al mes (10 viajes) (estimado)"));
-  const tabla = ejemplo.tarifas.escenarios.vigente_2026.general["4"];
-  const celda = Object.values(tabla).map((c) => c[2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo}) (estimado)`));
+  assert.ok(conEdad(25).includes("Transporte: 9,31 € al mes (Abono Joven) (estimado)"));
+  assert.ok(conEdad(26).includes("Transporte: 16,57 € al mes (10 viajes) (estimado)"));
+  const tabla = Object.entries(ejemplo.tarifas.tarifas_ruta.vigente_2026.ordinario.general).filter(([k]) => k.includes("+"));
+  const celda = tabla.map(([, c]) => c["0"][2]).find((c) => conEdad(30, 4).some((l) => l === `Transporte: ${c.coste_mes.toFixed(2).replace(".", ",")} € al mes (${c.titulo}) (estimado)`));
   assert.ok(celda, "con 4 viajes al día el título y el coste salen de la misma celda");
 });
 
 test("dos sueldos con el mismo título no lo repiten", () => {
   const caso = casos.find((c) => c.nombre.startsWith("pareja con un hijo"));
-  assert.ok(fichaDe(caso, "28065").includes("Transporte: 36,50 € al mes (10 viajes) (estimado)"));
+  assert.ok(fichaDe(caso, "28065").includes("Transporte: 27,62 € al mes (10 viajes) (estimado)"));
 });
 
 test("el borde del 30 % y el de la banda se deciden con lo que se muestra redondeado", () => {
@@ -508,26 +508,32 @@ test("las licencias salen de meta.fuentes sin repetir", () => {
   assert.equal(licencias(meta, meta), "CC BY 4.0; ODbL 1.0");
 });
 
+test("las fuentes y licencias incluyen las de la ruta (fuentes_ruta de tarifas.json)", () => {
+  const meta = { fuentes: [{ nombre: "CRTM", licencia: "CC BY 4.0" }], fuentes_ruta: [{ nombre: "RDL 17/2025", licencia: "BOE" }] };
+  assert.equal(fuentes(meta), "fuente: CRTM, RDL 17/2025");
+  assert.equal(licencias(meta), "CC BY 4.0; BOE");
+});
+
 // --- Escenarios «¿y si…?» y estado en el enlace -------------------------------------------------
 
 const NEUTRO = { ...BASE, ref: "", metrica: "precio_hora", ...ESCENARIO_NEUTRO };
-// Zona A (2807913) a zona A (2807901), 5 días y 2 viajes al día: el abono manda. Con los fixtures, el abono general cuesta 32,70 € y el Abono Joven, 10 €.
+// Zona A (2807913) a zona A (2807901), 5 días y 2 viajes al día: el abono manda. Con los fixtures, el 10 viajes de un adulto cuesta 27,62 € y el Abono Joven, 9,31 €.
 const transporteA = (edad, v) => {
   const base = { hogar: { perfil: "solo", edad }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["2807913"] };
   const entrada = entradaEscenario(base, { ...NEUTRO, ...v }, EDAD) ?? base;
   return calcular(ejemplo, entrada).zonas["2807913"].transporte;
 };
 
-test("sin el descuento, el abono de un adulto pasa de 32,70 a 56,20 € y el del joven, de 10 a 20 €", () => {
+test("sin el descuento, el abono de un adulto pasa de 27,62 a 47,29 € y el del joven, de 9,31 a 18,61 €", () => {
   const fin = { tarifas: "sin_descuento" };
-  assert.equal(transporteA(30, {}).toFixed(2), "32.70");
-  assert.equal(transporteA(30, fin).toFixed(2), "56.20");
-  assert.equal(transporteA(20, {}).toFixed(2), "10.00");
-  assert.equal(transporteA(20, fin).toFixed(2), "20.00");
+  assert.equal(transporteA(30, {}).toFixed(2), "27.62");
+  assert.equal(transporteA(30, fin).toFixed(2), "47.29");
+  assert.equal(transporteA(20, {}).toFixed(2), "9.31");
+  assert.equal(transporteA(20, fin).toFixed(2), "18.61");
 });
 
 test("cumplir 26 años quita el Abono Joven, y cambiar los días no toca los viajes al día", () => {
-  assert.equal(transporteA(25, { cumple26: "si" }).toFixed(2), "32.70");
+  assert.equal(transporteA(25, { cumple26: "si" }).toFixed(2), "27.62");
   const entrada = { hogar: { perfil: "solo", edad: 25 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 4 }] };
   const sim = entradaEscenario(entrada, { ...NEUTRO, dias_esc: "3", subida: "10" }, EDAD);
   assert.deepEqual(sim.sueldos[0], { ...entrada.sueldos[0], dias: 3 });
