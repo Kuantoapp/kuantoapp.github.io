@@ -91,7 +91,7 @@ VELOCIDAD_MAX = 90.0
 RECORRIDO_MIN = 3.0
 RETROCESO_MAX = 60.0
 # un viaje reconstruido de más de 4 h no es un recorrido real (circuitos que repiten paradas: 224, 252, 352…; medido:
-# el resto sale con p99 de 2,5 h) y r5py rechaza horas de más de 72 h
+# el resto sale con p99 de 2,0 h) y r5py rechaza horas de más de 72 h
 DURACION_MAX_H = 4.0
 HORA_EN_ID = r"_(\d{2}):(\d{2}):\d{2}_"
 HORA_CORTA = r"_(\d{1,2})(\d{2})$"

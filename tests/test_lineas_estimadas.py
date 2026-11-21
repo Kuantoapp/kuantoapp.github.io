@@ -282,8 +282,8 @@ def test_rellenar_horarios_descarta_los_imposibles_sin_hora_en_el_trip_id():
 
 def test_rellenar_horarios_descarta_el_viaje_que_reconstruido_durarian_mas_de_4_horas():
     # un circuito con una parada a 150 km (la 224): a 30 km/h serían 5 h, no es un recorrido real
-    largo = "x_8__102___-1_07:30:00_1"
-    trips, st = _escenario()
+    largo, bueno = "x_8__102___-1_07:30:00_1", "x_8__102___-1_06:56:00_1_-__1"
+    trips, st = _escenario((bueno, "8__102___", RELLENO3))
     trips = pd.concat(
         [trips, trips.iloc[[0]].assign(trip_id=largo, route_id="8__102___")]
     )
@@ -297,6 +297,11 @@ def test_rellenar_horarios_descarta_el_viaje_que_reconstruido_durarian_mas_de_4_
     xy = pd.concat([XY3, pd.DataFrame({"x": [X0 + 150_000], "y": [Y0]}, index=["z"])])
     salida = le.rellenar_horarios(trips, st, xy)
     assert largo not in set(salida["trip_id"])
+    assert _horas(salida, bueno) == [
+        "06:56:00",
+        "07:02:00",
+        "07:10:00",
+    ]  # sigue alineado
     assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
 
 
