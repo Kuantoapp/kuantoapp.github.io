@@ -16,9 +16,9 @@ const EDAD = ejemplo.tarifas.edad_max_joven + 1;
 const real = cargar("app/datos");
 
 const BASE = {
-  fuente: "bruto", bruto: "24000", neto: "", pagas: "12", perfil: "solo", adultos: "1", hijos: "0", edad: "30",
+  fuente: "bruto", bruto: "24000", neto: "", pagas: "12", perfil: "solo", adultos: "1", hijos: "0", edad: "30", disc: "no", familia: "ordinario", nolab: "0",
   m2: "69", personas: "1", destino: "Getafe", dias: "5", viajes: "2", modo: "tp",
-  fuente2: "bruto", bruto2: "24000", neto2: "", pagas2: "12", destino2: "Getafe", dias2: "5", viajes2: "2", modo2: "tp",
+  fuente2: "bruto", bruto2: "24000", neto2: "", pagas2: "12", destino2: "Getafe", dias2: "5", viajes2: "2", modo2: "tp", edad2: "30", disc2: "no",
 };
 const campos = (cambios) => validar({ ...BASE, ...cambios }, real).errores?.map((e) => e.campo);
 
@@ -401,9 +401,38 @@ test("la atribución real lleva la cita del INE, la fecha del MIVAU y que el Min
 test("una entrada correcta devuelve la entrada del cálculo y ningún error", () => {
   const res = validar(BASE, real);
   assert.equal(res.errores, undefined);
-  assert.deepEqual(res.entrada.sueldos, [{ bruto: 24000, destino: "28065", dias: 5, modo: "tp", viajes_dia: 2 }]);
+  assert.deepEqual(res.entrada.sueldos, [{ bruto: 24000, destino: "28065", dias: 5, modo: "tp", viajes_dia: 2, edad: 30 }]);
   assert.deepEqual(res.entrada.hogar, { perfil: "solo", adultos: 1, hijos: 0, edad: 30, personas_comparten: 1, m2: 69 });
   assert.doesNotThrow(() => calcular(real, res.entrada));
+});
+
+test("edad y discapacidad por persona, edades de los hijos, familia numerosa y viajes no laborables (#164)", () => {
+  const ok = (cambios) => validar({ ...BASE, ...cambios }, real);
+  // edad y discapacidad de cada persona: la primera da la edad del hogar
+  const pareja = { ...BASE, perfil: "pareja", adultos: "2", edad: "24", edad2: "45", disc2: "si" };
+  const { sueldos, hogar } = validar(pareja, real).entrada;
+  assert.deepEqual(sueldos.map((s) => [s.edad, s.discapacidad]), [[24, undefined], [45, true]]);
+  assert.equal(hogar.edad, 24);
+  assert.deepEqual(campos({ edad2: "70", perfil: "pareja", adultos: "2" }), ["edad2"]);
+  assert.deepEqual(campos({ disc: "quizá" }), ["disc"]);
+  // edades de los hijos: vacías, todas o error; solo cuentan las de los hijos que hay
+  assert.equal(ok({ hijos: "1" }).entrada.hogar.edades_hijos, undefined);
+  assert.deepEqual(ok({ hijos: "2", hijo1: "16", hijo2: "9" }).entrada.hogar.edades_hijos, [16, 9]);
+  assert.deepEqual(ok({ hijos: "1", hijo1: "16", hijo2: "99" }).entrada.hogar.edades_hijos, [16]);
+  assert.deepEqual(campos({ hijos: "2", hijo1: "16" }), ["hijo2"]);
+  assert.deepEqual(campos({ hijos: "1", hijo1: "26" }), ["hijo1"]);
+  assert.deepEqual(campos({ hijos: "1", hijo1: "-1" }), ["hijo1"]);
+  // familia numerosa y viajes no laborables
+  assert.equal(ok({ hijos: "2", familia: "fn_general" }).entrada.hogar.familia, "fn_general");
+  assert.deepEqual(campos({ hijos: "1", familia: "fn_especial" }), ["familia"]);
+  assert.deepEqual(campos({ familia: "grande" }), ["familia"]);
+  assert.equal(ok({ nolab: "8" }).entrada.hogar.no_laborables, 8);
+  assert.deepEqual(campos({ nolab: "4" }), ["nolab"]);
+  // y el cálculo los usa: el hijo de 16 años suma su Abono Joven
+  const base = ok({ hijos: "1" }).entrada;
+  const con = ok({ hijos: "1", hijo1: "16" }).entrada;
+  const z = (e) => calcular(real, { ...e, zonas: ["2807913"] }).zonas["2807913"].transporte;
+  assert.ok(Math.abs(z(con) - z(base) - 9.31) < 0.005);
 });
 
 test("sueldo negativo, texto, vacío o fuera de la tabla de netos devuelven un aviso y no un cálculo", () => {
@@ -542,6 +571,13 @@ test("cumplir 26 años quita el Abono Joven, y cambiar los días no toca los via
   assert.equal(entrada.sueldos[0].dias, 5, "no se modifica la entrada original");
 });
 
+test("«cumples 26 años» sube a 26 la edad de cada sueldo que tiene menos, y deja la de quien ya es mayor", () => {
+  const entrada = { hogar: { perfil: "pareja", edad: 24 }, sueldos: [{ edad: 24, dias: 5 }, { edad: 40, dias: 5 }] };
+  const sim = entradaEscenario(entrada, { ...NEUTRO, cumple26: "si" }, EDAD);
+  assert.deepEqual(sim.sueldos.map((s) => s.edad), [26, 40]);
+  assert.equal(entrada.sueldos[0].edad, 24, "no se modifica la entrada original");
+});
+
 test("la subida del alquiler del escenario reduce lo que sobra, y la ficha lo dice", () => {
   const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ bruto: 24000, destino: "2807901", dias: 5, modo: "tp" }], zonas: ["28065"] };
   const actual = calcular(ejemplo, entrada).zonas["28065"];
@@ -673,8 +709,8 @@ test("los polos con nombre son destinos válidos, por nombre o por id", () => {
 test("con el perfil de pareja hay dos sueldos, cada uno con su lugar, días, viajes y modo; sin él, el segundo se ignora", () => {
   const { sueldos } = validarEj({ viajes2: "4", modo2: "coche", bruto2: "30.000" }).entrada;
   assert.deepEqual(sueldos, [
-    { bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 2 },
-    { bruto: 30000, destino: "polo:ifema", dias: 2, modo: "coche", viajes_dia: 4 },
+    { bruto: 24000, destino: "2807901", dias: 5, modo: "tp", viajes_dia: 2, edad: 30 },
+    { bruto: 30000, destino: "polo:ifema", dias: 2, modo: "coche", viajes_dia: 4, edad: 30 },
   ]);
   const solo = validarEj({ perfil: "solo", adultos: "1", destino2: "no existe", dias2: "9" });
   assert.equal(solo.entrada.sueldos.length, 1);
@@ -722,15 +758,17 @@ test("las líneas de la ficha de pareja dicen horas, coste y título de cada per
   assert.ok(compartido.some((l) => l.includes("compartido entre 3")), "el desglose por persona no pisa cuántos comparten el piso");
 });
 
-test("los avisos del formulario: el coche nunca sin su aviso del tráfico y la pareja, la edad única", () => {
+test("los avisos del formulario: el coche nunca sin su aviso del tráfico y los hijos sin edad", () => {
   const de = (cambios) => avisosEntrada(validarEj(cambios).entrada);
-  assert.deepEqual(de({}).length, 1);
-  assert.match(de({}).join(" "), /edad es una sola para el hogar.*Abono Joven.*las dos personas o a ninguna/);
   for (const cambios of [{ modo: "coche" }, { modo2: "coche" }]) {
     const lineas = de(cambios);
-    assert.equal(lineas.length, 2);
+    assert.equal(lineas.length, 1);
     assert.match(lineas[0], /no incluye el tráfico.*estimación.*aparcamiento ni peajes/);
   }
+  assert.deepEqual(de({}), []);
+  // hijos sin edades: aviso; con sus edades o sin hijos, ninguno
+  assert.match(de({ hijos: "1" })[0], /Sin las edades de los hijos, el transporte cuenta solo a quien trabaja/);
+  assert.deepEqual(de({ hijos: "1", hijo1: "16" }), []);
   assert.deepEqual(avisosEntrada(validar({ ...BASE, destino: "Centro" }, ejemplo).entrada), []);
   assert.ok(!/\d/.test(de({ modo: "coche" })[0]), "sin cifras: no necesita nota de fuente");
 });
