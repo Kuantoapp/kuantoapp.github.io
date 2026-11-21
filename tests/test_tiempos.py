@@ -211,6 +211,21 @@ def test_tabla_completa_pares_ausentes_y_sustituye_la_diagonal():
     assert np.isnan(_par(tabla, "B", "polo:p"))  # par ausente
 
 
+VIGENTE = "service_id,start_date,end_date\r\nL,20261027,20271128\r\n"
+
+
+def _viaje_minimo() -> dict[str, str]:
+    """Un viaje real de dos paradas (51 km/h), lo mínimo que `preparar_gtfs` necesita leer."""
+    return {
+        "trips.txt": "route_id,trip_id,service_id\r\nR,T1,L\r\n",
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+            "T1,08:00:00,08:00:00,A,0\r\nT1,08:10:00,08:10:00,B,1\r\n"
+        ),
+        "stops.txt": "stop_id,stop_lon,stop_lat\r\nA,-3.70,40.4\r\nB,-3.60,40.4\r\n",
+    }
+
+
 def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
     def zip_de(ruta: Path, ficheros: dict[str, str]) -> Path:
         with zipfile.ZipFile(ruta, "w") as z:
@@ -225,7 +240,7 @@ def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
             "calendar.txt": calendario,
             "fare_rules.txt": "fare_id,route_id\r\n",
             "feed_info.txt": "a\r\n1\r\n2\r\n",
-            "trips.txt": "trip_id\r\nT1\r\n",
+            **_viaje_minimo(),
         },
     )
     urbanos = zip_de(
@@ -233,22 +248,44 @@ def test_preparar_gtfs_arregla_lo_que_r5py_rechaza(tmp_path: Path, caplog):
         {
             "google/": "",
             "google/calendar.txt": "service_id,start_date,end_date\r\nL,20261027,20271128\r\n",
-            "google/trips.txt": "trip_id\r\nT1\r\n",
+            **{f"google/{n}": t for n, t in _viaje_minimo().items()},
         },
     )
     with caplog.at_level(logging.WARNING):
         salida = tiempos.preparar_gtfs([metro, urbanos], tmp_path / "gtfs")
     assert [ruta.name.split("_")[0] for ruta in salida] == ["metro", "urbanos"]
+    ficheros = ["calendar.txt", "stop_times.txt", "stops.txt", "trips.txt"]
     with zipfile.ZipFile(salida[0]) as z:
-        assert sorted(z.namelist()) == ["calendar.txt", "trips.txt"]
+        assert sorted(z.namelist()) == ficheros
         cal = pd.read_csv(io.BytesIO(z.read("calendar.txt")), dtype=str)
     assert cal.loc[0, "end_date"] == tiempos.FIN_CALENDARIO  # caducado: prolongado
     assert cal.loc[0, "start_date"] == "20250527"
     assert "metro.zip" in caplog.text and "caducado" in caplog.text
     with zipfile.ZipFile(salida[1]) as z:
-        assert sorted(z.namelist()) == ["calendar.txt", "trips.txt"]  # sin subcarpeta
+        assert sorted(z.namelist()) == ficheros  # sin subcarpeta
         assert "20271128" in z.read("calendar.txt").decode()  # vigente: intacto
     assert caplog.text.count("caducado") == 1
+
+
+def test_preparar_gtfs_sin_completar_tambien_quita_los_viajes_imposibles(
+    tmp_path: Path,
+):
+    # sin hora en el trip_id y con 4 km en 75 s: se descarta (#349) también en la matriz «sin estimadas»
+    viaje = _viaje_minimo()
+    viaje["trips.txt"] += "R,T2,L\r\n"
+    viaje["stop_times.txt"] += (
+        "T2,08:00:00,08:00:00,A,0\r\nT2,08:30:00,08:30:00,B,1\r\nT2,08:31:15,08:31:15,C,2\r\n"
+    )
+    viaje["stops.txt"] += "C,-3.55,40.4\r\n"
+    origen = tmp_path / "feed.zip"
+    with zipfile.ZipFile(origen, "w") as z:
+        for nombre, texto in {**viaje, "calendar.txt": VIGENTE}.items():
+            z.writestr(nombre, texto)
+    (salida,) = tiempos.preparar_gtfs([origen], tmp_path / "gtfs")
+    with zipfile.ZipFile(salida) as z:
+        assert pd.read_csv(io.BytesIO(z.read("trips.txt")))["trip_id"].tolist() == [
+            "T1"
+        ]
 
 
 def test_marcar_estimados_solo_mejoras_por_encima_del_ruido():
