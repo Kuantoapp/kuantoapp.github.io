@@ -21,7 +21,8 @@ Supuestos y límites:
   piso se reparten: UC del piso (UC del perfil + 0,5 por cada hogar más) entre `personas_comparten`.
   Supuesto: cada hogar más cuenta como un adulto (0,5 UC); infraestima si el otro hogar es una pareja
   o tiene hijos. Si vives solo y compartes con una pareja, tu parte de suministros y comunicaciones
-  sale 96,10 €/mes en vez de 128,13 (estimado, `cesta_uc` de 2025; #323).
+  sale 1,5/2 UC en vez de 2/2 contando la pareja como dos adultos: el 75 % (96,10 en vez de 128,13
+  €/mes, estimado, con el `cesta_uc` de `hogares.json` del 2026-11-20, IPC hasta 2026-10; #323).
   Supuesto para las comunicaciones: en piso compartido cada uno suele tener su móvil; por persona
   serían ≈15 €/mes más en «comparte». El reparto sale de que la EPF nacional (t=75006) da el 89 % del
   gasto en servicios integrados por hogar.
