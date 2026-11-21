@@ -439,6 +439,7 @@ async function main() {
   const ir = (texto) => {
     aplicarValores(estadoDeEnlace(texto, valoresFormulario(), api).valores);
     mostrarSegunda();
+    mostrarHijos(); // las casillas de edad de los hijos siguen al número de hijos del estado al que se vuelve
     recalcular();
   };
   formulario().addEventListener("change", guardarPaso);
