@@ -1,6 +1,7 @@
 """Tests de `mesobra.lineas_estimadas` con trazados y GTFS de juguete (sin OSM ni r5py)."""
 
 import datetime as dt
+import io
 import zipfile
 
 import geopandas as gpd
@@ -250,12 +251,138 @@ def test_rellenar_horarios_falla_si_no_hay_hora_valida_o_viaje():
         le.rellenar_horarios(trips[trips["trip_id"] == "t1"], st, XY3)
 
 
-def test_rellenar_horarios_no_toca_los_viajes_con_solo_la_primera_parada_de_relleno():
-    # la 483: primera parada a 01:00:01 y el resto con horas reales; es de #349, no se reconstruye
-    parcial = "x_8__483___-1_07:30:00_1_-__1"
-    recorrido = ("01:00:01", "07:30:51", "07:32:06")
-    trips, st = _escenario((parcial, "8__483___", recorrido))
+def test_rellenar_horarios_reconstruye_la_483_con_la_primera_parada_de_relleno():
+    # la 483: primera parada a 01:00:01 y 4 km en 75 s después (192 km/h): imposible (#349)
+    viaje = "x_8__102___-1_07:30:00_1_-__1"
+    trips, st = _escenario((viaje, "8__102___", ("01:00:01", "07:30:51", "07:32:06")))
+    salida = le.rellenar_horarios(trips, st, XY3)
+    assert _horas(salida, viaje) == ["07:30:00", "07:36:00", "07:44:00"]
+    assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
+
+
+def test_rellenar_horarios_reconstruye_los_viajes_que_retroceden():
+    viaje = "x_8__102___-1_07:30:00_1_-__1"
+    trips, st = _escenario((viaje, "8__102___", ("08:00:00", "07:30:00", "07:40:00")))
+    assert _horas(le.rellenar_horarios(trips, st, XY3), viaje) == [
+        "07:30:00",
+        "07:36:00",
+        "07:44:00",
+    ]
+
+
+def test_rellenar_horarios_descarta_los_imposibles_sin_hora_en_el_trip_id():
+    sin_hora = "x_8__102___-1_9"
+    trips, st = _escenario(
+        (sin_hora, "8__102___", ("08:00:00", "07:30:00", "07:40:00"))
+    )
+    salida = le.rellenar_horarios(trips, st, XY3)
+    assert sin_hora not in set(salida["trip_id"])
+    assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
+
+
+def test_rellenar_horarios_descarta_el_viaje_que_reconstruido_durarian_mas_de_4_horas():
+    # un circuito con una parada a 150 km (la 224): a 30 km/h serían 5 h, no es un recorrido real
+    largo, bueno = "x_8__102___-1_07:30:00_1", "x_8__102___-1_06:56:00_1_-__1"
+    trips, st = _escenario((bueno, "8__102___", RELLENO3))
+    trips = pd.concat(
+        [trips, trips.iloc[[0]].assign(trip_id=largo, route_id="8__102___")]
+    )
+    filas = [
+        (largo, h, h, s, str(i))
+        for i, (s, h) in enumerate(
+            zip("pqz", ("07:30:00", "07:31:00", "07:32:00"), strict=True)
+        )
+    ]
+    st = pd.concat([st, pd.DataFrame(filas, columns=COLS)], ignore_index=True)
+    xy = pd.concat([XY3, pd.DataFrame({"x": [X0 + 150_000], "y": [Y0]}, index=["z"])])
+    salida = le.rellenar_horarios(trips, st, xy)
+    assert largo not in set(salida["trip_id"])
+    assert _horas(salida, bueno) == [
+        "06:56:00",
+        "07:02:00",
+        "07:10:00",
+    ]  # sigue alineado
+    assert _horas(salida, "t1") == ["07:40:00", "07:46:00", "07:54:00"]
+
+
+def test_rellenar_horarios_respeta_lo_que_no_es_imposible():
+    # +1 s de la primera parada (retroceso de 1 s) y un viaje real que pasa por la 01:00
+    trips, st = _escenario(
+        ("x_8__102___-1_18:02:00_1", "8__102___", ("18:02:01", "18:02:00", "18:10:00")),
+        ("x_8__102___-1_01:00:00_1", "8__102___", ("01:00:00", "01:06:00", "01:14:00")),
+    )
     assert le.rellenar_horarios(trips, st, XY3) is st
+
+
+def test_completar_tablas_quita_de_trips_los_viajes_descartados():
+    tablas = {
+        "trips.txt": (
+            b"route_id,trip_id,service_id,direction_id\r\n"
+            b"8__101___,t1,L,0\r\n8__102___,malo_sin_hora,L,0\r\n"
+        ),
+        "stop_times.txt": (
+            b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+            b"t1,07:40:00,07:40:00,p,0\r\nt1,07:47:00,07:47:00,q,1\r\nt1,07:56:00,07:56:00,r,2\r\n"
+            b"malo_sin_hora,08:00:00,08:00:00,p,0\r\n"
+            b"malo_sin_hora,07:30:00,07:30:00,q,1\r\nmalo_sin_hora,07:40:00,07:40:00,r,2\r\n"
+        ),
+        "stops.txt": b"stop_id,stop_lon,stop_lat\r\np,-3.70,40.4\r\nq,-3.66,40.4\r\nr,-3.61,40.4\r\n",
+    }
+    salida = le.completar_tablas(tablas, {})
+    trips = pd.read_csv(io.BytesIO(salida["trips.txt"]), dtype=str)
+    horas = pd.read_csv(io.BytesIO(salida["stop_times.txt"]), dtype=str)
+    assert trips["trip_id"].tolist() == ["t1"]
+    assert set(horas["trip_id"]) == {"t1"}
+
+
+def test_horas_imposibles_usa_la_velocidad_maxima_de_su_red():
+    # 4 km entre la 2.ª parada y la última: 205 s = 70 km/h; 170 s = 85 km/h
+    viajes = {
+        "urbano_70": ("9__3__006_", "07:33:55"),
+        "interurbano_70": ("8__102___", "07:33:55"),
+        "interurbano_85": ("8__102___", "07:33:20"),
+        "nocturno_85": ("8_N_303___", "07:33:20"),
+        "tren_70": ("10T0001C1", "07:33:55"),
+        "tren_95": ("10T0001C1", "07:33:00"),  # 4 km en 150 s = 96 km/h
+    }
+    filas = [
+        (t, h, h, s, str(i))
+        for t, (_, fin) in viajes.items()
+        for i, (s, h) in enumerate(
+            zip("pqr", ("07:30:00", "07:30:30", fin), strict=True)
+        )
+    ]
+    trips = pd.DataFrame(
+        {"trip_id": list(viajes), "route_id": [r for r, _ in viajes.values()]}
+    )
+    marcados = le._con_horas_imposibles(trips, pd.DataFrame(filas, columns=COLS), XY3)
+    assert sorted(marcados) == [
+        "interurbano_85",
+        "nocturno_85",
+        "tren_95",
+        "urbano_70",
+    ]
+
+
+def test_depurar_tablas_quita_los_viajes_de_relleno_y_los_imposibles():
+    cabecera = b"trip_id,arrival_time,departure_time,stop_id,stop_sequence\r\n"
+    bueno = b"t1,07:40:00,07:40:00,p,0\r\nt1,07:47:00,07:47:00,q,1\r\nt1,07:56:00,07:56:00,r,2\r\n"
+    tablas = {
+        "trips.txt": (
+            b"route_id,trip_id,service_id,direction_id\r\n"
+            b"8__101___,t1,L,0\r\n8__102___,relleno,L,0\r\n8__102___,veloz,L,0\r\n"
+        ),
+        "stop_times.txt": cabecera
+        + bueno
+        + b"relleno,01:00:00,01:00:00,p,0\r\nrelleno,01:00:00,01:00:00,q,1\r\n"
+        + b"veloz,07:30:00,07:30:00,p,0\r\nveloz,07:30:30,07:30:30,q,1\r\nveloz,07:31:30,07:31:30,r,2\r\n",
+        "stops.txt": b"stop_id,stop_lon,stop_lat\r\np,-3.70,40.4\r\nq,-3.66,40.4\r\nr,-3.61,40.4\r\n",
+    }
+    salida = le.depurar_tablas(tablas)
+    assert pd.read_csv(io.BytesIO(salida["trips.txt"]))["trip_id"].tolist() == ["t1"]
+    horas = pd.read_csv(io.BytesIO(salida["stop_times.txt"]), dtype=str)
+    assert set(horas["trip_id"]) == {"t1"}
+    assert le.depurar_tablas(salida) is salida  # nada más que quitar
 
 
 def test_hhmmss_rechaza_segundos_negativos_o_no_finitos():

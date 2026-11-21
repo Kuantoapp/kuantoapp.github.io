@@ -14,9 +14,11 @@ Decisión de Izan del 2026-11-15 (`docs/decisiones.md`). Para cada línea de `RU
 - **Líneas con horario de relleno** (#311): el CRTM publica 33 rutas (30 interurbanas y los urbanos 1A, 1B y 1 de
   Leganés) con todas las paradas de cada viaje a las 01:00:00, y r5py no las ve en la franja de punta (lista en
   `docs/decisiones.md`). `rellenar_horarios` toma la salida real del `trip_id` y reparte la hora por distancia con la
-  velocidad de las líneas parecidas (`parecidas`). La 483 (primera parada a 01:00:01 y el resto con horas imposibles)
-  y otros viajes de horas absurdas no se tocan: ver #349. Es una estimación: el cociente entre la duración
+  velocidad de las líneas parecidas (`parecidas`). Es una estimación: el cociente entre la duración
   reconstruida y la real tiene mediana 1,06 y p10–p90 de 0,56 a 2,69 en líneas con horario real.
+- **Viajes con horas imposibles** (#349): la 483 (primera parada a 01:00:01 y el resto a ~3.400 km/h), la 223 (todo su
+  horario a ~130 km/h) y otros retroceden o superan `VELOCIDAD_MAX`. Se tratan igual que los de relleno, y si su
+  `trip_id` no lleva hora se descartan (no se adivina la salida).
 
 Las distancias son en línea recta entre paradas consecutivas, igual en las líneas de referencia y en las
 reconstruidas, para que la velocidad medida y la aplicada sean la misma magnitud (los GTFS no traen
@@ -83,6 +85,20 @@ SERVICIO = "estimado"
 ALARGAMIENTO = 1.1
 # el CRTM publica sin horario real algunas líneas: todas las paradas de cada viaje a esta hora (#311)
 RELLENO = ("01:00:00", "01:00:01")
+# horas imposibles (#349): velocidad media máxima en recta entre paradas, por red (primer trozo del route_id: 8
+# interurbanos, 9 urbanos). La recta es menos que la carretera (~1,2 veces): 80 km/h en recta son ~96 de media con
+# paradas, más de lo que hace un autobús interurbano, y un urbano no pasa de 60 (medido: la 9__3__006_ y la 9__1__006_
+# van a 65-77); las nocturnas son `8_N_…` y `9_i_…`, de ahí el `split("_")`. Metro (4), Metro Ligero (10), Cercanías y
+# EMT usan 90: Cercanías llega a 73 km/h con trenes reales.
+# El retroceso admite 60 s porque el CRTM pone +1 s a la primera parada de muchos viajes reales. El horario tiene
+# resolución de 1 min: un viaje de duración 0 con 3 km o menos (31 interurbanos y 124 urbanos) es redondeo y no se marca.
+VELOCIDAD_MAX = 90.0
+VELOCIDAD_POR_RED = {"8": 80.0, "9": 60.0}
+RECORRIDO_MIN = 3.0
+RETROCESO_MAX = 60.0
+# un viaje reconstruido de más de 4 h no es un recorrido real (circuitos que repiten paradas: 224, 252, 352…; medido:
+# el resto sale con p99 de 2,0 h) y r5py rechaza horas de más de 72 h
+DURACION_MAX_H = 4.0
 HORA_EN_ID = r"_(\d{2}):(\d{2}):\d{2}_"
 HORA_CORTA = r"_(\d{1,2})(\d{2})$"
 SEMANA = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
@@ -361,29 +377,90 @@ def _velocidades(
     return kmh
 
 
-def rellenar_horarios(
+def _con_horas_imposibles(
     trips: pd.DataFrame, stop_times: pd.DataFrame, xy: pd.DataFrame
-) -> pd.DataFrame:
-    """`stop_times` con horas reales en los viajes con horario de relleno (`RELLENO`).
+) -> pd.Index:
+    """`trip_id` de los viajes cuyas horas son imposibles (#349).
 
-    - **Todas las paradas de relleno:** la salida es la hora que lleva el `trip_id` (`..._06:56:00_...`); cada parada
-      va a esa hora más su distancia acumulada en línea recta entre la velocidad mediana de las líneas parecidas de
-      su red (`parecidas`, medida en viajes con horario real). Sin hora en el `trip_id` es un error, no se adivina.
-
-    Sin viajes de relleno devuelve el mismo objeto `stop_times` (`completar_tablas` lo comprueba con `is`). Los
-    viajes con solo la primera parada de relleno (la 483) no se tocan: ver #349.
+    Retroceden más de `RETROCESO_MAX` s, o van a más de la velocidad máxima de su red (`VELOCIDAD_POR_RED`, si no
+    `VELOCIDAD_MAX`) de media (recta) entre la segunda parada y la última en más de `RECORRIDO_MIN` km. Se salta la
+    primera parada porque el CRTM la pone a 01:00:01 en la 483.
+    Una parada sin coordenadas no suma distancia: solo puede dejar de marcar un viaje, nunca marcarlo de más.
     """
+    st = stop_times.assign(seq=stop_times["stop_sequence"].astype(int)).sort_values(
+        ["trip_id", "seq"]
+    )
+    hms = st["departure_time"].str.extract(r"^\s*(\d+):(\d{2}):(\d{2})").astype(float)
+    viaje = st["trip_id"].to_numpy()
+    p = xy.reindex(st["stop_id"]).to_numpy()
+    tramo = np.r_[0.0, np.hypot(*np.diff(p, axis=0).T)] / 1000
+    d = pd.DataFrame(
+        {
+            "hora": (hms[0] * 3600 + hms[1] * 60 + hms[2]).to_numpy(),
+            "tramo": np.where(st["trip_id"].ne(st["trip_id"].shift()), 0.0, tramo),
+            "n": st.groupby("trip_id").cumcount().to_numpy(),
+        }
+    )
+    g = d.groupby(viaje)
+    retro = g["hora"].diff().lt(-RETROCESO_MAX).groupby(viaje).any()
+    resto = d["tramo"].where(d["n"] >= 2, 0.0).groupby(viaje).sum()
+    segunda = pd.Series(d["hora"].to_numpy(), index=viaje)[d["n"].to_numpy() == 1]
+    horas = (g["hora"].last() - segunda) / 3600
+    red = trips.set_index("trip_id")["route_id"].str.split("_").str[0]
+    limite = red.map(VELOCIDAD_POR_RED).reindex(resto.index).fillna(VELOCIDAD_MAX)
+    rapido = (resto > RECORRIDO_MIN) & (resto > limite * horas)
+    return resto.index[(retro | rapido).to_numpy()]
+
+
+def _viajes_malos(
+    trips: pd.DataFrame, stop_times: pd.DataFrame, xy: pd.DataFrame
+) -> tuple[pd.Index, pd.Index]:
+    """`trip_id` de los viajes de relleno o con horas imposibles, y entre ellos los de relleno total (`RELLENO`)."""
     sin_hora = (
         stop_times["departure_time"].isin(RELLENO).groupby(stop_times["trip_id"]).all()
     )
-    relleno = sin_hora.index[sin_hora]
-    if relleno.empty:
+    de_relleno = sin_hora.index[sin_hora]
+    return de_relleno.union(_con_horas_imposibles(trips, stop_times, xy)), de_relleno
+
+
+def _rutas(trips: pd.DataFrame, viajes: pd.Index) -> list[str]:
+    return sorted(set(trips.set_index("trip_id")["route_id"].reindex(viajes).dropna()))
+
+
+def rellenar_horarios(
+    trips: pd.DataFrame, stop_times: pd.DataFrame, xy: pd.DataFrame
+) -> pd.DataFrame:
+    """`stop_times` con horas reales en los viajes con horario de relleno (`RELLENO`) o con horas imposibles (#349).
+
+    - **Viajes a reconstruir:** todas las paradas de relleno, o retroceden o van a una velocidad imposible
+      (`_con_horas_imposibles`). Una parada suelta a las 01:00 de un viaje real (Metro, Cercanías) no cuenta.
+    - **Reconstrucción:** la salida es la hora que lleva el `trip_id` (`..._06:56:00_...`); cada parada va a esa hora
+      más su distancia acumulada en línea recta entre la velocidad mediana de las líneas parecidas de su red
+      (`parecidas`, medida en viajes sin ninguno de esos defectos). Sin hora en el `trip_id` es un error si son de
+      relleno, porque no se adivina; si solo tienen horas imposibles, se descartan.
+
+    Sin viajes que arreglar devuelve el mismo objeto `stop_times` (`completar_tablas` lo comprueba con `is`). Los
+    descartados desaparecen de `stop_times`: quien tenga `trips.txt` debe quitarlos también.
+    """
+    malos, de_relleno = _viajes_malos(trips, stop_times, xy)
+    if malos.empty:
         return stop_times
-    salida = _segundos_del_id(relleno.to_series())
-    if salida.isna().any():
+    salida = _segundos_del_id(malos.to_series())
+    if (falta := salida.isna() & malos.isin(de_relleno)).any():
         raise ValueError(
-            f"Viajes de relleno sin hora en el trip_id: {salida.index[salida.isna()][:5].tolist()}"
+            f"Viajes de relleno sin hora en el trip_id: {salida.index[falta][:5].tolist()}"
         )
+    if (descartados := salida.index[salida.isna()]).size:
+        LOG.warning(
+            "%d viajes con horas imposibles descartados: su trip_id no lleva hora (#349); rutas %s",
+            descartados.size,
+            _rutas(trips, descartados),
+        )
+    en_malos = stop_times["trip_id"].isin(malos)
+    relleno = salida.index[salida.notna()]
+    if relleno.empty:
+        return stop_times[~en_malos]
+    salida = salida[relleno]
     ruta = trips.set_index("trip_id")["route_id"].reindex(relleno)
     if ruta.isna().any():
         raise ValueError(
@@ -400,31 +477,75 @@ def rellenar_horarios(
     km = np.where(st["trip_id"].ne(st["trip_id"].shift()), 0.0, tramo)
     acum = pd.Series(km, index=st.index).groupby(st["trip_id"]).cumsum()
     largo = acum.groupby(st["trip_id"]).max().groupby(ruta).median()
-    kmh = _velocidades(trips, stop_times[~es], xy, largo)
+    kmh = _velocidades(trips, stop_times[~en_malos], xy, largo)
     velocidad = kmh.reindex(ruta.reindex(st["trip_id"]).to_numpy()).to_numpy()
     t0 = salida.reindex(st["trip_id"]).to_numpy()
     segundos = np.round(t0 + acum.to_numpy() / velocidad * 3600)
     if pd.Series(segundos).groupby(st["trip_id"].to_numpy()).diff().lt(0).any():
         raise ValueError("Horas reconstruidas que retroceden dentro de un viaje")
-    hora = _hhmmss(segundos)
-    st = st.drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
-    return pd.concat([stop_times[~es], st], ignore_index=True)
+    absurdos = pd.Index(st["trip_id"][segundos - t0 > DURACION_MAX_H * 3600].unique())
+    if absurdos.size:
+        LOG.warning(
+            "%d viajes descartados: reconstruidos durarían más de %g h, su recorrido en recta no es un viaje real (#349); rutas %s",
+            absurdos.size,
+            DURACION_MAX_H,
+            _rutas(trips, absurdos),
+        )
+    queda = ~st["trip_id"].isin(absurdos).to_numpy()
+    hora = _hhmmss(segundos[queda])
+    st = st[queda].drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
+    return pd.concat([stop_times[~en_malos], st], ignore_index=True)
+
+
+def _csv(tablas: dict[str, bytes], nombre: str) -> pd.DataFrame:
+    return pd.read_csv(io.BytesIO(tablas[nombre]), dtype=str, encoding="utf-8-sig")
+
+
+def depurar_tablas(tablas: dict[str, bytes]) -> dict[str, bytes]:
+    """Las tablas de un GTFS sin los viajes de relleno ni con horas imposibles (matriz «sin estimadas», #349).
+
+    Solo queda lo que el CRTM publica con horario creíble, para que `tiempos.marcar_estimados` compare con la matriz
+    que reconstruye esos viajes (`completar_tablas`). Si no hay ninguno, devuelve el mismo objeto `tablas`.
+    """
+    trips, stop_times = _csv(tablas, "trips.txt"), _csv(tablas, "stop_times.txt")
+    malos, _ = _viajes_malos(
+        trips, stop_times, _xy(_paradas(_csv(tablas, "stops.txt"), set()))
+    )
+    if malos.empty:
+        return tablas
+    LOG.warning(
+        "%d viajes de relleno o con horas imposibles quitados (#311, #349); rutas %s",
+        malos.size,
+        _rutas(trips, malos),
+    )
+    # shortcut: no filtra frequencies.txt; hoy ningún quitado está en él (0 en los seis GTFS, y el de interurbanos y
+    # urbanos viene vacío), filtrarlo si un feed con frequencies pierde viajes
+    return {
+        **tablas,
+        "trips.txt": trips[~trips["trip_id"].isin(malos)].to_csv(index=False).encode(),
+        "stop_times.txt": stop_times[~stop_times["trip_id"].isin(malos)]
+        .to_csv(index=False)
+        .encode(),
+    }
 
 
 def completar_tablas(
     tablas: dict[str, bytes], secuencias: dict[str, list[str]]
 ) -> dict[str, bytes]:
     """Horas de relleno y paradas intermedias sobre las tablas de un GTFS (`tiempos.preparar_gtfs`); si no hay nada, igual."""
-
-    def leer(nombre: str) -> pd.DataFrame:
-        return pd.read_csv(io.BytesIO(tablas[nombre]), dtype=str, encoding="utf-8-sig")
-
-    trips, stop_times = leer("trips.txt"), leer("stop_times.txt")
-    xy = _xy(_paradas(leer("stops.txt"), set()))
+    trips, stop_times = _csv(tablas, "trips.txt"), _csv(tablas, "stop_times.txt")
+    xy = _xy(_paradas(_csv(tablas, "stops.txt"), set()))
     st = rellenar_horarios(trips, stop_times, xy)
     rellenadas = st is not stop_times
     if rellenadas:
-        LOG.warning("Horas estimadas en viajes con horario de relleno del CRTM (#311)")
+        LOG.warning(
+            "Horas estimadas en viajes con horario de relleno o imposible del CRTM (#311, #349)"
+        )
+        if (descartados := ~trips["trip_id"].isin(st["trip_id"])).any():
+            # shortcut: no filtra frequencies.txt; hoy ningún descartado está en él (0 en los seis GTFS, y el de
+            # interurbanos y urbanos viene vacío), filtrarlo si un feed con frequencies pierde viajes
+            trips = trips[~descartados]
+            tablas = {**tablas, "trips.txt": trips.to_csv(index=False).encode()}
     if trips["route_id"].isin(secuencias).any():
         st = completar_viajes(trips, st, xy, secuencias)
         LOG.warning(
