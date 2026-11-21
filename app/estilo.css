@@ -133,7 +133,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 /* Mapa y lo que flota sobre él. */
 #mapa-contenedor { position: relative; flex: 1; min-width: 0; }
 #mapa { position: absolute; inset: 0; }
-#leyenda { position: absolute; right: 16px; bottom: 16px; width: 17rem; max-height: 60%; overflow-y: auto; overflow-wrap: anywhere; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-2); box-shadow: var(--sombra); color: var(--texto-2); font-size: 14px; font-variant-numeric: tabular-nums; }
+#leyenda { position: absolute; right: 16px; bottom: 16px; width: 17rem; max-height: min(60%, calc(100% - 240px)); overflow-y: auto; overflow-wrap: anywhere; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-2); box-shadow: var(--sombra); color: var(--texto-2); font-size: 14px; font-variant-numeric: tabular-nums; }
 #leyenda p { margin: 8px 0 0; }
 #leyenda summary { min-height: 44px; margin-top: 4px; padding: 12px 0; color: var(--acento); cursor: pointer; }
 #leyenda .titulo { margin: 0 0 8px; color: var(--texto); font-weight: 600; }
@@ -155,14 +155,18 @@ a { color: var(--acento); text-underline-offset: 2px; }
   aside, body.panel-plegado aside, #plegar-panel .icono { transition: none; }
 }
 
-/* Pantalla estrecha: barra de filtros desplazable, el mapa arriba, la leyenda debajo y el panel al fondo. */
-@media (max-width: 40rem) {
+/* Pantalla media (por debajo de 68rem los menús centrados chocan con las acciones): la barra se desplaza en
+   horizontal desde la izquierda y Deshacer, Rehacer y Cancelar quedan fijos a su derecha. */
+@media (max-width: 68rem) {
   #barra-filtros { justify-content: flex-start; overflow-x: auto; padding: 4px 0 4px 8px; }
   .menu { position: static; }
-  .menu-panel, #m-escenario { position: fixed; top: 58px; right: 8px; left: 8px; width: auto; max-height: 70vh; }
-  /* Deshacer, Rehacer y Cancelar, fijos a la derecha de la barra que se desplaza y solo con icono (el texto queda
-     para lectores de pantalla). */
+  .menu-panel, #m-escenario { position: fixed; top: 58px; right: auto; left: 8px; width: min(24rem, calc(100% - 16px)); max-height: 70vh; }
   .acciones { position: sticky; top: auto; right: 0; transform: none; flex-wrap: nowrap; gap: 4px; padding-left: 8px; background: var(--superficie); }
+}
+
+/* Pantalla estrecha: barra de filtros desplazable, el mapa arriba, la leyenda debajo y el panel al fondo. */
+@media (max-width: 40rem) {
+  .menu-panel, #m-escenario { right: 8px; width: auto; }
   main { flex-direction: column-reverse; }
   aside { flex: none; max-width: none; max-height: 50%; padding: 0 16px 16px; border-right: 0; border-top: 1px solid var(--linea); }
   body.panel-plegado aside { max-height: 0; border: 0; }
