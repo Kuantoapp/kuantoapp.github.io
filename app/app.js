@@ -3,8 +3,8 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, entradaEscenario, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia,
-  lineaTooltip, lineasFicha, mejores, modosDisponibles, pintar, tituloEscenario, validar,
+  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, imprecisas, leyenda, licencias, lineaDiferencia,
+  lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar,
 } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
@@ -120,18 +120,20 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
     cont.append(fila);
   }
   cont.append(elemento("p", `${hayImprecisas ? "Borde punteado: pocos alquileres declarados (impreciso). " : ""}${hayEstimadas ? "Borde discontinuo: alquiler estimado. " : ""}Borde grueso: zona de referencia.`));
+  // Lo largo va plegado y breve: qué mide, las fuentes con la atribución que piden sus licencias y el enlace al método.
   const detalle = document.createElement("details");
   const ejemplo = avisoPrueba(metas) !== null; // datos inventados: no se atribuyen a ninguna fuente
-  const notas = [
-    `${m.titulo}: ${m.unidad}. ${metodo}. ${m.nota}`,
-    ...(ejemplo ? [] : [`Color: ${fuentes(...m.datos.map((n) => api[n].meta))}.`, `Zonas y coronas (las coronas fijan la tarifa del transporte): ${fuentes(zonas.meta)}.`]),
-    `Alquiler (año y avisos, arriba en el panel): ${alquiler.meta.nota}`,
-    `Tiempos: ${tiempos.meta.nota ?? "ver fuentes"} Parte de los tiempos son estimados y el fichero no marca cuáles.`,
-    `Hogar y cesta: ${hogares.meta.nota}`,
-    `Neto y tarifas (estimado): ${netos.meta.nota ?? "con la normativa de 2026"} ${tarifas.meta.nota ?? ""} ${tarifas.meta.nota_ruta ?? ""}`,
-    ...(ejemplo ? [] : [`Licencias: ${licencias(...metas)}.`]),
-  ];
-  detalle.append(elemento("summary", "Qué mide, fuentes, notas y licencias"), ...notas.map((n) => elemento("p", n)));
+  detalle.append(elemento("summary", "Fuentes, método y licencias"), elemento("p", `${m.unidad}. ${metodo}. ${m.nota} Parte de los tiempos de viaje son estimados.`));
+  const informe = Object.assign(document.createElement("a"), { href: "informe.html", textContent: "Más detalle en el informe" });
+  detalle.append(informe);
+  if (!ejemplo) {
+    const nombres = nombresFuente(...metas);
+    const lista = document.createElement("ul");
+    lista.append(...nombres.map((n) => elemento("li", n)));
+    const todas = document.createElement("details");
+    todas.append(elemento("summary", `Fuentes (${nombres.length}) y licencias`), lista, elemento("p", `Licencias: ${licencias(...metas)}.`));
+    detalle.append(todas);
+  }
   cont.append(detalle);
 }
 
@@ -145,15 +147,45 @@ function limitesDe(features) {
   return limites;
 }
 
+// Mapa base de OpenFreeMap (datos de OpenStreetMap, sin clave). Solo se piden teselas: el sueldo no sale del navegador.
+const ORIGEN_BASE = "https://tiles.openfreemap.org/";
+const ESTILO_BASE = `${ORIGEN_BASE}styles/positron`;
+// España entera (Península, Baleares, Canarias, Ceuta y Melilla): al alejar, el mapa no sale de aquí.
+const ESPANA = [[-19.5, 26.8], [5.5, 44.6]];
+const VELO = { type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [[[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]]] } };
+
+/**
+ * Añade el mapa base por debajo de las zonas y sus etiquetas por encima. Si no hay red o el estilo trae recursos de otro
+ * origen, lanza el error y el mapa sigue sin base (las zonas ya están pintadas).
+ */
+async function ponerMapaBase(mapa) {
+  const res = await fetch(ESTILO_BASE, { signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`estilo ${res.status}`);
+  const estilo = await res.json();
+  const urls = [estilo.glyphs, estilo.sprite, ...Object.values(estilo.sources).flatMap((s) => [s.url, ...(s.tiles ?? [])])].filter((u) => u !== undefined);
+  if (!urls.every((u) => typeof u === "string" && u.startsWith(ORIGEN_BASE))) throw new Error("recursos fuera de OpenFreeMap");
+  mapa.setGlyphs(estilo.glyphs);
+  mapa.setSprite(estilo.sprite);
+  for (const [id, fuente] of Object.entries(estilo.sources)) mapa.addSource(`base-${id}`, fuente);
+  for (const capa of estilo.layers.filter((c) => c.type !== "background")) {
+    const nueva = { ...capa, id: `base-${capa.id}`, ...(capa.source && { source: `base-${capa.source}` }) };
+    // Nombres en español cuando OpenStreetMap los tiene.
+    if (JSON.stringify(capa.layout?.["text-field"] ?? "").includes("name")) nueva.layout = { ...capa.layout, "text-field": ["coalesce", ["get", "name:es"], ["get", "name"]] };
+    mapa.addLayer(nueva, capa.type === "symbol" ? undefined : "velo");
+  }
+}
+
 function crearMapa(zonas) {
   const mapa = new maplibregl.Map({
     container: "mapa",
-    // Sin base: ni teselas ni glifos, así que no hay peticiones a terceros. Fondo blanco: el hueco entre zonas
-    // (enclave de Torrejón del Rey, fuera de la Comunidad) no se confunde con «sin dato».
-    style: { version: 8, sources: {}, layers: [{ id: "fondo", type: "background", paint: { "background-color": "#ffffff" } }] },
-    attributionControl: false,
-    maxZoom: 13, // los polígonos están simplificados y no casan con un mapa base a nivel de calle
+    // Arranca sin base, así las zonas salen aunque no haya red; el mapa base se añade después (`ponerMapaBase`).
+    style: { version: 8, sources: {}, layers: [{ id: "fondo", type: "background", paint: { "background-color": "#f2f2ef" } }] },
+    attributionControl: { compact: true },
+    maxBounds: ESPANA,
+    // shortcut: los polígonos están simplificados y a nivel de calle no casan con el mapa base; si molesta, bajar a 13
+    maxZoom: 15,
   });
+  mapa.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   const limites = limitesDe(zonas.features);
   // En pantalla estrecha la leyenda ocupa parte del contenedor cuando se pinta, después de crear el mapa:
   // hay que recalcular su tamaño y encuadrarlo de nuevo, o se corta por abajo.
@@ -164,15 +196,24 @@ function crearMapa(zonas) {
   encuadrar();
   let pendiente = null;
   mapa.on("load", () => {
+    // Fuera de la Comunidad, un velo claro: es el único sitio donde la herramienta tiene datos.
+    mapa.addSource("velo", { type: "geojson", data: VELO });
+    mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
-    mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"] } });
-    mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#444", "line-width": 0.6 } });
+    mapa.addSource("comunidad", { type: "geojson", data: { type: "Feature", properties: {}, geometry: contorno(zonas.features) } });
+    mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.85 } });
+    mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 0.8 } });
+    mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
+    // Al pasar por encima, la zona se recorta en oscuro; la elegida (ficha abierta), en el azul de la marca.
+    mapa.addLayer({ id: "zonas-encima", type: "line", source: "zonas", paint: { "line-color": "#1d1d1f", "line-width": ["case", ["boolean", ["feature-state", "encima"], false], 2, 0] } });
+    mapa.addLayer({ id: "zonas-elegida", type: "line", source: "zonas", filter: ["==", ["get", "zona_id"], ""], paint: { "line-color": "#0b4f9c", "line-width": 3.5 } });
     // Fondo blanco bajo el punteado: sin él no se ve sobre la clase más oscura.
     mapa.addLayer({ id: "zonas-imprecisas-fondo", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#fff", "line-width": 3 } });
     mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
     mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: ["==", ["get", "estimado"], true], paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
     mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: ["==", ["get", "referencia"], true], paint: { "line-color": "#000", "line-width": 3 } });
     pendiente = null;
+    ponerMapaBase(mapa).catch((error) => console.warn(`Mapa base no disponible, se pinta sin él: ${error.message}`));
   });
   return {
     mapa,
@@ -218,6 +259,7 @@ async function main() {
   const elegir = (id) => {
     estado.zona = id;
     pintarFicha();
+    if (mapa.getLayer("zonas-elegida")) mapa.setFilter("zonas-elegida", ["==", ["get", "zona_id"], id]);
   };
   function pintarMejores() {
     $("mejores-titulo").textContent = `Las diez mejores zonas: ${METRICAS[estado.metrica].titulo.toLowerCase()} (estimado)`;
@@ -225,7 +267,7 @@ async function main() {
       const boton = elemento("button", texto);
       boton.type = "button";
       boton.addEventListener("click", () => {
-        mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 10 });
+        mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 11, duration: 900 });
         elegir(zona_id);
       });
       const li = document.createElement("li");
@@ -260,7 +302,7 @@ async function main() {
     Object.assign(estado, { entrada: entradaSim ?? entrada, resultado: pintada, actual, simulando: entradaSim !== null });
     $("estado").textContent = "";
     $("subida-valor").textContent = `${v.subida} %`;
-    history.replaceState(null, "", `#${estadoAEnlace(v)}`);
+    history.replaceState(history.state, "", `#${estadoAEnlace(v)}`);
     estado.metrica = v.metrica;
     const algunaZona = Object.values(actual.zonas)[0];
     // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
@@ -287,10 +329,41 @@ async function main() {
   $("escenario").addEventListener("input", recalcular);
   $("escenario").addEventListener("submit", (e) => e.preventDefault());
 
+  // Deshacer: cada cambio confirmado (evento `change`: al soltar el deslizador o salir de un campo) es un paso del historial,
+  // así que «Deshacer» y el botón «atrás» del navegador vuelven al filtro anterior. `confirmado` es el estado del paso actual.
+  const deshacer = $("deshacer");
+  let confirmado = null;
+  const guardarPaso = () => {
+    const ahora = estadoAEnlace(valoresFormulario());
+    if (ahora === confirmado) return;
+    const paso = (history.state?.paso ?? 0) + 1;
+    history.replaceState(history.state, "", `#${confirmado}`); // `recalcular` ya había escrito el nuevo en este paso
+    history.pushState({ paso }, "", `#${ahora}`);
+    confirmado = ahora;
+    deshacer.disabled = false;
+  };
+  formulario().addEventListener("change", guardarPaso);
+  $("escenario").addEventListener("change", guardarPaso);
+  deshacer.addEventListener("click", () => history.back());
+  window.addEventListener("popstate", () => {
+    aplicarValores(estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api).valores);
+    mostrarSegunda();
+    recalcular();
+    confirmado = estadoAEnlace(valoresFormulario());
+    deshacer.disabled = !(history.state?.paso > 0);
+  });
+
   const tooltip = $("tooltip");
+  let encima = null; // zona bajo el puntero, para su borde (feature-state)
+  const marcarEncima = (id) => {
+    if (encima !== null) mapa.setFeatureState({ source: "zonas", id: encima }, { encima: false });
+    encima = id;
+    if (id !== null) mapa.setFeatureState({ source: "zonas", id }, { encima: true });
+  };
   mapa.on("mousemove", "zonas-relleno", (e) => {
     if (!estado.resultado) return;
     const id = e.features[0].properties.zona_id;
+    if (id !== encima) marcarEncima(id);
     tooltip.textContent = lineaTooltip(lineas(id), METRICAS[estado.metrica].datos.includes("alquiler") ? api.alquiler.zonas[id] : undefined, api.alquiler.meta);
     tooltip.style.left = `${e.point.x + 12}px`;
     tooltip.style.top = `${e.point.y + 12}px`;
@@ -298,6 +371,7 @@ async function main() {
     mapa.getCanvas().style.cursor = "pointer";
   });
   mapa.on("mouseleave", "zonas-relleno", () => {
+    marcarEncima(null);
     tooltip.hidden = true;
     mapa.getCanvas().style.cursor = "";
   });
@@ -305,6 +379,8 @@ async function main() {
     if (estado.resultado) elegir(e.features[0].properties.zona_id);
   });
   recalcular(); // pinta la leyenda por primera vez: el mapa ya tiene su tamaño final
+  confirmado = estadoAEnlace(valoresFormulario());
+  deshacer.disabled = !(history.state?.paso > 0);
   encuadrar();
 }
 

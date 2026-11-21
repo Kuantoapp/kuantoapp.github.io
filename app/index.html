@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob:; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob: https://tiles.openfreemap.org; style-src 'self'; connect-src 'self' https://tiles.openfreemap.org; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Kuanto · Mapa de zonas</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
@@ -26,6 +26,13 @@
       </section>
       <form id="formulario" novalidate autocomplete="off">
         <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
+        <div class="acciones">
+          <button type="button" id="deshacer" disabled>Deshacer el último cambio</button>
+        </div>
+
+        <fieldset id="metricas">
+          <legend>Qué pinta el mapa</legend>
+        </fieldset>
 
         <fieldset>
           <legend>Sueldo</legend>
@@ -122,10 +129,6 @@
           <label>Modo
             <select name="modo2"><option value="tp">Transporte público</option></select>
           </label>
-        </fieldset>
-
-        <fieldset id="metricas">
-          <legend>Qué pinta el mapa</legend>
         </fieldset>
 
         <fieldset>

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, cortesCuantiles, entradaEscenario,
+  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, contorno, cortesCuantiles, entradaEscenario,
   erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia, lineaTooltip,
   lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar,
 } from "./vista.js";
@@ -745,6 +745,21 @@ test("el enlace de una pareja con dos destinos es válido; el modo coche sin mat
   assert.equal(coche.avisos.length, 1);
   assert.match(coche.avisos[0], /«modo»/);
   assert.equal(estadoDeEnlace("modo=coche&destino=Centro", { ...NEUTRO, destino: "Centro" }, ejemplo).avisos.length, 0);
+});
+
+test("el contorno de dos cuadrados vecinos deja fuera el borde común", () => {
+  const cuadrado = (x) => ({ geometry: { type: "Polygon", coordinates: [[[x, 0], [x + 1, 0], [x + 1, 1], [x, 1], [x, 0]]] } });
+  const { type, coordinates } = contorno([cuadrado(0), cuadrado(1)]);
+  assert.equal(type, "MultiLineString");
+  assert.equal(coordinates.length, 6); // 8 tramos menos los 2 del borde común (x = 1), uno por cuadrado
+  assert.ok(!coordinates.some(([a, b]) => a[0] === 1 && b[0] === 1));
+});
+
+test("las zonas reales comparten bordes: el contorno es una parte de sus tramos (4.921 de 21.425 el 21-11)", () => {
+  const { features } = leer("app/datos/zonas.geojson");
+  const tramos = features.flatMap(({ geometry: g }) => (g.type === "Polygon" ? [g.coordinates] : g.coordinates).flat()).reduce((n, anillo) => n + anillo.length - 1, 0);
+  const { coordinates } = contorno(features);
+  assert.ok(coordinates.length > 0 && coordinates.length < tramos / 2); // si no compartieran topología, saldrían casi todos
 });
 
 test("el importe inactivo de la segunda persona tampoco se cuela desde el enlace", () => {

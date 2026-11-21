@@ -48,6 +48,16 @@ input[type="range"] { display: block; width: 100%; min-height: 44px; margin: 0; 
 .opciones { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .opciones label, #metricas label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: var(--texto); font-size: 15px; }
 input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+
+/* Filtro principal (qué pinta el mapa): píldoras que se marcan enteras; el radio sigue ahí para teclado y lectores. */
+#metricas { display: flex; flex-wrap: wrap; gap: 8px; }
+#metricas label { padding: 0 16px 0 12px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
+#metricas label:hover { border-color: var(--acento); }
+#metricas label:has(input:checked) { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+.acciones { display: flex; justify-content: flex-end; margin-top: 16px; }
+#deshacer { min-height: 44px; padding: 8px 16px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-weight: 600; cursor: pointer; }
+#deshacer:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
+#deshacer:disabled { color: var(--texto-3); cursor: default; }
 output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
 .ayuda, .aviso { margin: 8px 0 0; color: var(--texto-3); font-size: 14px; }
 .aviso { margin: 24px 0 0; }
@@ -87,6 +97,12 @@ a { color: var(--acento); text-underline-offset: 2px; }
 #leyenda p { margin: 8px 0 0; }
 #leyenda summary { min-height: 44px; margin-top: 4px; padding: 12px 0; color: var(--acento); cursor: pointer; }
 #leyenda .titulo { margin: 0 0 8px; color: var(--texto); font-weight: 600; }
+#leyenda ul { margin: 8px 0 0; padding-left: 16px; }
+#leyenda li { margin: 4px 0; }
+#leyenda details a { display: inline-block; min-height: 44px; padding: 12px 0; }
+/* Controles de MapLibre con la misma superficie que la leyenda. */
+.maplibregl-ctrl-group { border-radius: var(--r-2) !important; box-shadow: var(--sombra) !important; }
+.maplibregl-ctrl-group button { width: 44px !important; height: 44px !important; }
 #leyenda .fila { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
 #leyenda .muestra { flex: none; width: 20px; height: 12px; border: 1px solid var(--linea-control); border-radius: 3px; }
 #tooltip { position: absolute; z-index: 2; padding: 4px 8px; background: var(--texto); color: var(--superficie); border-radius: var(--r-1); font-size: 14px; font-variant-numeric: tabular-nums; pointer-events: none; white-space: nowrap; }
