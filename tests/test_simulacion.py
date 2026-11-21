@@ -604,6 +604,7 @@ def test_fin_descuento_control_de_la_issue():
         assert sin - con == control
     # media del año: × 335/360 (decisión 30); el joven redondea cada escenario (18,61 − 9,31)
     df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
+    df = df[df["criterio"] == "fin_descuento"]
     df = df.set_index(["perfil", "municipio_id"])["eur_mes"]
     assert float(D("35.20") * tr.ABONOS_ANIO / 12) == pytest.approx(32.76, abs=0.005)
     for m in ("28007", "28008", "28009"):  # B3, C1 y C2: el mismo abono
@@ -615,15 +616,71 @@ def test_fin_descuento_control_de_la_issue():
 
 
 def test_fin_descuento_propiedades_y_contrato():
+    todo = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
+    contratos.validar(todo, "simulacion")
+    assert set(todo["criterio"]) == {"fin_descuento", "fin_descuento_rdl"}
+    assert todo["estimado"].all() and todo["pct_ocupados_elegibles"].isna().all()
+    assert (todo["eur_mes"] > 0).all() and todo["elegible"].all()
+    for _, df in todo.groupby("criterio"):
+        # Abono Joven: tarifa plana en todas las coronas
+        assert df[df["perfil"] == "joven"]["eur_mes"].nunique() == 1
+        adulto = df[df["perfil"] == "adulto"].set_index("municipio_id")["eur_mes"]
+        assert adulto[list(CORONAS_FIN)].is_monotonic_increasing  # de A a C2
+
+
+def test_tarifa_2025_por_1_03_da_la_oficial_de_2026():
+    # BOCM-20251231-3 pág. 69: +3 % sobre la vigente; el BOCM redondea a 0,10 a la baja (contraste de la decisión 32)
+    def sube(p):
+        return (p * D("1.03")).quantize(D("0.1"), rounding="ROUND_FLOOR")
+
+    ofi = ("sin_descuento", "ordinario")
+    for c, p in simulacion.ABONO_2025.items():
+        assert sube(p) == tr.ABONO_30[c][ofi], c
+    assert (
+        sube(simulacion.DIEZ_VIAJES_2025["metro_a"]) == tr.DIEZ_VIAJES["metro_a"][ofi]
+    )
+    for p, hoy in zip(
+        simulacion.DIEZ_VIAJES_INTERURBANO_2025, tr.DIEZ_VIAJES_INTERURBANO, strict=True
+    ):
+        assert sube(p) == hoy[ofi]
+
+
+def test_fin_descuento_rdl_control_y_cota_inferior():
     df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
-    contratos.validar(df, "simulacion")
-    assert (df["criterio"] == "fin_descuento").all() and df["estimado"].all()
-    assert (df["eur_mes"] > 0).all() and df["elegible"].all()
-    assert df["pct_ocupados_elegibles"].isna().all()
-    # Abono Joven: tarifa plana en todas las coronas
-    assert df[df["perfil"] == "joven"]["eur_mes"].nunique() == 1
-    adulto = df[df["perfil"] == "adulto"].set_index("municipio_id")["eur_mes"]
-    assert adulto[list(CORONAS_FIN)].is_monotonic_increasing  # de A a C2
+    eur = df.set_index(["criterio", "perfil", "municipio_id"])["eur_mes"]
+    # A y B1: 10 viajes (7,30 + 0,20 × 12,20) × 227 × 2 ÷ 120 = 36,85 − 27,62; B2: (9,60 + 0,20 × 16,10) → 48,50 − 36,32
+    # B3-C2: abono (49,20 + 0,20 × 82,00) × 335/360 = 61,04 − 45,78; joven: (10 + 0,50 × 20) → 18,61 − 9,31
+    esperado = {"28079": 9.23, "28005": 9.23, "28006": 12.18}
+    esperado |= dict.fromkeys(("28007", "28008", "28009"), 15.26)
+    for m, x in esperado.items():
+        assert eur["fin_descuento_rdl", "adulto", m] == pytest.approx(x, abs=0.005)
+        assert eur["fin_descuento_rdl", "adulto", m] < eur["fin_descuento", "adulto", m]
+        assert eur["fin_descuento_rdl", "joven", m] == eur["fin_descuento", "joven", m]
+
+
+def test_fin_descuento_rdl_mantiene_el_titulo_mas_barato():
+    # con los precios del escenario RDL, el título de vigente_2026 sigue siendo el más barato
+    vig = ("vigente_2026", "ordinario")
+    abono, diez = tr.ABONOS_ANIO / 12, 2 * simulacion.DIAS_FIN * tr.SEMANAS_MES / 10
+    for i, c in enumerate(tr.ORDEN_CORONAS):
+        p_abono = tr.ABONO_30[c][vig] + simulacion.PCT_RDL * simulacion.ABONO_2025[c]
+        hoy = (
+            tr.DIEZ_VIAJES["metro_a"] if c == "A" else tr.DIEZ_VIAJES_INTERURBANO[i]
+        )[vig]
+        ref = (
+            simulacion.DIEZ_VIAJES_2025["metro_a"]
+            if c == "A"
+            else simulacion.DIEZ_VIAJES_INTERURBANO_2025[i]
+        )
+        gana_abono = p_abono * abono < (hoy + simulacion.PCT_RDL * ref) * diez
+        titulo = tr.coste_mes(
+            vig,
+            "general",
+            tr.clave_v1(c, simulacion.VIAJES_FIN),
+            simulacion.DIAS_FIN,
+            0,
+        )[0]
+        assert gana_abono == (titulo == "Abono 30 días"), c
 
 
 def test_fin_descuento_falla_si_un_municipio_cae_en_dos_coronas():

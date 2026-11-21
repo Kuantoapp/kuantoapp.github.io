@@ -120,8 +120,8 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
     para 2027 publicada a 2026-11-21 (ficha del BOE: solo la convalidación, BOE-A-2026-2025). El descuento total
     del abono normal es del 41,8 % frente a la oficial de 2026 (32,70 frente a 56,20 €, BOCM-20251231-2 pág. 66
     y -3 pág. 70); lo que pasa del 20 % lo pone el CRTM voluntariamente. `sin_descuento` quita todo, así que para
-    el adulto es la cota superior: la parte del RDL ronda la mitad (sin cifra hasta leer la tarifa del
-    30-11-2025 en su BOCM). Para el joven, el 50 % es todo el descuento (20,00 → 10,00 €).
+    el adulto es la cota superior. La cota inferior es `fin_descuento_rdl` (decisión 32). Para el joven, el 50 %
+    es todo el descuento (20,00 → 10,00 €).
 28. `sin_descuento` son las tarifas oficiales de 2026 (supuesto S5 de `transporte`): si las de 2027 suben, se
     pierde más.
 29. Forma v1: ida y vuelta pasando por la zona A desde la corona del municipio, 5 días y 2 viajes al día, precio
@@ -135,6 +135,16 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 31. Sin hogares sobrecargados: la tabla `sobrecarga` (F3-06, #100) no se publica (señal de corte, PR #293).
     Filas de `simulacion` con `criterio` = `fin_descuento`, `perfil` = `adulto` o `joven`, `elegible` = pierde
     algo (eur_mes > 0), `pct_ocupados_elegibles` nulo (no aplica) y `estimado` = True.
+32. `fin_descuento_rdl`: solo se retira la parte del RDL y el CRTM mantiene la suya. Precio = vigente 2026 + 20 %
+    (50 % joven) de la tarifa del 30-11-2025 (art. 8, último párrafo), con el mismo título que `vigente_2026`
+    (lo comprueba un test) y la misma media del año. Esa tarifa es la de 1-2-2013 (BOCM-20130130-9, págs. 22-23,
+    columna sin descuento; BOCM-20251231-3 pág. 69: «la última actualización de tarifas se produjo en el año
+    2013»), salvo el Abono 30 días de C1 y C2, igualado a B3 (82 €) desde el 1-1-2022 (BOCM-20211217-35, pág. 251,
+    «UNIFICACIÓN DE LAS TARIFAS DEL ABONO DE LAS ZONAS B3, C1 Y C2»), y el Abono Joven, de 20 € (sin subida en
+    2026, misma pág. 69). El 50 % va solo al Abono Joven (art. 8.b: títulos «dirigidos a población joven»); los
+    demás títulos, también los de un joven, llevan el 20 %. Contraste: la oficial de 2026 es la de 2025 × 1,03
+    redondeada a 0,10 a la baja en todos esos títulos, también con 82 € (84,40). Supone que en 2027 el CRTM
+    mantiene su parte en euros, sin tarifa nueva.
 """
 
 import logging
@@ -151,6 +161,7 @@ from mesobra import (
     neto,
     parametros_2026,
     titulares,
+    transporte,
 )
 
 LOG = logging.getLogger(__name__)
@@ -672,13 +683,50 @@ EDADES_FIN = {"adulto": "general", "joven": "joven"}  # perfil → edad de `tari
 NORMA_DESCUENTO = (
     "RDL 17/2025 (BOE-A-2025-26459), art. 8: 50 % joven y 20 % resto del 1-1 al 31-12-2026, más el "
     "descuento voluntario del CRTM; sin prórroga para 2027 publicada. Si no se prorroga, con las tarifas "
-    "oficiales de 2026. Adulto: cota superior (quita también la parte del CRTM; la del RDL ronda la mitad). "
-    "€/mes = media del año (335/30 abonos ÷ 12): por abono, 35,20 € en C2 y 10,00 € el joven"
+    "oficiales de 2026. Adulto: fin_descuento es la cota superior (quita también la parte del CRTM) y "
+    "fin_descuento_rdl la inferior (solo la del RDL). €/mes = media del año (335/30 abonos ÷ 12): por abono, "
+    "35,20 € en C2 y 10,00 € el joven"
 )
+CRITERIO_RDL = "fin_descuento_rdl"
+# RDL 17/2025, art. 8.c (abonos y 10 viajes) y 8.b (títulos joven)
+PCT_RDL, PCT_RDL_JOVEN = D("0.20"), D("0.50")
+# Tarifa del 30-11-2025, precio ordinario (decisión 32): BOCM-20130130-9 págs. 22-23; C1 y C2, BOCM-20211217-35
+ABONO_2025 = {"A": D("54.60"), "B1": D("63.70"), "B2": D("72.00")}
+ABONO_2025 |= dict.fromkeys(("B3", "C1", "C2"), D("82.00"))
+DIEZ_VIAJES_2025 = {"metro_a": D("12.20")}
+# interurbano por saltos de corona, como `transporte.DIEZ_VIAJES_INTERURBANO`
+DIEZ_VIAJES_INTERURBANO_2025 = [
+    D(x) for x in ("8.50", "12.20", "16.10", "23.00", "29.70", "37.40")
+]
+
+
+def _sin_rdl(titulo: str, corona: str) -> D:
+    """Coste al mes del título de la v1 si solo se retira el descuento del RDL (decisión 32)."""
+    vig, ofi = ("vigente_2026", "ordinario"), ("sin_descuento", "ordinario")
+    abono = transporte.ABONOS_ANIO / 12
+    if titulo == "Abono Joven":  # sin subida en 2026: la oficial es la del 30-11-2025
+        precios, q = (transporte.ABONO_JOVEN[vig], transporte.ABONO_JOVEN[ofi]), abono
+    elif titulo == "Abono 30 días":
+        precios, q = (transporte.ABONO_30[corona][vig], ABONO_2025[corona]), abono
+    elif titulo == "10 viajes":
+        cmin, cmax, productos = transporte._partes(
+            transporte.clave_v1(corona, VIAJES_FIN)
+        )
+        if productos != ["metro_a"] and productos != ["interurbano"]:
+            raise ValueError(f"10 viajes sin tarifa de 2025 para {productos}")
+        hoy = transporte._diez_viajes(productos[0], cmin, cmax)[vig]
+        saltos = transporte._i(cmax) - transporte._i(cmin)
+        ref = DIEZ_VIAJES_2025.get(productos[0]) or DIEZ_VIAJES_INTERURBANO_2025[saltos]
+        precios, q = (hoy, ref), 2 * DIAS_FIN * transporte.SEMANAS_MES / 10
+    else:
+        raise ValueError(f"título sin tarifa de 2025: {titulo!r}")
+    pct = PCT_RDL_JOVEN if titulo == "Abono Joven" else PCT_RDL
+    return transporte._redondea((precios[0] + pct * precios[1]) * q)
 
 
 def fin_descuento(api: dict) -> pd.DataFrame:
-    """Tabla `simulacion` con los € al mes que pierde cada perfil por municipio si se acaba el descuento."""
+    """Tabla `simulacion` con los € al mes que pierde cada perfil por municipio si se acaba el descuento: todo
+    (`fin_descuento`) o solo la parte del RDL (`fin_descuento_rdl`)."""
     tarifas = api["tarifas"]["escenarios"]
     coronas = {}
     for f in api["zonas"]["features"]:
@@ -686,19 +734,22 @@ def fin_descuento(api: dict) -> pd.DataFrame:
         if coronas.setdefault(m, c) != c:
             raise ValueError(f"municipio {m} en dos coronas: {coronas[m]} y {c}")
 
-    def coste(esc: str, edad: str, corona: str) -> D:
-        fila = tarifas[esc][edad][str(VIAJES_FIN)][corona][DIAS_FIN - 1]
-        return D(str(fila["coste_mes"]))
+    def fila(esc: str, edad: str, corona: str) -> tuple[str, D]:
+        f = tarifas[esc][edad][str(VIAJES_FIN)][corona][DIAS_FIN - 1]
+        return f["titulo"], D(str(f["coste_mes"]))
 
     filas = []
     for m, corona in sorted(coronas.items()):
         for perfil, edad in EDADES_FIN.items():
-            eur = coste("sin_descuento", edad, corona) - coste(
-                "vigente_2026", edad, corona
-            )
-            filas.append(
-                (perfil, m, CRITERIO_FIN, eur > 0, float(eur), True, float("nan"))
-            )
+            titulo, hoy = fila("vigente_2026", edad, corona)
+            for criterio, sin in [
+                (CRITERIO_FIN, fila("sin_descuento", edad, corona)[1]),
+                (CRITERIO_RDL, _sin_rdl(titulo, corona)),
+            ]:
+                eur = sin - hoy
+                filas.append(
+                    (perfil, m, criterio, eur > 0, float(eur), True, float("nan"))
+                )
     return _tabla(filas)
 
 
@@ -733,7 +784,7 @@ def main() -> None:
     fin.to_csv(PROCESSED / "simulacion_fin_descuento.csv", index=False)
     _log_tabla(
         f"fin del descuento, €/mes por municipio (estimado; {NORMA_DESCUENTO})",
-        fin.groupby("perfil")["eur_mes"].describe(),
+        fin.groupby(["criterio", "perfil"])["eur_mes"].describe(),
     )
     cal = calidad(pares, excluida, matriz_trabajo.ocupados_observados(matriz))
     cal.to_csv(PROCESSED / "simulacion_calidad.csv", index=False)
