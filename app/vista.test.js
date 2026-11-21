@@ -755,7 +755,7 @@ test("el contorno de dos cuadrados vecinos deja fuera el borde común", () => {
   assert.ok(!coordinates.some(([a, b]) => a[0] === 1 && b[0] === 1));
 });
 
-test("las zonas reales comparten bordes: el contorno es una parte de sus tramos (4.921 de 21.425 el 21-11)", () => {
+test("las zonas reales comparten bordes: el contorno es una parte pequeña de sus tramos", () => {
   const { features } = leer("app/datos/zonas.geojson");
   const tramos = features.flatMap(({ geometry: g }) => (g.type === "Polygon" ? [g.coordinates] : g.coordinates).flat()).reduce((n, anillo) => n + anillo.length - 1, 0);
   const { coordinates } = contorno(features);

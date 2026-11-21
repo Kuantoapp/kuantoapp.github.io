@@ -57,7 +57,7 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .acciones { display: flex; justify-content: flex-end; margin-top: 16px; }
 #deshacer { min-height: 44px; padding: 8px 16px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-weight: 600; cursor: pointer; }
 #deshacer:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
-#deshacer:disabled { color: var(--texto-3); cursor: default; }
+#deshacer:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
 output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
 .ayuda, .aviso { margin: 8px 0 0; color: var(--texto-3); font-size: 14px; }
 .aviso { margin: 24px 0 0; }
@@ -103,6 +103,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 /* Controles de MapLibre con la misma superficie que la leyenda. */
 .maplibregl-ctrl-group { border-radius: var(--r-2) !important; box-shadow: var(--sombra) !important; }
 .maplibregl-ctrl-group button { width: 44px !important; height: 44px !important; }
+.maplibregl-ctrl-attrib-button { width: 44px !important; height: 44px !important; background-position: center !important; }
 #leyenda .fila { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
 #leyenda .muestra { flex: none; width: 20px; height: 12px; border: 1px solid var(--linea-control); border-radius: 3px; }
 #tooltip { position: absolute; z-index: 2; padding: 4px 8px; background: var(--texto); color: var(--superficie); border-radius: var(--r-1); font-size: 14px; font-variant-numeric: tabular-nums; pointer-events: none; white-space: nowrap; }
