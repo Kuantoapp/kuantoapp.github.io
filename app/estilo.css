@@ -27,7 +27,9 @@
 ::selection { background: var(--seleccion); }
 html, body { height: 100%; margin: 0; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
 main { display: flex; height: 100%; }
-aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); }
+aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
+/* «Mapa completo»: el panel se pliega (y deja de recibir el foco con `visibility`); el mapa ocupa el hueco. */
+main.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s linear 0.3s; }
 aside:not(:has(:not(:empty))) { display: none; }
 h2 { margin: 32px 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
 
@@ -54,10 +56,18 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 #metricas label { padding: 0 16px 0 12px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
 #metricas label:hover { border-color: var(--acento); }
 #metricas label:has(input:checked) { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
-.acciones { display: flex; justify-content: flex-end; margin-top: 16px; }
-#deshacer { min-height: 44px; padding: 8px 16px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-weight: 600; cursor: pointer; }
-#deshacer:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
-#deshacer:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
+/* Barra fija: pestañas de vista y los botones de deshacer, rehacer y cancelar. Mismo botón de píldora en todos. */
+#cabecera-panel { position: sticky; top: 0; z-index: 2; margin: 0 -24px; padding: 12px 24px 0; background: var(--fondo); }
+.barra { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--linea); }
+.pestanas, .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.barra button, #quitar-escenario, .flotante { min-height: 44px; padding: 8px 14px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
+.barra button:hover:not(:disabled), #quitar-escenario:hover:not(:disabled), .flotante:hover { background: var(--acento-suave); border-color: var(--acento); }
+.barra button:disabled, #quitar-escenario:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
+.barra [aria-pressed="true"], .flotante[aria-pressed="true"] { border-color: var(--acento); background: var(--acento); color: var(--superficie); }
+#quitar-escenario { margin-top: 4px; }
+.flotante { position: absolute; z-index: 2; box-shadow: var(--sombra); }
+#mostrar-filtros { top: 16px; left: 16px; }
+#tema-mapa { top: 116px; right: 10px; } /* bajo los botones de zoom de MapLibre (10 px de margen y 2 × 44 px) */
 output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
 .ayuda, .aviso { margin: 8px 0 0; color: var(--texto-3); font-size: 14px; }
 .aviso { margin: 24px 0 0; }
@@ -68,7 +78,7 @@ output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nu
 :focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 
 /* Ficha de la zona: el momento de la pantalla. Nombre, cifra grande y lo que sobra; el desglose en filas. */
-#ficha { position: sticky; top: 0; z-index: 1; max-height: 60%; overflow-y: auto; margin: 24px 0 0; padding: 20px 24px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-variant-numeric: tabular-nums; }
+#ficha { max-height: 45vh; overflow-y: auto; margin: 12px 0 0; padding: 20px 24px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-variant-numeric: tabular-nums; }
 #ficha:empty { display: none; }
 #ficha p { margin: 0; padding: 8px 0; border-top: 1px solid var(--linea); color: var(--texto-2); font-size: 14px; }
 #ficha p:first-child { padding: 0; border: 0; color: var(--texto-3); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
@@ -111,11 +121,19 @@ a { color: var(--acento); text-underline-offset: 2px; }
 #estado:not(:empty) { padding: 12px 16px; background: var(--superficie); border-radius: var(--r-2); box-shadow: var(--sombra); }
 
 
+@media (prefers-reduced-motion: reduce) {
+  aside, main.panel-plegado aside { transition: none; }
+}
+
 /* Pantalla estrecha: el mapa arriba, la leyenda debajo (fuera del mapa, con las entradas en línea) y el panel al fondo. */
 @media (max-width: 40rem) {
   main { flex-direction: column-reverse; }
   aside { flex: none; max-width: none; max-height: 50%; padding: 0 16px 16px; border-right: 0; border-top: 1px solid var(--linea); }
-  #ficha { max-height: 40%; margin-top: 16px; padding: 16px; }
+  /* En el móvil el panel es bajo: solo la ficha queda fija (la cabecera se deshace con `display: contents`). */
+  #cabecera-panel { display: contents; }
+  .barra { padding-top: 12px; }
+  #ficha { position: sticky; top: 0; z-index: 1; max-height: 40%; margin-top: 16px; padding: 16px; }
+  main.panel-plegado aside { max-height: 0; border: 0; }
   #ficha p:nth-child(2) { font-size: 24px; }
   fieldset { padding: 16px; }
   #mapa-contenedor { display: flex; flex-direction: column; flex: 1; min-height: 0; }

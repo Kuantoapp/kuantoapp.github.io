@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
-  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, contorno, cortesCuantiles, entradaEscenario,
+  CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, contorno, cortesCuantiles, entradaEscenario, hayEscenario,
   erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia, lineaTooltip,
   lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar,
 } from "./vista.js";
@@ -745,6 +745,12 @@ test("el enlace de una pareja con dos destinos es válido; el modo coche sin mat
   assert.equal(coche.avisos.length, 1);
   assert.match(coche.avisos[0], /«modo»/);
   assert.equal(estadoDeEnlace("modo=coche&destino=Centro", { ...NEUTRO, destino: "Centro" }, ejemplo).avisos.length, 0);
+});
+
+test("hay escenario si un solo campo se aparta del neutro", () => {
+  assert.equal(hayEscenario(ESCENARIO_NEUTRO), false);
+  assert.equal(hayEscenario({ ...ESCENARIO_NEUTRO, subida: "5" }), true);
+  assert.equal(hayEscenario({ ...ESCENARIO_NEUTRO, dias_esc: "3" }), true);
 });
 
 test("el contorno de dos cuadrados vecinos deja fuera el borde común", () => {

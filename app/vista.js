@@ -472,12 +472,17 @@ export function erroresEscenario(v, api) {
   return errores;
 }
 
+/** Si algún campo de escenarios se aparta de `ESCENARIO_NEUTRO`. */
+export function hayEscenario(v) {
+  return !Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro);
+}
+
 /**
  * Entrada del cálculo con el escenario aplicado, o `null` si ningún campo se aparta de `ESCENARIO_NEUTRO`.
  * Los valores ya están validados. Cambiar los días no toca los viajes al día de cada sueldo.
  */
 export function entradaEscenario(entrada, v, edadCumple) {
-  if (Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro)) return null;
+  if (!hayEscenario(v)) return null;
   const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}), ...(v.cesta === "tramo" ? { cesta: "tramo" } : {}) };
   const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
   return { ...entrada, escenario, sueldos: entrada.sueldos.map((s) => ({ ...s, ...dias })) };

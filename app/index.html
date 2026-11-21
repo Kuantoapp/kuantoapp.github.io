@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob: https://tiles.openfreemap.org; style-src 'self'; connect-src 'self' https://tiles.openfreemap.org; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob:; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Kuanto · Mapa de zonas</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
@@ -12,9 +12,22 @@
 </head>
 <body>
   <main>
-    <aside>
-      <!-- Arriba y fija (sticky) para que se vea al pinchar una zona en el mapa o en la lista sin hacer scroll. -->
-      <section id="ficha" aria-live="polite" tabindex="0"></section>
+    <aside id="panel">
+      <!-- Arriba y fija (sticky): la barra de vista y cambios y la ficha, para que se vean sin hacer scroll. -->
+      <div id="cabecera-panel">
+        <div class="barra" role="toolbar" aria-label="Vista y cambios">
+          <div class="pestanas">
+            <button type="button" id="ver-filtros" aria-pressed="true" aria-controls="panel">Filtros</button>
+            <button type="button" id="ver-mapa" aria-pressed="false" aria-controls="panel">Mapa completo</button>
+          </div>
+          <div class="acciones">
+            <button type="button" id="deshacer" disabled>Deshacer</button>
+            <button type="button" id="rehacer" disabled>Rehacer</button>
+            <button type="button" id="cancelar" disabled>Cancelar cambios</button>
+          </div>
+        </div>
+        <section id="ficha" aria-live="polite" tabindex="0"></section>
+      </div>
       <section id="mejores">
         <h2 id="mejores-titulo">Las diez mejores zonas</h2>
         <ol id="mejores-lista"></ol>
@@ -27,10 +40,6 @@
       </section>
       <form id="formulario" novalidate autocomplete="off">
         <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
-        <div class="acciones">
-          <button type="button" id="deshacer" disabled>Deshacer el último cambio</button>
-        </div>
-
         <fieldset id="metricas">
           <legend>Qué pinta el mapa</legend>
         </fieldset>
@@ -144,6 +153,7 @@
         <form id="escenario" novalidate autocomplete="off">
           <fieldset>
             <legend>¿Y si…?</legend>
+            <button type="button" id="quitar-escenario" disabled>Quitar el escenario</button>
             <label>Descuento del transporte (abonos y bonos de viajes)
               <select name="tarifas">
                 <option value="vigente_2026">Se mantiene el de 2026</option>
@@ -181,6 +191,8 @@
     </aside>
     <section id="mapa-contenedor">
       <div id="mapa" role="img" aria-label="Mapa de las zonas coloreadas por la métrica elegida"></div>
+      <button type="button" id="mostrar-filtros" class="flotante" hidden>Mostrar filtros</button>
+      <button type="button" id="tema-mapa" class="flotante" aria-pressed="false">Mapa oscuro</button>
       <div id="leyenda"></div>
       <div id="tooltip" hidden></div>
       <p id="estado" role="status"></p>

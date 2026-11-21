@@ -3,7 +3,7 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, imprecisas, leyenda, licencias, lineaDiferencia,
+  ESCENARIO_NEUTRO, METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
   lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar,
 } from "./vista.js";
 
@@ -155,49 +155,57 @@ function limitesDe(features) {
   return limites;
 }
 
-// Mapa base de OpenFreeMap (datos de OpenStreetMap, sin clave). Solo se piden teselas: el sueldo no sale del navegador.
-const ORIGEN_BASE = "https://tiles.openfreemap.org/";
-const ESTILO_BASE = `${ORIGEN_BASE}styles/positron`;
-// Sustituye a la de la TileJSON: MapLibre da prioridad a las opciones de la fuente sobre la TileJSON remota.
-const ATRIBUCION_BASE =
-  '<a href="https://openfreemap.org/">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/">OpenMapTiles</a> © <a href="https://www.openstreetmap.org/copyright">colaboradores de OpenStreetMap</a>';
+// Mapa base propio, del mismo sitio: provincias y países vecinos (`mesobra.fondo`) y glifos para los nombres de zona.
+// Nada sale a la red, así que funciona sin conexión. `{fontstack}` y `{range}` los rellena MapLibre: no van por `new URL`.
+const CARPETA_MAPA = new URL("mapa/", location.href);
+const GLIFOS = `${new URL("glifos/", CARPETA_MAPA).href}{fontstack}/{range}.pbf`;
+const FUENTE_ETIQUETAS = ["Noto Sans Regular"]; // solo el rango 0-255 (test_fondo comprueba los nombres)
 // España entera (Península, Baleares, Canarias, Ceuta y Melilla): al alejar, el mapa no sale de aquí.
 const ESPANA = [[-19.5, 26.8], [5.5, 44.6]];
 const VELO = { type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [[[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]]] } };
+// Colores del mapa (no de la web) en cada tema. Los de las clases no cambian: son los datos. `marca` y `bajoMarca` son las
+// líneas de zona imprecisa, estimada, de referencia y elegida, y el halo que las separa de la clase de debajo.
+const TEMAS = {
+  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
+  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
+};
+// [capa, propiedad de pintura, color de TEMAS]
+const PINTURA_TEMA = [
+  ["mar", "background-color", "mar"], ["vecinos", "fill-color", "vecino"], ["provincias", "fill-color", "provincia"],
+  ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"],
+  ["comunidad", "line-color", "contorno"], ["zonas-borde", "line-color", "bordeZona"], ["zonas-nombre", "text-color", "texto"],
+  ["zonas-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
+  ["zonas-elegida", "line-color", "marca"], ["zonas-imprecisas-fondo", "line-color", "bajoMarca"], ["zonas-imprecisas", "line-color", "marca"],
+  ["zonas-estimadas", "line-color", "marca"], ["zonas-referencia", "line-color", "marca"],
+];
 
-/**
- * Añade el mapa base por debajo de las zonas y sus etiquetas por encima. Si no hay red o el estilo trae recursos de otro
- * origen, lanza el error y el mapa sigue sin base (las zonas ya están pintadas).
- */
-async function ponerMapaBase(mapa) {
-  const res = await fetch(ESTILO_BASE, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) throw new Error(`estilo ${res.status}`);
-  const estilo = await res.json();
-  const fuentesBase = Object.values(estilo.sources);
-  if (!fuentesBase.every((s) => ["vector", "raster"].includes(s.type))) throw new Error("tipo de fuente inesperado en el estilo");
-  const urls = [estilo.glyphs, estilo.sprite, ...fuentesBase.flatMap((s) => [s.url, ...(s.tiles ?? [])])].filter((u) => u !== undefined);
-  if (!urls.every((u) => typeof u === "string" && u.startsWith(ORIGEN_BASE))) throw new Error("recursos fuera de OpenFreeMap");
-  mapa.setGlyphs(estilo.glyphs);
-  mapa.setSprite(estilo.sprite);
-  // Atribución fija y propia: la del estilo llegaría como HTML de un tercero (MapLibre la pinta con innerHTML).
-  for (const [id, fuente] of Object.entries(estilo.sources)) mapa.addSource(`base-${id}`, { ...fuente, attribution: ATRIBUCION_BASE });
-  for (const capa of estilo.layers.filter((c) => c.type !== "background")) {
-    const nueva = { ...capa, id: `base-${capa.id}`, ...(capa.source && { source: `base-${capa.source}` }) };
-    // Nombres en español cuando OpenStreetMap los tiene.
-    if (JSON.stringify(capa.layout?.["text-field"] ?? "").includes("name")) nueva.layout = { ...capa.layout, "text-field": ["coalesce", ["get", "name:es"], ["get", "name"]] };
-    mapa.addLayer(nueva, capa.type === "symbol" ? undefined : "velo");
+const CLAVE_TEMA = "kuanto.temaMapa";
+
+/** El tema que eligió quien mira (si el navegador deja guardarlo) o, si no, el de su sistema. */
+function temaActual() {
+  try {
+    const guardado = localStorage.getItem(CLAVE_TEMA);
+    if (Object.hasOwn(TEMAS, guardado ?? "")) return guardado;
+  } catch {
+    // sin almacenamiento (ventana privada, bloqueado): se decide por el sistema
   }
+  return matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro";
 }
 
-function crearMapa(zonas) {
+function aplicarTema(mapa, tema) {
+  for (const [capa, propiedad, clave] of PINTURA_TEMA) if (mapa.getLayer(capa)) mapa.setPaintProperty(capa, propiedad, TEMAS[tema][clave]);
+}
+
+function crearMapa(zonas, fondo) {
+  const t = TEMAS.claro;
+  const deTipo = (tipo) => ["==", ["get", "tipo"], tipo];
   const mapa = new maplibregl.Map({
     container: "mapa",
-    // Arranca sin base, así las zonas salen aunque no haya red; el mapa base se añade después (`ponerMapaBase`).
-    style: { version: 8, sources: {}, layers: [{ id: "fondo", type: "background", paint: { "background-color": "#f2f2ef" } }] },
-    attributionControl: { compact: matchMedia("(max-width: 40rem)").matches }, // desplegada salvo en el móvil
+    // Solo el mar al crear: las capas con GeoJSON se añaden en `load`, así ese evento no espera a procesarlas.
+    style: { version: 8, glyphs: GLIFOS, sources: {}, layers: [{ id: "mar", type: "background", paint: { "background-color": t.mar } }] },
+    attributionControl: false, // el fondo es de dominio público (Natural Earth) y se cita en data/README.md
     maxBounds: ESPANA,
-    // shortcut: los polígonos están simplificados y a nivel de calle no casan con el mapa base; si molesta, bajar a 13
-    maxZoom: 15,
+    maxZoom: 13, // los polígonos están simplificados: a nivel de calle no casan
   });
   mapa.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   const limites = limitesDe(zonas.features);
@@ -210,6 +218,11 @@ function crearMapa(zonas) {
   encuadrar();
   let pendiente = null;
   mapa.on("load", () => {
+    mapa.addSource("fondo", { type: "geojson", data: fondo });
+    mapa.addLayer({ id: "vecinos", type: "fill", source: "fondo", filter: deTipo("pais"), paint: { "fill-color": t.vecino } });
+    mapa.addLayer({ id: "provincias", type: "fill", source: "fondo", filter: deTipo("provincia"), paint: { "fill-color": t.provincia } });
+    mapa.addLayer({ id: "vecinos-borde", type: "line", source: "fondo", filter: deTipo("pais"), paint: { "line-color": t.lineaPais, "line-width": 0.8 } });
+    mapa.addLayer({ id: "provincias-borde", type: "line", source: "fondo", filter: deTipo("provincia"), paint: { "line-color": t.lineaProvincia, "line-width": 0.6 } });
     // Fuera de la Comunidad, un velo claro: es el único sitio donde la herramienta tiene datos.
     mapa.addSource("velo", { type: "geojson", data: VELO });
     mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
@@ -218,7 +231,7 @@ function crearMapa(zonas) {
     mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.85 } });
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 0.8 } });
     mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
-    // Al pasar por encima, la zona se recorta en oscuro; la elegida (ficha abierta), en el azul de la marca.
+    // Al pasar por encima, la zona se recorta con la línea de marca; la elegida (ficha abierta), además con halo.
     mapa.addLayer({ id: "zonas-encima", type: "line", source: "zonas", paint: { "line-color": "#1d1d1f", "line-width": ["case", ["boolean", ["feature-state", "encima"], false], 2, 0] } });
     // Halo blanco bajo una línea casi negra: se ve sobre cualquier clase, clara u oscura.
     mapa.addLayer({ id: "zonas-elegida-halo", type: "line", source: "zonas", filter: ["==", ["get", "zona_id"], ""], paint: { "line-color": "#ffffff", "line-width": 6 } });
@@ -228,8 +241,17 @@ function crearMapa(zonas) {
     mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
     mapa.addLayer({ id: "zonas-estimadas", type: "line", source: "zonas", filter: ["==", ["get", "estimado"], true], paint: { "line-color": "#111", "line-width": 2, "line-dasharray": [2, 2] } });
     mapa.addLayer({ id: "zonas-referencia", type: "line", source: "zonas", filter: ["==", ["get", "referencia"], true], paint: { "line-color": "#000", "line-width": 3 } });
+    // Nombres de zona al acercarse, encima de todo.
+    mapa.addLayer({
+      id: "zonas-nombre",
+      type: "symbol",
+      source: "zonas",
+      minzoom: 9.5,
+      layout: { "text-field": ["get", "nombre"], "text-font": FUENTE_ETIQUETAS, "text-size": 12, "text-max-width": 8 },
+      paint: { "text-color": t.texto, "text-halo-color": t.halo, "text-halo-width": 1.5 },
+    });
     pendiente = null;
-    ponerMapaBase(mapa).catch((error) => console.warn(`Mapa base no disponible, se pinta sin él: ${error.message}`));
+    aplicarTema(mapa, temaActual());
   });
   return {
     mapa,
@@ -245,7 +267,7 @@ function crearMapa(zonas) {
 // --- Principal -----------------------------------------------------------------------------------
 
 async function main() {
-  const api = await cargarApi(CARPETA_DATOS);
+  const [api, fondo] = await Promise.all([cargarApi(CARPETA_DATOS), cargarJSON(CARPETA_MAPA, "fondo.geojson")]);
   $("fecha-datos").textContent = api.tiempos.meta.generado;
   const maxHijos = Math.max(...api.netos.configuraciones.map((c) => c.hijos));
   $("max-hijos").textContent = `(hasta ${maxHijos} hijos)`;
@@ -254,7 +276,8 @@ async function main() {
   const enlace = estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api);
   aplicarValores(enlace.valores);
   mostrarSegunda();
-  const { mapa, actualizar, encuadrar } = crearMapa(api.zonas);
+  const { mapa, actualizar, encuadrar } = crearMapa(api.zonas, fondo);
+  prepararVista(mapa);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
   const prueba = avisoPrueba([api.zonas, ...NOMBRES.map((n) => api[n])].map((x) => x.meta));
   $("pie").hidden = prueba !== null; // el pie atribuye los tiempos al CRTM: con datos de ejemplo no
@@ -286,6 +309,9 @@ async function main() {
         mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 11, duration: 900 });
         elegir(zona_id);
       });
+      // La zona se marca en el mapa al pasar por la lista, con el ratón o con el teclado.
+      for (const evento of ["mouseenter", "focus"]) boton.addEventListener(evento, () => marcarEncima(zona_id));
+      for (const evento of ["mouseleave", "blur"]) boton.addEventListener(evento, () => marcarEncima(null));
       const li = document.createElement("li");
       li.append(boton);
       return li;
@@ -345,36 +371,61 @@ async function main() {
   $("escenario").addEventListener("input", recalcular);
   $("escenario").addEventListener("submit", (e) => e.preventDefault());
 
-  // Deshacer: cada cambio confirmado (evento `change`: al soltar el deslizador o salir de un campo) es un paso del historial,
-  // así que «Deshacer» y el botón «atrás» del navegador vuelven al filtro anterior. `confirmado` es el estado del paso actual.
-  const deshacer = $("deshacer");
+  // Deshacer y rehacer: cada cambio confirmado (evento `change`: al soltar el deslizador o salir de un campo) es un paso del
+  // historial, así que también valen «atrás» y «adelante» del navegador. `confirmado` es el estado del paso actual;
+  // `inicial`, el de la página al abrirse (lo que recupera «Cancelar cambios»); `pasoMax`, el último paso al que se puede rehacer.
   let confirmado = null;
+  let inicial = null;
+  let pasoMax = 0;
+  const pasoActual = () => history.state?.paso ?? 0;
+  const actualizarBotones = () => {
+    $("deshacer").disabled = pasoActual() === 0;
+    $("rehacer").disabled = pasoActual() >= pasoMax;
+    $("cancelar").disabled = confirmado === inicial;
+    $("quitar-escenario").disabled = !hayEscenario(valoresFormulario());
+  };
   const guardarPaso = () => {
     const valores = valoresFormulario();
     // Un paso con errores no se guarda: al volver a él, el enlace lo descartaría y «Deshacer» parecería no hacer nada.
     if (validar(valores, api).errores) return;
     const ahora = estadoAEnlace(valores);
     if (ahora === confirmado) return;
-    const paso = (history.state?.paso ?? 0) + 1;
+    const paso = pasoActual() + 1;
     history.replaceState(history.state, "", `#${confirmado}`); // `recalcular` ya había escrito el nuevo en este paso
     history.pushState({ paso }, "", `#${ahora}`);
     confirmado = ahora;
-    deshacer.disabled = false;
+    pasoMax = paso; // un cambio nuevo descarta lo que se podía rehacer, como en el navegador
+    actualizarBotones();
+  };
+  // Aplica un estado del enlace a los formularios y repinta.
+  const ir = (texto) => {
+    aplicarValores(estadoDeEnlace(texto, valoresFormulario(), api).valores);
+    mostrarSegunda();
+    recalcular();
   };
   formulario().addEventListener("change", guardarPaso);
   $("escenario").addEventListener("change", guardarPaso);
-  deshacer.addEventListener("click", () => history.back());
-  window.addEventListener("popstate", () => {
-    aplicarValores(estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api).valores);
-    mostrarSegunda();
+  $("deshacer").addEventListener("click", () => history.back());
+  $("rehacer").addEventListener("click", () => history.forward());
+  $("cancelar").addEventListener("click", () => {
+    ir(inicial);
+    guardarPaso(); // también se puede deshacer
+  });
+  $("quitar-escenario").addEventListener("click", () => {
+    aplicarValores(ESCENARIO_NEUTRO);
     recalcular();
+    guardarPaso();
+  });
+  window.addEventListener("popstate", () => {
+    ir(location.hash.slice(1));
     confirmado = estadoAEnlace(valoresFormulario());
-    deshacer.disabled = !(history.state?.paso > 0);
+    actualizarBotones();
   });
 
   const tooltip = $("tooltip");
   let encima = null; // zona bajo el puntero, para su borde (feature-state)
   const marcarEncima = (id) => {
+    if (!mapa.getSource("zonas")) return; // antes de que cargue el mapa
     if (encima !== null) mapa.setFeatureState({ source: "zonas", id: encima }, { encima: false });
     encima = id;
     if (id !== null) mapa.setFeatureState({ source: "zonas", id }, { encima: true });
@@ -399,8 +450,43 @@ async function main() {
   });
   recalcular(); // pinta la leyenda por primera vez: el mapa ya tiene su tamaño final
   confirmado = estadoAEnlace(valoresFormulario());
-  deshacer.disabled = !(history.state?.paso > 0);
+  inicial = confirmado;
+  pasoMax = pasoActual(); // al recargar a mitad del historial, lo que hubiera por delante no se conoce
+  actualizarBotones();
   encuadrar();
+}
+
+/** Pestañas «Filtros» y «Mapa completo» (pliega el panel) y el botón del tema del mapa. No tocan el cálculo. */
+function prepararVista(mapa) {
+  const plegar = (plegado) => {
+    document.querySelector("main").classList.toggle("panel-plegado", plegado);
+    $("ver-filtros").setAttribute("aria-pressed", String(!plegado));
+    $("ver-mapa").setAttribute("aria-pressed", String(plegado));
+    $("mostrar-filtros").hidden = !plegado;
+    (plegado ? $("mostrar-filtros") : $("ver-mapa")).focus(); // el foco no se queda en un panel escondido
+    requestAnimationFrame(() => mapa.resize()); // sin transición (movimiento reducido) el tamaño cambia ya
+  };
+  $("ver-mapa").addEventListener("click", () => plegar(true));
+  $("ver-filtros").addEventListener("click", () => plegar(false));
+  $("mostrar-filtros").addEventListener("click", () => plegar(false));
+  $("panel").addEventListener("transitionend", (e) => {
+    if (e.target === e.currentTarget) mapa.resize(); // con transición, al acabar
+  });
+  const boton = $("tema-mapa");
+  const ponerTema = (tema) => {
+    aplicarTema(mapa, tema);
+    boton.setAttribute("aria-pressed", String(tema === "oscuro")); // etiqueta fija: el estado lo dice `aria-pressed`
+  };
+  ponerTema(temaActual());
+  boton.addEventListener("click", () => {
+    const tema = boton.getAttribute("aria-pressed") === "true" ? "claro" : "oscuro";
+    ponerTema(tema);
+    try {
+      localStorage.setItem(CLAVE_TEMA, tema);
+    } catch {
+      // sin almacenamiento: el tema vale hasta recargar
+    }
+  });
 }
 
 main().catch((error) => {
