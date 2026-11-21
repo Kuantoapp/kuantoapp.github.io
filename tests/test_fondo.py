@@ -70,9 +70,11 @@ def test_rechaza_otro_crs_o_sin_espana(capas):
 def test_nombres_de_zona_caben_en_los_glifos_del_mapa():
     """app/mapa/glifos solo trae el rango 0-255: un nombre con otro carácter saldría sin esa letra en el mapa."""
     zonas = json.loads((fondo.RAIZ / "app/datos/zonas.geojson").read_text("utf-8"))
+    capa = json.loads((fondo.RAIZ / "app/mapa/fondo.geojson").read_text("utf-8"))
+    provincias = [f for f in capa["features"] if f["properties"]["tipo"] == "etiqueta"]
     fuera = [
         f["properties"]["nombre"]
-        for f in zonas["features"]
+        for f in zonas["features"] + provincias
         if any(ord(c) > 255 for c in f["properties"]["nombre"])
     ]
     assert fuera == []

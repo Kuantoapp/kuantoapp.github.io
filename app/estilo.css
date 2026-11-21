@@ -156,7 +156,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* Pantalla estrecha: barra de filtros desplazable, el mapa arriba, la leyenda debajo y el panel al fondo. */
 @media (max-width: 40rem) {
-  #barra-filtros { overflow-x: auto; padding: 4px 8px; }
+  #barra-filtros { overflow-x: auto; padding: 4px 0 4px 8px; }
   .menu { position: static; }
   .menu-panel, #m-escenario { position: fixed; top: 58px; right: 8px; left: 8px; width: auto; max-height: 70vh; }
   /* Deshacer, Rehacer y Cancelar, fijos a la derecha de la barra que se desplaza y solo con icono (el texto queda

@@ -508,7 +508,8 @@ function prepararVista(mapa) {
     menu.addEventListener("mouseleave", () => menu.classList.remove("sin-hover"));
     // Al salir con Tab, el menú abierto al pulsar se cierra.
     menu.addEventListener("focusout", (e) => {
-      if (!menu.contains(e.relatedTarget)) menu.querySelector(".menu-boton").setAttribute("aria-expanded", "false");
+      // sin `relatedTarget` (pulsar texto o un hueco del panel) no se cierra: pulsar fuera ya lo cierra el `click`
+      if (e.relatedTarget && !menu.contains(e.relatedTarget)) menu.querySelector(".menu-boton").setAttribute("aria-expanded", "false");
     });
   }
   // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también sin transición o al acabarla.
