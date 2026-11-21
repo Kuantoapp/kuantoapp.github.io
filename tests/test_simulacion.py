@@ -640,3 +640,62 @@ def test_fin_descuento_con_los_datos_publicados():
     df = simulacion.fin_descuento(api)
     municipios = {f["properties"]["municipio_id"] for f in api["zonas"]["features"]}
     assert set(df["municipio_id"]) == municipios and (df["eur_mes"] > 0).all()
+
+
+def test_tarifa_oficial_de_2025_mas_el_3_por_ciento_da_la_de_2026():
+    """BOCM-20251231-3, pág. 69: oficiales de 2026 = vigentes + 3 % (salvo el Abono Joven), a la baja a 0,10 €."""
+    oficial = ("sin_descuento", "ordinario")
+
+    def sube(x: D) -> D:
+        return (x * D("1.03")).quantize(D("0.1"), rounding="ROUND_FLOOR")
+
+    for c, x in simulacion.OFICIAL_2025_ABONO.items():
+        assert sube(x) == tr.ABONO_30[c][oficial]
+    assert (
+        sube(simulacion.OFICIAL_2025_DIEZ["metro_a"])
+        == tr.DIEZ_VIAJES["metro_a"][oficial]
+    )
+    for i, fila in enumerate(tr.DIEZ_VIAJES_INTERURBANO):
+        assert sube(simulacion.OFICIAL_2025_DIEZ["interurbano", i]) == fila[oficial]
+    assert tr.ABONO_JOVEN[oficial] == simulacion.OFICIAL_2025_JOVEN
+
+
+def test_coste_rdl_sin_ayuda_es_el_vigente_de_tarifas_json():
+    """`coste_rdl` rehace `transporte.coste_mes`: con ayuda 0 tiene que dar lo que ve la app en cada corona y edad."""
+    escenarios = _api_fin({})["tarifas"]["escenarios"]["vigente_2026"]
+    cero = dict.fromkeys(simulacion.AYUDA_RDL, D(0))
+    for c in tr.ORDEN_CORONAS:
+        for edad in ("general", "joven"):
+            app = escenarios[edad]["2"][c][4]["coste_mes"]
+            assert float(simulacion.coste_rdl(c, edad, cero)) == app
+
+
+def test_fin_rdl_a_mano():
+    df = simulacion.fin_rdl(_api_fin(CORONAS_FIN))
+    contratos.validar(df, "simulacion")
+    assert (df["criterio"] == "fin_rdl").all() and df["estimado"].all()
+    eur = df.set_index(["perfil", "municipio_id"])["eur_mes"]
+    # C2: abono (49,20 + 0,20 × 82,00) × 335/360 = 61,04 frente a 45,78
+    assert eur["adulto", "28009"] == pytest.approx(15.26, abs=0.005)
+    # A: 10 viajes de Metro (7,30 + 0,20 × 12,20) × 2 × 5 × 227/60 ÷ 10 = 36,85 frente a 27,62
+    assert eur["adulto", "28079"] == pytest.approx(9.23, abs=0.005)
+    # B2: 10 viajes de 2 saltos (9,60 + 0,20 × 16,10) × 227/6 ÷ 10 = 48,50 frente a 36,32
+    assert eur["adulto", "28006"] == pytest.approx(12.18, abs=0.005)
+    # el joven pierde todo su descuento (el 50 % es estatal); el adulto, menos que sin ningún descuento
+    total = simulacion.fin_descuento(_api_fin(CORONAS_FIN)).set_index(
+        ["perfil", "municipio_id"]
+    )["eur_mes"]
+    for m in CORONAS_FIN:
+        assert eur["joven", m] == pytest.approx(total["joven", m], abs=0.005)
+        assert 0 < eur["adulto", m] < total["adulto", m]
+
+
+def test_sensibilidad_por_corona_no_es_monotona_con_3_dias():
+    s = simulacion.fin_coronas(_api_fin({})).set_index(
+        ["corona", "perfil", "dias", "viajes_dia"]
+    )["eur_mes"]
+    assert len(s) == 6 * 2 * 2 * 2 and (s > 0).all()
+    # con 3 días C1 pierde más que C2: con descuento C1 usa el 10 viajes (40,41) y C2 el abono (45,78); sin él,
+    # los dos pasan al sencillo (68,10)
+    assert s["C1", "adulto", 3, 2] == pytest.approx(68.10 - 40.41, abs=0.005)
+    assert s["C2", "adulto", 3, 2] == pytest.approx(68.10 - 45.78, abs=0.005)
