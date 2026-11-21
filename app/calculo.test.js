@@ -56,6 +56,17 @@ test("4 viajes al día en un par sin zona A (B1 a B2) cuentan la A: abono A-B2, 
   assert.ok(tarifa(api, "28065", "28092", { ...sueldo, viajes_dia: 2 }, "vigente_2026").coste_mes < 40.2);
 });
 
+test("4 viajes al día dentro de una zona (C2) pagan el interurbano de una zona más el Metro de A: 18,77 €", () => {
+  const sueldo = { dias: 2, viajes_dia: 4, edad: 30, colectivo: "ordinario", no_laborables: 0 };
+  assert.equal(tarifa(api, "28001", "28001", sueldo, "vigente_2026").coste_mes, 18.77);
+});
+
+test("el Abono Joven del hijo no lleva viajes no laborables, también desde una zona lejana", () => {
+  const h = { perfil: "solo", edad: 33, hijos: 1, no_laborables: 16 };
+  const t = (hogar) => zona("28001", entrada({ hogar, zonas: ["28001"] })).transporte;
+  igual(t({ ...h, edades_hijos: [18] }), t(h) + 9.31, "hijo de 18 años");
+});
+
 test("un par sin clave falla con error claro", () => {
   assert.throws(() => calcular(conClave("2807901", "2807901", null), entrada()), /sin clave de tarifa/);
 });

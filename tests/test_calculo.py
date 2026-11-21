@@ -429,7 +429,7 @@ def test_neto_cuadra_con_neto_py(bruto: int, hogar: dict, tolerancia: float) -> 
 
 
 def test_cuatro_viajes_en_un_par_sin_zona_a_cuenta_la_a() -> None:
-    # B1 → B2: la clave con transbordo parte de A, así que el abono A-B2 (43,20 € × 335/360 = 40,20) cubre el Metro de A
+    # B1 → B2 a 5 días: con Metro de A el abono tiene que cubrir desde A: A-B2 (43,20 € × 335/360 = 40,20)
     sueldo = {
         "dias": 5,
         "viajes_dia": 4,
@@ -443,6 +443,20 @@ def test_cuatro_viajes_en_un_par_sin_zona_a_cuenta_la_a() -> None:
         API, "28065", "28092", sueldo | {"viajes_dia": 2}, "vigente_2026"
     )
     assert dos["coste_mes"] < cuatro["coste_mes"]
+
+
+def test_cuatro_viajes_dentro_de_una_zona_pagan_por_viaje_el_rango_real() -> None:
+    # C2 → C2, 2 días: 15,13 viajes × (0,51 interurbano de una zona + 0,73 Metro de A) = 18,77 €
+    # (BOCM-20251231-2, pág. 67); el abono desde A (A-C2) saldría a 45,78 €
+    sueldo = {
+        "dias": 2,
+        "viajes_dia": 4,
+        "edad": 30,
+        "colectivo": "ordinario",
+        "no_laborables": 0,
+    }
+    z = calculo.tarifa(API, "28001", "28001", sueldo, "vigente_2026")
+    assert z["coste_mes"] == 18.77
 
 
 @pytest.mark.parametrize(("edad", "coste"), [(25, 9.31), (26, 27.62)])

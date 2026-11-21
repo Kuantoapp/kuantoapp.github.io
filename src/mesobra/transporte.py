@@ -318,8 +318,11 @@ def _por_viaje(
 
 
 def _abono(tarifa: tuple[str, str], clave: str) -> tuple[str, D]:
-    """El abono más barato que cubre el rango de coronas de la clave."""
-    cmin, cmax, _ = _partes(clave)
+    """El abono más barato que cubre el rango de coronas de la clave; con Metro de la zona A, desde la A
+    (un interzonal sin A, como B2-C1, no cubre esa validación)."""
+    cmin, cmax, productos = _partes(clave)
+    if "metro_a" in productos:
+        cmin = "A"
     cubren = {
         (a, b): p
         for (a, b), p in ABONOS.items()
@@ -447,10 +450,9 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
 
 def clave_transbordo(clave: str) -> str:
     """Clave de la misma ruta con cambio de operador en cada sentido (4 viajes al día, #164): una
-    validación más, con Metro de la zona A, como en `clave_v1`. Como esa validación entra en la zona A,
-    el rango pasa a empezar en A: un abono interzonal sin A (B2-C1) no la cubriría."""
-    _, cmax, productos = _partes(clave)
-    return f"A-{cmax}|{'+'.join([*productos, 'metro_a'])}"
+    validación más, con Metro de la zona A, como en `clave_v1`. El rango real se conserva para el pago
+    por viaje del interurbano; `_abono` ya exige que el abono cubra desde la A si hay `metro_a`."""
+    return clave + "+metro_a"
 
 
 def tabla_v1() -> pd.DataFrame:
