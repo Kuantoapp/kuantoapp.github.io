@@ -90,6 +90,9 @@ RELLENO = ("01:00:00", "01:00:01")
 VELOCIDAD_MAX = 90.0
 RECORRIDO_MIN = 3.0
 RETROCESO_MAX = 60.0
+# un viaje reconstruido de más de 4 h no es un recorrido real (circuitos que repiten paradas: 224, 252, 352…; medido:
+# el resto sale con p99 de 2,5 h) y r5py rechaza horas de más de 72 h
+DURACION_MAX_H = 4.0
 HORA_EN_ID = r"_(\d{2}):(\d{2}):\d{2}_"
 HORA_CORTA = r"_(\d{1,2})(\d{2})$"
 SEMANA = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
@@ -457,8 +460,16 @@ def rellenar_horarios(
     segundos = np.round(t0 + acum.to_numpy() / velocidad * 3600)
     if pd.Series(segundos).groupby(st["trip_id"].to_numpy()).diff().lt(0).any():
         raise ValueError("Horas reconstruidas que retroceden dentro de un viaje")
-    hora = _hhmmss(segundos)
-    st = st.drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
+    absurdos = pd.Index(st["trip_id"][segundos - t0 > DURACION_MAX_H * 3600].unique())
+    if absurdos.size:
+        LOG.warning(
+            "%d viajes descartados: reconstruidos durarían más de %g h, su recorrido en recta no es un viaje real (#349)",
+            absurdos.size,
+            DURACION_MAX_H,
+        )
+    queda = ~st["trip_id"].isin(absurdos).to_numpy()
+    hora = _hhmmss(segundos[queda])
+    st = st[queda].drop(columns="seq").assign(arrival_time=hora, departure_time=hora)
     return pd.concat([stop_times[~en_malos], st], ignore_index=True)
 
 
