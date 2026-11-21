@@ -401,6 +401,10 @@ def _con_horas_imposibles(stop_times: pd.DataFrame, xy: pd.DataFrame) -> pd.Inde
     return resto.index[(retro | rapido).to_numpy()]
 
 
+def _rutas(trips: pd.DataFrame, viajes: pd.Index) -> list[str]:
+    return sorted(set(trips.set_index("trip_id")["route_id"].reindex(viajes).dropna()))
+
+
 def rellenar_horarios(
     trips: pd.DataFrame, stop_times: pd.DataFrame, xy: pd.DataFrame
 ) -> pd.DataFrame:
@@ -430,8 +434,9 @@ def rellenar_horarios(
         )
     if (descartados := salida.index[salida.isna()]).size:
         LOG.warning(
-            "%d viajes con horas imposibles descartados: su trip_id no lleva hora (#349)",
+            "%d viajes con horas imposibles descartados: su trip_id no lleva hora (#349); rutas %s",
             descartados.size,
+            _rutas(trips, descartados),
         )
     en_malos = stop_times["trip_id"].isin(malos)
     relleno = salida.index[salida.notna()]
@@ -463,9 +468,10 @@ def rellenar_horarios(
     absurdos = pd.Index(st["trip_id"][segundos - t0 > DURACION_MAX_H * 3600].unique())
     if absurdos.size:
         LOG.warning(
-            "%d viajes descartados: reconstruidos durarían más de %g h, su recorrido en recta no es un viaje real (#349)",
+            "%d viajes descartados: reconstruidos durarían más de %g h, su recorrido en recta no es un viaje real (#349); rutas %s",
             absurdos.size,
             DURACION_MAX_H,
+            _rutas(trips, absurdos),
         )
     queda = ~st["trip_id"].isin(absurdos).to_numpy()
     hora = _hhmmss(segundos[queda])
@@ -490,6 +496,8 @@ def completar_tablas(
             "Horas estimadas en viajes con horario de relleno o imposible del CRTM (#311, #349)"
         )
         if (descartados := ~trips["trip_id"].isin(st["trip_id"])).any():
+            # shortcut: no filtra frequencies.txt; hoy ningún descartado está en él (0 en los seis GTFS, y el de
+            # interurbanos y urbanos viene vacío), filtrarlo si un feed con frequencies pierde viajes
             trips = trips[~descartados]
             tablas = {**tablas, "trips.txt": trips.to_csv(index=False).encode()}
     if trips["route_id"].isin(secuencias).any():
