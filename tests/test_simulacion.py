@@ -661,9 +661,9 @@ def test_fin_descuento_rdl_control_y_cota_inferior():
 def test_fin_descuento_rdl_mantiene_el_titulo_mas_barato():
     # con los precios del escenario RDL, el título de vigente_2026 sigue siendo el más barato
     vig = ("vigente_2026", "ordinario")
-    abono, diez = tr.ABONOS_ANIO / 12, 2 * 5 * tr.SEMANAS_MES / 10
+    abono, diez = tr.ABONOS_ANIO / 12, 2 * simulacion.DIAS_FIN * tr.SEMANAS_MES / 10
     for i, c in enumerate(tr.ORDEN_CORONAS):
-        p_abono = tr.ABONO_30[c][vig] + D("0.2") * simulacion.ABONO_2025[c]
+        p_abono = tr.ABONO_30[c][vig] + simulacion.PCT_RDL * simulacion.ABONO_2025[c]
         hoy = (
             tr.DIEZ_VIAJES["metro_a"] if c == "A" else tr.DIEZ_VIAJES_INTERURBANO[i]
         )[vig]
@@ -672,8 +672,14 @@ def test_fin_descuento_rdl_mantiene_el_titulo_mas_barato():
             if c == "A"
             else simulacion.DIEZ_VIAJES_INTERURBANO_2025[i]
         )
-        gana_abono = p_abono * abono < (hoy + D("0.2") * ref) * diez
-        titulo = tr.coste_mes(vig, "general", tr.clave_v1(c, 2), 5, 0)[0]
+        gana_abono = p_abono * abono < (hoy + simulacion.PCT_RDL * ref) * diez
+        titulo = tr.coste_mes(
+            vig,
+            "general",
+            tr.clave_v1(c, simulacion.VIAJES_FIN),
+            simulacion.DIAS_FIN,
+            0,
+        )[0]
         assert gana_abono == (titulo == "Abono 30 días"), c
 
 

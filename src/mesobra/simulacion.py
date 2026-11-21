@@ -139,9 +139,10 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
     (50 % joven) de la tarifa del 30-11-2025 (art. 8, último párrafo), con el mismo título que `vigente_2026`
     (lo comprueba un test) y la misma media del año. Esa tarifa es la de 1-2-2013 (BOCM-20130130-9, págs. 22-23,
     columna sin descuento; BOCM-20251231-3 pág. 69: «la última actualización de tarifas se produjo en el año
-    2013»), salvo el Abono 30 días de B3, C1 y C2, igualado después a 82 € («tarifa única de 82€», ficha antigua
-    del abono del CRTM, consultada el 2026-11-21; el acuerdo de la igualación no se ha localizado), y el Abono
-    Joven, de 20 € (sin subida en 2026, misma pág. 69). Contraste: la oficial de 2026 es la de 2025 × 1,03
+    2013»), salvo el Abono 30 días de C1 y C2, igualado a B3 (82 €) desde el 1-1-2022 (BOCM-20211217-35, pág. 251,
+    «UNIFICACIÓN DE LAS TARIFAS DEL ABONO DE LAS ZONAS B3, C1 Y C2»), y el Abono Joven, de 20 € (sin subida en
+    2026, misma pág. 69). El 50 % va solo al Abono Joven (art. 8.b: títulos «dirigidos a población joven»); los
+    demás títulos, también los de un joven, llevan el 20 %. Contraste: la oficial de 2026 es la de 2025 × 1,03
     redondeada a 0,10 a la baja en todos esos títulos, también con 82 € (84,40). Supone que en 2027 el CRTM
     mantiene su parte en euros, sin tarifa nueva.
 """
@@ -687,9 +688,9 @@ NORMA_DESCUENTO = (
     "35,20 € en C2 y 10,00 € el joven"
 )
 CRITERIO_RDL = "fin_descuento_rdl"
-# RDL 17/2025, art. 8.b (joven) y 8.c (resto)
-PCT_RDL = {"general": D("0.20"), "joven": D("0.50")}
-# Tarifa del 30-11-2025, precio ordinario (decisión 32): BOCM-20130130-9 págs. 22-23, salvo B3-C2 (82 €, CRTM)
+# RDL 17/2025, art. 8.c (abonos y 10 viajes) y 8.b (títulos joven)
+PCT_RDL, PCT_RDL_JOVEN = D("0.20"), D("0.50")
+# Tarifa del 30-11-2025, precio ordinario (decisión 32): BOCM-20130130-9 págs. 22-23; C1 y C2, BOCM-20211217-35
 ABONO_2025 = {"A": D("54.60"), "B1": D("63.70"), "B2": D("72.00")}
 ABONO_2025 |= dict.fromkeys(("B3", "C1", "C2"), D("82.00"))
 DIEZ_VIAJES_2025 = {"metro_a": D("12.20")}
@@ -699,7 +700,7 @@ DIEZ_VIAJES_INTERURBANO_2025 = [
 ]
 
 
-def _sin_rdl(titulo: str, edad: str, corona: str) -> D:
+def _sin_rdl(titulo: str, corona: str) -> D:
     """Coste al mes del título de la v1 si solo se retira el descuento del RDL (decisión 32)."""
     vig, ofi = ("vigente_2026", "ordinario"), ("sin_descuento", "ordinario")
     abono = transporte.ABONOS_ANIO / 12
@@ -714,14 +715,13 @@ def _sin_rdl(titulo: str, edad: str, corona: str) -> D:
         if productos != ["metro_a"] and productos != ["interurbano"]:
             raise ValueError(f"10 viajes sin tarifa de 2025 para {productos}")
         hoy = transporte._diez_viajes(productos[0], cmin, cmax)[vig]
-        saltos = transporte.ORDEN_CORONAS.index(cmax) - transporte.ORDEN_CORONAS.index(
-            cmin
-        )
+        saltos = transporte._i(cmax) - transporte._i(cmin)
         ref = DIEZ_VIAJES_2025.get(productos[0]) or DIEZ_VIAJES_INTERURBANO_2025[saltos]
         precios, q = (hoy, ref), 2 * DIAS_FIN * transporte.SEMANAS_MES / 10
     else:
         raise ValueError(f"título sin tarifa de 2025: {titulo!r}")
-    return transporte._redondea((precios[0] + PCT_RDL[edad] * precios[1]) * q)
+    pct = PCT_RDL_JOVEN if titulo == "Abono Joven" else PCT_RDL
+    return transporte._redondea((precios[0] + pct * precios[1]) * q)
 
 
 def fin_descuento(api: dict) -> pd.DataFrame:
@@ -744,7 +744,7 @@ def fin_descuento(api: dict) -> pd.DataFrame:
             titulo, hoy = fila("vigente_2026", edad, corona)
             for criterio, sin in [
                 (CRITERIO_FIN, fila("sin_descuento", edad, corona)[1]),
-                (CRITERIO_RDL, _sin_rdl(titulo, edad, corona)),
+                (CRITERIO_RDL, _sin_rdl(titulo, corona)),
             ]:
                 eur = sin - hoy
                 filas.append(
