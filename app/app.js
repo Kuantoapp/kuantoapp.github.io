@@ -500,8 +500,17 @@ function prepararVista(mapa) {
     if (e.key !== "Escape") return;
     const abierto = botonesMenu.find((b) => b.closest(".menu").contains(document.activeElement));
     cerrarMenus(null);
+    // El abierto al pasar el ratón también se cierra: `.sin-hover` lo anula hasta que el ratón sale (WCAG 1.4.13).
+    for (const menu of document.querySelectorAll(".menu:hover")) menu.classList.add("sin-hover");
     abierto?.focus(); // el foco vuelve al botón de su menú
   });
+  for (const menu of document.querySelectorAll(".menu")) {
+    menu.addEventListener("mouseleave", () => menu.classList.remove("sin-hover"));
+    // Al salir con Tab, el menú abierto al pulsar se cierra.
+    menu.addEventListener("focusout", (e) => {
+      if (!menu.contains(e.relatedTarget)) menu.querySelector(".menu-boton").setAttribute("aria-expanded", "false");
+    });
+  }
   // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también sin transición o al acabarla.
   const ajustar = () => requestAnimationFrame(() => mapa.resize());
   for (const id of ["panel", "barra-filtros"]) $(id).addEventListener("transitionend", (e) => e.target === e.currentTarget && mapa.resize());

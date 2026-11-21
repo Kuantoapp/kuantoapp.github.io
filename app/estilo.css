@@ -64,13 +64,20 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .menu { position: relative; }
 .menu-boton { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
 .menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
-.menu:hover > .menu-boton, .menu-boton[aria-expanded="true"] { background: var(--acento-suave); color: var(--acento); }
+.menu-boton[aria-expanded="true"] { background: var(--acento-suave); color: var(--acento); }
 .menu:has([aria-invalid="true"]) > .menu-boton { color: var(--error); text-decoration: underline; } /* un error dentro se ve sin abrirlo */
 .menu-panel { position: absolute; top: 100%; left: 0; display: none; width: 22rem; max-height: 75vh; overflow-y: auto; padding: 4px 12px 12px; background: var(--fondo); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); }
-.menu:hover > .menu-panel, .menu-panel:focus-within, .menu-boton[aria-expanded="true"] + .menu-panel { display: block; }
+.menu-panel:focus-within, .menu-boton[aria-expanded="true"] + .menu-panel { display: block; }
+/* Abrir al pasar el ratón solo donde hay ratón (en táctil :hover se queda pegado). Escape lo anula con
+   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). */
+@media (hover: hover) {
+  .menu:not(.sin-hover):hover > .menu-panel { display: block; }
+  .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+}
 .menu-panel fieldset { margin: 8px 0 0; }
 #m-escenario { right: 0; left: auto; } /* los últimos menús se abren hacia dentro */
 .acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.acciones button { display: inline-flex; align-items: center; gap: 6px; }
 .acciones button, #quitar-escenario { min-height: 44px; padding: 8px 14px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
 .acciones button:hover:not(:disabled), #quitar-escenario:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
 .acciones button:disabled, #quitar-escenario:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
@@ -86,7 +93,7 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 #tema-mapa[aria-pressed="false"] .icono-sol, #tema-mapa[aria-pressed="true"] .icono-luna { display: none; } /* enseña el modo al que se pasa */
 #mapa-completo[aria-pressed="false"] .icono-reducir, #mapa-completo[aria-pressed="true"] .icono-ampliar { display: none; }
 /* Pestaña del panel: pegada a su borde, sigue visible con el panel plegado; la flecha apunta hacia donde se mueve. */
-#plegar-panel { position: relative; z-index: 3; flex: none; align-self: center; width: 28px; height: 64px; margin-right: -28px; padding: 0; border: 1px solid var(--linea); border-left: 0; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--superficie); color: var(--texto); box-shadow: var(--sombra); cursor: pointer; }
+#plegar-panel { position: relative; z-index: 3; flex: none; align-self: center; width: 44px; height: 64px; margin-right: -44px; padding: 0; border: 1px solid var(--linea); border-left: 0; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--superficie); color: var(--texto); box-shadow: var(--sombra); cursor: pointer; }
 #plegar-panel:hover { color: var(--acento); }
 #plegar-panel .icono { transition: transform 0.3s var(--curva); }
 #plegar-panel[aria-expanded="false"] .icono { transform: rotate(180deg); }
@@ -152,11 +159,15 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #barra-filtros { overflow-x: auto; padding: 4px 8px; }
   .menu { position: static; }
   .menu-panel, #m-escenario { position: fixed; top: 58px; right: 8px; left: 8px; width: auto; max-height: 70vh; }
-  .acciones { flex-wrap: nowrap; }
+  /* Deshacer, Rehacer y Cancelar, fijos a la derecha de la barra que se desplaza y solo con icono (el texto queda
+     para lectores de pantalla). */
+  .acciones { position: sticky; right: 0; flex-wrap: nowrap; gap: 4px; padding-left: 8px; background: var(--superficie); }
+  .acciones button { justify-content: center; width: 44px; padding: 0; }
+  .acciones .texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   main { flex-direction: column-reverse; }
   aside { flex: none; max-width: none; max-height: 50%; padding: 0 16px 16px; border-right: 0; border-top: 1px solid var(--linea); }
   body.panel-plegado aside { max-height: 0; border: 0; }
-  #plegar-panel { width: 64px; height: 28px; margin: 0 0 -1px; border: 1px solid var(--linea); border-bottom: 0; border-radius: var(--r-2) var(--r-2) 0 0; }
+  #plegar-panel { width: 64px; height: 44px; margin: 0 0 -1px; border: 1px solid var(--linea); border-bottom: 0; border-radius: var(--r-2) var(--r-2) 0 0; }
   #plegar-panel .icono { transform: rotate(-90deg); }
   #plegar-panel[aria-expanded="false"] .icono { transform: rotate(90deg); }
   #ficha { max-height: 40%; padding: 16px; }
