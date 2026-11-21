@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { calcular, precioHora, tramoCesta } from "./calculo.js";
+import { calcular, precioHora, tarifa, tramoCesta } from "./calculo.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../tests/${ruta}`, import.meta.url), "utf8"));
 const api = Object.fromEntries(
@@ -50,6 +50,12 @@ test("la clave de un polo sale de su columna de tarifas.json", () => {
   assert.equal(zona("2807901", entrada({ sueldos: [polo] }), a).transporte, 45.78);
 });
 
+test("4 viajes al día en un par sin zona A (B1 a B2) cuentan la A: abono A-B2, 40,20 €", () => {
+  const sueldo = { dias: 5, viajes_dia: 4, edad: 30, colectivo: "ordinario", no_laborables: 0 };
+  assert.equal(tarifa(api, "28065", "28092", sueldo, "vigente_2026").coste_mes, 40.2);
+  assert.ok(tarifa(api, "28065", "28092", { ...sueldo, viajes_dia: 2 }, "vigente_2026").coste_mes < 40.2);
+});
+
 test("un par sin clave falla con error claro", () => {
   assert.throws(() => calcular(conClave("2807901", "2807901", null), entrada()), /sin clave de tarifa/);
 });
@@ -76,6 +82,7 @@ test("las entradas de transporte inválidas fallan con error", () => {
     [{ familia: "fn_general" }, {}, /familia numerosa con 0 hijos/],
     [{ familia: "grande" }, {}, /familia = "grande"/],
     [{ no_laborables: 4 }, {}, /no_laborables/],
+    [{ no_laborables: false }, {}, /no_laborables/],
     [{}, { discapacidad: 1 }, /discapacidad/],
     [{}, { edad: 15 }, /edad = 15/],
   ];

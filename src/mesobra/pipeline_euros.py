@@ -404,9 +404,9 @@ def tarifas_json(
         "el Abono Joven se compran 335/30 veces al año; sin abono anual (venta a particulares suspendida); "
         "el 10 viajes se prorratea porque no caduca (ficha del CRTM: «Validez: Ilimitada»); "
         "el billete sencillo de la zona A, a 1,50 € (EMT o Metro de hasta 5 estaciones). "
-        "Precio ordinario (sin descuentos de familia numerosa ni discapacidad) y solo viajes al trabajo, sin ocio. "
-        "escenarios: viajes_dia 2, ida y vuelta pasando por la zona A; "
-        "4, con cambio a Metro de la zona A en cada sentido. "
+        "Esta tabla lleva el precio ordinario (sin descuentos de familia numerosa ni discapacidad) y solo viajes al trabajo, sin ocio, "
+        "ida y vuelta pasando por la zona A. El cálculo de la app ya no la usa, sino la tabla por ruta que se describe aparte; "
+        "solo la lee la simulación del fin del descuento. "
         f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
     )
     nota_ruta = (

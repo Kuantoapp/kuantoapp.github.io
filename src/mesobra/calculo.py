@@ -38,7 +38,11 @@ Supuestos:
    (`tarifas_ruta`). Tarifa joven si edad ≤ `edad_max_joven`. El colectivo es el de la familia más la
    discapacidad de la persona. Un par sin clave da error. Cada hijo de 15 a `edad_max_joven` años
    suma un Abono Joven (a 5 días, en la ruta del primer sueldo: es plano) con el colectivo de la
-   familia; los menores de 15 años no pagan (BOCM-20251231-2, pág. 66). Sin `edades_hijos` no se cuentan.
+   familia, sin viajes no laborables (precio plano); los menores de 15 años no pagan (de 7 a 14, BOCM-20251231-2,
+   pág. 66; hasta 6, gratuidad infantil del RDL 17/2025, art. 8.a). Sin `edades_hijos` no se cuentan. Supuestos del
+   hijo: compra el Abono Joven todos los meses con el calendario laboral (sesgo al alza para un estudiante), no
+   se modela su discapacidad, y con 2 hijos la familia solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003
+   (ver `transporte.py`).
    shortcut: la edad mayor de 64 (Abono +65) no se calcula, porque el neto supone menores de 65 años;
    cuando se admita, `tarifa` ya pide la edad `mayor_65` (verificar si basta con 65 cumplidos).
 6. Coche: 2 × km × días × semanas_mes × `eur_km`, sin aparcamiento ni congestión (F3-02, #96).
@@ -230,7 +234,7 @@ def coste_hijos(
         "viajes_dia": 2,
         "edad": EDAD_MIN_JOVEN,
         "colectivo": hogar["familia"],
-        "no_laborables": hogar["no_laborables"],
+        "no_laborables": 0,  # Abono Joven plano, 9,31 €: el ocio de los hijos no se modela (#164)
     }
     destino = sueldos[0]["destino"]
     return n * tarifa(api, zona, destino, hijo, escenario["tarifas"])["coste_mes"]
@@ -322,7 +326,10 @@ def _transporte_hogar(api: Api, hogar: dict) -> None:
         )
     if hogar["familia"] != "ordinario" and hogar["hijos"] < 2:
         raise ValueError(f"familia numerosa con {hogar['hijos']} hijos: pide 2 o más")
-    if hogar["no_laborables"] not in api["tarifas"]["no_laborables"]:
+    if (
+        type(hogar["no_laborables"]) is not int
+        or hogar["no_laborables"] not in api["tarifas"]["no_laborables"]
+    ):
         raise ValueError(
             f"no_laborables = {hogar['no_laborables']!r}: debe ser {api['tarifas']['no_laborables']}"
         )

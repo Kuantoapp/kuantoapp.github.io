@@ -447,8 +447,10 @@ def clave_v1(corona: str, viajes_dia: int) -> str:
 
 def clave_transbordo(clave: str) -> str:
     """Clave de la misma ruta con cambio de operador en cada sentido (4 viajes al día, #164): una
-    validación más, con Metro de la zona A, como en `clave_v1`."""
-    return clave + "+metro_a"
+    validación más, con Metro de la zona A, como en `clave_v1`. Como esa validación entra en la zona A,
+    el rango pasa a empezar en A: un abono interzonal sin A (B2-C1) no la cubriría."""
+    _, cmax, productos = _partes(clave)
+    return f"A-{cmax}|{'+'.join([*productos, 'metro_a'])}"
 
 
 def tabla_v1() -> pd.DataFrame:

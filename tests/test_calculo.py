@@ -279,6 +279,16 @@ def test_hijos_por_edad_suman_abono_joven_solo_de_15_a_25() -> None:
         assert z["transporte"] == pytest.approx(base + extra)
 
 
+def test_el_abono_joven_del_hijo_no_lleva_viajes_no_laborables() -> None:
+    # desde una zona lejana (A-C2) el Abono Joven con 16 viajes de ocio costaría más de 9,31 €
+    h = {"perfil": "solo", "edad": 33, "hijos": 1, "no_laborables": 16}
+    sin, con = (
+        _zona(_entrada(hogar=h | extra, zonas=["28001"]), "28001")["transporte"]
+        for extra in ({}, {"edades_hijos": [18]})
+    )
+    assert con == pytest.approx(sin + 9.31)
+
+
 def test_viajes_no_laborables_y_familia_numerosa() -> None:
     cinco = CENTRO | {"dias": 5}
     z = _zona(
@@ -301,6 +311,7 @@ def test_viajes_no_laborables_y_familia_numerosa() -> None:
         ({"familia": "fn_general"}, {}, "familia numerosa con 0 hijos"),
         ({"familia": "grande"}, {}, "familia = 'grande'"),
         ({"no_laborables": 4}, {}, "no_laborables"),
+        ({"no_laborables": False}, {}, "no_laborables"),
         ({}, {"discapacidad": 1}, "discapacidad"),
         ({}, {"edad": 15}, "edad = 15"),
     ],
@@ -415,3 +426,41 @@ def test_neto_cuadra_con_neto_py(bruto: int, hogar: dict, tolerancia: float) -> 
     assert calculo.neto_mes(netos, bruto, hogar) == pytest.approx(
         exacto, abs=tolerancia
     )
+
+
+def test_cuatro_viajes_en_un_par_sin_zona_a_cuenta_la_a() -> None:
+    # B1 → B2: la clave con transbordo parte de A, así que el abono A-B2 (43,20 € × 335/360 = 40,20) cubre el Metro de A
+    sueldo = {
+        "dias": 5,
+        "viajes_dia": 4,
+        "edad": 30,
+        "colectivo": "ordinario",
+        "no_laborables": 0,
+    }
+    cuatro = calculo.tarifa(API, "28065", "28092", sueldo, "vigente_2026")
+    assert cuatro["coste_mes"] == 40.2
+    dos = calculo.tarifa(
+        API, "28065", "28092", sueldo | {"viajes_dia": 2}, "vigente_2026"
+    )
+    assert dos["coste_mes"] < cuatro["coste_mes"]
+
+
+@pytest.mark.parametrize(("edad", "coste"), [(25, 9.31), (26, 27.62)])
+def test_edad_de_un_sueldo_en_el_borde_del_abono_joven(edad: int, coste: float) -> None:
+    sueldo = CENTRO | {"edad": edad, "dias": 5}
+    z = _zona(
+        _entrada(hogar={"perfil": "pareja", "edad": 30}, sueldos=[sueldo]), "2807901"
+    )
+    assert z["transporte"] == coste
+
+
+def test_hijos_de_familia_numerosa_especial_pagan_su_abono_joven() -> None:
+    h = {"perfil": "pareja", "edad": 40, "hijos": 2, "familia": "fn_especial"}
+    cinco = [CENTRO | {"dias": 5}]
+    sin = _zona(_entrada(hogar=h, sueldos=cinco), "2807901")["transporte"]
+    con = _zona(
+        _entrada(hogar=h | {"edades_hijos": [15, 16]}, sueldos=cinco), "2807901"
+    )["transporte"]
+    assert con == pytest.approx(
+        sin + 2 * 4.65
+    )  # 5,00 € × 335/30 ÷ 12 (BOCM-20251231-2, pág. 66)

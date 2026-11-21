@@ -123,7 +123,7 @@ export const hijosJovenes = (api, hogar) => hogar.edades_hijos.filter((e) => e >
 function costeHijos(api, hogar, sueldos, zona, escenario) {
   const n = hijosJovenes(api, hogar);
   if (n === 0) return 0;
-  const hijo = { dias: 5, viajes_dia: 2, edad: EDAD_MIN_JOVEN, colectivo: hogar.familia, no_laborables: hogar.no_laborables };
+  const hijo = { dias: 5, viajes_dia: 2, edad: EDAD_MIN_JOVEN, colectivo: hogar.familia, no_laborables: 0 };
   return n * tarifa(api, zona, sueldos[0].destino, hijo, escenario.tarifas).coste_mes;
 }
 
@@ -176,7 +176,7 @@ function transporteHogar(api, hogar) {
   for (const e of edades) entero("edades_hijos", e, 0, api.tarifas.edad_max_joven);
   if (!FAMILIAS.includes(hogar.familia)) throw new Error(`familia = ${JSON.stringify(hogar.familia)}: debe ser ${FAMILIAS.join(" o ")}`);
   if (hogar.familia !== "ordinario" && hogar.hijos < 2) throw new Error(`familia numerosa con ${hogar.hijos} hijos: pide 2 o más`);
-  if (!api.tarifas.no_laborables.includes(hogar.no_laborables)) {
+  if (!Number.isInteger(hogar.no_laborables) || !api.tarifas.no_laborables.includes(hogar.no_laborables)) {
     throw new Error(`no_laborables = ${JSON.stringify(hogar.no_laborables)}: debe ser ${JSON.stringify(api.tarifas.no_laborables)}`);
   }
 }
