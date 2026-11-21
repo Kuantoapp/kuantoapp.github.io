@@ -358,7 +358,7 @@ export function avisosEntrada(entrada) {
     ...(entrada.sueldos.some((s) => s.modo === "coche")
       ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes. Los viajes al día no cuentan en coche: se supone ida y vuelta."]
       : []),
-    ...(entrada.hogar.hijos > 0 && !entrada.hogar.edades_hijos?.length ? ["Sin las edades de los hijos, el transporte cuenta solo a quien trabaja: pon sus edades para sumar el Abono Joven de los de 15 a 25 años."] : []),
+    ...(entrada.hogar.hijos > 0 && !entrada.hogar.edades_hijos?.length ? ["Sin las edades de los hijos, el transporte cuenta solo a quien trabaja: pon sus edades para sumar el Abono Joven de los de 15 a 25 años (fuente: ficha del Abono Joven del CRTM)."] : []),
   ];
 }
 
