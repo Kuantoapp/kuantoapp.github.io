@@ -17,13 +17,17 @@ Supuestos y límites:
 - Unidades de consumo (UC) de la escala OCDE modificada de la EPF: 1 + 0,5 por cada adulto más
   + 0,3 por cada hijo (menor de 14 años). Alimentación = gasto por UC × UC del perfil.
   `cesta_uc` da el gasto por UC para recalcular la cesta con otro hogar (#180).
-- Cada persona compra su comida, también en piso compartido. Los suministros y las comunicaciones del
-  piso se reparten: UC del piso (UC del perfil + 0,5 por cada persona más) entre `personas_comparten`.
+- Cada hogar compra su comida, también en piso compartido. Los suministros y las comunicaciones del
+  piso se reparten: UC del piso (UC del perfil + 0,5 por cada hogar más) entre `personas_comparten`.
+  Supuesto: cada hogar más cuenta como un adulto (0,5 UC); infraestima si el otro hogar es una pareja
+  o tiene hijos. Si vives solo y compartes con una pareja, tu parte de suministros y comunicaciones
+  sale 1,5/2 UC en vez de 2/2 contando la pareja como dos adultos: el 75 % (96,10 en vez de 128,13
+  €/mes, estimado, con el `cesta_uc` de `hogares.json` del 2026-11-20, IPC hasta 2026-10; #323).
   Supuesto para las comunicaciones: en piso compartido cada uno suele tener su móvil; por persona
   serían ≈15 €/mes más en «comparte». El reparto sale de que la EPF nacional (t=75006) da el 89 % del
   gasto en servicios integrados por hogar.
 - Comunicaciones = 08.2.1 de 4 dígitos (COICOP 2018/EPF) (telefonía e Internet): sin equipos ni otros servicios (streaming).
-- `personas_comparten` cuenta las unidades que pagan el alquiler: la pareja suma sus dos
+- `personas_comparten` cuenta los hogares que pagan el alquiler, el tuyo incluido: la pareja suma sus dos
   sueldos y paga el piso entero (1), y en la monoparental el hijo no paga (1).
 - Sin gastos comunitarios, basura ni saneamiento: en alquiler van con la renta y contarlos
   duplicaría el alquiler.
