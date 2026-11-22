@@ -10,7 +10,7 @@ from mesobra.api_estatica import FICHEROS, validar
 
 RAIZ = Path(__file__).resolve().parents[2]
 DESCARGAR = RAIZ / ".claude/skills/dm-nueva-fuente/scripts/descargar.py"
-PASOS = ("pipeline_territorio", "pipeline_euros", "pipeline_analisis", "sdm")
+PASOS = ("fondo", "pipeline_territorio", "pipeline_euros", "pipeline_analisis", "sdm")
 
 log = logging.getLogger("mesobra")
 

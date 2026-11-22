@@ -2,11 +2,12 @@
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
 import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, hijosJovenes, tramoCesta } from "./calculo.js";
 
-// Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
-export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
-// Divergente PuOr (apta para daltónicos) con el 0 como punto medio: naranja = pierdes, púrpura = ganas.
-const NEGATIVOS = ["#b35806", "#f1a340"]; // del más negativo al más cercano a 0
-const POSITIVOS = ["#998ec3", "#542788"]; // del más cercano a 0 al más alto
+// Azules de ColorBrewer (secuencial, apta para daltónicos) para las horas: más oscuro, más horas de viaje.
+export const PALETA = ["#deebf7", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];
+// Divergente con el 0 como punto medio: rojo teja = pierdes (la alerta), verde azulado = ganas. Rojos de RdBu y
+// verdes azulados de BrBG (ColorBrewer): se distinguen con daltonismo porque no enfrentan rojo y verde puros.
+const NEGATIVOS = ["#b2182b", "#ef8a62"]; // del más negativo al más cercano a 0
+const POSITIVOS = ["#80cdc1", "#01665e"]; // del más cercano a 0 al más alto
 export const SIN_DATO = "#bdbdbd";
 // Tope de tiempos.json (contrato de api_estatica): más minutos, o sin ruta, es null (ver tiempos.meta.nota).
 const TOPE_RUTA_MIN = 120;
@@ -504,12 +505,17 @@ export function erroresEscenario(v, api) {
   return errores;
 }
 
+/** Si algún campo de escenarios se aparta de `ESCENARIO_NEUTRO`. */
+export function hayEscenario(v) {
+  return !Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro);
+}
+
 /**
  * Entrada del cálculo con el escenario aplicado, o `null` si ningún campo se aparta de `ESCENARIO_NEUTRO`.
  * Los valores ya están validados. Cambiar los días no toca los viajes al día de cada sueldo.
  */
 export function entradaEscenario(entrada, v, edadCumple) {
-  if (Object.entries(ESCENARIO_NEUTRO).every(([k, neutro]) => v[k] === neutro)) return null;
+  if (!hayEscenario(v)) return null;
   const escenario = { tarifas: v.tarifas, subida_alquiler: Number(v.subida), ...(v.cumple26 === "si" ? { edad: edadCumple } : {}), ...(v.cesta === "tramo" ? { cesta: "tramo" } : {}) };
   const dias = v.dias_esc === "" ? {} : { dias: Number(v.dias_esc) };
   // Con «cumples 26» nadie tiene menos: la edad de cada sueldo es la suya o 26, la mayor (la edad del sueldo manda sobre la del escenario).
@@ -586,12 +592,36 @@ export function licencias(...metas) {
 
 /** «fuente: A, B» sin repetir, a partir de los `meta.fuentes` de los ficheros cargados. */
 export function fuentes(...metas) {
-  const nombres = new Set(metas.flatMap((m) => fuentesDe(m).map((f) => f.nombre)));
-  return `fuente: ${[...nombres].join(", ")}`;
+  return `fuente: ${nombresFuente(...metas).join(", ")}`;
+}
+
+/** Nombres de las fuentes sin repetir, en el orden de los `meta.fuentes` dados (cada uno con su atribución). */
+export function nombresFuente(...metas) {
+  return [...new Set(metas.flatMap((m) => fuentesDe(m).map((f) => f.nombre)))];
 }
 
 /** Tooltip de una zona: sus dos primeras líneas y, si su alquiler es de un año anterior al del fichero, el año. */
 export function lineaTooltip(lineas, dato, meta) {
   const anterior = dato?.anio != null && dato.anio < meta.anio_dato;
   return `${lineas.slice(0, 2).join(" · ")}${anterior ? ` · alquiler de ${dato.anio}` : ""}`;
+}
+
+/**
+ * Contorno exterior de un conjunto de zonas que comparten bordes: los tramos que solo aparecen en un polígono.
+ * Las zonas de `zonas.geojson` comparten topología (cada borde común está, con los mismos vértices, en las dos),
+ * así que no hace falta unir geometrías. Incluye el borde de los huecos (el enclave de Torrejón del Rey).
+ */
+export function contorno(features) {
+  const veces = new Map();
+  for (const { geometry: g } of features) {
+    const poligonos = g.type === "Polygon" ? [g.coordinates] : g.coordinates;
+    for (const anillo of poligonos.flat()) {
+      for (let i = 1; i < anillo.length; i++) {
+        const tramo = [anillo[i - 1], anillo[i]].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        const clave = JSON.stringify(tramo);
+        veces.set(clave, veces.has(clave) ? null : tramo);
+      }
+    }
+  }
+  return { type: "MultiLineString", coordinates: [...veces.values()].filter((t) => t !== null) };
 }

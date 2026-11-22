@@ -3,30 +3,128 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob:; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Kuanto · Mapa de zonas</title>
+  <title>Kuanto · Cuánto te sobra al mes en cada zona de Madrid</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-  <main>
-    <aside>
-      <!-- Arriba y fija (sticky) para que se vea al pinchar una zona en el mapa o en la lista sin hacer scroll. -->
-      <section id="ficha" aria-live="polite"></section>
-      <section id="mejores">
-        <h2 id="mejores-titulo">Las diez mejores zonas</h2>
-        <ol id="mejores-lista"></ol>
-        <p class="ayuda">Pincha una para verla en el mapa y abrir su ficha.</p>
-      </section>
-      <section id="avisos-dato">
-        <h2>Antes de leer el mapa</h2>
-        <ul id="avisos-hogar"></ul>
-        <ul id="avisos"></ul>
-      </section>
-      <form id="formulario" novalidate autocomplete="off">
-        <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
+  <!-- Barra de navegación común a la portada, «Cómo funciona» y la herramienta (#388). -->
+  <nav class="navegacion" aria-label="Kuanto">
+    <div class="navegacion-interior">
+      <a href="index.html" id="ir-portada" class="marca">Kuanto</a>
+      <ul>
+        <li><a href="saber-mas.html">Cómo funciona</a></li>
+        <li class="nav-metodologia"><a href="informe.html">Metodología</a></li>
+        <li><button type="button" class="boton-nav" data-ir-herramienta>Calcular</button></li>
+      </ul>
+    </div>
+  </nav>
 
+  <!-- Portada (#388): qué hace Kuanto, con qué datos y cuánto fiarse. La herramienta es otra vista, que abren sus botones. -->
+  <article id="portada" class="pagina" aria-label="Qué es Kuanto">
+    <section class="bloque heroe" aria-labelledby="titulo-portada">
+      <h1 id="titulo-portada" tabindex="-1">Cuánto te sobra al mes, zona a zona.</h1>
+      <p class="entradilla">Pon tu sueldo y dónde trabajas. Kuanto resta el alquiler, el transporte y la cesta básica en cada zona de la Comunidad de Madrid y te lo pinta en un mapa.</p>
+      <div class="acciones-heroe">
+        <button type="button" class="boton-principal" data-ir-herramienta>Calcular lo que te sobra</button>
+        <a href="saber-mas.html" class="boton-secundario">Saber más</a>
+      </div>
+      <p class="aparte">Sin registro. Lo que escribes se queda en tu navegador.</p>
+      <ul class="cifras-heroe">
+        <li><span class="cifra">199</span> zonas: los otros 178 municipios y los 21 distritos de la capital <span class="fuente">fuente: datos/zonas.geojson</span></li>
+        <li><span class="cifra">6</span> redes de transporte público con sus horarios: Metro, Metro Ligero, Cercanías, interurbanos, EMT y urbanos <span class="fuente">fuente: GTFS del CRTM</span></li>
+      </ul>
+    </section>
+
+    <section class="bloque cuentas" aria-labelledby="titulo-cuentas">
+      <h2 id="titulo-cuentas">Cuatro cuentas, una sola cifra.</h2>
+      <dl class="ficha-tecnica">
+        <div>
+          <dt>Tu sueldo neto</dt>
+          <dd>Del bruto al neto con el IRPF estatal y el de Madrid y las cotizaciones del trabajador. <span class="fuente">Fuente: LIRPF, normas del BOE de 2026 y Decreto Legislativo 1/2010 de la Comunidad de Madrid.</span></dd>
+        </div>
+        <div>
+          <dt>Tu alquiler</dt>
+          <dd>Lo que se paga en los contratos declarados a Hacienda en cada zona, con la mediana y la horquilla entre el cuartil bajo y el alto. <span class="fuente">Fuente: SERPAVI, Ministerio de Vivienda y Agenda Urbana.</span></dd>
+        </div>
+        <div>
+          <dt>Tu viaje</dt>
+          <dd>Minutos puerta a puerta en transporte público desde cada zona hasta la de tu trabajo, en hora punta. <span class="fuente">Fuente: GTFS del CRTM y OpenStreetMap.</span></dd>
+        </div>
+        <div>
+          <dt>Tu abono</dt>
+          <dd>El título más barato para cada persona del hogar según su edad y las coronas que cruza. <span class="fuente">Fuente: precios de 2026, BOCM-20251231-2.</span></dd>
+        </div>
+      </dl>
+      <p class="remate">Con todo eso, Kuanto te dice también cuánto vale cada hora de viaje: lo que ganas o pierdes al mes por vivir más lejos o más cerca que en tu zona de referencia.</p>
+    </section>
+
+    <section class="bloque dato" aria-labelledby="titulo-dato">
+      <div class="dato-texto">
+        <h2 id="titulo-dato">El alquiler no pesa lo mismo en todas partes.</h2>
+        <p class="destacado"><span class="cifra-grande">24,0 %</span> de la renta media del hogar: eso supone el alquiler mediano en Puente de Vallecas y en Centro; en la zona mediana, el 15,3 % (fuente: SERPAVI y ADRH, 2024, <code>datos/analisis.json</code>).</p>
+        <p>Con el SMI, el sueldo de una persona sola no cubre el alquiler mediano, el abono y la cesta media en 18 de las 158 zonas con alquiler, entre 8 y 33 según el alquiler de la zona, mirando la mediana entre los destinos a los que llega cada una (estimado; fuente: <code>datos/analisis.json</code>).</p>
+        <p>Y vivir más lejos no siempre sale a cuenta: para esa misma persona, la hora extra de viaje rinde al menos lo que su hora de trabajo solo en 1.218 de los 8.620 pares de zonas con ruta, alquiler y más viaje que la de referencia, el 14,1 % (estimado; fuente: <code>datos/analisis.json</code>).</p>
+        <a href="saber-mas.html#perfiles">Mira cómo cambia según el sueldo y el hogar</a>
+      </div>
+      <figure class="dato-imagen">
+        <img src="img/esfuerzo_ultimo.png" width="811" height="1100" loading="lazy" alt="Mapa de la Comunidad de Madrid con el esfuerzo de alquiler de 2024 por municipio y distrito en cinco clases de igual número de zonas. Los valores más altos están en el centro y el sur de la capital.">
+        <figcaption>Esfuerzo de alquiler en 2024 por zona, en quintiles. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
+      </figure>
+    </section>
+
+    <section class="bloque calculo" aria-labelledby="titulo-calculo">
+      <h2 id="titulo-calculo">Así sale la cifra.</h2>
+      <p class="formula">
+        <span>Sueldo neto</span><span class="operador">−</span><span>Alquiler</span><span class="operador">−</span><span>Transporte</span><span class="operador">−</span><span>Cesta básica</span><span class="operador">=</span><strong>Lo que sobra</strong>
+      </p>
+      <div class="notas-calculo">
+        <p><strong>Los tiempos</strong> son la mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable, andando y en transporte público, desde el centro de población de cada zona hasta el de tu trabajo.</p>
+        <p><strong>El alquiler</strong> es el precio por metro cuadrado de los contratos por la superficie de tu vivienda, 69 m² si no la cambias, actualizado con el IPC de alquiler y llevado al precio de los contratos nuevos con la Estadística de viviendas declaradas en el IRPF 2024 de la Agencia Tributaria (estimado; fuente: SERPAVI, INE y AEAT, <code>datos/hogares.json</code> y <code>datos/alquiler.json</code>).</p>
+        <p><strong>La cesta básica</strong> es lo que gastan de media los hogares de Madrid en comida, suministros, internet y móvil, ajustado al tamaño del tuyo (estimado; fuente: Encuesta de Presupuestos Familiares del INE, catálogo de la Comunidad de Madrid).</p>
+      </div>
+    </section>
+
+    <section class="bloque fiarse" aria-labelledby="titulo-fiarse">
+      <h2 id="titulo-fiarse">Cuánto fiarte.</h2>
+      <ul class="avisos-portada">
+        <li>Lo que sale de un cálculo lleva la marca «estimado», y la ficha de cada zona te da una horquilla: te sobran entre una cifra y otra.</li>
+        <li>Una zona con menos de 50 viviendas con alquiler declarado lleva borde punteado en el mapa: su mediana es imprecisa (fuente: SERPAVI, <code>datos/alquiler.json</code>).</li>
+        <li>El alquiler de los contratos declarados es un suelo del precio actual.</li>
+        <li>En 2.405 de los 11.179 pares de zonas con ruta (21,5 %) el tiempo mejora con líneas u horarios que el CRTM publica sin viajes o con horas imposibles y que se reconstruyeron; esos tiempos pueden ser más cortos que los reales y el fichero no dice cuáles (estimado; fuente: <code>datos/tiempos.json</code>).</li>
+        <li>Si falta el alquiler o no hay ruta en 120 minutos, la zona sale en gris y nunca como cero (fuente: <code>datos/tiempos.json</code>).</li>
+        <li>El neto supone tributación individual y contrato indefinido, y solo se calcula entre 12.000 y 120.000 € brutos al año (fuente: <code>datos/netos.json</code>).</li>
+      </ul>
+      <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en <a href="saber-mas.html#fuentes">cómo funciona</a>.</p>
+    </section>
+
+    <section class="bloque cierre" aria-labelledby="titulo-cierre">
+      <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
+      <p class="entradilla">Elige tu sueldo, tu hogar y dónde trabajas, y mira el mapa entero de la Comunidad.</p>
+      <button type="button" class="boton-principal" data-ir-herramienta>Calcular lo que te sobra</button>
+    </section>
+  </article>
+
+  <!-- La herramienta: una vista a pantalla completa bajo la barra; oculta (e `inert`) mientras se ve la portada. -->
+  <div id="herramienta">
+  <!-- Filtros en una barra superior: cada variable despliega su panel al pasar el ratón, al pulsar o con el teclado. -->
+  <header id="barra-filtros">
+    <form id="formulario" class="menus" novalidate autocomplete="off">
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-metricas">Filtro principal</button>
+        <div class="menu-panel" id="m-metricas">
+        <fieldset id="metricas">
+          <legend>Filtro principal: qué pinta el mapa</legend>
+        </fieldset>
+        </div>
+      </div>
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-sueldo">Sueldo</button>
+        <div class="menu-panel" id="m-sueldo">
+        <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
         <fieldset>
           <legend>Sueldo</legend>
           <div class="opciones">
@@ -48,70 +146,6 @@
             <select name="disc"><option value="no">No</option><option value="si">Sí</option></select>
           </label>
           <p class="ayuda">Solo cambia el precio del transporte: el neto no recoge el mínimo por discapacidad ni el aumento de los gastos deducibles por discapacidad (fuente: LIRPF, arts. 19.2.f y 60), así que sale más bajo que el real.</p>
-        </fieldset>
-
-        <fieldset>
-          <legend>Hogar</legend>
-          <label>Perfil
-            <select name="perfil">
-              <option value="solo">Vivo solo en un piso entero</option>
-              <option value="comparte">Comparto piso</option>
-              <option value="pareja">Pareja con dos sueldos</option>
-              <option value="monoparental">Familia monoparental</option>
-            </select>
-          </label>
-          <p class="ayuda">El perfil rellena los datos siguientes; ajústalos si no son los tuyos.</p>
-          <label>Adultos
-            <select name="adultos"><option value="1">Uno</option><option value="2">Dos</option></select>
-          </label>
-          <label>Hijos <span id="max-hijos">(hasta 5 hijos)</span>
-            <select name="hijos"><option value="0">Ninguno</option><option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option><option value="4">Cuatro</option><option value="5">Cinco</option></select>
-          </label>
-          <div id="edades-hijos" hidden>
-            <p class="ayuda">Edad de cada hijo (opcional: pon la de todos o déjalas vacías). Los de 15 a 25 años suman un Abono Joven; los menores de 15 no pagan (fuente: ficha del Abono Joven del CRTM y BOCM-20251231-2, pág. 66). Sin las edades, solo cuenta el transporte de quien trabaja. El neto supone hijos de 3 a 24 años (fuente: LIRPF, art. 58).</p>
-          </div>
-          <label>Familia numerosa
-            <select name="familia">
-              <option value="ordinario">No</option>
-              <option value="fn_general">Sí, de categoría general</option>
-              <option value="fn_especial">Sí, de categoría especial</option>
-            </select>
-          </label>
-          <p class="ayuda">Con dos hijos solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003 (por ejemplo, un hijo con discapacidad); con tres o más hijos lo es por regla general (art. 2.1). Aplica los precios de familia numerosa del BOCM a todo el hogar.</p>
-          <label>Vivienda (m²) <input name="m2" type="number" inputmode="decimal"></label>
-          <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
-          <label>Hogares que pagáis el alquiler, el tuyo incluido <input name="personas" type="number" inputmode="numeric"></label>
-          <p class="ayuda">Tu pareja y tus hijos son tu hogar. Si no compartes piso, pon uno. En los gastos del piso, cada hogar más cuenta como un adulto.</p>
-        </fieldset>
-
-        <fieldset>
-          <legend>Trabajo</legend>
-          <label>Lugar de trabajo <input name="destino" list="destinos" value="Getafe"></label>
-          <datalist id="destinos"></datalist>
-          <label>Días presenciales a la semana
-            <select name="dias">
-              <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
-              <option value="4">Cuatro</option><option value="5" selected>Cinco</option>
-            </select>
-          </label>
-          <label>Viajes al día
-            <select name="viajes">
-              <option value="2">Dos: ida y vuelta directa</option>
-              <option value="4">Cuatro: cambias de operador en cada sentido (p. ej. autobús interurbano y Metro)</option>
-            </select>
-          </label>
-          <p class="ayuda">En el modelo de tarifas, cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
-          <label>Modo
-            <select name="modo"><option value="tp">Transporte público</option></select>
-          </label>
-          <label>Viajes al mes de ocio y fin de semana
-            <select name="nolab">
-              <option value="0">Ninguno</option>
-              <option value="8">Unos 8</option>
-              <option value="16">Unos 16</option> <!-- sin-fuente: opción de un supuesto del cálculo, decisiones de 2026-11-18 -->
-            </select>
-          </label>
-          <p class="ayuda">Se suponen por la misma ruta del trabajo y se pagan con el título más barato del mes.</p>
         </fieldset>
 
         <!-- Solo con el perfil de pareja. `hidden`, no `disabled`: un control deshabilitado no sale de FormData y su valor se perdería del enlace. -->
@@ -151,11 +185,83 @@
             <select name="modo2"><option value="tp">Transporte público</option></select>
           </label>
         </fieldset>
-
-        <fieldset id="metricas">
-          <legend>Qué pinta el mapa</legend>
+        </div>
+      </div>
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-hogar">Hogar</button>
+        <div class="menu-panel" id="m-hogar">
+        <fieldset>
+          <legend>Hogar</legend>
+          <label>Perfil
+            <select name="perfil">
+              <option value="solo">Vivo solo en un piso entero</option>
+              <option value="comparte">Comparto piso</option>
+              <option value="pareja">Pareja con dos sueldos</option>
+              <option value="monoparental">Familia monoparental</option>
+            </select>
+          </label>
+          <p class="ayuda">El perfil rellena los datos siguientes; ajústalos si no son los tuyos.</p>
+          <label>Adultos
+            <select name="adultos"><option value="1">Uno</option><option value="2">Dos</option></select>
+          </label>
+          <label>Hijos <span id="max-hijos">(hasta 5 hijos)</span>
+            <select name="hijos"><option value="0">Ninguno</option><option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option><option value="4">Cuatro</option><option value="5">Cinco</option></select>
+          </label>
+          <div id="edades-hijos" hidden>
+            <p class="ayuda">Edad de cada hijo (opcional: pon la de todos o déjalas vacías). Los de 15 a 25 años suman un Abono Joven; los menores de 15 no pagan (fuente: ficha del Abono Joven del CRTM y BOCM-20251231-2, pág. 66). Sin las edades, solo cuenta el transporte de quien trabaja. El neto supone hijos de 3 a 24 años (fuente: LIRPF, art. 58).</p>
+          </div>
+          <label>Familia numerosa
+            <select name="familia">
+              <option value="ordinario">No</option>
+              <option value="fn_general">Sí, de categoría general</option>
+              <option value="fn_especial">Sí, de categoría especial</option>
+            </select>
+          </label>
+          <p class="ayuda">Con dos hijos solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003 (por ejemplo, un hijo con discapacidad); con tres o más hijos lo es por regla general (art. 2.1). Aplica los precios de familia numerosa del BOCM a todo el hogar.</p>
+          <label>Vivienda (m²) <input name="m2" type="number" inputmode="decimal"></label>
+          <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
+          <label>Hogares que pagáis el alquiler, el tuyo incluido <input name="personas" type="number" inputmode="numeric"></label>
+          <p class="ayuda">Tu pareja y tus hijos son tu hogar. Si no compartes piso, pon uno. En los gastos del piso, cada hogar más cuenta como un adulto.</p>
         </fieldset>
-
+        </div>
+      </div>
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-trabajo">Trabajo</button>
+        <div class="menu-panel" id="m-trabajo">
+        <fieldset>
+          <legend>Trabajo</legend>
+          <label>Lugar de trabajo <input name="destino" list="destinos" value="Getafe"></label>
+          <datalist id="destinos"></datalist>
+          <label>Días presenciales a la semana
+            <select name="dias">
+              <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
+              <option value="4">Cuatro</option><option value="5" selected>Cinco</option>
+            </select>
+          </label>
+          <label>Viajes al día
+            <select name="viajes">
+              <option value="2">Dos: ida y vuelta directa</option>
+              <option value="4">Cuatro: cambias de operador en cada sentido (p. ej. autobús interurbano y Metro)</option>
+            </select>
+          </label>
+          <p class="ayuda">En el modelo de tarifas, cambiar de línea dentro del Metro no cuenta como cambio de operador.</p>
+          <label>Modo
+            <select name="modo"><option value="tp">Transporte público</option></select>
+          </label>
+          <label>Viajes al mes de ocio y fin de semana
+            <select name="nolab">
+              <option value="0">Ninguno</option>
+              <option value="8">Unos 8</option>
+              <option value="16">Unos 16</option> <!-- sin-fuente: opción de un supuesto del cálculo, decisiones de 2026-11-18 -->
+            </select>
+          </label>
+          <p class="ayuda">Se suponen por la misma ruta del trabajo y se pagan con el título más barato del mes.</p>
+        </fieldset>
+        </div>
+      </div>
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-referencia">Zona de referencia</button>
+        <div class="menu-panel" id="m-referencia">
         <fieldset>
           <legend>Zona de referencia</legend>
           <label>Comparar con
@@ -163,53 +269,93 @@
           </label>
           <p class="ayuda">Puede ser donde vives ahora. El precio de la hora compara cada zona con esta.</p>
         </fieldset>
-      </form>
-      <section id="escenarios">
-        <form id="escenario" novalidate autocomplete="off">
-          <fieldset>
-            <legend>¿Y si…?</legend>
-            <label>Descuento del transporte (abonos y bonos de viajes)
-              <select name="tarifas">
-                <option value="vigente_2026">Se mantiene el de 2026</option>
-                <option value="sin_descuento">Se acaba: precio oficial</option>
-              </select>
-            </label>
-            <label>El alquiler sube <output id="subida-valor" for="subida-rango"></output>
-              <input id="subida-rango" name="subida" type="range" min="0" max="30" step="1" value="0">
-            </label>
-            <label>Cumples 26 años y pierdes el Abono Joven (fuente: ficha del Abono Joven, CRTM)
-              <select name="cumple26"><option value="no">No</option><option value="si">Sí</option></select>
-            </label>
-            <label>Días presenciales a la semana
-              <select name="dias_esc">
-                <option value="">Los mismos que arriba</option>
-                <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
-                <option value="4">Cuatro</option><option value="5">Cinco</option>
-              </select>
-            </label>
-            <label>Comida de la cesta básica
-              <select name="cesta">
-                <option value="media">La de todos los hogares (referencia)</option>
-                <option value="tramo">La de los hogares de tu tramo de ingresos</option>
-              </select>
-            </label>
-            <p class="ayuda">La referencia es lo que gasta en comida de media un hogar de Madrid. Con tu tramo, la comida se ajusta a lo que gastan los hogares que ingresan como el tuyo (estimado, fuente: INE, Encuesta de Presupuestos Familiares de España). Quien gana poco puede gastar menos en comida porque no le llega: por eso la media es la referencia.</p>
-            <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian, y con dos sueldos los días valen para las dos personas. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
-            <p class="ayuda">La dirección de la página guarda el formulario y los escenarios, sueldo incluido. No sale de tu navegador, pero queda en su historial. No la compartas si no quieres que se vea tu sueldo.</p>
-          </fieldset>
-        </form>
+        </div>
+      </div>
+    </form>
+    <form id="escenario" class="menus" novalidate autocomplete="off">
+      <div class="menu">
+        <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-escenario">Otros escenarios</button>
+        <div class="menu-panel" id="m-escenario">
+        <fieldset>
+          <legend>Otros escenarios: ¿y si…?</legend>
+          <button type="button" id="quitar-escenario" disabled>Quitar el escenario</button>
+          <label>Descuento del transporte (abonos y bonos de viajes)
+            <select name="tarifas">
+              <option value="vigente_2026">Se mantiene el de 2026</option>
+              <option value="sin_descuento">Se acaba: precio oficial</option>
+            </select>
+          </label>
+          <label>El alquiler sube <output id="subida-valor" for="subida-rango"></output>
+            <input id="subida-rango" name="subida" type="range" min="0" max="30" step="1" value="0">
+          </label>
+          <label>Cumples 26 años y pierdes el Abono Joven (fuente: ficha del Abono Joven, CRTM)
+            <select name="cumple26"><option value="no">No</option><option value="si">Sí</option></select>
+          </label>
+          <label>Días presenciales a la semana
+            <select name="dias_esc">
+              <option value="">Los mismos que arriba</option>
+              <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
+              <option value="4">Cuatro</option><option value="5">Cinco</option>
+            </select>
+          </label>
+          <label>Comida de la cesta básica
+            <select name="cesta">
+              <option value="media">La de todos los hogares (referencia)</option>
+              <option value="tramo">La de los hogares de tu tramo de ingresos</option>
+            </select>
+          </label>
+          <p class="ayuda">La referencia es lo que gasta en comida de media un hogar de Madrid. Con tu tramo, la comida se ajusta a lo que gastan los hogares que ingresan como el tuyo (estimado, fuente: INE, Encuesta de Presupuestos Familiares de España). Quien gana poco puede gastar menos en comida porque no le llega: por eso la media es la referencia.</p>
+          <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian, y con dos sueldos los días valen para las dos personas. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
+          <p class="ayuda">La dirección de la página guarda el formulario y los escenarios, sueldo incluido. No sale de tu navegador, pero queda en su historial. No la compartas si no quieres que se vea tu sueldo.</p>
+        </fieldset>
+        </div>
+      </div>
+    </form>
+    <div class="acciones" role="group" aria-label="Cambios">
+      <button type="button" id="deshacer" disabled title="Deshacer"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg><span class="texto">Deshacer</span></button>
+      <button type="button" id="rehacer" disabled title="Rehacer"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg><span class="texto">Rehacer</span></button>
+      <button type="button" id="cancelar" disabled title="Cancelar cambios"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span class="texto">Cancelar cambios</span></button>
+    </div>
+  </header>
+  <main>
+    <aside id="panel">
+      <section id="ficha" aria-live="polite" tabindex="0"></section>
+      <section id="mejores">
+        <h2 id="mejores-titulo">Las diez mejores zonas</h2>
+        <ol id="mejores-lista"></ol>
+        <p class="ayuda">Pincha una para verla en el mapa y abrir su ficha.</p>
+      </section>
+      <section id="avisos-dato">
+        <h2>Antes de leer el mapa</h2>
+        <ul id="avisos-hogar"></ul>
+        <ul id="avisos"></ul>
       </section>
       <footer>
         <p id="pie">Powered by <a href="https://www.crtm.es/" rel="noopener noreferrer">CRTM</a>. Tiempos calculados el <span id="fecha-datos"></span>. Este proyecto no está patrocinado ni avalado por el CRTM.</p>
       </footer>
     </aside>
+    <!-- Pestaña del panel: sigue a la vista con el panel plegado. -->
+    <button type="button" id="plegar-panel" aria-expanded="true" aria-controls="panel" aria-label="Panel de la zona" title="Mostrar u ocultar el panel">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
     <section id="mapa-contenedor">
       <div id="mapa" role="img" aria-label="Mapa de las zonas coloreadas por la métrica elegida"></div>
+      <div class="controles-mapa">
+        <button type="button" id="tema-mapa" class="flotante" aria-pressed="false" aria-label="Mapa oscuro" title="Mapa oscuro o claro">
+          <svg class="icono icono-luna" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+          <svg class="icono icono-sol" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <button type="button" id="mapa-completo" class="flotante" aria-pressed="false" aria-label="Mapa completo" title="Mapa completo">
+          <svg class="icono icono-ampliar" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7"/></svg>
+          <svg class="icono icono-reducir" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10h-6V4M14 10l7-7M4 14h6v6M10 14l-7 7"/></svg>
+        </button>
+      </div>
       <div id="leyenda"></div>
       <div id="tooltip" hidden></div>
       <p id="estado" role="status"></p>
     </section>
   </main>
+  </div>
   <script src="vendor/maplibre-gl.js"></script>
   <script type="module" src="app.js"></script>
 </body>
