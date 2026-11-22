@@ -60,7 +60,14 @@ class Hogar(TypedDict):
     edad: int  # 16 a 64
     adultos: NotRequired[int]
     hijos: NotRequired[int]
-    personas_comparten: NotRequired[int]
+    personas_comparten: NotRequired[
+        Annotated[
+            int,
+            Field(
+                description="hogares que pagan el alquiler, el tuyo incluido; pareja e hijos = 1"
+            ),
+        ]
+    ]
     m2: NotRequired[float]
 
 
@@ -79,6 +86,13 @@ class Escenario(TypedDict, total=False):
     tarifas: Literal["vigente_2026", "sin_descuento"]
     subida_alquiler: float  # %
     edad: int
+    cesta: Annotated[
+        Literal["media", "tramo"],
+        Field(
+            description="tramo: comida con el gasto de los hogares de tu tramo de ingresos, "
+            "EPF de España 2025, estimado; la media es la referencia"
+        ),
+    ]
 
 
 @cache
