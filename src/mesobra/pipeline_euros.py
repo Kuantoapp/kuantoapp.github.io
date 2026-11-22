@@ -337,7 +337,7 @@ def netos_json(rejilla: pd.DataFrame) -> dict:
     nota = (
         "Neto anual en € de 2026 desde el bruto anual: cotización del trabajador e IRPF estatal y de "
         "Madrid (cuota de la declaración). Tributación individual, sin deducciones reembolsables ni "
-        "autonómicas (un monoparental con dos hijos queda hasta 1.200 €/año por debajo), contrato "
+        "autonómicas (una familia numerosa o un monoparental con dos hijos queda hasta 1.200 €/año por debajo: 2.400 € la especial y 600 € más por cada hijo por encima del mínimo de su categoría; LIRPF, art. 81 bis), contrato "
         "indefinido, menor de 65 años. Rejilla de 12.000 a 120.000 €: fuera de ella no se extrapola."
     )
     return {

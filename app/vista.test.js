@@ -533,8 +533,9 @@ test("los límites exactos se aceptan y un paso fuera se rechaza", () => {
   mal({ personas: "21" }, "personas");
 });
 
-test("hijos solo de 0 a 2, edad de 16 a 64, y el resto de campos con su rango", () => {
-  assert.equal(validar({ ...BASE, hijos: "3" }, real).errores[0].mensaje, "Hasta 2 hijos");
+test("hijos solo de 0 a 5, edad de 16 a 64, y el resto de campos con su rango", () => {
+  assert.equal(validar({ ...BASE, hijos: "6" }, real).errores[0].mensaje, "Hasta 5 hijos");
+  assert.equal(campos({ hijos: "5" }), undefined);
   assert.deepEqual(campos({ edad: "15" }), ["edad"]);
   assert.deepEqual(campos({ edad: "65" }), ["edad"]);
   assert.deepEqual(campos({ adultos: "3" }), ["adultos"]);
@@ -819,6 +820,29 @@ test("los avisos del formulario: el coche nunca sin su aviso del tráfico y los 
   assert.deepEqual(de({ hijos: "1", hijo1: "16" }), []);
   assert.deepEqual(avisosEntrada(validar({ ...BASE, destino: "Centro" }, ejemplo).entrada), []);
   assert.ok(!/\d/.test(de({ modo: "coche" })[0]), "sin cifras: no necesita nota de fuente");
+});
+
+test("aviso del art. 81 bis: familia numerosa por número de hijos y monoparental con dos", () => {
+  const aviso = (cambios) => avisosEntrada(validar({ ...BASE, ...cambios }, real).entrada).filter((t) => t.includes("81 bis"));
+  const deduccion = (cambios) => aviso(cambios).map((t) => t.match(/hasta ([\d.]+) €\/año/)[1]);
+  assert.deepEqual(aviso({ hijos: "2", perfil: "pareja", adultos: "2" }), [], "dos hijos en pareja: sin deducción");
+  assert.deepEqual(aviso({ hijos: "1" }), []);
+  assert.deepEqual(deduccion({ hijos: "2" }), ["1.200"], "monoparental con dos hijos (art. 81 bis.1.c)");
+  assert.deepEqual(deduccion({ hijos: "3" }), ["1.200"]);
+  assert.deepEqual(deduccion({ hijos: "4" }), ["1.800"]);
+  assert.deepEqual(deduccion({ hijos: "5" }), ["2.400"]);
+  assert.match(aviso({ hijos: "3" })[0], /general/);
+  assert.match(aviso({ hijos: "5" })[0], /especial/);
+  for (const t of aviso({ hijos: "4" })) assert.match(t, /fuente: LIRPF, art\. 81 bis/);
+});
+
+test("aviso de familia numerosa sin marcar con 3 hijos o más, y especial con 5", () => {
+  const titulo = (cambios) => avisosEntrada(validar({ ...BASE, ...cambios }, real).entrada).filter((t) => t.includes("Ley 40/2003"));
+  assert.equal(titulo({ hijos: "3" }).length, 1, "3 hijos sin familia numerosa marcada");
+  assert.deepEqual(titulo({ hijos: "3", familia: "fn_general" }), []);
+  assert.deepEqual(titulo({ hijos: "2" }), []);
+  assert.match(titulo({ hijos: "5", familia: "fn_general" })[0], /especial/);
+  assert.deepEqual(titulo({ hijos: "5", familia: "fn_especial" }), []);
 });
 
 test("el enlace de una pareja con dos destinos es válido; el modo coche sin matriz se descarta con aviso", () => {

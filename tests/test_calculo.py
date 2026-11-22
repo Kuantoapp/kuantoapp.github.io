@@ -232,7 +232,7 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
     ("cambios", "mensaje"),
     [
         ({"sueldos": [CENTRO | {"bruto": 120001}]}, "fuera de la tabla"),
-        ({"hogar": {"perfil": "solo", "edad": 30, "hijos": 3}}, "hijos = 3"),
+        ({"hogar": {"perfil": "solo", "edad": 30, "hijos": 6}}, "hijos = 6"),
         ({"hogar": {"perfil": "solo", "edad": 65}}, "edad = 65"),
         ({"escenario": {"cesta": "baja"}}, "cesta"),
         ({"sueldos": [CENTRO | {"dias": 6}]}, "dias = 6"),
@@ -241,12 +241,12 @@ def test_monoparental_por_hogar_y_pareja_con_hijos() -> None:
         ({"sueldos": [CENTRO | {"neto_mes": 1500}]}, "uno de los dos"),
         (
             {
-                "hogar": {"perfil": "solo", "edad": 30, "hijos": 3},
+                "hogar": {"perfil": "solo", "edad": 30, "hijos": 6},
                 "sueldos": [
                     {"neto_mes": 1500, "destino": "2807901", "dias": 3, "modo": "tp"}
                 ],
             },
-            "hijos = 3",
+            "hijos = 6",
         ),
         (
             {"sueldos": [{"destino": "2807901", "dias": 3, "modo": "tp"}]},

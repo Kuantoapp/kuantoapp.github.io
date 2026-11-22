@@ -89,7 +89,7 @@ CONTRATOS: dict[str, dict] = {
         "clave": ("bruto_anual", "hijos", "monoparental"),
         "columnas": {
             "bruto_anual": "entero",  # €, cada 250 y cada 50 entre 16.500 y 21.500
-            "hijos": "entero",  # {0, 1, 2}
+            "hijos": "entero",  # 0 a 5
             "monoparental": "booleano",
             "cotizacion": "decimal",  # €/año
             "cuota_irpf": "decimal",  # €/año

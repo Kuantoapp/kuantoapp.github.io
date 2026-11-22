@@ -52,10 +52,25 @@ def test_cero_hijos_monoparental_igual():
     )
 
 
-@pytest.mark.parametrize("hijos", [-1, 3])
+@pytest.mark.parametrize("hijos", [-1, 6])
 def test_hijos_fuera_de_rango(hijos):
     with pytest.raises(ValueError, match="hijos"):
         neto.cuota_irpf(D(30000), D(1950), hijos=hijos, monoparental=False)
+
+
+def test_minimos_por_descendientes():
+    # LIRPF art. 58.1 y DL 1/2010 de Madrid art. 2 bis (texto consolidado del BOE, consultado el 22/11/2026)
+    assert p.DESCENDIENTES_ESTATAL == (2400, 2700, 4000, 4500)
+    assert (D("2575.85"), D("2897.83"), 4400, 4950) == p.DESCENDIENTES_MADRID
+    # el 4.º y siguientes usan el último importe: 5 hijos = 2.400 + 2.700 + 4.000 + 2 × 4.500
+    assert neto._minimo(D(0), p.DESCENDIENTES_ESTATAL, 5, D(1)) == 18100
+
+
+def test_neto_crece_con_los_hijos(netos):
+    for _, g in netos.query("bruto_anual >= 20000").groupby(
+        ["bruto_anual", "monoparental"]
+    ):
+        assert g.sort_values("hijos").neto_anual.diff().dropna().ge(0).all()
 
 
 def test_bruto_float_sin_imprecision():
@@ -71,7 +86,7 @@ def test_pagas_invalidas():
 
 
 def test_rejilla_propiedades(netos):
-    assert len(netos) == len(neto.BRUTOS) * 6
+    assert len(netos) == len(neto.BRUTOS) * 12
     assert (netos.bruto_anual.min(), netos.bruto_anual.max()) == (12_000, 120_000)
     assert ((netos.neto_anual > 0) & (netos.neto_anual <= netos.bruto_anual)).all()
     for _, g in netos.groupby(["hijos", "monoparental"]):
@@ -99,6 +114,13 @@ def test_interpolacion_lineal_menos_de_un_euro_al_mes(netos):
         ),  # DA 61.ª limitada a la cuota
         ((19000, 2, True), ("1235.00", "267.38", "17497.62")),  # tramo 2.º del art. 20
         ((30000, 0, False), ("1950.00", "4598.02", "23451.98")),
+        # 3 y 5 hijos: cuota estatal + Madrid calculadas a mano el 22/11/2026 (base 26.050 y 40.075;
+        # mínimos 10.100 / 10.893,49, 14.650 / 15.830,33 y 23.650 / 25.730,33). Pendientes de contrastar
+        # con Renta WEB Open (AEAT): su formulario no admitió entrada automática (#318).
+        ((30000, 3, False), ("1950.00", "3746.14", "24303.86")),
+        ((30000, 3, True), ("1950.00", "2784.96", "25265.04")),
+        ((45000, 5, True), ("2925.00", "4684.36", "37390.64")),
+        ((45000, 5, False), ("2925.00", "7073.00", "35002.00")),
         (
             (80000, 1, False),
             ("4017.17", "21906.75", "54076.08"),
