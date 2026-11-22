@@ -373,7 +373,7 @@ export function avisosEntrada(entrada) {
       : []),
     ...(entrada.hogar.hijos > 0 && !entrada.hogar.edades_hijos?.length ? ["Sin las edades de los hijos, el transporte cuenta solo a quien trabaja: pon sus edades para sumar el Abono Joven de los de 15 a 25 años (fuente: ficha del Abono Joven del CRTM)."] : []),
     ...(n >= 3 || familia ? [`Con ${n} hijos, el neto no incluye la deducción por familia numerosa ${cat}: hasta ${deduccion} €/año más para el hogar si tenéis el título (fuente: LIRPF, art. 81 bis).`] : []),
-    ...(monoparental2 ? ["Con dos hijos y sin pareja, el neto no incluye la deducción del art. 81 bis: hasta 1.200 €/año más si no recibís pensión de alimentos por ellos (fuente: LIRPF, art. 81 bis)."] : []),
+    ...(monoparental2 ? ["Con dos hijos y sin pareja, el neto no incluye la deducción del art. 81 bis: hasta 1.200 €/año más si no tienes derecho a pensión de alimentos por ellos (fuente: LIRPF, art. 81 bis)."] : []),
     ...(n >= 3 && !familia ? [`Con ${n} hijos la familia es numerosa (fuente: Ley 40/2003, art. 2.1, redacción vigente en 2026): si tenéis el título, elige su categoría en «Familia numerosa» para que el transporte lleve su precio.`] : []),
     ...(n >= 5 && familia === "fn_general" ? ["Con 5 hijos o más la familia numerosa es especial (fuente: Ley 40/2003, art. 4.1, redacción vigente en 2026): revisa la categoría en «Familia numerosa»."] : []),
   ];
