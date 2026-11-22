@@ -716,9 +716,13 @@ def test_fin_coronas_no_es_monotona_con_3_dias():
     s = simulacion.fin_coronas(_api_fin({}))
     s = s.set_index(["corona", "perfil", "dias", "viajes_dia"])["eur_mes"]
     assert len(s) == 6 * 2 * 2 * 2 and (s > 0).all()
-    # caso base: lo mismo que `fin_descuento` (C2: 32,76 y 9,30)
-    assert s["C2", "adulto", 5, 2] == pytest.approx(32.76, abs=0.005)
-    assert s["C2", "joven", 5, 2] == pytest.approx(9.30, abs=0.005)
+    # caso base (5 días, 2 viajes): lo mismo que `fin_descuento` en todas las coronas y perfiles
+    fin = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
+    fin = fin[fin["criterio"] == simulacion.CRITERIO_FIN]
+    for perfil, m, eur in fin[["perfil", "municipio_id", "eur_mes"]].itertuples(
+        index=False
+    ):
+        assert s[CORONAS_FIN[m], perfil, 5, 2] == pytest.approx(eur, abs=0.005)
     # con 3 días C1 pierde más que C2: con descuento C1 usa el 10 viajes (40,41) y C2 el abono (45,78); sin él,
     # los dos pasan al sencillo (68,10)
     assert s["C1", "adulto", 3, 2] == pytest.approx(68.10 - 40.41, abs=0.005)

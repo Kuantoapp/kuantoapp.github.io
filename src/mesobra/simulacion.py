@@ -730,10 +730,21 @@ def _sin_rdl(titulo: str, corona: str) -> D:
     return transporte._redondea((precios[0] + pct * precios[1]) * q)
 
 
+def _tarifa(
+    api: dict,
+    esc: str,
+    edad: str,
+    corona: str,
+    caso: tuple[int, int] = (DIAS_FIN, VIAJES_FIN),
+) -> dict:
+    """Entrada de la forma v1 de `tarifas.json` (`titulo`, `coste_mes`); `caso` = (días, viajes al día)."""
+    dias, viajes = caso
+    return api["tarifas"]["escenarios"][esc][edad][str(viajes)][corona][dias - 1]
+
+
 def fin_descuento(api: dict) -> pd.DataFrame:
     """Tabla `simulacion` con los € al mes que pierde cada perfil por municipio si se acaba el descuento: todo
     (`fin_descuento`) o solo la parte del RDL (`fin_descuento_rdl`)."""
-    tarifas = api["tarifas"]["escenarios"]
     coronas = {}
     for f in api["zonas"]["features"]:
         m, c = f["properties"]["municipio_id"], f["properties"]["corona"]
@@ -741,7 +752,7 @@ def fin_descuento(api: dict) -> pd.DataFrame:
             raise ValueError(f"municipio {m} en dos coronas: {coronas[m]} y {c}")
 
     def fila(esc: str, edad: str, corona: str) -> tuple[str, D]:
-        f = tarifas[esc][edad][str(VIAJES_FIN)][corona][DIAS_FIN - 1]
+        f = _tarifa(api, esc, edad, corona)
         return f["titulo"], D(str(f["coste_mes"]))
 
     filas = []
@@ -761,10 +772,9 @@ def fin_descuento(api: dict) -> pd.DataFrame:
 
 def fin_coronas(api: dict) -> pd.DataFrame:
     """Sensibilidad de `fin_descuento` (decisión 33): € al mes por corona, perfil, días (3 y 5) y viajes (2 y 4)."""
-    t = api["tarifas"]["escenarios"]
 
     def coste(esc: str, edad: str, corona: str, dias: int, viajes: int) -> D:
-        return D(str(t[esc][edad][str(viajes)][corona][dias - 1]["coste_mes"]))
+        return D(str(_tarifa(api, esc, edad, corona, (dias, viajes))["coste_mes"]))
 
     return pd.DataFrame(
         [
@@ -815,7 +825,7 @@ def main() -> None:
     sens = fin_coronas(api)
     sens.to_csv(PROCESSED / "simulacion_fin_descuento_coronas.csv", index=False)
     _log_tabla(
-        "fin_descuento por corona, días y viajes al día (€/mes; decisión 33)",
+        f"fin_descuento por corona, días y viajes al día (€/mes, estimado; decisión 33; {NORMA_DESCUENTO})",
         sens.pivot(
             index="corona", columns=["perfil", "dias", "viajes_dia"], values="eur_mes"
         ),
