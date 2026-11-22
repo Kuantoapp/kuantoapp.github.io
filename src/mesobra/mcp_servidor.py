@@ -46,6 +46,7 @@ UNIDADES = {
     "sobra": "€/mes del hogar = neto − alquiler − transporte − cesta",
     "sobra_banda": "[bajo, alto] €/mes",
     "horas": "horas/mes de viaje al trabajo (ida y vuelta)",
+    "viajes": "por sueldo y en su orden: {horas, coste, titulo} del viaje (título de la misma celda de tarifas que el coste; coche en coche)",
     "esfuerzo": "proporción alquiler ÷ neto",
     "precio_hora": "€/mes ganados por cada hora extra de viaje al mes frente a la referencia",
 }

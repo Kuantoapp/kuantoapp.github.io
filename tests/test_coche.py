@@ -23,7 +23,8 @@ def test_coste_en_coche_con_valores_a_mano():
     t["coste_coche"] = {"eur_km": coche.EUR_KM}
     sueldo = {"destino": "polo:ifema", "dias": 3, "modo": "coche"}
     assert api["tarifas"]["semanas_mes"] == SEMANAS_MES
-    horas, coste = calculo.viaje(api, sueldo, "2807901", {})
+    horas, coste, titulo = calculo.viaje(api, sueldo, "2807901", {})
+    assert titulo == "coche"
     assert coste == pytest.approx(2 * 20 * 3 * SEMANAS_MES * 0.26)
     assert horas == pytest.approx(10 * 2 * 3 * SEMANAS_MES / 60)
 

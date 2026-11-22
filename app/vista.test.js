@@ -764,6 +764,8 @@ test("las líneas de la ficha de pareja dicen horas, coste y título de cada per
   const lineas = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), porPersona: [sinCoste, { ...sinCoste, horas: null }] });
   assert.ok(lineas.includes("Persona 1 (coche): 1,0 h al mes, sin coste calculable (estimado)"));
   assert.ok(lineas.includes("Persona 2 (coche): sin ruta, sin coste calculable (estimado)"));
+  const sinTitulo = { titulo: null, horas: null, coste: null };
+  assert.ok(lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), porPersona: [sinTitulo, sinTitulo] }).includes("Persona 1: sin ruta, sin coste calculable (estimado)"));
   const compartido = lineasFicha("Zona", resultado.zonas["28065"], "sobra", { ...contextoFicha(ejemplo, entrada, resultado, "28065"), personas: 3 });
   assert.ok(compartido.some((l) => l.includes("compartido entre 3")), "el desglose por persona no pisa cuántos comparten el piso");
 });
