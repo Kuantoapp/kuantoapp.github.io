@@ -145,6 +145,9 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
     demás títulos, también los de un joven, llevan el 20 %. Contraste: la oficial de 2026 es la de 2025 × 1,03
     redondeada a 0,10 a la baja en todos esos títulos, también con 82 € (84,40). Supone que en 2027 el CRTM
     mantiene su parte en euros, sin tarifa nueva.
+33. Sensibilidad de `fin_descuento` por corona con 3 y 5 días × 2 y 4 viajes al día (`fin_coronas`, #378), de la
+    forma v1 de `tarifas.json`. No es monótona: con 3 días y 2 viajes C1 pierde 27,69 € y C2 22,32 €, porque con
+    descuento C1 usa el 10 viajes (40,41 €) y C2 el abono (45,78 €), y sin él los dos pasan al sencillo (68,10 €).
 """
 
 import logging
@@ -727,10 +730,21 @@ def _sin_rdl(titulo: str, corona: str) -> D:
     return transporte._redondea((precios[0] + pct * precios[1]) * q)
 
 
+def _tarifa(
+    api: dict,
+    esc: str,
+    edad: str,
+    corona: str,
+    caso: tuple[int, int] = (DIAS_FIN, VIAJES_FIN),
+) -> dict:
+    """Entrada de la forma v1 de `tarifas.json` (`titulo`, `coste_mes`); `caso` = (días, viajes al día)."""
+    dias, viajes = caso
+    return api["tarifas"]["escenarios"][esc][edad][str(viajes)][corona][dias - 1]
+
+
 def fin_descuento(api: dict) -> pd.DataFrame:
     """Tabla `simulacion` con los € al mes que pierde cada perfil por municipio si se acaba el descuento: todo
     (`fin_descuento`) o solo la parte del RDL (`fin_descuento_rdl`)."""
-    tarifas = api["tarifas"]["escenarios"]
     coronas = {}
     for f in api["zonas"]["features"]:
         m, c = f["properties"]["municipio_id"], f["properties"]["corona"]
@@ -738,7 +752,7 @@ def fin_descuento(api: dict) -> pd.DataFrame:
             raise ValueError(f"municipio {m} en dos coronas: {coronas[m]} y {c}")
 
     def fila(esc: str, edad: str, corona: str) -> tuple[str, D]:
-        f = tarifas[esc][edad][str(VIAJES_FIN)][corona][DIAS_FIN - 1]
+        f = _tarifa(api, esc, edad, corona)
         return f["titulo"], D(str(f["coste_mes"]))
 
     filas = []
@@ -754,6 +768,25 @@ def fin_descuento(api: dict) -> pd.DataFrame:
                     (perfil, m, criterio, eur > 0, float(eur), True, float("nan"))
                 )
     return _tabla(filas)
+
+
+def fin_coronas(api: dict) -> pd.DataFrame:
+    """Sensibilidad de `fin_descuento` (decisión 33): € al mes por corona, perfil, días (3 y 5) y viajes (2 y 4)."""
+
+    def coste(esc: str, edad: str, corona: str, dias: int, viajes: int) -> D:
+        return D(str(_tarifa(api, esc, edad, corona, (dias, viajes))["coste_mes"]))
+
+    return pd.DataFrame(
+        [
+            (c, perfil, dias, viajes, float(coste("sin_descuento", edad, c, dias, viajes)
+                                            - coste("vigente_2026", edad, c, dias, viajes)))
+            for c in api["tarifas"]["orden_coronas"]
+            for perfil, edad in EDADES_FIN.items()
+            for dias in (3, DIAS_FIN)
+            for viajes in (VIAJES_FIN, 4)
+        ],
+        columns=["corona", "perfil", "dias", "viajes_dia", "eur_mes"],
+    )  # fmt: skip
 
 
 def _log_tabla(titulo: str, t: pd.DataFrame) -> None:
@@ -788,6 +821,14 @@ def main() -> None:
     _log_tabla(
         f"fin del descuento, €/mes por municipio (estimado; {NORMA_DESCUENTO})",
         fin.groupby(["criterio", "perfil"])["eur_mes"].describe(),
+    )
+    sens = fin_coronas(api)
+    sens.to_csv(PROCESSED / "simulacion_fin_descuento_coronas.csv", index=False)
+    _log_tabla(
+        f"fin_descuento por corona, días y viajes al día (€/mes, estimado; decisión 33; {NORMA_DESCUENTO})",
+        sens.pivot(
+            index="corona", columns=["perfil", "dias", "viajes_dia"], values="eur_mes"
+        ),
     )
     cal = calidad(pares, excluida, matriz_trabajo.ocupados_observados(matriz))
     cal.to_csv(PROCESSED / "simulacion_calidad.csv", index=False)
