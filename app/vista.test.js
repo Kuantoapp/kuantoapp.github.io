@@ -313,6 +313,9 @@ test("el borde del 30 % y el de la banda se deciden con lo que se muestra redond
   assert.ok(con({ esfuerzo: 0.306 }).includes("El alquiler se lleva el 31 % del neto, más del 30 % que esta herramienta toma como referencia (estimado)"));
   assert.ok(con({ sobra_banda: [-0.3, 120] }).includes("Te sobran entre 0 € y 120 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-0.5, 120] }).includes("Entre que te falten 1 € y te sobren 120 € al mes (estimado)"), "−0,5 se muestra como 1 €: ya no es «te sobran»");
+  assert.ok(con({ sobra_banda: [-0.49, 120] }).includes("Te sobran entre 0 € y 120 € al mes (estimado)"));
+  assert.ok(con({ sobra_banda: [-80, -0.5] }).includes("Te faltan entre 1 € y 80 € al mes (estimado)"));
+  assert.ok(con({ sobra_banda: [-80, 0.5] }).includes("Entre que te falten 80 € y te sobren 1 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 0.2] }).includes("Te faltan entre 0 € y 80 € al mes (estimado)"));
   assert.ok(con({ sobra_banda: [-80, 120] }).includes("Entre que te falten 80 € y te sobren 120 € al mes (estimado)"));
 });
