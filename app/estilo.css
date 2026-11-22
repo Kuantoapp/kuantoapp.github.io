@@ -28,7 +28,8 @@
 ::selection { background: var(--seleccion); }
 html, body { margin: 0; overflow-x: clip; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
 /* La herramienta ocupa justo una pantalla bajo la portada (#388): la página se desplaza y el mapa no. */
-#herramienta { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+/* `contain: layout`: los menús fijos de pantalla media se miden desde la herramienta y no desde la ventana. */
+#herramienta { display: flex; flex-direction: column; height: 100vh; height: 100dvh; contain: layout; }
 main { position: relative; display: flex; flex: 1; min-height: 0; }
 aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
 /* Panel plegado con su pestaña: deja de recibir el foco (`visibility`) y el mapa ocupa el hueco. */
@@ -193,7 +194,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 #portada a:hover { color: var(--acento-fuerte); }
 .portada-cabecera a { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; }
 .bloque { padding-block: clamp(64px, 10vw, 128px); border-bottom: 1px solid var(--linea); }
-#portada h1, #portada h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+#portada h1, #portada h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; }
 #portada h1 { max-width: 14ch; font-size: clamp(40px, 7.5vw, 88px); }
 #portada h2 { max-width: 18ch; font-size: clamp(32px, 5vw, 56px); }
 #portada p { max-width: 62ch; }
@@ -204,8 +205,8 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .boton-principal:active { transform: scale(0.98); }
 #portada :focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
 .aparte { margin: 12px 0 0; color: var(--texto-3); font-size: 15px; }
-.cifras-heroe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: clamp(56px, 8vw, 96px) 0 0; padding: 32px 0 0; border-top: 1px solid var(--linea); list-style: none; color: var(--texto-2); font-size: 15px; }
-.cifras-heroe .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-size: clamp(40px, 5vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.cifras-heroe { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin: clamp(56px, 8vw, 96px) 0 0; padding: 32px 0 0; border-top: 1px solid var(--linea); list-style: none; color: var(--texto-2); font-size: 15px; }
+.cifras-heroe .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-size: clamp(40px, 5vw, 56px); font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
 .fuente { display: block; margin-top: 8px; color: var(--texto-3); font-size: 14px; }
 
 /* Cuatro cuentas: ficha técnica en dos columnas, el titular fijo a la izquierda mientras se leen. */
@@ -221,8 +222,9 @@ a { color: var(--acento); text-underline-offset: 2px; }
 /* El dato: la cifra grande y tabular junto al mapa del informe. */
 .dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
 .destacado { margin: 32px 0 16px; color: var(--texto-2); font-size: 21px; line-height: 1.4; }
-.cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .dato-texto p:not(.destacado) { color: var(--texto-2); }
+.dato-texto > a { display: inline-flex; align-items: center; min-height: 44px; }
 .dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
 .dato-imagen img { display: block; width: 100%; max-height: 640px; height: auto; object-fit: contain; border-radius: 4px; }
 .dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
