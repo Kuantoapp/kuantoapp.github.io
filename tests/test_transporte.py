@@ -331,7 +331,8 @@ def _exacto(f) -> F:
 
 def test_ninguna_celda_difiere_del_calculo_exacto():
     # criterio de #374 en las claves de un solo producto de todos los rangos y sistemas; las de varios
-    # productos se compararon en la sesión del PR con el código anterior a precisión 90
+    # productos las cubren el caso de suma de test_empates_en_medio_centimo y la rejilla completa del PR
+    # #408 (código anterior a precisión 90 cuantizado a 1e-50 antes del céntimo: 0 diferencias)
     pares = [
         (a, b) for a, b in product(t.ORDEN_CORONAS, repeat=2) if t._i(a) <= t._i(b)
     ]
