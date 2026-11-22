@@ -41,7 +41,7 @@
         <li><h3>Descargamos</h3><p>Cada fuente oficial se guarda tal cual, con su fecha y su huella SHA-256, para que cualquiera compruebe que trabaja con los mismos ficheros.</p></li>
         <li><h3>Calculamos</h3><p>Un paquete de Python, <code>mesobra</code>, cruza las fuentes: rutas en transporte público con r5py, IRPF y cotizaciones de 2026, tarifas del abono y alquiler por zona.</p></li>
         <li><h3>Publicamos</h3><p>Salen 7 ficheros estáticos (zonas, tiempos, alquiler, netos, tarifas, hogares y análisis), cada uno con su fuente, su licencia y sus supuestos dentro (fuente: <code>app/datos/</code>).</p></li>
-        <li><h3>Tu navegador cuenta</h3><p>La web descarga esos ficheros y hace la cuenta con lo que escribes, en tu dispositivo. Nada de lo que eliges sale de él, y una vez abierta funciona sin red.</p></li>
+        <li><h3>Tu navegador cuenta</h3><p>La web descarga seis de esos ficheros y hace la cuenta con lo que escribes, en tu dispositivo. Nada de lo que eliges sale de él, y una vez abierta funciona sin red.</p></li>
       </ol>
     </section>
 
@@ -56,7 +56,7 @@
         <article class="pieza">
           <h3>Alquiler</h3>
           <p>Precio por metro cuadrado de los contratos de vivienda colectiva declarados a Hacienda (Modelo 100 cruzado con el Catastro), con su cuartil bajo, su mediana y su cuartil alto en cada zona. Fuente: SERPAVI, Ministerio de Vivienda y Agenda Urbana.</p>
-          <details><summary>Supuestos y límites</summary><p>Se actualiza a octubre de 2026 con el IPC de alquiler de la Comunidad de Madrid (INE, serie IPC297196), y eso es una estimación. Son contratos ya firmados, así que el precio es un suelo del actual. Con menos de 50 viviendas declaradas la mediana es imprecisa y la zona lleva borde punteado. En 2024 hay dato en 157 de las 199 zonas (fuente: <code>datos/alquiler.json</code> y <code>datos/analisis.json</code>).</p></details>
+          <details><summary>Supuestos y límites</summary><p>Se actualiza a octubre de 2026 con el IPC de alquiler de la Comunidad de Madrid (INE, serie IPC297196), y eso es una estimación. Son contratos ya firmados, así que el precio es un suelo del actual. Con menos de 50 viviendas declaradas la mediana es imprecisa y la zona lleva borde punteado. Hay alquiler en 158 de las 199 zonas, 157 con dato de 2024 y una de 2023 (fuente: <code>datos/alquiler.json</code> y <code>datos/analisis.json</code>).</p></details>
         </article>
         <article class="pieza">
           <h3>Viaje</h3>
@@ -65,8 +65,8 @@
         </article>
         <article class="pieza">
           <h3>Abono</h3>
-          <p>El título más barato al mes para cada persona del hogar, según su edad y las coronas que cruza su ruta, con los precios y el descuento de 2026. Fuente: BOCM-20251231-2 y Real Decreto-ley 17/2025.</p>
-          <details><summary>Supuestos y límites</summary><p>Es la media mensual del año, estimada con 227 días de trabajo según el calendario laboral de 2026 (Decreto 75/2025), dos festivos locales en laborable y las vacaciones en un bloque (fuente: <code>datos/tarifas.json</code>). El descuento de 2026 solo vale para ese año.</p></details>
+          <p>El título más barato al mes para cada persona del hogar, según su edad y las coronas que cruza la línea recta entre las dos zonas (estimado), con los precios y el descuento de 2026. Fuente: BOCM-20251231-2 y Real Decreto-ley 17/2025.</p>
+          <details><summary>Supuestos y límites</summary><p>Es la media mensual del año, estimada con 227 días de trabajo según el calendario laboral de 2026 (Decreto 75/2025), dos festivos locales en laborable y las vacaciones en un bloque (fuente: <code>datos/tarifas.json</code>). El descuento de 2026 solo vale para ese año. Medir las coronas en línea recta puede quedarse corto entre dos periferias, porque la ruta real cruza más coronas.</p></details>
         </article>
         <article class="pieza">
           <h3>Cesta básica</h3>
@@ -79,15 +79,11 @@
     <section class="bloque" id="datos" aria-labelledby="titulo-datos">
       <h2 id="titulo-datos">Lo que ya dicen los datos.</h2>
       <p class="entradilla">El peso del alquiler mediano sobre la renta media de los hogares de Madrid ciudad:</p>
-      <ul class="serie">
-        <li><span class="cifra">19,1 %</span> en 2015 <span class="fuente">fuente: SERPAVI (MIVAU) y ADRH (INE)</span></li>
-        <li><span class="cifra">21,0 %</span> en 2020 <span class="fuente">fuente: SERPAVI (MIVAU) y ADRH (INE)</span></li>
-        <li><span class="cifra">19,6 %</span> en 2024 <span class="fuente">fuente: SERPAVI (MIVAU) y ADRH (INE)</span></li>
-      </ul>
+      <ul class="serie"><li><span class="cifra">19,1 %</span> en 2015</li><li><span class="cifra">21,0 %</span> en 2020</li><li><span class="cifra">19,6 %</span> en 2024</li></ul><p class="fuente fuente-serie">Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia, <code>datos/analisis.json</code>.</p>
       <div class="dato">
         <div class="dato-texto">
           <p class="destacado"><span class="cifra-grande">68 de 142</span> zonas con dato en 2015 y en 2024 ven subir el peso del alquiler sobre la renta, aunque la mediana del cambio es de −0,06 puntos (fuente: SERPAVI y ADRH, <code>datos/analisis.json</code>).</p>
-          <p>La media esconde el reparto: el centro y el sur de la capital cargan con más, y por eso Kuanto mira zona a zona y no la media de la Comunidad.</p>
+          <p>La media esconde el reparto: en 2024, el centro y el sur de la capital cargan con más (fuente: <code>datos/analisis.json</code>), y por eso Kuanto mira zona a zona y no la media de la ciudad.</p>
         </div>
         <figure class="dato-imagen">
           <img src="img/esfuerzo_cambio.png" width="811" height="1125" loading="lazy" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024 por municipio y distrito, en puntos porcentuales, con colores divergentes centrados en cero: unas zonas suben y otras bajan.">
@@ -108,17 +104,17 @@
         <label><input type="radio" name="perfil" value="pareja"> Pareja de 29 años</label> <!-- sin-fuente: edad que define el perfil; sus datos y su fuente van en el panel -->
       </fieldset>
       <div class="paneles-perfil" aria-live="polite">
-        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">8,80 €</strong> netos por hora trabajada</span><span><strong class="cifra">13,8 %</strong> de los pares con más viaje (1426 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que no llega a fin de mes</span><span class="fuente">Persona sola con el SMI de 17.094 € al año (Real Decreto 126/2026). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
-        <p class="panel-perfil" data-perfil="tele"><span><strong class="cifra">8,80 €</strong> netos por hora trabajada</span><span><strong class="cifra">14,3 %</strong> de los pares con más viaje (1484 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que no llega a fin de mes</span><span class="fuente">Teleoperador de 23 años con el SMI. Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
-        <p class="panel-perfil" data-perfil="joven"><span><strong class="cifra">11,13 €</strong> netos por hora trabajada</span><span><strong class="cifra">10,4 %</strong> de los pares con más viaje (1082 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">4 de 158</strong> zonas con alquiler en las que no llega a fin de mes</span><span class="fuente">Persona sola de 29 años con el sueldo mediano de su edad en Madrid, 25.209,48 € al año (estimado, INE). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
-        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">12,52 €</strong> netos por hora trabajada</span><span><strong class="cifra">9,1 %</strong> de los pares con más viaje (947 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">2 de 158</strong> zonas con alquiler en las que no llega a fin de mes</span><span class="fuente">Madre sola de 34 años con un hijo y el sueldo medio en España de una empleada de oficina, 28.264,34 € al año (INE, 2024). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
-        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">12,18 €</strong> netos por hora trabajada</span><span><strong class="cifra">5,0 %</strong> de los pares con más viaje (524 de 10.401) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que no llega a fin de mes</span><span class="fuente">Pareja de 29 años con el sueldo mediano de Madrid, 28.037,75 € al año (INE, 2024). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
+        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">8,80 €</strong> netos por hora trabajada</span><span><strong class="cifra">13,8 %</strong> de los pares con más viaje (1426 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no cubre alquiler, abono y cesta (entre 8 y 33 según el alquiler)</span><span class="fuente">Persona sola con el SMI de 17.094 € al año (Real Decreto 126/2026). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
+        <p class="panel-perfil" data-perfil="tele"><span><strong class="cifra">8,80 €</strong> netos por hora trabajada</span><span><strong class="cifra">14,3 %</strong> de los pares con más viaje (1484 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no cubre alquiler, abono y cesta (entre 8 y 30 según el alquiler)</span><span class="fuente">Teleoperador de 23 años con el SMI. Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
+        <p class="panel-perfil" data-perfil="joven"><span><strong class="cifra">11,13 €</strong> netos por hora trabajada</span><span><strong class="cifra">10,4 %</strong> de los pares con más viaje (1082 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">4 de 158</strong> zonas con alquiler en las que el sueldo no cubre alquiler, abono y cesta (entre 0 y 8 según el alquiler)</span><span class="fuente">Persona sola de 29 años con el sueldo mediano de su edad en Madrid, 25.209,48 € al año (estimado, INE). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
+        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">12,52 €</strong> netos por hora trabajada</span><span><strong class="cifra">9,1 %</strong> de los pares con más viaje (947 de 10.368) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">2 de 158</strong> zonas con alquiler en las que el sueldo no cubre alquiler, abono y cesta (entre 0 y 8 según el alquiler)</span><span class="fuente">Madre sola de 34 años con un hijo y el sueldo medio en España de una empleada de oficina, 28.264,34 € al año (INE, 2024). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
+        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">12,18 €</strong> netos por hora trabajada</span><span><strong class="cifra">5,0 %</strong> de los pares con más viaje (524 de 10.401) en los que la hora extra de viaje rinde al menos lo que la de trabajo</span><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que los sueldos no cubren alquiler, abono y cesta (0 también según el alquiler)</span><span class="fuente">Pareja de 29 años, cada uno con el sueldo mediano de Madrid, 28.037,75 € al año (INE, 2024). Estimado; fuente: <code>datos/analisis.json</code>.</span></p>
       </div>
-      <p class="remate">Cuanto más vale tu hora de trabajo, menos compensa pasarla en el transporte: con el SMI, la hora extra de viaje rinde lo que la de trabajo en el 13,8 % de los pares; con el sueldo mediano en pareja, en el 5,0 % (estimado; fuente: <code>datos/analisis.json</code>).</p>
+      <p class="remate">Con el SMI, la hora extra de viaje rinde lo que la de trabajo en el 13,8 % de los pares; con los otros sueldos, entre el 5,0 y el 10,4 % (estimado; fuente: <code>datos/analisis.json</code>).</p>
 
       <figure class="grafico-coronas" aria-labelledby="titulo-coronas">
-        <figcaption id="titulo-coronas"><strong>Lo que rinde cada hora extra de viaje según la corona donde vives.</strong> Mediana por corona tarifaria de origen, persona sola con el SMI. En negativo pierdes dinero y tiempo a la vez; en positivo, ganas por cada hora de más.</figcaption>
-        <ul class="barras"><li><span class="etiqueta">A</span><span class="pista"><span class="barra negativa b-835"></span></span><span class="valor">−8,35 €</span></li><li><span class="etiqueta">B1</span><span class="pista"><span class="barra negativa b-223"></span></span><span class="valor">−2,23 €</span></li><li><span class="etiqueta">B2</span><span class="pista"><span class="barra negativa b-120"></span></span><span class="valor">−1,20 €</span></li><li><span class="etiqueta">B3</span><span class="pista"><span class="barra positiva b-099"></span></span><span class="valor">0,99 €</span></li><li><span class="etiqueta">C1</span><span class="pista"><span class="barra positiva b-209"></span></span><span class="valor">2,09 €</span></li><li><span class="etiqueta">C2</span><span class="pista"><span class="barra positiva b-434"></span></span><span class="valor">4,34 €</span></li></ul><p class="fuente">Euros por hora extra de viaje al mes frente a la zona de referencia; la corona A es la del centro. Estimado; fuente: <code>datos/analisis.json</code>.</p>
+        <figcaption id="titulo-coronas"><strong>Lo que rinde cada hora extra de viaje según la corona donde vives.</strong> Mediana por corona tarifaria de origen, persona sola con el SMI. En negativo pierdes dinero y tiempo a la vez; en positivo, ahorras esos euros por cada hora de más, siempre menos de los 8,80 € netos que te pagan por una hora de trabajo (estimado; fuente: <code>datos/analisis.json</code>).</figcaption>
+        <ul class="barras"><li><span class="etiqueta">A</span><span class="pista"><span class="barra negativa b-835"></span></span><span class="valor">−8,35 €</span></li><li><span class="etiqueta">B1</span><span class="pista"><span class="barra negativa b-223"></span></span><span class="valor">−2,23 €</span></li><li><span class="etiqueta">B2</span><span class="pista"><span class="barra negativa b-120"></span></span><span class="valor">−1,20 €</span></li><li><span class="etiqueta">B3</span><span class="pista"><span class="barra positiva b-099"></span></span><span class="valor">0,99 €</span></li><li><span class="etiqueta">C1</span><span class="pista"><span class="barra positiva b-209"></span></span><span class="valor">2,09 €</span></li><li><span class="etiqueta">C2</span><span class="pista"><span class="barra positiva b-434"></span></span><span class="valor">4,34 €</span></li></ul><p class="fuente">Euros por hora extra de viaje al mes frente a la zona de referencia, la zona con la que se compara el resto; la corona A es la del centro. Estimado; fuente: <code>datos/analisis.json</code>.</p>
       </figure>
     </section>
 
@@ -126,7 +122,7 @@
       <h2 id="titulo-confianza">Hecho para que lo compruebes.</h2>
       <dl class="ficha-tecnica dos-columnas">
         <div><dt>Abierto</dt><dd>El código y los datos que usa la web son públicos en <a href="https://github.com/yeraybc/DataMad-hackaton-2026" rel="noopener noreferrer">GitHub</a>.</dd></div>
-        <div><dt>Cada número, con su fuente</dt><dd>Una comprobación automática rechaza cualquier cifra de la web que no diga de dónde sale o que no avise si es estimada.</dd></div>
+        <div><dt>Cada número, con su fuente</dt><dd>Una comprobación automática rechaza cualquier cifra de los textos de la web que no diga de dónde sale.</dd></div>
         <div><dt>Normas citadas</dt><dd>Los impuestos, las cotizaciones y los abonos llevan cada parámetro citado a su BOE o BOCM.</dd></div>
         <div><dt>Sin rastreo</dt><dd>La web solo carga ficheros propios: sin analítica, sin recursos de otros sitios y, una vez abierta, sin red.</dd></div>
         <div><dt>Dice lo que no sabe</dt><dd>Marca lo estimado, da horquillas, señala las zonas imprecisas y pinta en gris lo que falta.</dd></div>
@@ -162,7 +158,7 @@
     <section class="bloque cierre" aria-labelledby="titulo-cierre">
       <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
       <p class="entradilla">Elige tu sueldo, tu hogar y dónde trabajas, y mira el mapa entero de la Comunidad.</p>
-      <a href="index.html?herramienta" class="boton-principal">Calcula cuánto te sobra</a>
+      <a href="index.html?herramienta" class="boton-principal">Calcular lo que te sobra</a>
     </section>
   </main>
 </body>

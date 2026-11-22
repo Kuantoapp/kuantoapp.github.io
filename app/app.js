@@ -573,9 +573,13 @@ const verHerramienta = (visible) => {
   herramienta.inert = !visible;
   $("portada").hidden = visible;
   scrollTo({ top: 0, behavior: "instant" });
+  // La vista va en la búsqueda (`?herramienta`): así una recarga o «atrás» vuelve a la vista en la que estabas.
+  history.replaceState(history.state, "", (visible ? "?herramienta" : location.pathname) + location.hash);
 };
+const vistaDeUrl = () => new URLSearchParams(location.search).has("herramienta");
 for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
   boton.addEventListener("click", () => {
+    history.pushState(history.state, "", `?herramienta${location.hash}`); // «atrás» vuelve a la portada
     verHerramienta(true);
     herramienta.querySelector(".menu-boton").focus();
   });
@@ -583,9 +587,10 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
 $("ir-portada").addEventListener("click", (e) => {
   e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
   verHerramienta(false);
+  $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
-// Con estado en el fragmento (enlace compartido o recarga) o desde otra página (`?herramienta`), se abre el mapa.
-verHerramienta(location.hash.length > 1 || new URLSearchParams(location.search).has("herramienta"));
+window.addEventListener("popstate", () => verHerramienta(vistaDeUrl()));
+verHerramienta(vistaDeUrl());
 
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;
