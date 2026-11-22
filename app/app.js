@@ -446,6 +446,11 @@ async function main() {
   $("escenario").addEventListener("change", guardarPaso);
   $("deshacer").addEventListener("click", () => history.back());
   $("rehacer").addEventListener("click", () => history.forward());
+  // Ir a la portada apila una entrada (#388) y descarta lo que se podía rehacer, como un cambio nuevo.
+  $("ir-portada").addEventListener("click", () => {
+    pasoMax = pasoActual();
+    actualizarBotones();
+  });
   $("cancelar").addEventListener("click", () => {
     ir(inicial);
     guardarPaso(); // también se puede deshacer
@@ -594,8 +599,10 @@ $("ir-portada").addEventListener("click", (e) => {
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
 window.addEventListener("popstate", () => {
+  const antes = document.body.classList.contains("en-herramienta");
   verHerramienta(vistaDeUrl());
-  if (!vistaDeUrl()) $("titulo-portada").focus(); // el foco no puede quedarse en la herramienta, ya `inert`
+  // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
+  if (vistaDeUrl() !== antes) (vistaDeUrl() ? herramienta.querySelector(".menu-boton") : $("titulo-portada")).focus();
 });
 verHerramienta(vistaDeUrl());
 
