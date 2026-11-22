@@ -27,8 +27,11 @@ celda de `tarifas.json` que el coste; `coche` en coche; nulos sin ruta). La fich
 
 Supuestos:
 1. sobra = neto − alquiler − transporte − cesta, en €/mes del hogar; esfuerzo = alquiler ÷ neto.
-2. Alquiler = €/m² × factor_ipc × (1 + subida/100) × m² del hogar ÷ personas_comparten (unidades que
-   pagan el alquiler, #82). Se da con P25, P50 y P75; el sobrante central usa P50.
+2. Alquiler = €/m² × factor_ipc × factor_brecha × (1 + subida/100) × m² del hogar ÷ personas_comparten
+   (unidades que pagan el alquiler, #82). `factor_brecha` (AEAT, IRPF 2024; estimado) lleva el precio de los
+   contratos en vigor al de un contrato nuevo y sigue siendo un suelo: se actualiza con el IPC de los contratos
+   en vigor (#329). Se da con P25, P50 y P75; el sobrante central usa P50. `alquiler_contrato` y
+   `sobra_contrato` son los de los contratos en vigor (sin `factor_brecha`), la referencia de la ficha.
 3. Banda del sobrante: €/m² mínimo entre P25 y el límite inferior del intervalo (zona estimada) da el
    sobrante alto; el máximo entre P75 y el superior, el bajo. El margen del neto no entra: la rejilla
    da un solo valor.
@@ -149,12 +152,16 @@ def alquiler(zona: dict, hogar: dict, subida: float) -> dict[str, float] | None:
     """Alquiler €/mes del hogar con P25, P50, P75 y los extremos de la banda; None sin dato."""
     if zona["origen"] == "sin_dato":
         return None
-    k = (
+    brecha = zona.get("factor_brecha")
+    if type(brecha) not in (int, float) or not brecha > 0:
+        raise ValueError(f"factor_brecha = {brecha!r}: debe ser un número mayor que 0")
+    k0 = (
         zona["factor_ipc"]
         * (1 + subida / 100)
         * hogar["m2"]
         / hogar["personas_comparten"]
     )
+    k = k0 * brecha
     bajo, alto = zona["p25"], zona["p75"]
     if zona["ic"]:
         bajo, alto = min(bajo, zona["ic"][0]), max(alto, zona["ic"][1])
@@ -165,7 +172,8 @@ def alquiler(zona: dict, hogar: dict, subida: float) -> dict[str, float] | None:
         "min": bajo,
         "max": alto,
     }
-    return {c: v * k for c, v in eur_m2.items()}
+    # `contrato`: el P50 de los contratos en vigor, sin la brecha de los nuevos (referencia de la ficha).
+    return {c: v * k for c, v in eur_m2.items()} | {"contrato": zona["p50"] * k0}
 
 
 def _celda(tiempos: dict, matriz: str, origen: str, destino: str) -> float | None:
@@ -250,6 +258,15 @@ def _suma(valores: list[float | None]) -> float | None:
     return None if None in valores else sum(valores)
 
 
+def api_precio_contrato(api: Api) -> Api:
+    """Copia de `api` con el precio de los contratos en vigor (`factor_brecha` = 1): para los análisis (titulares,
+    Bono), que siguen con ese precio; solo la herramienta usa el de contrato nuevo (decisión de #329)."""
+    zonas = {
+        z: {**v, "factor_brecha": 1.0} for z, v in api["alquiler"]["zonas"].items()
+    }
+    return api | {"alquiler": {**api["alquiler"], "zonas": zonas}}
+
+
 def calcular_zona(
     api: Api, hogar: dict, sueldos: list[dict], zona: str, escenario: dict
 ) -> dict:
@@ -281,9 +298,11 @@ def calcular_zona(
         "alquiler": None if alq is None else alq["p50"],
         "alquiler_p25": None if alq is None else alq["p25"],
         "alquiler_p75": None if alq is None else alq["p75"],
+        "alquiler_contrato": None if alq is None else alq["contrato"],
         "transporte": transporte,
         "cesta": cesta_mes,
         "sobra": None if fijo is None else fijo - alq["p50"],
+        "sobra_contrato": None if fijo is None else fijo - alq["contrato"],
         "sobra_banda": None if fijo is None else [fijo - alq["max"], fijo - alq["min"]],
         "horas": _suma([v["horas"] for v in viajes]),
         "viajes": viajes,

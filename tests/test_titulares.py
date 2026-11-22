@@ -1,5 +1,7 @@
 """Tests de `titulares` (#93): resumen sobre una tabla a mano y filas sobre la API de ejemplo."""
 
+import copy
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -62,6 +64,16 @@ def test_resumen_a_mano():
     # d: sobra_alto mediana(10, −10) = 0, no < 0; sobra_bajo mediana(−80, −120) = −100 < 0
     # a, b: bajo −50 y −100 < 0; c: bajo mediana(100, −300) = −100 < 0
     assert r["banda_zonas_negativas"] == [0, 4]
+
+
+def test_filas_no_usan_la_brecha_de_contrato_nuevo():
+    api, perfil = _api(), titulares.PERFILES[0]
+    doble = copy.deepcopy(api)
+    for z in doble["alquiler"]["zonas"].values():
+        z["factor_brecha"] = 2.0
+    pd.testing.assert_frame_equal(
+        titulares.filas(api, perfil), titulares.filas(doble, perfil)
+    )
 
 
 def test_filas_con_el_smi():

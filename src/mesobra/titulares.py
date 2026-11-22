@@ -123,6 +123,9 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
     destinos = [
         d["destino_id"] for d in api["tiempos"]["destinos"] if d["tipo"] == "zona"
     ]
+    sin_brecha = calculo.api_precio_contrato(
+        api
+    )  # los titulares siguen con el precio de contrato (#329)
     salida = []
     for d in destinos:
         entrada = {
@@ -132,7 +135,7 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
                 for bruto, dias in perfil["sueldos"]
             ],
         }
-        res = calculo.calcular(api, entrada)
+        res = calculo.calcular(sin_brecha, entrada)
         for origen, z in res["zonas"].items():
             bajo, alto = z["sobra_banda"] or (None, None)
             salida.append(

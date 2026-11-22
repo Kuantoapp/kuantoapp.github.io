@@ -40,10 +40,12 @@ if DATOS is None:
 ESTRICTO = ConfigDict(extra="forbid", strict=True)
 UNIDADES = {
     "neto": "€/mes del hogar; desde el bruto, estimado: neto anual ÷ 12 con cotización y cuota de IRPF 2026 de la declaración (retención si no hay obligación de declarar), tributación individual, sin deducciones reembolsables (ver fuentes.netos.json.supuestos)",
-    "alquiler": "€/mes (mediana P50; P25 y P75 en alquiler_p25/p75)",
+    "alquiler": "€/mes de un contrato nuevo, estimado: mediana P50 de los contratos en vigor × factor_ipc × factor_brecha (AEAT, IRPF 2024); P25 y P75 en alquiler_p25/p75. Sigue siendo un suelo",
+    "alquiler_contrato": "€/mes con lo que pagan los inquilinos actuales (P50 × factor_ipc, sin factor_brecha)",
     "transporte": "€/mes, estimado: media anual del título más barato con precios de 2026 (BOCM de 31-12-2025) y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
     "cesta": "€/mes (cesta básica del hogar)",
     "sobra": "€/mes del hogar = neto − alquiler − transporte − cesta",
+    "sobra_contrato": "€/mes del hogar con el alquiler de alquiler_contrato (inquilinos actuales)",
     "sobra_banda": "[bajo, alto] €/mes",
     "horas": "horas/mes de viaje al trabajo (ida y vuelta)",
     "viajes": "por sueldo y en su orden: {horas, coste, titulo} del viaje (título de la misma celda de tarifas que el coste; coche en coche)",
