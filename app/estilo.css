@@ -9,6 +9,7 @@
   --texto-2: #474a52;
   --texto-3: #5c6069;
   --acento: #0b4f9c;
+  --acento-fuerte: #083c78;
   --acento-suave: rgb(11 79 156 / 8%);
   --seleccion: rgb(11 79 156 / 18%);
   --error: #a4161a;
@@ -25,8 +26,9 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 ::selection { background: var(--seleccion); }
-html, body { height: 100%; margin: 0; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
-body { display: flex; flex-direction: column; }
+html, body { margin: 0; overflow-x: clip; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
+/* La herramienta ocupa justo una pantalla bajo la portada (#388): la página se desplaza y el mapa no. */
+#herramienta { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 main { position: relative; display: flex; flex: 1; min-height: 0; }
 aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
 /* Panel plegado con su pestaña: deja de recibir el foco (`visibility`) y el mapa ocupa el hueco. */
@@ -180,4 +182,80 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #mapa { position: relative; inset: auto; flex: 1; min-height: 12rem; }
   #leyenda { position: static; width: auto; max-height: 35%; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
   #leyenda .fila { display: inline-flex; margin-right: 12px; }
+}
+
+/* Portada (#388): modo persuadir. Titulares grandes a la izquierda, una idea por bloque y mucho aire. */
+#portada { font-size: 17px; line-height: 1.5; }
+.portada-cabecera, .bloque { width: min(72rem, 100% - 48px); margin-inline: auto; }
+.portada-cabecera { display: flex; align-items: center; justify-content: space-between; min-height: 64px; border-bottom: 1px solid var(--linea); }
+.marca { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+#portada a { color: var(--acento); text-underline-offset: 3px; }
+#portada a:hover { color: var(--acento-fuerte); }
+.portada-cabecera a { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; }
+.bloque { padding-block: clamp(64px, 10vw, 128px); border-bottom: 1px solid var(--linea); }
+#portada h1, #portada h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+#portada h1 { max-width: 14ch; font-size: clamp(40px, 7.5vw, 88px); }
+#portada h2 { max-width: 18ch; font-size: clamp(32px, 5vw, 56px); }
+#portada p { max-width: 62ch; }
+#portada .formula { max-width: none; }
+.entradilla { margin: 24px 0 32px; color: var(--texto-2); font-size: clamp(19px, 2.2vw, 24px); line-height: 1.4; }
+.boton-principal { min-height: 52px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--acento); color: var(--superficie); font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), transform 0.15s var(--curva); }
+.boton-principal:hover { background: var(--acento-fuerte); }
+.boton-principal:active { transform: scale(0.98); }
+#portada :focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+.aparte { margin: 12px 0 0; color: var(--texto-3); font-size: 15px; }
+.cifras-heroe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: clamp(56px, 8vw, 96px) 0 0; padding: 32px 0 0; border-top: 1px solid var(--linea); list-style: none; color: var(--texto-2); font-size: 15px; }
+.cifras-heroe .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-size: clamp(40px, 5vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.fuente { display: block; margin-top: 8px; color: var(--texto-3); font-size: 14px; }
+
+/* Cuatro cuentas: ficha técnica en dos columnas, el titular fijo a la izquierda mientras se leen. */
+.cuentas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; align-items: start; }
+.cuentas h2 { position: sticky; top: 32px; }
+.ficha-tecnica { margin: 0; }
+.ficha-tecnica div { padding: 24px 0; border-top: 1px solid var(--linea); }
+.ficha-tecnica div:first-child { padding-top: 0; border-top: 0; }
+.ficha-tecnica dt { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.ficha-tecnica dd { margin: 8px 0 0; color: var(--texto-2); }
+.remate { grid-column: 2; margin: 8px 0 0; font-size: 21px; line-height: 1.4; }
+
+/* El dato: la cifra grande y tabular junto al mapa del informe. */
+.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.destacado { margin: 32px 0 16px; color: var(--texto-2); font-size: 21px; line-height: 1.4; }
+.cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.dato-texto p:not(.destacado) { color: var(--texto-2); }
+.dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.dato-imagen img { display: block; width: 100%; max-height: 640px; height: auto; object-fit: contain; border-radius: 4px; }
+.dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
+
+/* Así sale la cifra: la fórmula en la tarjeta de firma (blanca, radio de 16 px y línea fina). */
+.formula { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: 40px 0; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-size: clamp(21px, 3vw, 32px); font-weight: 600; letter-spacing: -0.02em; }
+.formula .operador { color: var(--texto-3); font-weight: 400; }
+.formula strong { color: var(--acento); }
+.notas-calculo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.notas-calculo p { margin: 0; color: var(--texto-2); font-size: 16px; }
+.notas-calculo strong { color: var(--texto); }
+#portada code { font-size: 0.9em; overflow-wrap: anywhere; }
+
+/* Cuánto fiarte: los avisos, uno por línea, en el mismo tono que «Antes de leer el mapa». */
+.avisos-portada { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; padding: 0; list-style: none; }
+.avisos-portada li { padding: 20px 0; border-top: 1px solid var(--linea); color: var(--texto-2); }
+.fuentes-portada { margin: 32px 0 0; color: var(--texto-3); font-size: 15px; }
+.fiarse { border-bottom: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boton-principal { transition: none; }
+}
+@media (max-width: 56rem) {
+  .cuentas, .dato { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .cuentas h2 { position: static; }
+  .remate { grid-column: 1; }
+  .notas-calculo, .avisos-portada { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 40rem) {
+  .portada-cabecera, .bloque { width: calc(100% - 32px); }
+  .cifras-heroe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .boton-principal { width: 100%; }
 }

@@ -5,12 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:; child-src blob:; img-src 'self' data: blob:; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Kuanto · Mapa de zonas</title>
+  <title>Kuanto · Cuánto te sobra al mes en cada zona de Madrid</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
+  <!-- Portada (#388): explica qué hace Kuanto, con qué datos y cuánto fiarse; termina en la herramienta, debajo. -->
+  <div id="portada">
+    <header class="portada-cabecera">
+      <p class="marca">Kuanto</p>
+      <a href="informe.html">Metodología</a>
+    </header>
+
+    <section class="bloque heroe" aria-labelledby="titulo-portada">
+      <h1 id="titulo-portada">Cuánto te sobra al mes, zona a zona.</h1>
+      <p class="entradilla">Pon tu sueldo y dónde trabajas. Kuanto resta el alquiler, el transporte y la cesta básica en cada zona de la Comunidad de Madrid y te lo pinta en un mapa.</p>
+      <button type="button" id="ir-herramienta" class="boton-principal">Calcular lo que te sobra</button>
+      <p class="aparte">Sin registro. Lo que escribes se queda en tu navegador.</p>
+      <ul class="cifras-heroe">
+        <li><span class="cifra">199</span> zonas: los 178 municipios y los 21 distritos de Madrid <span class="fuente">fuente: datos/zonas.geojson</span></li>
+        <li><span class="cifra">6</span> redes de transporte público con sus horarios: Metro, Metro Ligero, Cercanías, interurbanos, EMT y urbanos <span class="fuente">fuente: GTFS del CRTM</span></li>
+        <li><span class="cifra">2026</span> impuestos, cotizaciones y abonos de este año <span class="fuente">fuente: BOE y BOCM</span></li>
+      </ul>
+    </section>
+
+    <section class="bloque cuentas" aria-labelledby="titulo-cuentas">
+      <h2 id="titulo-cuentas">Cuatro cuentas, una sola cifra.</h2>
+      <dl class="ficha-tecnica">
+        <div>
+          <dt>Tu sueldo neto</dt>
+          <dd>Del bruto al neto con el IRPF estatal y el de Madrid y las cotizaciones del trabajador. <span class="fuente">Fuente: LIRPF y normas del BOE de 2026.</span></dd>
+        </div>
+        <div>
+          <dt>Tu alquiler</dt>
+          <dd>Lo que se paga en los contratos declarados a Hacienda en cada zona, con la mediana y la horquilla entre el cuartil bajo y el alto. <span class="fuente">Fuente: SERPAVI, Ministerio de Vivienda y Agenda Urbana.</span></dd>
+        </div>
+        <div>
+          <dt>Tu viaje</dt>
+          <dd>Minutos puerta a puerta en transporte público desde cada zona hasta la de tu trabajo, en hora punta. <span class="fuente">Fuente: GTFS del CRTM y OpenStreetMap.</span></dd>
+        </div>
+        <div>
+          <dt>Tu abono</dt>
+          <dd>El título más barato para cada persona del hogar según su edad y las coronas que cruza. <span class="fuente">Fuente: precios de 2026, BOCM-20251231-2.</span></dd>
+        </div>
+      </dl>
+      <p class="remate">Con todo eso, Kuanto te dice también cuánto vale cada hora de viaje: lo que ganas o pierdes al mes por vivir más lejos o más cerca que en tu zona de referencia.</p>
+    </section>
+
+    <section class="bloque dato" aria-labelledby="titulo-dato">
+      <div class="dato-texto">
+        <h2 id="titulo-dato">El alquiler no pesa lo mismo en todas partes.</h2>
+        <p class="destacado"><span class="cifra-grande">24,0 %</span> de la renta del hogar se va en alquiler en Puente de Vallecas y en Centro; en la zona mediana, el 15,3 % (fuente: SERPAVI y ADRH, 2024, <code>datos/analisis.json</code>).</p>
+        <p>Vivir más lejos tampoco sale siempre a cuenta. Para una persona sola con el SMI, la hora extra de viaje rinde lo que su hora de trabajo solo en 1.426 de 10.368 pares de zonas, el 13,8 % (estimado; fuente: <code>datos/analisis.json</code>).</p>
+        <a href="informe.html">Lee el informe del alquiler</a>
+      </div>
+      <figure class="dato-imagen">
+        <img src="img/esfuerzo_ultimo.png" width="811" height="1100" loading="lazy" alt="Mapa de la Comunidad de Madrid con el esfuerzo de alquiler de 2024 por municipio y distrito en cinco clases de igual número de zonas. Los valores más altos están en el centro y el sur de la capital.">
+        <figcaption>Esfuerzo de alquiler en 2024 por zona, en quintiles. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
+      </figure>
+    </section>
+
+    <section class="bloque calculo" aria-labelledby="titulo-calculo">
+      <h2 id="titulo-calculo">Así sale la cifra.</h2>
+      <p class="formula" aria-label="Sueldo neto menos alquiler, menos transporte, menos cesta básica, igual a lo que sobra">
+        <span>Sueldo neto</span><span class="operador" aria-hidden="true">−</span><span>Alquiler</span><span class="operador" aria-hidden="true">−</span><span>Transporte</span><span class="operador" aria-hidden="true">−</span><span>Cesta básica</span><span class="operador" aria-hidden="true">=</span><strong>Lo que sobra</strong>
+      </p>
+      <div class="notas-calculo">
+        <p><strong>Los tiempos</strong> son la mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable, andando y en transporte público, desde el centro de población de cada zona hasta el de tu trabajo.</p>
+        <p><strong>El alquiler</strong> es el precio por metro cuadrado de los contratos por la superficie de tu vivienda, 69 m² si no la cambias, actualizado con el IPC de alquiler (fuente: SERPAVI e INE, <code>datos/hogares.json</code>).</p>
+        <p><strong>La cesta básica</strong> es lo que gastan de media los hogares de Madrid en comida, suministros, internet y móvil, ajustado al tamaño del tuyo (estimado; fuente: Encuesta de Presupuestos Familiares del INE, catálogo de la Comunidad de Madrid).</p>
+      </div>
+    </section>
+
+    <section class="bloque fiarse" aria-labelledby="titulo-fiarse">
+      <h2 id="titulo-fiarse">Cuánto fiarte.</h2>
+      <ul class="avisos-portada">
+        <li>Lo que sale de un cálculo lleva la marca «estimado», y la ficha de cada zona te da una horquilla: te sobran entre una cifra y otra.</li>
+        <li>Una zona con menos de 50 contratos declarados lleva borde punteado en el mapa: su mediana es imprecisa (fuente: SERPAVI, <code>datos/alquiler.json</code>).</li>
+        <li>El alquiler de los contratos declarados es un suelo del precio actual.</li>
+        <li>En 1.076 pares de zonas (2,7 %) el tiempo mejora con líneas que el CRTM publica sin viajes y que se reconstruyeron con el trazado de OpenStreetMap (estimado; fuente: <code>datos/tiempos.json</code>).</li>
+        <li>Si falta el alquiler o no hay ruta en 120 minutos, la zona sale en gris y nunca como cero (fuente: <code>datos/tiempos.json</code>).</li>
+        <li>El neto supone tributación individual y contrato indefinido, y solo se calcula entre 12.000 y 120.000 € brutos al año (fuente: <code>datos/netos.json</code>).</li>
+      </ul>
+      <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en la <a href="informe.html">metodología</a>.</p>
+    </section>
+  </div>
+
+  <!-- La herramienta ocupa una pantalla justo debajo de la portada. -->
+  <div id="herramienta">
   <!-- Filtros en una barra superior: cada variable despliega su panel al pasar el ratón, al pulsar o con el teclado. -->
   <header id="barra-filtros">
     <form id="formulario" class="menus" novalidate autocomplete="off">
@@ -256,6 +339,7 @@
       <p id="estado" role="status"></p>
     </section>
   </main>
+  </div>
   <script src="vendor/maplibre-gl.js"></script>
   <script type="module" src="app.js"></script>
 </body>

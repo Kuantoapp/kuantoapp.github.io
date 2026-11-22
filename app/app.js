@@ -565,6 +565,15 @@ function prepararVista(mapa) {
   });
 }
 
+// Portada (#388): el botón baja a la herramienta sin tocar el fragmento, que guarda el estado del formulario;
+// un enlace con estado (compartido o tras recargar) entra directo a la herramienta.
+const herramienta = $("herramienta");
+$("ir-herramienta").addEventListener("click", () => {
+  herramienta.scrollIntoView(); // suave o no según `scroll-behavior`, que sigue a prefers-reduced-motion
+  herramienta.querySelector(".menu-boton").focus({ preventScroll: true });
+});
+if (location.hash.length > 1) herramienta.scrollIntoView({ behavior: "instant" });
+
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;
   console.error(error);
