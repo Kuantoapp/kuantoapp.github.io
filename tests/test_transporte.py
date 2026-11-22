@@ -1,5 +1,7 @@
 from datetime import date, timedelta
+from decimal import ROUND_HALF_UP, localcontext
 from decimal import Decimal as D
+from fractions import Fraction as F
 from itertools import pairwise, product
 
 import geopandas as gpd
@@ -253,6 +255,106 @@ def test_tabla_v1_conserva_la_forma_de_80():
     assert fila.coste_mes.item() == 45.78
 
 
+def test_b2_sin_descuento_redondea_el_empate_hacia_arriba():
+    # 2 × 5 × 227/60 viajes × 16,50 € (BOCM-20251231-3 pág. 72, 2 saltos) / 10 = 62,425 exacto (#374)
+    assert coste("A-B2|interurbano", 5, esc=S) == ("10 viajes", D("62.43"))
+    v1 = t.tabla_v1().query(
+        "escenario == 'sin_descuento' and ~joven and corona == 'B2' and dias == 5 "
+        "and viajes_dia == 2"
+    )
+    assert v1.coste_mes.item() == 62.43
+
+
+@pytest.mark.parametrize(
+    ("tarifa", "clave", "dias", "nl", "esperado"),
+    [
+        # 2270 × 2,10 / 600 = 7,945 (BOCM-20251231-2 pág. 67, FN especial con discapacidad)
+        (("vigente_2026", "fn_especial_discapacidad"), "A-A|metro_a", 5, 0, ("10 viajes", "7.95")),
+        # (2270/60 + 8) × 2,10 / 10 = 9,625
+        (("vigente_2026", "fn_especial_discapacidad"), "A-B1|interurbano", 5, 8, ("10 viajes", "9.63")),
+        # suma de productos: 908 × 1,80 / 60 + 454 × 7,50 / 600 = 27,24 + 5,675 = 32,915 (pág. 71 y 72)
+        (
+            ("sin_descuento", "fn_general_discapacidad"),
+            "A-C1|interurbano+interurbano+metro_a",
+            1,
+            0,
+            ("10 viajes + Billete sencillo", "32.92"),
+        ),
+    ],
+)  # fmt: skip
+def test_empates_en_medio_centimo(tarifa, clave, dias, nl, esperado):
+    assert coste(clave, dias, nl, esc=tarifa) == (esperado[0], D(esperado[1]))
+
+
+def test_redondea_en_el_limite():
+    assert t._redondea(F(62425, 1000)) == D("62.43")
+    assert t._redondea(F(62425, 1000) - F(1, 10**30)) == D("62.42")
+    assert str(t._redondea(F(0))) == "0.00"
+
+
+def _mitad_arriba(x: F) -> D:
+    # otra vía que _redondea: un empate exacto termina y cabe en 60 cifras; lo demás queda lejos de ,xx5
+    with localcontext() as c:
+        c.prec = 60
+        return (D(x.numerator) / x.denominator).quantize(D("0.01"), ROUND_HALF_UP)
+
+
+def _exacto(f) -> F:
+    """Coste exacto del título de una fila de una clave de un solo producto, con la fórmula a mano:
+    los precios salen de las tablas del módulo, la aritmética no."""
+    tarifa = (f.escenario, f.colectivo)
+    cmin, cmax, (producto,) = t._partes(f.clave_tarifa)
+    diez = t._diez_viajes(producto, cmin, cmax)
+
+    def por_viaje(viajes):
+        opciones = {}
+        if producto in t.SENCILLO:
+            opciones["Billete sencillo"] = viajes * F(t.SENCILLO[producto][tarifa])
+        if diez:
+            opciones["10 viajes"] = viajes / 10 * F(diez[tarifa])
+        return opciones
+
+    fijos = {
+        **por_viaje(F(2 * f.dias * t.DIAS_TRABAJO, 60) + f.no_laborables),
+        "Abono Renfe": F(20) * 11 / 12,  # RDL 17/2025, 11 abonos al año
+        "Abono Renfe Joven": F(10) * 11 / 12,
+        "Abono +65": F(0),
+    }
+    if f.titulo in fijos:
+        return fijos[f.titulo]
+    # abono: 335/30 al año entre 12 meses, más el ocio del mes de vacaciones por viaje
+    titulo, precio = t._abono(tarifa, f.clave_tarifa)
+    precio = precio if f.titulo == titulo else t.ABONO_JOVEN[tarifa]
+    ocio = min(por_viaje(F(f.no_laborables)).values(), default=F(0))
+    return F(precio) * 335 / 360 + ocio / 12
+
+
+def test_ninguna_celda_difiere_del_calculo_exacto():
+    # criterio de #374 en las claves de un solo producto de todos los rangos y sistemas; las de varios
+    # productos las cubren el caso de suma de test_empates_en_medio_centimo y la rejilla completa del PR
+    # #408 (código anterior a precisión 90 cuantizado a 1e-50 antes del céntimo: 0 diferencias)
+    pares = [
+        (a, b) for a, b in product(t.ORDEN_CORONAS, repeat=2) if t._i(a) <= t._i(b)
+    ]
+    claves = sorted(
+        {t.clave_tarifa(a, b, s) for (a, b), s in product(pares, t.SISTEMAS)}
+    )
+    v2 = t.tabla(claves)
+    v1 = (
+        t.tabla_v1()
+        .query("viajes_dia == 2")
+        .assign(
+            colectivo=O,
+            edad=lambda d: d.joven.map({True: "joven", False: "general"}),
+            clave_tarifa=lambda d: d.corona.map(lambda c: t.clave_v1(c, 2)),
+            no_laborables=0,
+        )
+    )
+    for df in (v1, v2):
+        for f in df.itertuples():
+            assert f.coste_mes == float(_mitad_arriba(_exacto(f))), f
+
+
 def test_control_por_colectivo():
     # control de la issue (referencia de dm-calculos-normativos §1.3): BOCM-20251231-2 págs. 66-68
     a, joven = t.ABONO_30["A"], t.ABONO_JOVEN
@@ -412,7 +514,7 @@ def test_el_combinado_paga_el_suplemento_y_el_ocio_no():
     assert coste("A-A|metro_aeropuerto", 1, 8) == ("Abono 30 días", D("30.92"))
     # el ocio también sin suplemento en el pago por viaje: 28,22 + 8 × 0,73 = 34,06 (con suplemento, 58,06)
     por_viaje = t._por_viaje(V, "A-A|metro_aeropuerto", 1, 8, "general")[1]
-    assert por_viaje.quantize(D("0.01")) == D("34.06")
+    assert t._redondea(por_viaje) == D("34.06")
     # 2 días: 15,13 viajes × 3,73 = 56,45 > 30,43
     assert coste("A-A|metro_aeropuerto", 2) == ("Abono 30 días", D("30.43"))
     # FN especial: 7,567 × (3,60 + 15,00) / 10 = 14,07, bajo su abono (15,17)

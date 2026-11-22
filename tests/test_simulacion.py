@@ -5,6 +5,7 @@ import json
 import re
 import unicodedata
 from decimal import Decimal as D
+from fractions import Fraction as F
 from itertools import product
 
 import pandas as pd
@@ -619,7 +620,7 @@ def test_fin_descuento_control_de_la_issue():
     df = simulacion.fin_descuento(_api_fin(CORONAS_FIN))
     df = df[df["criterio"] == "fin_descuento"]
     df = df.set_index(["perfil", "municipio_id"])["eur_mes"]
-    assert float(D("35.20") * tr.ABONOS_ANIO / 12) == pytest.approx(32.76, abs=0.005)
+    assert float(F(D("35.20")) * tr.ABONOS_ANIO / 12) == pytest.approx(32.76, abs=0.005)
     for m in ("28007", "28008", "28009"):  # B3, C1 y C2: el mismo abono
         assert df["adulto", m] == pytest.approx(32.76, abs=0.005)
     assert df["joven", "28009"] == pytest.approx(9.30, abs=0.005)
@@ -685,7 +686,7 @@ def test_fin_descuento_rdl_mantiene_el_titulo_mas_barato():
             if c == "A"
             else simulacion.DIEZ_VIAJES_INTERURBANO_2025[i]
         )
-        gana_abono = p_abono * abono < (hoy + simulacion.PCT_RDL * ref) * diez
+        gana_abono = F(p_abono) * abono < F(hoy + simulacion.PCT_RDL * ref) * diez
         titulo = tr.coste_mes(
             vig,
             "general",
