@@ -131,7 +131,7 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 30. € al mes = media del año: el abono se compra 335/30 veces (`transporte.ABONOS_ANIO`), así que en la corona C2
     la pérdida es 35,20 € por abono (84,40 − 49,20) y 32,76 € de media al mes; el joven, 10,00 € y 9,30 €. Se
     restan los `coste_mes` ya redondeados de `tarifas.json` (18,61 − 9,31; la exacta, 9,31): ±0,01 €, lo mismo
-    que ve la app. En B2 sale 26,10 y no 26,11 por el redondeo del 10 viajes de `transporte` (issue aparte).
+    que ve la app. En B2, 62,43 − 36,32 = 26,11 (empate de 62,425 redondeado hacia arriba, #374).
 31. Sin hogares sobrecargados: la tabla `sobrecarga` (F3-06, #100) no se publica (señal de corte, PR #293).
     Filas de `simulacion` con `criterio` = `fin_descuento`, `perfil` = `adulto` o `joven`, `elegible` = pierde
     algo (eur_mes > 0), `pct_ocupados_elegibles` nulo (no aplica) y `estimado` = True.
@@ -152,6 +152,7 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 
 import logging
 from decimal import Decimal as D
+from fractions import Fraction as F
 from typing import NamedTuple
 
 import pandas as pd
@@ -727,7 +728,7 @@ def _sin_rdl(titulo: str, corona: str) -> D:
     else:
         raise ValueError(f"título sin tarifa de 2025: {titulo!r}")
     pct = PCT_RDL_JOVEN if titulo == "Abono Joven" else PCT_RDL
-    return transporte._redondea((precios[0] + pct * precios[1]) * q)
+    return transporte._redondea((F(precios[0]) + F(pct) * F(precios[1])) * q)
 
 
 def _tarifa(
