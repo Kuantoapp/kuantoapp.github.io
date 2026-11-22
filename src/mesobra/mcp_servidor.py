@@ -20,7 +20,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from pydantic import ConfigDict, Field, with_config
 
-from mesobra.calculo import RAIZ, calcular, leer_api
+from mesobra.calculo import RAIZ, calcular, leer_api, tramo_cesta
 
 # El wheel trae app/datos como mesobra/datos (force-include); en el checkout, la carpeta del repo. En el checkout,
 # src/mesobra/datos existe (guarda polos.csv) pero sin la API: se elige la carpeta que tiene zonas.geojson.
@@ -43,7 +43,7 @@ UNIDADES = {
     "alquiler": "€/mes de un contrato nuevo, estimado: mediana P50 de los contratos en vigor × factor_ipc × factor_brecha (AEAT, IRPF 2024); P25 y P75 en alquiler_p25/p75. Sigue siendo un suelo",
     "alquiler_contrato": "€/mes con lo que pagan los inquilinos actuales (P50 × factor_ipc, sin factor_brecha)",
     "transporte": "€/mes, estimado: media anual del título más barato con precios de 2026 (BOCM de 31-12-2025) y el calendario laboral de 2026 (ver fuentes.tarifas.json.supuestos)",
-    "cesta": "€/mes (cesta básica del hogar)",
+    "cesta": "€/mes de cesta básica del hogar, estimado: gasto medio de los hogares de Madrid (EPF 2025) actualizado con el IPC, con internet y móvil (ver fuentes.hogares.json.supuestos); con escenario cesta = tramo, la comida × factor de cesta_tramo",
     "sobra": "€/mes del hogar = neto − alquiler − transporte − cesta",
     "sobra_contrato": "€/mes del hogar con el alquiler de alquiler_contrato (inquilinos actuales)",
     "sobra_banda": "[bajo, alto] €/mes",
@@ -90,7 +90,7 @@ class Escenario(TypedDict, total=False):
         Literal["media", "tramo"],
         Field(
             description="tramo: comida con el gasto de los hogares de tu tramo de ingresos, "
-            "EPF de España 2025, estimado; la media es la referencia"
+            "EPF de España 2025 (INE t=73809 y t=73795), estimado; la media es la referencia"
         ),
     ]
 
@@ -189,7 +189,24 @@ def _envoltura(res: dict) -> dict[str, Any]:
             "precios oficiales del BOCM-20251231-3 sin la bonificación de 2026 (RDL 17/2025, "
             "BOE-A-2025-26459); el precio vigente es vigente_2026"
         )
+    if res["escenario"]["cesta"] == "tramo":
+        salida["cesta_tramo"] = _tramo(next(iter(zonas.values()))["neto"])
     return salida
+
+
+def _tramo(neto: float) -> dict[str, Any]:
+    """Tramo de ingresos de la cesta con el corte siguiente, como `tramoDe` de app/vista.js; el neto no depende de la zona."""
+    tramos = _api()["hogares"]["cesta_tramos"]
+    t = tramo_cesta(tramos, neto)
+    i = tramos.index(t)
+    return {
+        "desde": t["desde"],
+        "hasta": tramos[i + 1]["desde"] if i + 1 < len(tramos) else None,
+        "factor": t["factor"],
+        "nota": "€/mes netos del hogar [desde, hasta) (en la EPF, ingresos mensuales netos regulares; aquí solo los sueldos); simulación, estimado: la comida × factor, la alimentación "
+        "por unidad de consumo de los hogares de ese tramo entre la de todos (EPF de España 2025, INE t=73809 "
+        "y t=73795); la referencia es la media",
+    }
 
 
 def _claro(f: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
@@ -214,7 +231,8 @@ servidor = MCPServer(
         "explica su motivo y sobre cuántas zonas se ha calculado. Los destinos y zonas van por código INE "
         "(Getafe = 28065), no por nombre. Con escenario `sin_descuento` es una simulación: presenta "
         "junto a ella la cifra `vigente_2026` y etiquétala como tal. La tarifa joven se aplica a todos "
-        "los sueldos según una sola edad."
+        "los sueldos según una sola edad. Con escenario cesta `tramo` también es una simulación (estimado): "
+        "preséntala junto a la cifra con cesta `media`, que es la referencia."
     ),
 )
 
