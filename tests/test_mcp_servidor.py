@@ -90,6 +90,26 @@ def test_ranking_con_cesta_del_tramo_dice_el_tramo_y_sin_ella_no() -> None:
     assert "cesta_tramo" not in llamar("ranking_zonas", {**ENTRADA, "n": 3})
 
 
+def test_ultimo_tramo_de_la_cesta_sin_tope() -> None:
+    sueldos = [{**SUELDO, "bruto": 110000}]
+    r = llamar(
+        "calcular_sobrante",
+        {
+            "hogar": HOGAR,
+            "sueldos": sueldos,
+            "zona_id": GETAFE,
+            "escenario": {"cesta": "tramo"},
+        },
+    )
+    ultimo = API["hogares"]["cesta_tramos"][-1]
+    assert r["zona"]["neto"] >= ultimo["desde"]
+    assert (r["cesta_tramo"]["desde"], r["cesta_tramo"]["hasta"]) == (
+        ultimo["desde"],
+        None,
+    )
+    assert r["cesta_tramo"]["factor"] == ultimo["factor"]
+
+
 def test_esquema_describe_hogares_que_comparten_y_cesta() -> None:
     # Sin descripción, el asistente leería `personas_comparten` como personas: una pareja pondría 2 (#323)
     (tool,) = [

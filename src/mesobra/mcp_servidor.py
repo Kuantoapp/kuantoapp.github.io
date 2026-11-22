@@ -203,7 +203,7 @@ def _tramo(neto: float) -> dict[str, Any]:
         "desde": t["desde"],
         "hasta": tramos[i + 1]["desde"] if i + 1 < len(tramos) else None,
         "factor": t["factor"],
-        "nota": "€/mes netos del hogar [desde, hasta); simulación, estimado: la comida × factor, la alimentación "
+        "nota": "€/mes netos del hogar [desde, hasta) (en la EPF, ingresos mensuales netos regulares; aquí solo los sueldos); simulación, estimado: la comida × factor, la alimentación "
         "por unidad de consumo de los hogares de ese tramo entre la de todos (EPF de España 2025, INE t=73809 "
         "y t=73795); la referencia es la media",
     }
@@ -232,7 +232,7 @@ servidor = MCPServer(
         "(Getafe = 28065), no por nombre. Con escenario `sin_descuento` es una simulación: presenta "
         "junto a ella la cifra `vigente_2026` y etiquétala como tal. La tarifa joven se aplica a todos "
         "los sueldos según una sola edad. Con escenario cesta `tramo` también es una simulación (estimado): "
-        "la referencia es la cesta `media`."
+        "preséntala junto a la cifra con cesta `media`, que es la referencia."
     ),
 )
 
