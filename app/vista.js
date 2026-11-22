@@ -40,7 +40,7 @@ export const METRICAS = {
     datos: TODOS,
     decimales: 0,
     divergente: true,
-    nota: "Negativo: no llega a fin de mes. Estimado con el alquiler mediano (P50).",
+    nota: "Negativo: no llega a fin de mes. Estimado con el alquiler mediano (P50) de un contrato nuevo.",
   },
   horas: {
     titulo: "Horas de viaje al mes",
@@ -288,11 +288,11 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
   lineas.push(
     `Si firmas hoy un contrato nuevo, te ${sobra(zona.sobra) ? "sobran" : "faltan"} unos ${eur(zona.sobra)} al mes (estimado)`,
     fraseBanda(zona.sobra_banda),
-    `Con lo que pagan los inquilinos actuales te ${sobra(zona.sobra_contrato) ? "sobrarían" : "faltarían"} ${eur(zona.sobra_contrato)} al mes (estimado; los contratos nuevos cuestan más; fuente: ${AEAT})`,
+    `Con lo que pagan los inquilinos actuales te ${sobra(zona.sobra_contrato) ? "sobrarían" : "faltarían"} ${eur(zona.sobra_contrato)} al mes (estimado; fuente: SERPAVI, MIVAU, e INE; los contratos nuevos cuestan más según la ${AEAT})`,
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
     ...(ctx.impreciso ? [`Impreciso: pocos alquileres declarados (${ctx.testigos} en ${ctx.anio}, menos de ${ctx.minTestigos}): unos pocos mueven la cifra (fuente: SERPAVI, MIVAU)`] : []),
-    ...(ctx.brechaImprecisa ? [`En este distrito la estimación del contrato nuevo es poco precisa: sus códigos postales se reparten entre varios distritos (estimado; fuente: ${AEAT})`] : []),
+    ...(ctx.brechaImprecisa ? [`En este distrito la estimación del contrato nuevo es poco precisa: sus códigos postales se reparten entre varios distritos (estimado; fuente: ${AEAT}, y OpenStreetMap)`] : []),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
     `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,

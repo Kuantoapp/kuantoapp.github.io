@@ -271,7 +271,7 @@ test("ficha completa de una zona: banda del sobrante, título, precio de la hora
     "29,0 € por hora extra (estimado)",
     "Si firmas hoy un contrato nuevo, te sobran unos 408 € al mes (estimado)",
     "Según el piso, te sobran entre 314 € y 497 € al mes (estimado)",
-    "Con lo que pagan los inquilinos actuales te sobrarían 519 € al mes (estimado; los contratos nuevos cuestan más; fuente: AEAT, Estadística de viviendas declaradas en el IRPF 2024)",
+    "Con lo que pagan los inquilinos actuales te sobrarían 519 € al mes (estimado; fuente: SERPAVI, MIVAU, e INE; los contratos nuevos cuestan más según la AEAT, Estadística de viviendas declaradas en el IRPF 2024)",
     "Neto del hogar: 1523 € al mes (estimado)",
     "Alquiler de contrato nuevo: entre 610 y 793 € al mes (contratos de 2024 actualizados con el IPC de alquiler hasta octubre de 2026 y con la brecha de los nuevos de la AEAT, tómalo como un suelo; estimado)",
     "Transporte: 16,57 € al mes (10 viajes) (estimado)",
@@ -328,7 +328,7 @@ test("la ficha da el sobrante de contrato nuevo, la horquilla del piso y la refe
   const ficha = fichaDe(caso, "28065", "sobra");
   const f0 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 });
   assert.ok(ficha.includes(`Si firmas hoy un contrato nuevo, te sobran unos ${f0.format(z.sobra)} € al mes (estimado)`));
-  assert.ok(ficha.some((l) => l.startsWith("Con lo que pagan los inquilinos actuales te sobrarían") && l.includes(`${f0.format(z.sobra_contrato)} €`) && l.includes("estimado") && l.includes("fuente: AEAT, Estadística de viviendas declaradas en el IRPF 2024")));
+  assert.ok(ficha.some((l) => l.startsWith("Con lo que pagan los inquilinos actuales te sobrarían") && l.includes(`${f0.format(z.sobra_contrato)} €`) && l.includes("estimado") && l.includes("fuente: SERPAVI, MIVAU, e INE") && l.includes("según la AEAT, Estadística de viviendas declaradas en el IRPF 2024")));
   assert.equal(ficha.filter((l) => l.startsWith("Según el piso")).length, 1, "una sola horquilla");
   const faltan = lineasFicha("Zona", { ...z, sobra: -40, sobra_contrato: -5 }, "sobra", contextoFicha(ejemplo, caso.entrada, caso.salida, "28065"));
   assert.ok(faltan.includes("Si firmas hoy un contrato nuevo, te faltan unos 40 € al mes (estimado)"));
@@ -344,7 +344,7 @@ test("el aviso de precisión sale solo con brecha_pureza menor que 0,35", () => 
   };
   assert.equal(aviso(0).length, 1);
   assert.equal(aviso(0.3499).length, 1);
-  assert.match(aviso(0.2)[0], /fuente: AEAT/);
+  assert.match(aviso(0.2)[0], /fuente: AEAT.*OpenStreetMap/);
   for (const pureza of [0.35, 0.6, null]) assert.equal(aviso(pureza).length, 0, String(pureza));
 });
 
