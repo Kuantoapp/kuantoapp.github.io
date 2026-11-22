@@ -101,7 +101,7 @@ export function tarifa(api, origen, destino, sueldo, escenario) {
 }
 
 // {horas al mes, coste €/mes, titulo} del viaje de un sueldo (el título, de la misma celda que el coste); todo null si no hay ruta.
-export function viaje(api, sueldo, origen, escenario) {
+function viaje(api, sueldo, origen, escenario) {
   const { tarifas, tiempos } = api;
   const { dias, destino } = sueldo;
   const minutos = celda(tiempos, sueldo.modo, origen, destino);
