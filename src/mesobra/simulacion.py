@@ -149,6 +149,7 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 
 import logging
 from decimal import Decimal as D
+from fractions import Fraction as F
 from typing import NamedTuple
 
 import pandas as pd
@@ -724,7 +725,7 @@ def _sin_rdl(titulo: str, corona: str) -> D:
     else:
         raise ValueError(f"título sin tarifa de 2025: {titulo!r}")
     pct = PCT_RDL_JOVEN if titulo == "Abono Joven" else PCT_RDL
-    return transporte._redondea((precios[0] + pct * precios[1]) * q)
+    return transporte._redondea((F(precios[0]) + F(pct) * F(precios[1])) * q)
 
 
 def fin_descuento(api: dict) -> pd.DataFrame:

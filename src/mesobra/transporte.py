@@ -65,9 +65,10 @@ Sin abono anual: el BOCM le pone precio (10 × 30 días) pero su venta a particu
 desde 2023 (crtm.es/billetes-y-tarifas).
 """
 
+import math
 from datetime import date, timedelta
-from decimal import ROUND_HALF_UP
 from decimal import Decimal as D
+from fractions import Fraction as F
 from itertools import product
 
 import geopandas as gpd
@@ -79,7 +80,6 @@ from mesobra import contratos
 from mesobra.api_estatica import COLECTIVOS, EDADES, NO_LABORABLES, VIAJES_DIA
 from mesobra.api_estatica import CORONAS as ORDEN_CORONAS
 
-CENTIMO = D("0.01")
 # Decreto 75/2025, BOCM-20250925-16 pág. 103: 12 fiestas, con el 1-nov y el 6-dic trasladados al lunes
 FESTIVOS_2026 = [
     date(2026, m, d)
@@ -99,8 +99,9 @@ DIAS_TRABAJO = (
     - FESTIVOS_LOCALES
     - VACACIONES
 )
-SEMANAS_MES = D(DIAS_TRABAJO) / 5 / 12
-ABONOS_ANIO = D(365 - 30) / 30  # el abono no se compra en los 30 días de vacaciones
+# prorrateo en Fraction: un Decimal trunca 227/60 y un ,xx5 se redondea a la baja (#374)
+SEMANAS_MES = F(DIAS_TRABAJO, 5 * 12)
+ABONOS_ANIO = F(365 - 30, 30)  # el abono no se compra en los 30 días de vacaciones
 DIAS = range(1, 6)
 EDAD_MIN_JOVEN = 15
 # ficha CRTM: desde los 15 años hasta la fecha en que se cumplen 26
@@ -296,8 +297,9 @@ def _partes(clave: str) -> tuple[str, str, list[str]]:
     return cmin, cmax, productos.split("+")
 
 
-def _redondea(x: D) -> D:
-    return x.quantize(CENTIMO, rounding=ROUND_HALF_UP)
+def _redondea(x: F) -> D:
+    """Céntimo, mitad hacia arriba, sin redondeos intermedios (costes ≥ 0)."""
+    return D(math.floor(x * 100 + F(1, 2))).scaleb(-2)
 
 
 def _diez_viajes(
@@ -309,37 +311,37 @@ def _diez_viajes(
 
 
 def _opciones(
-    producto: str, viajes: D, cmin: str, cmax: str, tarifa: tuple[str, str]
-) -> dict[str, D]:
+    producto: str, viajes: F, cmin: str, cmax: str, tarifa: tuple[str, str]
+) -> dict[str, F]:
     """Coste de `viajes` de un producto con su sencillo y con su 10 viajes (prorrateado)."""
     opciones = {}
     if producto in SENCILLO:
-        opciones["Billete sencillo"] = viajes * SENCILLO[producto][tarifa]
+        opciones["Billete sencillo"] = viajes * F(SENCILLO[producto][tarifa])
     if diez := _diez_viajes(producto, cmin, cmax):
-        opciones["10 viajes"] = viajes / 10 * diez[tarifa]
+        opciones["10 viajes"] = viajes / 10 * F(diez[tarifa])
     return opciones
 
 
 def _por_viaje(
     tarifa: tuple[str, str], clave: str, dias: int, no_laborables: int, edad: str
-) -> tuple[str, D]:
+) -> tuple[str, F | D]:
     """Título y coste de pagar cada producto con su sencillo o su 10 viajes; infinito si alguno no tiene."""
     cmin, cmax, productos = _partes(clave)
-    viajes = dict.fromkeys(productos, D(0))
+    viajes = dict.fromkeys(productos, F(0))
     for p in productos:
         viajes[p] += 2 * dias * SEMANAS_MES
     if no_laborables:  # el ocio no va al aeropuerto: se paga sin suplemento
         principal = SIN_SUPLEMENTO.get(productos[0], productos[0])
-        viajes[principal] = viajes.get(principal, D(0)) + no_laborables
-    titulos, total = set(), D(0)
+        viajes[principal] = viajes.get(principal, F(0)) + no_laborables
+    titulos, total = set(), F(0)
     for p, v in viajes.items():
         opciones = _opciones(p, v, cmin, cmax, tarifa)
         if p == "cercanias" and tarifa in ABONO_RENFE:
-            opciones["Abono Renfe"] = ABONO_RENFE[tarifa] * ABONOS_RENFE_ANIO / 12
+            opciones["Abono Renfe"] = F(ABONO_RENFE[tarifa]) * ABONOS_RENFE_ANIO / 12
         if p == "cercanias" and edad == "joven" and tarifa in ABONO_RENFE_JOVEN:
             # quien tiene de 15 a 25 años algún día de 2026 nació de 2000 a 2011 (lo prueba un test)
             opciones["Abono Renfe Joven"] = (
-                ABONO_RENFE_JOVEN[tarifa] * ABONOS_RENFE_ANIO / 12
+                F(ABONO_RENFE_JOVEN[tarifa]) * ABONOS_RENFE_ANIO / 12
             )
         if not opciones:
             if p != "cercanias":
@@ -387,18 +389,18 @@ def coste_mes(
     # el mes sin abono (vacaciones) el ocio se paga por viaje en el producto principal
     # shortcut: con Cercanías de principal no hay precio por viaje y ese ocio no se cobra
     principal = SIN_SUPLEMENTO.get(productos[0], productos[0])
-    ocio = _opciones(principal, D(no_laborables), cmin, cmax, tarifa)
-    ocio_vacaciones = min(ocio.values(), default=D(0)) / 12
+    ocio = _opciones(principal, F(no_laborables), cmin, cmax, tarifa)
+    ocio_vacaciones = min(ocio.values(), default=F(0)) / 12
     candidatos = {
         **dict([_por_viaje(tarifa, clave, dias, no_laborables, edad)]),
-        titulo: precio * ABONOS_ANIO / 12 + ocio_vacaciones,
+        titulo: F(precio) * ABONOS_ANIO / 12 + ocio_vacaciones,
     }
     if edad == "joven":
         candidatos["Abono Joven"] = (
-            ABONO_JOVEN[tarifa] * ABONOS_ANIO / 12 + ocio_vacaciones
+            F(ABONO_JOVEN[tarifa]) * ABONOS_ANIO / 12 + ocio_vacaciones
         )
     if edad == "mayor_65":
-        candidatos["Abono +65"] = ABONO_65[tarifa]
+        candidatos["Abono +65"] = F(ABONO_65[tarifa])
     titulo = min(candidatos, key=candidatos.get)
     return titulo, _redondea(candidatos[titulo])
 
