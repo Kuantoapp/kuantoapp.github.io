@@ -126,10 +126,21 @@ def test_alquiler_de_contrato_nuevo_y_referencia_de_contratos_en_vigor() -> None
     assert z["sobra_contrato"] > z["sobra"]
 
 
-@pytest.mark.parametrize("brecha", [None, 0, -1.2, "1.2"])
+def test_api_precio_contrato_quita_la_brecha_sin_tocar_la_original() -> None:
+    sin = calculo.api_precio_contrato(API)
+    a, b = _zona(_entrada(), "28065"), _zona(_entrada(), "28065", sin)
+    assert b["alquiler"] == pytest.approx(b["alquiler_contrato"])
+    assert b["alquiler"] == pytest.approx(a["alquiler_contrato"])
+    assert API["alquiler"]["zonas"]["28065"]["factor_brecha"] == 1.19
+
+
+@pytest.mark.parametrize("brecha", [None, 0, -1.2, "1.2", True])
 def test_factor_brecha_ausente_o_invalido_falla(brecha: object) -> None:
     api = copy.deepcopy(API)
     api["alquiler"]["zonas"]["28065"]["factor_brecha"] = brecha
+    with pytest.raises(ValueError, match="factor_brecha"):
+        calculo.calcular(api, _entrada())
+    del api["alquiler"]["zonas"]["28065"]["factor_brecha"]
     with pytest.raises(ValueError, match="factor_brecha"):
         calculo.calcular(api, _entrada())
 

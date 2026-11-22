@@ -123,16 +123,9 @@ def filas(api: dict, perfil: dict) -> pd.DataFrame:
     destinos = [
         d["destino_id"] for d in api["tiempos"]["destinos"] if d["tipo"] == "zona"
     ]
-    # Los titulares siguen con el precio de contrato, sin `factor_brecha` (decisión de #329).
-    sin_brecha = api | {
-        "alquiler": {
-            **api["alquiler"],
-            "zonas": {
-                z: {**v, "factor_brecha": 1.0}
-                for z, v in api["alquiler"]["zonas"].items()
-            },
-        }
-    }
+    sin_brecha = calculo.api_precio_contrato(
+        api
+    )  # los titulares siguen con el precio de contrato (#329)
     salida = []
     for d in destinos:
         entrada = {

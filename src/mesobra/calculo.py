@@ -153,7 +153,7 @@ def alquiler(zona: dict, hogar: dict, subida: float) -> dict[str, float] | None:
     if zona["origen"] == "sin_dato":
         return None
     brecha = zona.get("factor_brecha")
-    if not isinstance(brecha, int | float) or not brecha > 0:
+    if type(brecha) not in (int, float) or not brecha > 0:
         raise ValueError(f"factor_brecha = {brecha!r}: debe ser un número mayor que 0")
     k0 = (
         zona["factor_ipc"]
@@ -256,6 +256,15 @@ def coste_hijos(
 
 def _suma(valores: list[float | None]) -> float | None:
     return None if None in valores else sum(valores)
+
+
+def api_precio_contrato(api: Api) -> Api:
+    """Copia de `api` con el precio de los contratos en vigor (`factor_brecha` = 1): para los análisis (titulares,
+    Bono), que siguen con ese precio; solo la herramienta usa el de contrato nuevo (decisión de #329)."""
+    zonas = {
+        z: {**v, "factor_brecha": 1.0} for z, v in api["alquiler"]["zonas"].items()
+    }
+    return api | {"alquiler": {**api["alquiler"], "zonas": zonas}}
 
 
 def calcular_zona(

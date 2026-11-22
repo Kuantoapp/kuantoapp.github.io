@@ -154,7 +154,7 @@ test("el alquiler es el de contrato nuevo y la referencia, el de los contratos e
 });
 
 test("sin factor_brecha válido falla, no vale 1", () => {
-  for (const brecha of [undefined, null, 0, -1.2, "1.2"]) {
+  for (const brecha of [undefined, null, 0, -1.2, "1.2", true]) {
     const a = structuredClone(api);
     a.alquiler.zonas["28065"].factor_brecha = brecha;
     assert.throws(() => calcular(a, entrada()), /factor_brecha/);

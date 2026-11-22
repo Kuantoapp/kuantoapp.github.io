@@ -1,5 +1,6 @@
 """Tests de `simulacion` (#101, #301): umbrales, topes, base imponible a mano, pesos, H, imputación y contrato."""
 
+import copy
 import json
 import re
 import unicodedata
@@ -27,6 +28,18 @@ def _api() -> dict:
     api = calculo.leer_api(calculo.API_EJEMPLO)
     t = api["tiempos"]
     return {**api, "tiempos": {**t, "origenes": t["origenes"][:3], "tp": t["tp"][:3]}}
+
+
+def test_pares_no_usan_la_brecha_de_contrato_nuevo():
+    api = _api2()
+    doble = copy.deepcopy(api)
+    for z in doble["alquiler"]["zonas"].values():
+        z["factor_brecha"] = 2.0
+    pares = []
+    for a in (api, doble):
+        imp, imputados = simulacion.imputar_tiempos(a, W)
+        pares.append(simulacion.tabla_pares(imp, W, imputados))
+    pd.testing.assert_frame_equal(pares[0], pares[1])
 
 
 def test_umbral_de_ingresos():
