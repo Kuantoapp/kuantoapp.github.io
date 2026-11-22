@@ -61,6 +61,35 @@ def test_escenario_y_dos_sueldos_igual_que_calculo() -> None:
     assert "simulacion" in r
 
 
+def test_escenario_cesta_del_tramo_igual_que_calculo() -> None:
+    entrada = {**ENTRADA, "escenario": {"cesta": "tramo"}}
+    esperado = calcular(API, entrada)["zonas"][GETAFE]["cesta"]
+    r = llamar("calcular_sobrante", {**entrada, "zona_id": GETAFE})
+    assert r["escenario"]["cesta"] == "tramo"
+    assert (
+        r["zona"]["cesta"]
+        == esperado
+        != calcular(API, ENTRADA)["zonas"][GETAFE]["cesta"]
+    )
+
+
+def test_esquema_describe_hogares_que_comparten_y_cesta() -> None:
+    # Sin descripción, el asistente leería `personas_comparten` como personas: una pareja pondría 2 (#323)
+    (tool,) = [
+        t
+        for t in asyncio.run(mcp_servidor.servidor.list_tools())
+        if t.name == "calcular_sobrante"
+    ]
+    defs = tool.input_schema["$defs"]
+    assert defs["Hogar"]["properties"]["personas_comparten"]["description"] == (
+        "hogares que pagan el alquiler, el tuyo incluido; pareja e hijos = 1"
+    )
+    assert defs["Escenario"]["properties"]["cesta"]["enum"] == ["media", "tramo"]
+    assert (
+        "tramo de ingresos" in defs["Escenario"]["properties"]["cesta"]["description"]
+    )
+
+
 def test_simulacion_solo_con_escenario_sin_descuento() -> None:
     r = llamar("calcular_sobrante", {**ENTRADA, "zona_id": "28092"})
     assert "simulacion" not in r
