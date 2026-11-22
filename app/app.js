@@ -573,23 +573,30 @@ const verHerramienta = (visible) => {
   herramienta.inert = !visible;
   $("portada").hidden = visible;
   scrollTo({ top: 0, behavior: "instant" });
-  // La vista va en la búsqueda (`?herramienta`): así una recarga o «atrás» vuelve a la vista en la que estabas.
-  history.replaceState(history.state, "", (visible ? "?herramienta" : location.pathname) + location.hash);
 };
+// La vista va en la búsqueda (`?herramienta`), así una recarga o «atrás» respetan la vista en la que estabas.
+// Cada cambio de vista es una entrada del historial, y la portada a la que se llega desde el mapa va marcada
+// (`portada`): al volver al mapa se retrocede a su entrada, para que no quede una portada entre los pasos de
+// «Deshacer» (que también usa el historial).
 const vistaDeUrl = () => new URLSearchParams(location.search).has("herramienta");
 for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
   boton.addEventListener("click", () => {
-    history.pushState(history.state, "", `?herramienta${location.hash}`); // «atrás» vuelve a la portada
+    if (history.state?.portada) history.back();
+    else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
     herramienta.querySelector(".menu-boton").focus();
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
   e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
+  if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
-window.addEventListener("popstate", () => verHerramienta(vistaDeUrl()));
+window.addEventListener("popstate", () => {
+  verHerramienta(vistaDeUrl());
+  if (!vistaDeUrl()) $("titulo-portada").focus(); // el foco no puede quedarse en la herramienta, ya `inert`
+});
 verHerramienta(vistaDeUrl());
 
 main().catch((error) => {
