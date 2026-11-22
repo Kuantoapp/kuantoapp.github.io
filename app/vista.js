@@ -235,7 +235,8 @@ function frasePrecio(zona, ref) {
 function fraseBanda([bajo, alto]) {
   const e = (v) => `${euros.format(Math.abs(v))} €`;
   // Se decide con lo redondeado que se muestra: −0,3 € no es «te falten 0 €».
-  if (Math.round(bajo) >= 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
+  // `Math.round(-0.5)` da −0, pero `Intl` muestra 0,5 como «1»: se redondea el valor absoluto, como lo hace `Intl`.
+  if (bajo >= 0 || Math.round(Math.abs(bajo)) === 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
   if (Math.round(alto) <= 0) return `Te faltan entre ${e(alto)} y ${e(bajo)} al mes (estimado)`;
   return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
 }
