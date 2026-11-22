@@ -2,7 +2,8 @@
 
 Cada cifra cita su norma; la referencia es `.claude/skills/dm-calculos-normativos/referencia/nomina-bruto-a-neto.md`.
 Vigentes desde el 01/01/2026; contrastados con el texto consolidado del BOE el 15/11/2026
-(dm-auditor-calculos-normativos, #79). Si cambia el año, se rehace entera.
+(dm-auditor-calculos-normativos, #79); los mínimos por el 3.º y el 4.º descendiente, el 22/11/2026 (#318).
+Si cambia el año, se rehace entera.
 """
 
 from decimal import Decimal as D
@@ -53,7 +54,8 @@ MINIMO_ESTATAL = D(5550)
 MINIMO_MADRID = D("5956.65")
 # Mínimo por 1.º, 2.º, 3.º y 4.º y siguientes descendientes, estatal (LIRPF, art. 58; BOE-A-2006-20764)
 DESCENDIENTES_ESTATAL = (D(2400), D(2700), D(4000), D(4500))
-# Mínimo por 1.º, 2.º, 3.º y 4.º y siguientes descendientes en Madrid (DL 1/2010, art. 2 bis; BOCM-m-2010-90068)
+# Mínimo por 1.º, 2.º, 3.º y 4.º y siguientes descendientes en Madrid (DL 1/2010, art. 2 bis, redacción de la
+# Ley 13/2023, BOE-A-2024-5610; BOCM-m-2010-90068)
 DESCENDIENTES_MADRID = (D("2575.85"), D("2897.83"), D(4400), D(4950))
 
 # Umbral de la DA 61.ª.1.a) LIRPF, fijado en literal; coincide con el SMI anual de 2026

@@ -838,6 +838,7 @@ test("aviso del art. 81 bis: familia numerosa por número de hijos y monoparenta
   assert.deepEqual(deduccion({ hijos: "4", familia: "fn_especial" }), ["2.400"]);
   assert.match(aviso({ hijos: "4", familia: "fn_especial" })[0], /especial/);
   assert.deepEqual(deduccion({ hijos: "2", perfil: "pareja", adultos: "2", familia: "fn_general" }), ["1.200"]);
+  assert.equal(aviso({ hijos: "2", familia: "fn_general" }).length, 1, "monoparental con título: una sola deducción");
 });
 
 test("aviso de familia numerosa sin marcar con 3 hijos o más, y especial con 5", () => {
