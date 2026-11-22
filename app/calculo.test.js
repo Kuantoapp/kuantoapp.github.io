@@ -122,6 +122,7 @@ test("sin ruta en transporte público no hay horas, coste, sobrante ni precio, y
   const z = zona("2807913", entrada(), a);
   assert.deepEqual([z.horas, z.transporte, z.sobra, z.sobra_banda, z.precio_hora], [null, null, null, null, null]);
   assert.notEqual(z.alquiler, null);
+  assert.deepEqual(z.viajes, [{ horas: null, coste: null, titulo: null }]);
   assert.notEqual(calcular(a, entrada()).ref, "2807913");
 });
 

@@ -22,6 +22,8 @@ Entrada de `calcular` (un dict):
   `ref` (zona de referencia).
 
 Salida: `{"ref", "escenario" (el aplicado, con sus valores por defecto), "zonas": {zona_id: {...}}}`.
+Cada zona lleva `viajes`: por sueldo y en su orden, `{horas, coste, titulo}` del viaje (el título sale de la misma
+celda de `tarifas.json` que el coste; `coche` en coche; nulos sin ruta). La ficha de la app lo lee de ahí.
 
 Supuestos:
 1. sobra = neto − alquiler − transporte − cesta, en €/mes del hogar; esfuerzo = alquiler ÷ neto.
@@ -195,13 +197,15 @@ def tarifa(api: Api, origen: str, destino: str, sueldo: dict, escenario: str) ->
 
 def viaje(
     api: Api, sueldo: dict, origen: str, escenario: dict
-) -> tuple[float | None, float | None]:
-    """(horas al mes, coste €/mes) del viaje al trabajo de un sueldo; None si no hay ruta."""
+) -> tuple[float | None, float | None, str | None]:
+    """(horas al mes, coste €/mes, título) del viaje al trabajo de un sueldo; None si no hay ruta.
+
+    El título sale de la misma celda de `tarifas.json` que el coste (`coche` en coche)."""
     tarifas, tiempos, dias = api["tarifas"], api["tiempos"], sueldo["dias"]
     semanas, destino = tarifas["semanas_mes"], sueldo["destino"]
     minutos = _celda(tiempos, sueldo["modo"], origen, destino)
     if minutos is None:  # sin ruta no hay viaje que pagar: ni horas ni coste
-        return None, None
+        return None, None, None
     if sueldo["modo"] == "coche":
         km = _celda(tiempos, "km_coche", origen, destino)
         coste = (
@@ -209,9 +213,11 @@ def viaje(
             if km is None
             else 2 * km * dias * semanas * tiempos["coste_coche"]["eur_km"]
         )
+        titulo = "coche"
     else:
-        coste = tarifa(api, origen, destino, sueldo, escenario["tarifas"])["coste_mes"]
-    return minutos * 2 * dias * semanas / 60, coste
+        celda = tarifa(api, origen, destino, sueldo, escenario["tarifas"])
+        coste, titulo = celda["coste_mes"], celda["titulo"]
+    return minutos * 2 * dias * semanas / 60, coste, titulo
 
 
 def hijos_jovenes(api: Api, hogar: dict) -> int:
@@ -250,7 +256,17 @@ def calcular_zona(
     """Sobrante, banda, horas y esfuerzo de vivir en `zona` (sin `precio_hora`, que pide la referencia)."""
     neto = sum(s["neto_mes"] for s in sueldos)
     alq = alquiler(api["alquiler"]["zonas"][zona], hogar, escenario["subida_alquiler"])
-    horas, costes = zip(*(viaje(api, s, zona, escenario) for s in sueldos), strict=True)
+    viajes = [
+        dict(
+            zip(
+                ("horas", "coste", "titulo"),
+                viaje(api, s, zona, escenario),
+                strict=True,
+            )
+        )
+        for s in sueldos
+    ]
+    costes = [v["coste"] for v in viajes]
     transporte = _suma([*costes, coste_hijos(api, hogar, sueldos, zona, escenario)])
     factor = (
         tramo_cesta(api["hogares"]["cesta_tramos"], neto)["factor"]
@@ -269,7 +285,8 @@ def calcular_zona(
         "cesta": cesta_mes,
         "sobra": None if fijo is None else fijo - alq["p50"],
         "sobra_banda": None if fijo is None else [fijo - alq["max"], fijo - alq["min"]],
-        "horas": _suma(list(horas)),
+        "horas": _suma([v["horas"] for v in viajes]),
+        "viajes": viajes,
         "esfuerzo": None if alq is None else alq["p50"] / neto,
     }
 

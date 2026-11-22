@@ -133,6 +133,7 @@ def test_sin_ruta_no_hay_coste_ni_sobra() -> None:
     z = _zona(_entrada(), "2807913", api)
     assert [z[k] for k in ("horas", "transporte", "sobra", "precio_hora")] == [None] * 4
     assert z["alquiler"] is not None
+    assert z["viajes"] == [{"horas": None, "coste": None, "titulo": None}]
 
 
 def test_cesta_con_el_hogar_del_visitante() -> None:

@@ -1,6 +1,6 @@
 // Lógica de la interfaz sin DOM ni MapLibre: validación del formulario, escalas de color, leyenda y textos.
 // app.js solo la conecta. Todo son funciones puras con pruebas en vista.test.js.
-import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, colectivo, hijosJovenes, tarifa, tramoCesta, viaje } from "./calculo.js";
+import { MISMO_TIEMPO, REFERENCIA, UMBRAL_HORAS, hijosJovenes, tramoCesta } from "./calculo.js";
 
 // Viridis (secuencial, apta para daltónicos) para las horas. El rojo se reserva para alertas.
 export const PALETA = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
@@ -173,12 +173,6 @@ const conCentimos = formateador(2);
 export function contextoFicha(api, entrada, resultado, id) {
   const hogar = { familia: "ordinario", no_laborables: 0, edades_hijos: [], ...api.hogares.perfiles[entrada.hogar.perfil], ...entrada.hogar };
   const { escenario } = resultado;
-  // shortcut: los valores por defecto repiten los de calculo.js; el formulario siempre da `viajes_dia`.
-  const preparado = (s) => {
-    const sueldo = { viajes_dia: 2, edad: escenario.edad, discapacidad: false, ...s, no_laborables: hogar.no_laborables };
-    return { ...sueldo, colectivo: colectivo(hogar, sueldo) };
-  };
-  const titulo = (s) => (s.modo === "coche" ? "coche" : tarifa(api, id, s.destino, preparado(s), escenario.tarifas).titulo);
   const hijos = hijosJovenes(api, hogar);
   const zona = resultado.zonas[id];
   const dato = api.alquiler.zonas[id];
@@ -197,12 +191,9 @@ export function contextoFicha(api, entrada, resultado, id) {
     ref: resultado.ref === null ? null : resultado.zonas[resultado.ref],
     m2: hogar.m2,
     personas: hogar.personas_comparten,
-    titulos: zona.transporte === null ? [] : [...entrada.sueldos.map(titulo), ...(hijos > 0 ? [`Abono Joven de ${hijos} ${hijos === 1 ? "hijo" : "hijos"}`] : [])],
-    // Con dos sueldos, el viaje de cada persona (el mismo `viaje` y escenario que suman en `zona`); con uno, la ficha no lo desglosa.
-    porPersona: n > 1 ? entrada.sueldos.map((s) => {
-      const [horas, coste] = viaje(api, preparado(s), id, escenario);
-      return { titulo: titulo(s), horas, coste };
-    }) : null,
+    titulos: zona.transporte === null ? [] : [...zona.viajes.map((v) => v.titulo), ...(hijos > 0 ? [`Abono Joven de ${hijos} ${hijos === 1 ? "hijo" : "hijos"}`] : [])],
+    // Con dos sueldos, el viaje de cada persona (el que suma en `zona`); con uno, la ficha no lo desglosa.
+    porPersona: n > 1 ? zona.viajes : null,
     sueldos: n,
     netoEstimado: entrada.sueldos.some((s) => "bruto" in s),
     salarioHora: zona.neto / (JORNADA_SEMANA * api.tarifas.semanas_mes * n),
@@ -229,7 +220,7 @@ function fraseCesta(zona, ctx) {
 function frasePersona({ titulo, horas, coste }, i) {
   const h = horas === null ? "sin ruta" : `${unDecimal.format(horas)} h al mes`;
   const c = coste === null ? "sin coste calculable" : `${conCentimos.format(coste)} € al mes de transporte`;
-  return `Persona ${i + 1} (${titulo}): ${h}, ${c} (estimado)`;
+  return `Persona ${i + 1}${titulo === null ? "" : ` (${titulo})`}: ${h}, ${c} (estimado)`;
 }
 
 function frasePrecio(zona, ref) {
