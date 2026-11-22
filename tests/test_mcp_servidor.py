@@ -8,7 +8,7 @@ import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
 from mesobra import mcp_servidor
-from mesobra.calculo import RAIZ, calcular, leer_api
+from mesobra.calculo import RAIZ, calcular, leer_api, tramo_cesta
 
 API = leer_api(RAIZ / "app/datos")
 GETAFE = "28065"
@@ -71,6 +71,23 @@ def test_escenario_cesta_del_tramo_igual_que_calculo() -> None:
         == esperado
         != calcular(API, ENTRADA)["zonas"][GETAFE]["cesta"]
     )
+    # El tramo y su cociente, como la ficha de la app (`tramoDe` de app/vista.js)
+    neto = calcular(API, entrada)["zonas"][GETAFE]["neto"]
+    tramo = r["cesta_tramo"]
+    assert (
+        tramo["factor"] == tramo_cesta(API["hogares"]["cesta_tramos"], neto)["factor"]
+    )
+    assert tramo["desde"] <= neto < tramo["hasta"]
+    assert "estimado" in tramo["nota"] and "t=73809" in tramo["nota"]
+
+
+def test_ranking_con_cesta_del_tramo_dice_el_tramo_y_sin_ella_no() -> None:
+    entrada = {**ENTRADA, "escenario": {"cesta": "tramo"}}
+    esperado = calcular(API, entrada)["zonas"]
+    r = llamar("ranking_zonas", {**entrada, "n": 3})
+    assert all(z["cesta"] == esperado[z["zona_id"]]["cesta"] for z in r["ranking"])
+    assert r["cesta_tramo"]["factor"] < 1
+    assert "cesta_tramo" not in llamar("ranking_zonas", {**ENTRADA, "n": 3})
 
 
 def test_esquema_describe_hogares_que_comparten_y_cesta() -> None:
@@ -85,9 +102,8 @@ def test_esquema_describe_hogares_que_comparten_y_cesta() -> None:
         "hogares que pagan el alquiler, el tuyo incluido; pareja e hijos = 1"
     )
     assert defs["Escenario"]["properties"]["cesta"]["enum"] == ["media", "tramo"]
-    assert (
-        "tramo de ingresos" in defs["Escenario"]["properties"]["cesta"]["description"]
-    )
+    descripcion = defs["Escenario"]["properties"]["cesta"]["description"]
+    assert "tramo de ingresos" in descripcion and "t=73809" in descripcion
 
 
 def test_simulacion_solo_con_escenario_sin_descuento() -> None:
@@ -195,6 +211,11 @@ def test_indicadores_zona_igual_que_analisis() -> None:
             "escenarios",
         ),
         ("ranking_zonas", {**ENTRADA, "n": True}, "n"),
+        (
+            "calcular_sobrante",
+            {**ENTRADA, "zona_id": GETAFE, "escenario": {"cesta": "alta"}},
+            "cesta",
+        ),
         (
             "calcular_sobrante",
             {**ENTRADA, "zona_id": GETAFE, "escenario": {"subida": 50}},
