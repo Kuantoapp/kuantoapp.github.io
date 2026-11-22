@@ -345,7 +345,8 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .barra { height: 100%; }
 .barra.negativa { grid-column: 1; justify-self: end; border-radius: 2px 0 0 2px; background: var(--pierdes); }
 .barra.positiva { grid-column: 2; justify-self: start; border-radius: 0 2px 2px 0; background: var(--ganas); }
-.b-835 { width: 100%; } .b-223 { width: 26.7%; } .b-120 { width: 14.4%; } .b-099 { width: 11.9%; } .b-209 { width: 25%; } .b-434 { width: 52%; }
+/* ancho = |mediana| / 8,30 (corona A), de datos/analisis.json */
+.b-a { width: 100%; } .b-b1 { width: 24.9%; } .b-b2 { width: 9.9%; } .b-b3 { width: 22.9%; } .b-c1 { width: 36%; } .b-c2 { width: 56%; }
 .grafico-coronas .fuente { margin: 0; }
 
 .dos-columnas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; }
