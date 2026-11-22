@@ -99,6 +99,15 @@ def test_tiempos_json_redondea_y_ordena():
     # filas y columnas en el orden de las zonas: 28001 era la tercera de _tiempos; 120,5 → 121 → null
     assert t["tp"] == [[120, 7, 6], [None, 4, 3], [None, 3, 1]]
     assert "r5py" in t["meta"]["nota"] and "7:30 y las 8:30" in t["meta"]["nota"]
+    assert "no significa que no haya transporte" in t["meta"]["nota"]
+
+
+def test_la_nota_da_los_estimados_sobre_los_pares_con_ruta():
+    # 1 estimado de 4 pares con ruta (de 9): 25,0 %, no 11,1 % de todos los pares
+    minutos = [1.0, 2.0, np.nan, 3.0, np.nan, np.nan, 4.0, np.nan, np.nan]
+    tiempos = _tiempos(minutos).assign(estimado=[True] + [False] * 8)
+    nota = tiempos_json(tiempos, _zonas(), _polos().iloc[0:0])["meta"]["nota"]
+    assert "1 de los 4 pares con ruta (25,0 %)" in nota
 
 
 def test_tiempos_json_con_polos_es_rectangular_y_valida_el_contrato():

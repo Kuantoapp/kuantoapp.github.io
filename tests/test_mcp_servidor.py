@@ -81,12 +81,13 @@ def test_ranking_getafe_dice_cuantas_zonas_y_por_que_faltan() -> None:
     )
     assert [z["zona_id"] for z in r["ranking"]] == ordenadas[:5]
     assert all(z["horas"] is not None for z in r["ranking"])
-    assert (r["zonas_calculadas"], r["zonas_total"]) == (102, 199)
+    assert (r["zonas_calculadas"], r["zonas_total"]) == (99, 199)
     assert r["sin_cifra_por_motivo"] == {
-        "sin dato de alquiler y sin ruta en 120 min": 41,
-        "sin ruta en 120 min": 56,
+        "sin dato de alquiler y sin ruta en 120 min": 40,
+        "sin dato de alquiler": 1,
+        "sin ruta en 120 min": 59,
     }
-    assert len(r["sin_cifra"]) == 97
+    assert len(r["sin_cifra"]) == 100
     assert all(z["motivos"] for z in r["sin_cifra"])
 
 

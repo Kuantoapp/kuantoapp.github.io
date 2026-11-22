@@ -61,7 +61,7 @@
         <article class="pieza">
           <h3>Viaje</h3>
           <p>Minutos puerta a puerta, andando y en transporte público, del centro de población de cada zona al de la zona de destino, calculados con r5py sobre los horarios de 6 redes del CRTM y las calles de OpenStreetMap (fuente: <code>datos/tiempos.json</code>).</p>
-          <details><summary>Supuestos y límites</summary><p>Es la mediana de las salidas entre las 7:30 y las 8:30 del martes 17 de noviembre de 2026; más de 120 minutos cuenta como sin ruta (fuente: <code>datos/tiempos.json</code>). En 1076 pares (2,7 %) el tiempo mejora con líneas que el CRTM publica sin viajes y que se reconstruyeron con el trazado de OpenStreetMap (estimado; fuente: <code>datos/tiempos.json</code>). El calendario de Metro caducó en mayo de 2026 y se supone que sigue igual hasta finales de 2027 (estimado).</p></details>
+          <details><summary>Supuestos y límites</summary><p>Es la mediana de las salidas entre las 7:30 y las 8:30 del martes 17 de noviembre de 2026; más de 120 minutos cuenta como sin ruta, y sin ruta también puede ser que falte el horario de una línea, no que no haya transporte (fuente: <code>datos/tiempos.json</code>). En 2.405 de los 11.179 pares de zonas con ruta (21,5 %) el tiempo mejora con líneas u horarios que el CRTM publica sin viajes o con horas imposibles y que se reconstruyeron; esos tiempos pueden ser más cortos que los reales y el fichero no dice cuáles (estimado; fuente: <code>datos/tiempos.json</code>). El calendario de Metro caducó en mayo de 2026 y se supone que sigue igual hasta finales de 2027 (estimado).</p></details>
         </article>
         <article class="pieza">
           <h3>Abono</h3>

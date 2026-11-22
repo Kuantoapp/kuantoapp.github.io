@@ -414,6 +414,9 @@ def tabla_pares(
     horas_mes = (
         api["tarifas"]["semanas_mes"] * titulares.DIAS_SEMANA * titulares.HORAS_DIA
     )
+    contrato = calculo.api_precio_contrato(
+        api
+    )  # el Bono sigue con el precio de contrato (#301, #329)
     filas, refs = [], {}
     for pid, p, hogar, tipo in variantes():
         # ingresos de quien solicita (decisión 9), de todo el hogar (sensibilidad) y bruto (sensibilidad)
@@ -438,7 +441,7 @@ def tabla_pares(
                     for bruto, dias in p["sueldos"]
                 ],
             }
-            zonas = calculo.calcular(api, entrada)["zonas"]
+            zonas = calculo.calcular(contrato, entrada)["zonas"]
             con_tiempo = [
                 (t["tp"][i][j], z)
                 for i, z in enumerate(t["origenes"])

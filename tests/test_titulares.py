@@ -1,5 +1,8 @@
 """Tests de `titulares` (#93): resumen sobre una tabla a mano y filas sobre la API de ejemplo."""
 
+import copy
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -64,6 +67,16 @@ def test_resumen_a_mano():
     assert r["banda_zonas_negativas"] == [0, 4]
 
 
+def test_filas_no_usan_la_brecha_de_contrato_nuevo():
+    api, perfil = _api(), titulares.PERFILES[0]
+    doble = copy.deepcopy(api)
+    for z in doble["alquiler"]["zonas"].values():
+        z["factor_brecha"] = 2.0
+    pd.testing.assert_frame_equal(
+        titulares.filas(api, perfil), titulares.filas(doble, perfil)
+    )
+
+
 def test_filas_con_el_smi():
     api, perfil = _api(), titulares.PERFILES[0]
     df = titulares.filas(api, perfil)
@@ -87,6 +100,14 @@ def test_titulares_validan_y_son_estimados():
     assert all("estimado" in t["texto"] and t["fuente"] for t in res)
     ipc = f"IPC297196) hasta {api['alquiler']['meta']['ipc_hasta']}"
     assert all(ipc in t["fuente"] for t in res)
+
+
+def test_titulares_publicados_coinciden_con_su_recalculo():
+    # Si cambian zonas, tiempos o el cálculo, hay que regenerar analisis.json (#401)
+    datos = pipeline_analisis.APP_DATOS
+    publicado = json.loads((datos / "analisis.json").read_text(encoding="utf-8"))
+    nuevos = titulares.titulares(titulares.resumenes(calculo.leer_api(datos)))
+    assert publicado["titulares"][-len(nuevos) :] == nuevos
 
 
 def test_sin_precios_falla():

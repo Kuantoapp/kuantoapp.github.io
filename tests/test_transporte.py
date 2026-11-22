@@ -382,3 +382,54 @@ def test_rango_coronas_por_la_recta_entre_centros():
     assert tuple(r.loc[("d_c1", "d_c1")]) == ("C1", "C1")
     assert tuple(r.loc[("c2_n", "c2_e")]) == ("C2", "C2")
     assert len(r) == 25
+
+
+def test_suplemento_del_aeropuerto_en_los_precios_por_viaje():
+    # BOCM-20251231-2 pág. 68: 3,00 € ordinario y por viaje y sin bonificación del RDL
+    assert t.SUPLEMENTO_AEROPUERTO[V] == t.SUPLEMENTO_AEROPUERTO[S] == D("3.00")
+    assert t.SENCILLO["metro_aeropuerto"][V] == D("4.50")  # 1,50 + 3,00
+    assert t.DIEZ_VIAJES["metro_aeropuerto"][V] == D("37.30")  # 7,30 + 10 × 3,00
+    assert t.DIEZ_VIAJES["metro_aeropuerto"][S] == D("42.50")  # 12,50 + 10 × 3,00
+
+
+def test_el_aeropuerto_encarece_el_10_viajes_y_no_el_abono():
+    # 1 día: 7,567 viajes × (7,30 + 30,00) / 10 = 28,22 frente a 5,52 sin suplemento
+    assert coste("A-A|metro_a", 1) == ("10 viajes", D("5.52"))
+    assert coste("A-A|metro_aeropuerto", 1) == ("10 viajes", D("28.22"))
+    # 3 días: 22,7 viajes × 3,73 = 84,67 > abono de A, 32,70 × 335/30/12 = 30,43 (exento)
+    assert coste("A-A|metro_aeropuerto", 3) == ("Abono 30 días", D("30.43"))
+    # el Abono Joven, 10 € × 335/30/12, tampoco lo paga
+    assert coste("A-A|metro_aeropuerto", 1, edad="joven") == ("Abono Joven", D("9.31"))
+
+
+def test_el_combinado_paga_el_suplemento_y_el_ocio_no():
+    assert t.SENCILLO["combinado_aeropuerto"][V] == D("6.00")  # 3,00 + 3,00
+    assert t.DIEZ_VIAJES["combinado_aeropuerto"][V] == D("40.90")  # 10,90 + 10 × 3,00
+    assert t.DIEZ_VIAJES["combinado_aeropuerto"][S] == D("48.80")  # 18,80 + 10 × 3,00
+    # 1 día: 7,567 × 4,09 = 30,95 frente al abono B1, 38,20 × 335/360 = 35,55
+    assert coste("A-B1|combinado_aeropuerto", 1) == ("10 viajes", D("30.95"))
+    # el ocio (8 viajes) se paga sin suplemento: gana el abono, 30,43 + 8 × 0,73 / 12 = 30,92
+    assert coste("A-A|metro_aeropuerto", 1, 8) == ("Abono 30 días", D("30.92"))
+    # el ocio también sin suplemento en el pago por viaje: 28,22 + 8 × 0,73 = 34,06 (con suplemento, 58,06)
+    por_viaje = t._por_viaje(V, "A-A|metro_aeropuerto", 1, 8, "general")[1]
+    assert por_viaje.quantize(D("0.01")) == D("34.06")
+    # 2 días: 15,13 viajes × 3,73 = 56,45 > 30,43
+    assert coste("A-A|metro_aeropuerto", 2) == ("Abono 30 días", D("30.43"))
+    # FN especial: 7,567 × (3,60 + 15,00) / 10 = 14,07, bajo su abono (15,17)
+    assert t.coste_mes(
+        ("vigente_2026", "fn_especial"), "general", "A-A|metro_aeropuerto", 1, 0
+    ) == ("10 viajes", D("14.07"))
+
+
+@pytest.mark.parametrize(
+    ("clave", "esperada"),
+    [
+        ("A-B1|combinado", "A-B1|combinado_aeropuerto"),
+        ("A-A|metro_a", "A-A|metro_aeropuerto"),
+        ("A-B2|interurbano+metro_a", "A-B2|interurbano+metro_aeropuerto"),
+        ("A-A|metro_a+metro_a", "A-A|metro_aeropuerto+metro_a"),
+        ("A-B2|interurbano", "A-B2|interurbano"),  # sin Metro no hay suplemento
+    ],
+)
+def test_con_aeropuerto(clave, esperada):
+    assert t.con_aeropuerto(clave) == esperada

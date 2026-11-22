@@ -70,10 +70,14 @@ export function cesta(cestaUc, hogar, factor) {
 
 export function alquiler(zona, hogar, subida) {
   if (zona.origen === "sin_dato") return null;
-  const k = (zona.factor_ipc * (1 + subida / 100) * hogar.m2) / hogar.personas_comparten;
+  const brecha = zona.factor_brecha;
+  if (typeof brecha !== "number" || !(brecha > 0)) throw new Error(`factor_brecha = ${JSON.stringify(brecha)}: debe ser un número mayor que 0`);
+  const k0 = (zona.factor_ipc * (1 + subida / 100) * hogar.m2) / hogar.personas_comparten;
+  const k = k0 * brecha;
   let [bajo, alto] = [zona.p25, zona.p75];
   if (zona.ic?.length) [bajo, alto] = [Math.min(bajo, zona.ic[0]), Math.max(alto, zona.ic[1])];
-  return { p25: zona.p25 * k, p50: zona.p50 * k, p75: zona.p75 * k, min: bajo * k, max: alto * k };
+  // `contrato`: el P50 de los contratos en vigor, sin la brecha de los nuevos (referencia de la ficha).
+  return { p25: zona.p25 * k, p50: zona.p50 * k, p75: zona.p75 * k, min: bajo * k, max: alto * k, contrato: zona.p50 * k0 };
 }
 
 function celda(tiempos, matriz, origen, destino) {
@@ -100,20 +104,22 @@ export function tarifa(api, origen, destino, sueldo, escenario) {
   return porClave[String(sueldo.no_laborables)][sueldo.dias - 1];
 }
 
-// [horas al mes, coste €/mes] del viaje de un sueldo; [null, null] si no hay ruta.
-export function viaje(api, sueldo, origen, escenario) {
+// {horas al mes, coste €/mes, titulo} del viaje de un sueldo (el título, de la misma celda que el coste); todo null si no hay ruta.
+function viaje(api, sueldo, origen, escenario) {
   const { tarifas, tiempos } = api;
   const { dias, destino } = sueldo;
   const minutos = celda(tiempos, sueldo.modo, origen, destino);
-  if (minutos === null) return [null, null];
+  if (minutos === null) return { horas: null, coste: null, titulo: null };
   let coste;
+  let titulo;
   if (sueldo.modo === "coche") {
     const km = celda(tiempos, "km_coche", origen, destino);
     coste = km === null ? null : 2 * km * dias * tarifas.semanas_mes * tiempos.coste_coche.eur_km;
+    titulo = "coche";
   } else {
-    coste = tarifa(api, origen, destino, sueldo, escenario.tarifas).coste_mes;
+    ({ coste_mes: coste, titulo } = tarifa(api, origen, destino, sueldo, escenario.tarifas));
   }
-  return [(minutos * 2 * dias * tarifas.semanas_mes) / 60, coste];
+  return { horas: (minutos * 2 * dias * tarifas.semanas_mes) / 60, coste, titulo };
 }
 
 // Hijos con Abono Joven: de EDAD_MIN_JOVEN a edad_max_joven años.
@@ -133,7 +139,7 @@ function calcularZona(api, hogar, sueldos, zona, escenario) {
   const neto = suma(sueldos.map((s) => s.neto_mes));
   const alq = alquiler(api.alquiler.zonas[zona], hogar, escenario.subida_alquiler);
   const viajes = sueldos.map((s) => viaje(api, s, zona, escenario));
-  const transporte = suma([...viajes.map((v) => v[1]), costeHijos(api, hogar, sueldos, zona, escenario)]);
+  const transporte = suma([...viajes.map((v) => v.coste), costeHijos(api, hogar, sueldos, zona, escenario)]);
   const factor = escenario.cesta === "tramo" ? tramoCesta(api.hogares.cesta_tramos, neto).factor : 1;
   const cestaMes = cesta(api.hogares.cesta_uc, hogar, factor);
   const fijo = alq === null || transporte === null ? null : neto - transporte - cestaMes;
@@ -143,11 +149,14 @@ function calcularZona(api, hogar, sueldos, zona, escenario) {
     alquiler: alq === null ? null : alq.p50,
     alquiler_p25: alq === null ? null : alq.p25,
     alquiler_p75: alq === null ? null : alq.p75,
+    alquiler_contrato: alq === null ? null : alq.contrato,
     transporte,
     cesta: cestaMes,
     sobra: fijo === null ? null : fijo - alq.p50,
+    sobra_contrato: fijo === null ? null : fijo - alq.contrato,
     sobra_banda: fijo === null ? null : [fijo - alq.max, fijo - alq.min],
-    horas: suma(viajes.map((v) => v[0])),
+    horas: suma(viajes.map((v) => v.horas)),
+    viajes,
     esfuerzo: alq === null ? null : alq.p50 / neto,
   };
 }
@@ -208,7 +217,7 @@ function prepararHogar(api, entrada) {
 }
 
 // Colectivo de tarifas.json de una persona: su familia más su discapacidad del 65 % o más.
-export const colectivo = (hogar, sueldo) => (!sueldo.discapacidad ? hogar.familia : hogar.familia === "ordinario" ? "discapacidad" : `${hogar.familia}_discapacidad`);
+const colectivo = (hogar, sueldo) => (!sueldo.discapacidad ? hogar.familia : hogar.familia === "ordinario" ? "discapacidad" : `${hogar.familia}_discapacidad`);
 
 function prepararSueldos(api, entrada, hogar, escenario) {
   const { sueldos } = entrada;

@@ -110,8 +110,8 @@ def test_js_da_las_mismas_cifras_que_python_en_las_199_zonas(entrada: dict) -> N
 def test_los_casos_fijos_ejercitan_los_nulos_y_los_cuatro_viajes() -> None:
     zonas = _en_python(GETAFE)["zonas"].values()
     assert (
-        sum(z["sobra"] is None for z in zonas) == 97
-    )  # 41 sin alquiler y sin ruta, 56 solo sin ruta
+        sum(z["sobra"] is None for z in zonas) == 100
+    )  # 40 sin alquiler y sin ruta, 59 solo sin ruta, 1 solo sin alquiler
     assert any(z["sobra"] is not None for z in zonas)
     dos = _en_python(CUATRO_VIAJES)["zonas"]
     cuatro = _en_python(

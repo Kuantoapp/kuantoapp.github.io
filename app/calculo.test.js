@@ -122,6 +122,7 @@ test("sin ruta en transporte público no hay horas, coste, sobrante ni precio, y
   const z = zona("2807913", entrada(), a);
   assert.deepEqual([z.horas, z.transporte, z.sobra, z.sobra_banda, z.precio_hora], [null, null, null, null, null]);
   assert.notEqual(z.alquiler, null);
+  assert.deepEqual(z.viajes, [{ horas: null, coste: null, titulo: null }]);
   assert.notEqual(calcular(a, entrada()).ref, "2807913");
 });
 
@@ -139,16 +140,32 @@ test("una zona sin dato de alquiler da null en alquiler, sobra, banda, esfuerzo 
   a.alquiler.zonas["2807913"] = api.alquiler.zonas["28001"];
   const r = calcular(a, entrada());
   const z = r.zonas["2807913"];
-  assert.deepEqual([z.alquiler, z.sobra, z.sobra_banda, z.esfuerzo, z.precio_hora], [null, null, null, null, null]);
+  assert.deepEqual([z.alquiler, z.alquiler_contrato, z.sobra, z.sobra_contrato, z.sobra_banda, z.esfuerzo, z.precio_hora], Array(7).fill(null));
   assert.ok(z.horas > 0);
   assert.equal(r.ref, "2807901");
+});
+
+test("el alquiler es el de contrato nuevo y la referencia, el de los contratos en vigor", () => {
+  const z = zona("28065");
+  igual(z.alquiler, 12.6 * 1.035 * 1.19 * 45, "alquiler");
+  igual(z.alquiler / z.alquiler_contrato, 1.19, "factor_brecha");
+  igual(z.sobra_contrato - z.sobra, z.alquiler - z.alquiler_contrato, "sobrante");
+  assert.ok(z.sobra_contrato > z.sobra);
+});
+
+test("sin factor_brecha válido falla, no vale 1", () => {
+  for (const brecha of [undefined, null, 0, -1.2, "1.2", true]) {
+    const a = structuredClone(api);
+    a.alquiler.zonas["28065"].factor_brecha = brecha;
+    assert.throws(() => calcular(a, entrada()), /factor_brecha/);
+  }
 });
 
 test("la banda se ensancha con el intervalo de una zona estimada", () => {
   const a = structuredClone(api);
   Object.assign(a.alquiler.zonas["28065"], { origen: "estimado", ic: [9, 15] });
   const [obs, est] = [zona("28065"), zona("28065", entrada(), a)];
-  const k = 1.035 * 45;
+  const k = 1.035 * 1.19 * 45;
   const fijo = obs.neto - obs.transporte - obs.cesta;
   igual(obs.sobra_banda, [fijo - 14.3 * k, fijo - 11.0 * k], "observada");
   igual(est.sobra_banda, [fijo - 15.0 * k, fijo - 9.0 * k], "estimada");
