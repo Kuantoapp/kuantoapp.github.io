@@ -142,8 +142,8 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
     escenario, caso base. C2: adulto 61,04 − 45,78 = 15,26 €/mes (frente a 32,76 de `fin_descuento`); joven 9,30 €,
     igual, porque todo su descuento es estatal. Supuestos: el RDL dice «importe de la tarifa», no «sin bonificar»;
     se lee como tarifa oficial porque BOCM-20251231-3, pág. 69, llama «tarifas» a las oficiales y el Abono Joven
-    paga 10,00 = 50 % de 20,00. Sale de `transporte` y no de `tarifas.json`: no tiene el redondeo de B2 de la
-    decisión 30. Sensibilidad de `fin_descuento` por corona con 3 y 5 días × 2 y 4 viajes (`fin_coronas`); no es
+    paga 10,00 = 50 % de 20,00. Sale de los precios de `transporte` (`tarifas.json` no tiene los de 2025), con el
+    mismo redondeo por escenario que `fin_descuento`. Sensibilidad de `fin_descuento` por corona con 3 y 5 días × 2 y 4 viajes (`fin_coronas`); no es
     monótona: con 3 días C1 pierde 27,69 € (10 viajes) y C2 22,32 € (abono), porque cambia el título.
 """
 
@@ -677,13 +677,14 @@ def calidad(
 
 
 # Fin del descuento (decisiones 27 a 31): caso base de la nota del 15-11 de #102
-CRITERIO_FIN = "fin_descuento"
+CRITERIO_FIN, CRITERIO_RDL = "fin_descuento", "fin_rdl"
 DIAS_FIN, VIAJES_FIN = 5, 2
 EDADES_FIN = {"adulto": "general", "joven": "joven"}  # perfil → edad de `tarifas.json`
 NORMA_DESCUENTO = (
     "RDL 17/2025 (BOE-A-2025-26459), art. 8: 50 % joven y 20 % resto del 1-1 al 31-12-2026, más el "
     "descuento voluntario del CRTM; sin prórroga para 2027 publicada. Si no se prorroga, con las tarifas "
-    "oficiales de 2026. Adulto: cota superior (quita también la parte del CRTM; la del RDL ronda la mitad). "
+    "oficiales de 2026. fin_descuento del adulto: cota superior (quita también la parte del CRTM); "
+    "fin_rdl: solo la parte del RDL. "
     "€/mes = media del año (335/30 abonos ÷ 12): por abono, 35,20 € en C2 y 10,00 € el joven"
 )
 
@@ -789,7 +790,7 @@ def fin_rdl(api: dict) -> pd.DataFrame:
                 corona, edad, sin_ayuda
             )
             filas.append(
-                (perfil, m, "fin_rdl", eur > 0, float(eur), True, float("nan"))
+                (perfil, m, CRITERIO_RDL, eur > 0, float(eur), True, float("nan"))
             )
     return _tabla(filas)
 
