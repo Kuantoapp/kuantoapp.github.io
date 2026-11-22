@@ -565,14 +565,27 @@ function prepararVista(mapa) {
   });
 }
 
-// Portada (#388): el botón baja a la herramienta sin tocar el fragmento, que guarda el estado del formulario;
-// un enlace con estado (compartido o tras recargar) entra directo a la herramienta.
+// Portada y herramienta, dos vistas de la misma página (#388). La vista no va en el fragmento, que guarda el
+// estado del formulario: la herramienta siempre está maquetada (oculta e `inert`), así el mapa nace con su tamaño.
 const herramienta = $("herramienta");
-$("ir-herramienta").addEventListener("click", () => {
-  herramienta.scrollIntoView(); // suave o no según `scroll-behavior`, que sigue a prefers-reduced-motion
-  herramienta.querySelector(".menu-boton").focus({ preventScroll: true });
+const verHerramienta = (visible) => {
+  document.body.classList.toggle("en-herramienta", visible);
+  herramienta.inert = !visible;
+  $("portada").hidden = visible;
+  scrollTo({ top: 0, behavior: "instant" });
+};
+for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
+  boton.addEventListener("click", () => {
+    verHerramienta(true);
+    herramienta.querySelector(".menu-boton").focus();
+  });
+}
+$("ir-portada").addEventListener("click", (e) => {
+  e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
+  verHerramienta(false);
 });
-if (location.hash.length > 1) herramienta.scrollIntoView({ behavior: "instant" });
+// Con estado en el fragmento (enlace compartido o recarga) o desde otra página (`?herramienta`), se abre el mapa.
+verHerramienta(location.hash.length > 1 || new URLSearchParams(location.search).has("herramienta"));
 
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;
