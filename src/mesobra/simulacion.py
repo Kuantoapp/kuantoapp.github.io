@@ -117,7 +117,8 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 27. Norma: RDL 17/2025 (BOE-A-2025-26459), art. 8: descuento del 50 % en los títulos joven y del 20 % en los
     demás abonos y 10 viajes del 1-1 al 31-12-2026, sobre la tarifa del 30-11-2025; el art. 11 obliga a la
     Comunidad y a los ayuntamientos a cubrir, una vez aplicada la ayuda estatal, la pérdida hasta esos
-    porcentajes, no más (el resto lo pone el CRTM por acuerdo, BOCM-20251231-2, págs. 65-66). Sin prórroga
+    porcentajes (más los costes del art. 13), no más (el resto lo pone el CRTM por acuerdo, BOCM-20251231-2, págs.
+    65-66). Sin prórroga
     para 2027 publicada a 2026-11-21 (ficha del BOE: solo la convalidación, BOE-A-2026-2025). El descuento total
     del abono normal es del 41,8 % frente a la oficial de 2026 (32,70 frente a 56,20 €, BOCM-20251231-2 pág. 66
     y -3 pág. 70); lo que pasa del 20 % lo pone el CRTM voluntariamente. `sin_descuento` quita todo, así que para

@@ -5,7 +5,7 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 
 - 2026-11-21 · **Fin del descuento del abono (F3-08): la parte estatal es `fin_rdl` (estimado), junto a `fin_descuento` de #375.**
   - **Qué es:** `fin_rdl` supone que cae solo la ayuda del RDL 17/2025 (art. 8) y que el CRTM mantiene su parte en euros. Esa parte la pone por acuerdo (BOCM-20251231-2, págs. 65-66): el art. 11 solo obliga a cubrir hasta los porcentajes del art. 8.
-  - **Cómo se calcula:** cada abono y 10 viajes sube un 20 % (el Abono Joven, un 50 %) de la tarifa oficial vigente a 30-11-2025: zona A, 54,60 € (BOCM-20130130-9); C1 y C2, 82,00 € (BOCM-20211217-35). Subidas un 3 %, esas tarifas dan las 11 oficiales de 2026. El sencillo no cambia. En cada escenario se toma el título más barato, con 5 días y 2 viajes.
+  - **Cómo se calcula:** cada abono y 10 viajes sube en el 20 % (el Abono Joven, en el 50 %) de la tarifa oficial vigente a 30-11-2025, no en un porcentaje de su precio actual: zona A, 54,60 € (BOCM-20130130-9); C1 y C2, 82,00 € (BOCM-20211217-35). Subidas un 3 %, esas tarifas dan las 11 oficiales de 2026. El sencillo no cambia. En cada escenario se toma el título más barato, con 5 días y 2 viajes.
   - **Cifras en C2:** el adulto pierde 15,26 €/mes con `fin_rdl` y 32,76 €/mes con `fin_descuento`, que es la cota superior. El joven pierde 9,30 € en los dos casos, porque todo su descuento es estatal.
   - **Supuesto:** el RDL dice «importe de la tarifa», no «sin bonificar». Se toma la tarifa oficial porque el BOCM-20251231-3 (pág. 69) llama «tarifas» a las oficiales y porque el Abono Joven cuesta 10,00 €, el 50 % de 20,00 €.
   - **Control:** el de la issue (35,20 € y 10,00 €) es por abono. Se publica la media mensual con 335/30 abonos al año.
