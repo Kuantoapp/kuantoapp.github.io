@@ -67,9 +67,7 @@ def test_minimos_por_descendientes():
 
 
 def test_neto_crece_con_los_hijos(netos):
-    for _, g in netos.query("bruto_anual >= 20000").groupby(
-        ["bruto_anual", "monoparental"]
-    ):
+    for _, g in netos.groupby(["bruto_anual", "monoparental"]):
         assert g.sort_values("hijos").neto_anual.diff().dropna().ge(0).all()
 
 

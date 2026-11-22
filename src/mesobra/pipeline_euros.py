@@ -336,9 +336,12 @@ def netos_json(rejilla: pd.DataFrame) -> dict:
         raise ValueError("La rejilla de netos no cubre todas las combinaciones")
     nota = (
         "Neto anual en € de 2026 desde el bruto anual: cotización del trabajador e IRPF estatal y de "
-        "Madrid (cuota de la declaración). Tributación individual, sin deducciones reembolsables ni "
-        "autonómicas (una familia numerosa o un monoparental con dos hijos queda hasta 1.200 €/año por debajo: 2.400 € la especial y 600 € más por cada hijo por encima del mínimo de su categoría; LIRPF, art. 81 bis), contrato "
-        "indefinido, menor de 65 años. Rejilla de 12.000 a 120.000 €: fuera de ella no se extrapola."
+        "Madrid (cuota de la declaración). Tributación individual, contrato indefinido, menor de 65 años. "
+        "No incluye las deducciones reembolsables del art. 81 bis LIRPF (1.200 € al año para familia "
+        "numerosa general o monoparental con dos hijos, 2.400 € la especial, 600 € más por cada hijo por "
+        "encima del mínimo de su categoría y 1.200 € por cada descendiente con discapacidad) ni la de Madrid "
+        "por alquiler para menores de 40 años (DL 1/2010, art. 8: el 30 %, hasta 1.237,20 €), así que en esos "
+        "casos el neto real es mayor. Rejilla de 12.000 a 120.000 €: fuera de ella no se extrapola."
     )
     return {
         "meta": _meta(2026, FUENTES_NETOS, nota),

@@ -361,18 +361,20 @@ const FN_BASE = { general: [1200, 3], especial: [2400, 5] };
 export function avisosEntrada(entrada) {
   const { adultos, hijos: n, familia } = entrada.hogar;
   const monoparental2 = n === 2 && adultos === 1;
-  const cat = n >= 5 ? "especial" : "general";
+  // la categoría marcada manda (especial con 4 hijos por renta o discapacidad, general con 2: Ley 40/2003, arts. 2.2 y 4)
+  const cat = familia === "fn_especial" || (n >= 5 && familia !== "fn_general") ? "especial" : "general";
   const [base, minimo] = FN_BASE[cat];
+  // shortcut: el mínimo de hijos de la categoría se supone 3 y 5 (art. 4.1.a); si se obtuvo por otra vía es menor y el incremento, mayor; afinar si el formulario pide la vía.
   const deduccion = (base + 600 * Math.max(0, n - minimo)).toLocaleString("es-ES", { useGrouping: "always" });
   return [
     ...(entrada.sueldos.some((s) => s.modo === "coche")
       ? ["En coche, el tiempo de viaje no incluye el tráfico: en hora punta será mayor. El coste es una estimación: sale de kilómetros estimados y de un coste por kilómetro que no incluye aparcamiento ni peajes. Los viajes al día no cuentan en coche: se supone ida y vuelta."]
       : []),
     ...(entrada.hogar.hijos > 0 && !entrada.hogar.edades_hijos?.length ? ["Sin las edades de los hijos, el transporte cuenta solo a quien trabaja: pon sus edades para sumar el Abono Joven de los de 15 a 25 años (fuente: ficha del Abono Joven del CRTM)."] : []),
-    ...(n >= 3 ? [`Con ${n} hijos, el neto no incluye la deducción por familia numerosa ${cat}: hasta ${deduccion} €/año más para el hogar si tenéis el título (fuente: LIRPF, art. 81 bis).`] : []),
+    ...(n >= 3 || familia ? [`Con ${n} hijos, el neto no incluye la deducción por familia numerosa ${cat}: hasta ${deduccion} €/año más para el hogar si tenéis el título (fuente: LIRPF, art. 81 bis).`] : []),
     ...(monoparental2 ? ["Con dos hijos y sin pareja, el neto no incluye la deducción del art. 81 bis: hasta 1.200 €/año más (fuente: LIRPF, art. 81 bis)."] : []),
-    ...(n >= 3 && !familia ? [`Con ${n} hijos la familia es numerosa (fuente: Ley 40/2003, art. 2.1): si tenéis el título, elige su categoría en «Familia numerosa» para que el transporte lleve su precio.`] : []),
-    ...(n >= 5 && familia === "fn_general" ? ["Con 5 hijos o más la familia numerosa es especial (fuente: Ley 40/2003, art. 4.1): revisa la categoría en «Familia numerosa»."] : []),
+    ...(n >= 3 && !familia ? [`Con ${n} hijos la familia es numerosa (fuente: Ley 40/2003, art. 2.1, redacción vigente en 2026): si tenéis el título, elige su categoría en «Familia numerosa» para que el transporte lleve su precio.`] : []),
+    ...(n >= 5 && familia === "fn_general" ? ["Con 5 hijos o más la familia numerosa es especial (fuente: Ley 40/2003, art. 4.1, redacción vigente en 2026): revisa la categoría en «Familia numerosa»."] : []),
   ];
 }
 
