@@ -1,46 +1,369 @@
+/* Tokens de Kuanto (dirección de #382 en docs/decisiones.md). El informe (#383) reutiliza los mismos. */
+:root {
+  --fondo: #f5f5f7;
+  --superficie: #ffffff;
+  --elevado: #ebedf0;
+  --linea: rgb(29 29 31 / 10%);
+  --linea-control: #8a8d94;
+  --texto: #1d1d1f;
+  --texto-2: #474a52;
+  --texto-3: #5c6069;
+  --acento: #0b4f9c;
+  --acento-fuerte: #083c78;
+  --acento-suave: rgb(11 79 156 / 8%);
+  --seleccion: rgb(11 79 156 / 18%);
+  --error: #a4161a;
+  --diferencia: #7a3b00;
+  --sombra: 0 1px 2px rgb(29 29 31 / 6%), 0 8px 24px rgb(29 29 31 / 6%);
+  --r-1: 8px;
+  --r-2: 12px;
+  --r-3: 16px;
+  --curva: cubic-bezier(0.2, 0, 0, 1);
+  --alto-nav: 56px;
+  --pierdes: #b2182b; /* extremos de la paleta divergente del mapa (vista.js) */
+  --ganas: #01665e;
+  --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  accent-color: var(--acento);
+}
+
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: #222; }
-main { display: flex; height: 100%; }
-aside { flex: 0 0 24rem; max-width: 45%; overflow-y: auto; padding: 0 1rem; font-size: 0.9rem; }
-aside:not(:has(:not(:empty))) { display: none; }
-fieldset { margin: 0.75rem 0; padding: 0.5rem 0.75rem; border: 1px solid #bbb; border-radius: 0.25rem; }
-legend { padding: 0 0.25rem; font-weight: 600; }
-fieldset label { display: block; margin: 0.4rem 0; }
-fieldset label input:not([type="radio"]), fieldset label select { display: block; width: 100%; margin-top: 0.15rem; padding: 0.3rem; font: inherit; }
-.opciones { display: flex; gap: 1rem; }
-#persona2 { border-style: dashed; }
-.opciones label, #metricas label { display: flex; align-items: center; gap: 0.4rem; }
-.ayuda, .aviso { margin: 0.25rem 0; color: #555; font-size: 0.8rem; }
-[aria-invalid="true"] { border: 2px solid #8b0000; }
-.error { display: block; margin-top: 0.15rem; color: #8b0000; font-weight: 600; font-size: 0.8rem; }
-#ficha { position: sticky; top: 0; z-index: 1; margin: 0 -1rem; padding: 0.5rem 1rem; background: #fff; border-bottom: 2px solid #222; }
+[hidden] { display: none !important; }
+::selection { background: var(--seleccion); }
+html, body { margin: 0; overflow-x: clip; font-family: var(--fuente); color: var(--texto); background: var(--fondo); -webkit-font-smoothing: antialiased; }
+/* La herramienta (#388) es una vista fija bajo la barra de navegación: siempre maquetada, así el mapa nace con su
+   tamaño, y oculta mientras se ve la portada. `contain: layout`: sus menús fijos se miden desde ella. */
+#herramienta { position: fixed; inset: var(--alto-nav) 0 0; z-index: 1; display: flex; flex-direction: column; contain: layout; }
+body:not(.en-herramienta) #herramienta { visibility: hidden; }
+body.mapa-completo .navegacion { display: none; }
+body.mapa-completo #herramienta { top: 0; }
+main { position: relative; display: flex; flex: 1; min-height: 0; }
+aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
+/* Panel plegado con su pestaña: deja de recibir el foco (`visibility`) y el mapa ocupa el hueco. */
+body.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s linear 0.3s; }
+/* «Mapa completo»: fuera la barra de filtros, el panel y su pestaña. */
+body.mapa-completo #barra-filtros, body.mapa-completo aside, body.mapa-completo #plegar-panel { display: none; }
+h2 { margin: 32px 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+
+/* Formulario: cada fieldset es una tarjeta con su titular dentro. */
+fieldset { margin: 16px 0; padding: 16px 20px 20px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+legend { float: left; width: 100%; margin: 0 0 8px; padding: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+legend + * { clear: both; }
+#persona2 { border-style: dashed; border-color: var(--linea-control); }
+fieldset label { display: block; margin: 12px 0 0; color: var(--texto-2); font-size: 14px; }
+fieldset label input:not([type="radio"], [type="range"]), fieldset label select {
+  display: block; width: 100%; min-height: 44px; margin-top: 4px; padding: 8px 12px;
+  border: 1px solid var(--linea-control); border-radius: var(--r-2); background: var(--superficie);
+  color: var(--texto); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s var(--curva), box-shadow 0.15s var(--curva);
+}
+fieldset label input:hover, fieldset label select:hover { border-color: var(--texto-2); }
+input[type="range"] { display: block; width: 100%; min-height: 44px; margin: 0; }
+.opciones { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.opciones label, #metricas label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: var(--texto); font-size: 15px; }
+input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+
+/* Filtro principal (qué pinta el mapa): píldoras que se marcan enteras; el radio sigue ahí para teclado y lectores. */
+#metricas { display: flex; flex-wrap: wrap; gap: 8px; }
+#metricas label { padding: 0 16px 0 12px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
+#metricas label:hover { border-color: var(--acento); }
+#metricas label:has(input:checked) { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+/* Barra de filtros arriba: una fila baja de variables; cada una despliega su panel (ratón, foco dentro o pulsación). */
+#barra-filtros { position: relative; z-index: 5; display: flex; flex: none; align-items: center; justify-content: center; gap: 4px; padding: 6px 168px; background: var(--superficie); border-bottom: 1px solid var(--linea); }
+.menus { display: contents; }
+.menu { position: relative; }
+.menu-boton { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
+.menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.menu-boton[aria-expanded="true"] { background: var(--acento-suave); color: var(--acento); }
+.menu:has([aria-invalid="true"]) > .menu-boton { color: var(--error); text-decoration: underline; } /* un error dentro se ve sin abrirlo */
+.menu-panel { position: absolute; top: 100%; left: 0; display: none; width: 22rem; max-height: 75vh; overflow-y: auto; padding: 4px 12px 12px; background: var(--fondo); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); }
+.menu-panel:focus-within, .menu-boton[aria-expanded="true"] + .menu-panel { display: block; }
+/* Abrir al pasar el ratón solo donde hay ratón (en táctil :hover se queda pegado). Escape lo anula con
+   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). */
+@media (hover: hover) {
+  .menu:not(.sin-hover):hover > .menu-panel { display: block; }
+  .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+}
+.menu-panel fieldset { margin: 8px 0 0; }
+#m-escenario { right: 0; left: auto; } /* los últimos menús se abren hacia dentro */
+.acciones { position: absolute; top: 50%; right: 16px; display: flex; gap: 8px; transform: translateY(-50%); }
+.acciones button { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 0; }
+.acciones .texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.acciones button, #quitar-escenario { min-height: 44px; padding: 8px 14px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
+.acciones button:hover:not(:disabled), #quitar-escenario:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
+.acciones button:disabled, #quitar-escenario:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
+#quitar-escenario { margin-top: 4px; }
+/* Iconos de línea: un trazo, del color del texto del botón. */
+.icono { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Botones del mapa, bajo el zoom de MapLibre (10 px de margen y 2 × 44 px): tema y mapa completo, solo con icono. */
+.controles-mapa { position: absolute; top: 116px; right: 10px; z-index: 2; display: flex; flex-direction: column; gap: 8px; }
+.flotante { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--linea); border-radius: var(--r-2); background: var(--superficie); color: var(--texto); box-shadow: var(--sombra); cursor: pointer; }
+.flotante:hover { color: var(--acento); }
+/* Sobre el mapa oscuro el anillo del acento no llega a 3:1: un aro blanco entre botón y anillo lo separa del fondo. */
+.flotante:focus-visible { box-shadow: 0 0 0 6px var(--superficie), var(--sombra); }
+#tema-mapa[aria-pressed="false"] .icono-sol, #tema-mapa[aria-pressed="true"] .icono-luna { display: none; } /* enseña el modo al que se pasa */
+#mapa-completo[aria-pressed="false"] .icono-reducir, #mapa-completo[aria-pressed="true"] .icono-ampliar { display: none; }
+/* Pestaña del panel: pegada a su borde, sigue visible con el panel plegado; la flecha apunta hacia donde se mueve. */
+#plegar-panel { position: relative; z-index: 3; flex: none; align-self: center; width: 44px; height: 64px; margin-right: -44px; padding: 0; border: 1px solid var(--linea); border-left: 0; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--superficie); color: var(--texto); box-shadow: var(--sombra); cursor: pointer; }
+#plegar-panel:hover { color: var(--acento); }
+#plegar-panel .icono { transition: transform 0.3s var(--curva); }
+#plegar-panel[aria-expanded="false"] .icono { transform: rotate(180deg); }
+output { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ayuda, .aviso { margin: 8px 0 0; color: var(--texto-3); font-size: 14px; }
+.aviso { margin: 24px 0 0; }
+[aria-invalid="true"] { border: 2px solid var(--error) !important; }
+.error { display: block; margin-top: 4px; color: var(--error); font-weight: 600; font-size: 14px; }
+
+/* Foco visible en todo lo que se puede alcanzar con Tab. */
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+
+/* Ficha de la zona: el momento de la pantalla. Nombre, cifra grande y lo que sobra; el desglose en filas. */
+#ficha { position: sticky; top: 0; z-index: 1; max-height: 45vh; overflow-y: auto; margin: 16px 0 0; padding: 20px 24px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-variant-numeric: tabular-nums; }
 #ficha:empty { display: none; }
-#ficha p { margin: 0.2rem 0; }
-#ficha p:first-child, #ficha .diferencia { font-weight: 600; }
-#ficha .diferencia { color: #7a3b00; }footer { margin: 1rem 0; color: #555; font-size: 0.8rem; }
-#mejores h2, #avisos-dato h2 { margin: 0.75rem 0 0.25rem; font-size: 0.95rem; }
-#mejores ol { margin: 0; padding-left: 1.6rem; }
-#mejores button { padding: 0.1rem 0; border: none; background: none; color: #0b4f9c; font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }
-#mejores button:focus-visible { outline: 2px solid #0b4f9c; outline-offset: 2px; }
-#avisos { margin: 0; padding-left: 1.1rem; color: #555; font-size: 0.8rem; }
-#avisos li { margin: 0.15rem 0; }
+#ficha p { margin: 0; padding: 8px 0; border-top: 1px solid var(--linea); color: var(--texto-2); font-size: 14px; }
+#ficha p:first-child { padding: 0; border: 0; color: var(--texto-3); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+#ficha p:nth-child(2) { padding: 4px 0 8px; border: 0; color: var(--texto); font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+#ficha p:nth-child(3) { color: var(--texto); font-size: 16px; font-weight: 600; }
+#ficha p.diferencia { color: var(--diferencia); font-weight: 600; }
+
+/* Las diez mejores: filas de 44 px, el puesto en gris y tabular. */
+#mejores ol { margin: 0; padding-left: 32px; }
+#mejores li { border-bottom: 1px solid var(--linea); }
+#mejores li::marker { color: var(--texto-3); font-variant-numeric: tabular-nums; }
+#mejores button { display: block; width: 100%; min-height: 44px; padding: 10px 8px; border: 0; border-radius: var(--r-1); background: none; color: var(--texto); font: inherit; font-variant-numeric: tabular-nums; text-align: left; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
+#mejores button:hover { background: var(--acento-suave); color: var(--acento); }
+#mejores button:active { background: var(--elevado); }
+#mejores .ayuda { margin-top: 12px; }
+#avisos-hogar, #avisos { margin: 0; padding-left: 20px; color: var(--texto-2); font-size: 14px; }
+#avisos-hogar li, #avisos li { margin: 4px 0; }
+#avisos li:last-child { color: var(--texto-3); }
+footer { margin: 24px 0 0; color: var(--texto-3); font-size: 14px; }
+a { color: var(--acento); text-underline-offset: 2px; }
+
+/* Mapa y lo que flota sobre él. */
 #mapa-contenedor { position: relative; flex: 1; min-width: 0; }
 #mapa { position: absolute; inset: 0; }
-#leyenda { position: absolute; left: 0.75rem; bottom: 0.75rem; width: 16rem; max-height: 60%; overflow-y: auto; padding: 0.5rem 0.75rem; background: rgb(255 255 255 / 92%); border-radius: 0.25rem; font-size: 0.8rem; }
-#leyenda { overflow-wrap: anywhere; }
-#leyenda p { margin: 0.25rem 0 0; }
-#leyenda summary { margin-top: 0.25rem; cursor: pointer; }
-#leyenda .titulo { margin: 0 0 0.25rem; font-weight: 600; }
-#leyenda .fila { display: flex; align-items: center; gap: 0.5rem; }
-#leyenda .muestra { flex: none; width: 1.1rem; height: 0.8rem; border: 1px solid #666; }
-#tooltip { position: absolute; z-index: 2; padding: 0.25rem 0.5rem; background: #222; color: #fff; border-radius: 0.25rem; font-size: 0.85rem; pointer-events: none; white-space: nowrap; }
-#estado { position: absolute; top: 0.75rem; left: 0.75rem; right: 0.75rem; margin: 0; color: #8b0000; font-weight: 600; }
-/* Pantalla estrecha: el mapa arriba, la leyenda debajo (fuera del mapa, con las entradas en línea) y el panel al fondo. */
+#leyenda { position: absolute; right: 16px; bottom: 16px; width: 17rem; max-height: min(60%, calc(100% - 240px)); overflow-y: auto; overflow-wrap: anywhere; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-2); box-shadow: var(--sombra); color: var(--texto-2); font-size: 14px; font-variant-numeric: tabular-nums; }
+#leyenda p { margin: 8px 0 0; }
+#leyenda summary { min-height: 44px; margin-top: 4px; padding: 12px 0; color: var(--acento); cursor: pointer; }
+#leyenda .titulo { margin: 0 0 8px; color: var(--texto); font-weight: 600; }
+#leyenda ul { margin: 8px 0 0; padding-left: 16px; }
+#leyenda li { margin: 4px 0; }
+#leyenda details a { display: inline-block; min-height: 44px; padding: 12px 0; }
+/* Controles de MapLibre con la misma superficie que la leyenda. */
+.maplibregl-ctrl-group { border-radius: var(--r-2) !important; box-shadow: var(--sombra) !important; }
+.maplibregl-ctrl-group button { width: 44px !important; height: 44px !important; }
+.maplibregl-ctrl-attrib-button { width: 44px !important; height: 44px !important; background-position: center !important; }
+#leyenda .fila { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+#leyenda .muestra { flex: none; width: 20px; height: 12px; border: 1px solid var(--linea-control); border-radius: 3px; }
+#tooltip { position: absolute; z-index: 2; padding: 4px 8px; background: var(--texto); color: var(--superficie); border-radius: var(--r-1); font-size: 14px; font-variant-numeric: tabular-nums; pointer-events: none; white-space: nowrap; }
+#estado { position: absolute; top: 16px; left: 16px; right: 16px; margin: 0; color: var(--error); font-weight: 600; }
+#estado:not(:empty) { padding: 12px 16px; background: var(--superficie); border-radius: var(--r-2); box-shadow: var(--sombra); }
+
+
+@media (prefers-reduced-motion: reduce) {
+  aside, body.panel-plegado aside, #plegar-panel .icono { transition: none; }
+}
+
+/* Pantalla media (por debajo de 68rem los menús centrados chocan con las acciones): la barra se desplaza en
+   horizontal desde la izquierda y Deshacer, Rehacer y Cancelar quedan fijos a su derecha. */
+@media (max-width: 68rem) {
+  #barra-filtros { justify-content: flex-start; overflow-x: auto; padding: 4px 0 4px 8px; }
+  .menu { position: static; }
+  .menu-panel, #m-escenario { position: fixed; top: 58px; right: auto; left: 8px; width: min(24rem, calc(100% - 16px)); max-height: calc(100dvh - var(--alto-nav) - 66px); }
+  .acciones { position: sticky; top: auto; right: 0; transform: none; flex-wrap: nowrap; gap: 4px; padding-left: 8px; background: var(--superficie); }
+}
+
+/* Pantalla estrecha: barra de filtros desplazable, el mapa arriba, la leyenda debajo y el panel al fondo. */
 @media (max-width: 40rem) {
+  .menu-panel, #m-escenario { right: 8px; width: auto; }
   main { flex-direction: column-reverse; }
-  aside { flex: none; max-width: none; max-height: 50%; }
+  aside { flex: none; max-width: none; max-height: 50%; padding: 0 16px 16px; border-right: 0; border-top: 1px solid var(--linea); }
+  body.panel-plegado aside { max-height: 0; border: 0; }
+  #plegar-panel { width: 64px; height: 44px; margin: 0 0 -1px; border: 1px solid var(--linea); border-bottom: 0; border-radius: var(--r-2) var(--r-2) 0 0; }
+  #plegar-panel .icono { transform: rotate(-90deg); }
+  #plegar-panel[aria-expanded="false"] .icono { transform: rotate(90deg); }
+  #ficha { max-height: 40%; padding: 16px; }
+  #ficha p:nth-child(2) { font-size: 24px; }
+  fieldset { padding: 16px; }
   #mapa-contenedor { display: flex; flex-direction: column; flex: 1; min-height: 0; }
   #mapa { position: relative; inset: auto; flex: 1; min-height: 12rem; }
-  #leyenda { position: static; width: auto; max-height: 35%; border-top: 1px solid #bbb; border-radius: 0; }
-  #leyenda .fila { display: inline-flex; margin-right: 0.75rem; }
+  #leyenda { position: static; width: auto; max-height: 35%; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
+  #leyenda .fila { display: inline-flex; margin-right: 12px; }
+}
+
+/* Portada (#388): modo persuadir. Titulares grandes a la izquierda, una idea por bloque y mucho aire. */
+.pagina { display: block; font-size: 17px; line-height: 1.5; }
+.navegacion-interior, .bloque { width: min(72rem, 100% - 48px); margin-inline: auto; }
+
+/* Barra de navegación común: fija arriba, del color del fondo y con una línea fina (sin cristal ni desenfoque). */
+.navegacion { position: sticky; top: 0; z-index: 10; height: var(--alto-nav); background: var(--fondo); border-bottom: 1px solid var(--linea); }
+.navegacion-interior { display: flex; align-items: center; gap: 16px; height: 100%; }
+.navegacion ul { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 0 0 auto; padding: 4px 6px 4px 0; overflow-x: auto; list-style: none; }
+.navegacion a, .boton-nav { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--texto-2); font: inherit; font-size: 15px; text-decoration: none; white-space: nowrap; transition: color 0.15s var(--curva), background-color 0.15s var(--curva); }
+.navegacion a:hover { color: var(--texto); }
+.navegacion a[aria-current="page"] { color: var(--texto); font-weight: 600; }
+.navegacion .marca { flex: none; padding-left: 0; color: var(--texto); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.boton-nav { padding: 0 16px; border: 0; background: var(--acento); color: var(--superficie); font-weight: 600; cursor: pointer; }
+.navegacion .boton-nav, .navegacion .boton-nav:hover { color: var(--superficie); }
+.boton-nav:hover { background: var(--acento-fuerte); }
+.navegacion :focus-visible { outline: 3px solid var(--acento); outline-offset: -3px; }
+.navegacion .boton-nav:focus-visible { outline-color: var(--texto); outline-offset: 2px; }
+.pagina a { color: var(--acento); text-underline-offset: 3px; }
+.pagina a:hover { color: var(--acento-fuerte); }
+.bloque { padding-block: clamp(64px, 10vw, 128px); border-bottom: 1px solid var(--linea); }
+.pagina h1, .pagina h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; }
+.pagina h1 { max-width: 14ch; font-size: clamp(40px, 7.5vw, 88px); }
+.pagina h2 { max-width: 18ch; font-size: clamp(32px, 5vw, 56px); }
+.pagina p { max-width: 62ch; }
+.pagina .formula, .pagina .panel-perfil { max-width: none; }
+.entradilla { margin: 24px 0 32px; color: var(--texto-2); font-size: clamp(19px, 2.2vw, 24px); line-height: 1.4; }
+.boton-principal { min-height: 52px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--acento); color: var(--superficie); font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), transform 0.15s var(--curva); }
+.boton-principal:hover { background: var(--acento-fuerte); }
+.acciones-heroe { display: flex; flex-wrap: wrap; gap: 12px; }
+.boton-secundario { display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border: 1px solid var(--acento); border-radius: 999px; color: var(--acento); font-size: 17px; font-weight: 600; text-decoration: none; transition: background-color 0.15s var(--curva); }
+.pagina a.boton-secundario:hover { background: var(--acento-suave); color: var(--acento); }
+.pagina a.boton-principal, .pagina a.boton-principal:hover { display: inline-flex; align-items: center; color: var(--superficie); text-decoration: none; }
+.cierre { border-bottom: 0; }
+.cierre .entradilla { margin: 16px 0 32px; }
+.boton-principal:active { transform: scale(0.98); }
+.pagina :focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+.aparte { margin: 12px 0 0; color: var(--texto-3); font-size: 15px; }
+.cifras-heroe { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin: clamp(56px, 8vw, 96px) 0 0; padding: 32px 0 0; border-top: 1px solid var(--linea); list-style: none; color: var(--texto-2); font-size: 15px; }
+.cifras-heroe .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-size: clamp(40px, 5vw, 56px); font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.fuente { display: block; margin-top: 8px; color: var(--texto-3); font-size: 14px; }
+
+/* Cuatro cuentas: ficha técnica en dos columnas, el titular fijo a la izquierda mientras se leen. */
+.cuentas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; align-items: start; }
+.cuentas h2 { position: sticky; top: 32px; }
+.ficha-tecnica { margin: 0; }
+.ficha-tecnica div { padding: 24px 0; border-top: 1px solid var(--linea); }
+.ficha-tecnica div:first-child { padding-top: 0; border-top: 0; }
+.ficha-tecnica dt { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.ficha-tecnica dd { margin: 8px 0 0; color: var(--texto-2); }
+.remate { grid-column: 2; margin: 8px 0 0; font-size: 21px; line-height: 1.4; }
+
+/* El dato: la cifra grande y tabular junto al mapa del informe. */
+.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.destacado { margin: 32px 0 16px; color: var(--texto-2); font-size: 21px; line-height: 1.4; }
+.cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.dato-texto p:not(.destacado) { color: var(--texto-2); }
+.dato-texto > a { display: inline-flex; align-items: center; min-height: 44px; }
+.dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.dato-imagen img { display: block; width: 100%; max-height: 640px; height: auto; object-fit: contain; border-radius: 4px; }
+.dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
+
+/* Así sale la cifra: la fórmula en la tarjeta de firma (blanca, radio de 16 px y línea fina). */
+.formula { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: 40px 0; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-size: clamp(21px, 3vw, 32px); font-weight: 600; letter-spacing: -0.02em; }
+.formula .operador { color: var(--texto-3); font-weight: 400; }
+.formula strong { color: var(--acento); }
+.notas-calculo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.notas-calculo p { margin: 0; color: var(--texto-2); font-size: 16px; }
+.notas-calculo strong { color: var(--texto); }
+.pagina code { font-size: 0.9em; overflow-wrap: anywhere; }
+
+/* Cuánto fiarte: los avisos, uno por línea, en el mismo tono que «Antes de leer el mapa». */
+.avisos-portada { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; padding: 0; list-style: none; }
+.avisos-portada li { padding: 20px 0; border-top: 1px solid var(--linea); color: var(--texto-2); }
+.fuentes-portada { margin: 32px 0 0; color: var(--texto-3); font-size: 15px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boton-principal { transition: none; }
+}
+@media (max-width: 56rem) {
+  .cuentas, .dato { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .cuentas h2 { position: static; }
+  .remate { grid-column: 1; }
+  .notas-calculo, .avisos-portada { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+/* A 320 no caben los cuatro: «Metodología» sigue enlazada desde «Cómo funciona». */
+@media (max-width: 25rem) {
+  .nav-metodologia { display: none; }
+}
+@media (max-width: 40rem) {
+  .navegacion-interior, .bloque { width: calc(100% - 32px); }
+  .navegacion a, .boton-nav { padding: 0 8px; font-size: 14px; }
+  .boton-nav { padding: 0 12px; }
+  .cifras-heroe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .boton-principal, .boton-secundario { width: 100%; justify-content: center; }
+}
+
+/* «Cómo funciona» (#388): mismo sistema que la portada; lo interactivo, sin JS. */
+.pagina h3 { margin: 0 0 8px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
+.indice a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--linea-control); border-radius: 999px; color: var(--texto); font-size: 15px; text-decoration: none; transition: border-color 0.15s var(--curva); }
+.pagina .indice a:hover { border-color: var(--acento); color: var(--acento); }
+.pagina section[id] { scroll-margin-top: var(--alto-nav); }
+.pasos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin: 48px 0 0; padding: 0; list-style: none; counter-reset: paso; }
+.pasos li { position: relative; padding-top: 56px; counter-increment: paso; }
+.pasos li::before { content: counter(paso); position: absolute; top: 0; left: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--linea-control); border-radius: 50%; background: var(--superficie); color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pasos li:not(:last-child)::after { content: ""; position: absolute; top: 20px; left: 52px; right: -20px; border-top: 1px solid var(--linea-control); }
+.pasos p { margin: 0; color: var(--texto-2); font-size: 16px; }
+.piezas { display: grid; gap: 0; margin: 40px 0 0; }
+.pieza { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 8px 48px; padding: 32px 0; border-top: 1px solid var(--linea); }
+.pieza h3 { grid-row: span 2; }
+.pieza p { margin: 0; color: var(--texto-2); }
+.pagina details { border-radius: var(--r-2); }
+.pagina summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--acento); font-weight: 600; cursor: pointer; }
+.pagina summary:hover { color: var(--acento-fuerte); }
+.pagina details p, .pagina details ul { margin: 4px 0 8px; color: var(--texto-2); font-size: 16px; }
+.serie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: 24px 0 8px; padding: 0; list-style: none; color: var(--texto-2); }
+.fuente-serie { margin: 0 0 64px; }
+.serie .cifra { display: block; color: var(--texto); font-size: clamp(40px, 5vw, 56px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+
+/* Selector de perfil: radios nativos en píldoras; sin :has se ven todos los paneles. */
+.selector-perfil { display: flex; flex-wrap: wrap; gap: 8px; margin: 32px 0 24px; padding: 0; border: 0; background: none; }
+.selector-perfil legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.selector-perfil label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; padding: 0 16px 0 12px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--texto); font-size: 15px; cursor: pointer; transition: border-color 0.15s var(--curva), background-color 0.15s var(--curva); }
+.selector-perfil label:hover { border-color: var(--acento); }
+.selector-perfil label:has(input:checked) { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+.selector-perfil label:has(input:focus-visible) { outline: 3px solid var(--acento); outline-offset: 2px; }
+.panel-perfil { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 32px; margin: 0 0 16px; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); color: var(--texto-2); font-size: 16px; }
+.panel-perfil .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-size: clamp(32px, 4vw, 44px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.panel-perfil .fuente { grid-column: 1 / -1; margin: 0; }
+@supports selector(:has(*)) {
+  .panel-perfil { display: none; }
+  .perfiles:has([value="smi"]:checked) [data-perfil="smi"],
+  .perfiles:has([value="tele"]:checked) [data-perfil="tele"],
+  .perfiles:has([value="joven"]:checked) [data-perfil="joven"],
+  .perfiles:has([value="madre"]:checked) [data-perfil="madre"],
+  .perfiles:has([value="pareja"]:checked) [data-perfil="pareja"] { display: grid; }
+}
+
+/* Gráfico de coronas: barras divergentes desde el 0, con el valor siempre escrito (no solo el color). */
+.grafico-coronas { margin: 64px 0 0; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.grafico-coronas figcaption { max-width: 62ch; color: var(--texto-2); font-size: 16px; }
+.grafico-coronas figcaption strong { display: block; margin-bottom: 4px; color: var(--texto); font-size: 19px; }
+.barras { display: grid; gap: 12px; margin: 32px 0 16px; padding: 0; list-style: none; font-variant-numeric: tabular-nums; }
+.barras li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) 4.5rem; align-items: center; gap: 12px; }
+.etiqueta { font-weight: 600; }
+.valor { color: var(--texto-2); font-size: 15px; text-align: right; }
+.pista { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 24px; }
+.pista::before { content: ""; position: absolute; inset: -4px auto -4px 50%; border-left: 1px solid var(--texto-3); }
+.barra { height: 100%; }
+.barra.negativa { grid-column: 1; justify-self: end; border-radius: 2px 0 0 2px; background: var(--pierdes); }
+.barra.positiva { grid-column: 2; justify-self: start; border-radius: 0 2px 2px 0; background: var(--ganas); }
+/* ancho = |mediana| / 8,30 (corona A), de datos/analisis.json */
+.b-a { width: 100%; } .b-b1 { width: 24.9%; } .b-b2 { width: 9.9%; } .b-b3 { width: 22.9%; } .b-c1 { width: 36%; } .b-c2 { width: 56%; }
+.grafico-coronas .fuente { margin: 0; }
+
+.dos-columnas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; }
+.dos-columnas div:first-child, .dos-columnas div:nth-child(2) { padding-top: 24px; border-top: 1px solid var(--linea); }
+.fuentes-lista { display: grid; gap: 0; margin: 32px 0 0; }
+.fuentes-lista details { padding: 8px 0; border-top: 1px solid var(--linea); border-radius: 0; }
+.fuentes-lista ul { padding-left: 20px; }
+
+@media (max-width: 56rem) {
+  .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pasos li::after { display: none; }
+  .pieza { grid-template-columns: minmax(0, 1fr); }
+  .pieza h3 { grid-row: auto; }
+  .panel-perfil, .dos-columnas { grid-template-columns: minmax(0, 1fr); }
+  .dos-columnas div:nth-child(2) { padding-top: 24px; border-top: 1px solid var(--linea); }
+}
+@media (max-width: 40rem) {
+  .pasos, .serie { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .barras li { grid-template-columns: 2rem minmax(0, 1fr) 4rem; gap: 8px; }
 }
