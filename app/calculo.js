@@ -70,10 +70,14 @@ export function cesta(cestaUc, hogar, factor) {
 
 export function alquiler(zona, hogar, subida) {
   if (zona.origen === "sin_dato") return null;
-  const k = (zona.factor_ipc * (1 + subida / 100) * hogar.m2) / hogar.personas_comparten;
+  const brecha = zona.factor_brecha;
+  if (typeof brecha !== "number" || !(brecha > 0)) throw new Error(`factor_brecha = ${JSON.stringify(brecha)}: debe ser un número mayor que 0`);
+  const k0 = (zona.factor_ipc * (1 + subida / 100) * hogar.m2) / hogar.personas_comparten;
+  const k = k0 * brecha;
   let [bajo, alto] = [zona.p25, zona.p75];
   if (zona.ic?.length) [bajo, alto] = [Math.min(bajo, zona.ic[0]), Math.max(alto, zona.ic[1])];
-  return { p25: zona.p25 * k, p50: zona.p50 * k, p75: zona.p75 * k, min: bajo * k, max: alto * k };
+  // `contrato`: el P50 de los contratos en vigor, sin la brecha de los nuevos (referencia de la ficha).
+  return { p25: zona.p25 * k, p50: zona.p50 * k, p75: zona.p75 * k, min: bajo * k, max: alto * k, contrato: zona.p50 * k0 };
 }
 
 function celda(tiempos, matriz, origen, destino) {
@@ -145,9 +149,11 @@ function calcularZona(api, hogar, sueldos, zona, escenario) {
     alquiler: alq === null ? null : alq.p50,
     alquiler_p25: alq === null ? null : alq.p25,
     alquiler_p75: alq === null ? null : alq.p75,
+    alquiler_contrato: alq === null ? null : alq.contrato,
     transporte,
     cesta: cestaMes,
     sobra: fijo === null ? null : fijo - alq.p50,
+    sobra_contrato: fijo === null ? null : fijo - alq.contrato,
     sobra_banda: fijo === null ? null : [fijo - alq.max, fijo - alq.min],
     horas: suma(viajes.map((v) => v.horas)),
     viajes,

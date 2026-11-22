@@ -48,12 +48,14 @@ def test_un_sueldo_a_mano() -> None:
     z = _zona(_entrada(), "2807901")
     neto = (13447.5 + 7000 / 15000 * (23795.0 - 13447.5)) / 12
     assert z["neto"] == pytest.approx(neto)
-    assert z["alquiler"] == pytest.approx(19.6 * 45)
+    alquiler = 19.6 * 1.19 * 45  # contrato nuevo: P50 × factor_brecha del fixture
+    assert z["alquiler"] == pytest.approx(alquiler)
+    assert z["alquiler_contrato"] == pytest.approx(19.6 * 45)
     assert z["transporte"] == 16.57  # 10 viajes prorrateado, A-A 3 días
     assert z["cesta"] == pytest.approx(275.37 + 81.08 + 43.72)
-    assert z["sobra"] == pytest.approx(neto - 19.6 * 45 - 16.57 - 400.17)
+    assert z["sobra"] == pytest.approx(neto - alquiler - 16.57 - 400.17)
     assert z["horas"] == pytest.approx(9 * 2 * 3 * 3.7833 / 60)
-    assert z["esfuerzo"] == pytest.approx(19.6 * 45 / neto)
+    assert z["esfuerzo"] == pytest.approx(alquiler / neto)
 
 
 def test_referencia_por_defecto_y_precio_hora() -> None:
@@ -107,11 +109,29 @@ def test_banda_con_percentiles_e_intervalo() -> None:
     api = copy.deepcopy(API)
     api["alquiler"]["zonas"]["28065"] |= {"origen": "estimado", "ic": [9.0, 15.0]}
     obs, est = _zona(_entrada(), "28065"), _zona(_entrada(), "28065", api)
-    k = 1.035 * 45
+    k = 1.035 * 1.19 * 45
     fijo = obs["neto"] - obs["transporte"] - obs["cesta"]
     assert obs["sobra_banda"] == pytest.approx([fijo - 14.3 * k, fijo - 11.0 * k])
     assert est["sobra_banda"] == pytest.approx([fijo - 15.0 * k, fijo - 9.0 * k])
     assert obs["sobra_banda"][0] < obs["sobra"] < obs["sobra_banda"][1]
+
+
+def test_alquiler_de_contrato_nuevo_y_referencia_de_contratos_en_vigor() -> None:
+    z = _zona(_entrada(), "28065")
+    assert z["alquiler"] == pytest.approx(12.6 * 1.035 * 1.19 * 45)
+    assert z["alquiler"] / z["alquiler_contrato"] == pytest.approx(1.19)
+    assert z["sobra_contrato"] - z["sobra"] == pytest.approx(
+        z["alquiler"] - z["alquiler_contrato"]
+    )
+    assert z["sobra_contrato"] > z["sobra"]
+
+
+@pytest.mark.parametrize("brecha", [None, 0, -1.2, "1.2"])
+def test_factor_brecha_ausente_o_invalido_falla(brecha: object) -> None:
+    api = copy.deepcopy(API)
+    api["alquiler"]["zonas"]["28065"]["factor_brecha"] = brecha
+    with pytest.raises(ValueError, match="factor_brecha"):
+        calculo.calcular(api, _entrada())
 
 
 def test_zona_sin_dato_da_nulos() -> None:
@@ -120,8 +140,17 @@ def test_zona_sin_dato_da_nulos() -> None:
     r = calculo.calcular(api, _entrada())
     z = r["zonas"]["2807913"]
     assert [
-        z[k] for k in ("alquiler", "sobra", "sobra_banda", "esfuerzo", "precio_hora")
-    ] == [None] * 5
+        z[k]
+        for k in (
+            "alquiler",
+            "alquiler_contrato",
+            "sobra",
+            "sobra_contrato",
+            "sobra_banda",
+            "esfuerzo",
+            "precio_hora",
+        )
+    ] == [None] * 7
     assert z["horas"] > 0
     assert r["ref"] == "2807901"
     assert r["zonas"]["2807901"]["etiqueta"] == "referencia"

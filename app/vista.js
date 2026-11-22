@@ -182,6 +182,7 @@ export function contextoFicha(api, entrada, resultado, id) {
     testigos: dato.testigos,
     minTestigos: api.alquiler.meta.min_testigos,
     impreciso: imprecisas(api.alquiler).has(id),
+    brechaImprecisa: dato.brecha_pureza != null && dato.brecha_pureza < PUREZA_MIN,
     ipc: dato.factor_ipc === 1 ? null : mesIpc(api.alquiler.meta.ipc_hasta),
     ipcHasta: api.hogares.meta.ipc_hasta,
     tramo: escenario.cesta === "tramo" ? tramoDe(api.hogares.cesta_tramos, zona.neto) : null,
@@ -232,13 +233,20 @@ function frasePrecio(zona, ref) {
   return `Vivir aquí te cuesta ${p} € por cada hora de viaje que te ahorras (estimado)`;
 }
 
+const AEAT = "AEAT, Estadística de viviendas declaradas en el IRPF 2024";
+// Por debajo, el factor de un distrito se apoya en códigos postales que cruzan distritos (`brecha_pureza`, #320).
+const PUREZA_MIN = 0.35;
+
+const eur = (v) => `${euros.format(Math.abs(v))} €`;
+
+// Se decide con lo redondeado que se muestra: −0,3 € no es «te falten 0 €».
+// `Math.round(-0.5)` da −0, pero `Intl` muestra 0,5 como «1»: se redondea el valor absoluto, como lo hace `Intl`.
+const sobra = (v) => v >= 0 || Math.round(Math.abs(v)) === 0;
+
 function fraseBanda([bajo, alto]) {
-  const e = (v) => `${euros.format(Math.abs(v))} €`;
-  // Se decide con lo redondeado que se muestra: −0,3 € no es «te falten 0 €».
-  // `Math.round(-0.5)` da −0, pero `Intl` muestra 0,5 como «1»: se redondea el valor absoluto, como lo hace `Intl`.
-  if (bajo >= 0 || Math.round(Math.abs(bajo)) === 0) return `Te sobran entre ${e(bajo)} y ${e(alto)} al mes (estimado)`;
-  if (Math.round(alto) <= 0) return `Te faltan entre ${e(alto)} y ${e(bajo)} al mes (estimado)`;
-  return `Entre que te falten ${e(bajo)} y te sobren ${e(alto)} al mes (estimado)`;
+  if (sobra(bajo)) return `Según el piso, te sobran entre ${eur(bajo)} y ${eur(alto)} al mes (estimado)`;
+  if (Math.round(alto) <= 0) return `Según el piso, te faltan entre ${eur(alto)} y ${eur(bajo)} al mes (estimado)`;
+  return `Según el piso, entre que te falten ${eur(bajo)} y te sobren ${eur(alto)} al mes (estimado)`;
 }
 
 const MES = new Intl.DateTimeFormat("es-ES", { month: "long", year: "numeric", timeZone: "UTC" });
@@ -254,14 +262,14 @@ function fraseAlquiler(zona, { anio, ic, subida, ipc }) {
   if (subida > 0) {
     const dato = zona.origen === "estimado" ? `dato estimado de ${anio}` : `contratos de ${anio}`; // una zona imputada no tiene contratos
     const hasta = ipc === null ? "" : ` actualizad${zona.origen === "estimado" ? "o" : "os"} con el IPC de alquiler hasta ${ipc}`;
-    return `Alquiler con la subida del ${subida} %: ${rango} (${dato}${hasta} más la subida; simulación, estimado)`;
+    return `Alquiler con la subida del ${subida} %: ${rango} (${dato}${hasta}, con la brecha de los contratos nuevos más la subida; simulación, estimado)`;
   }
   if (zona.origen !== "estimado") {
-    if (ipc === null) return `Alquiler: ${rango} (contratos de ${anio}, tómalo como un suelo)`;
-    return `Alquiler: ${rango} (contratos de ${anio} actualizados con el IPC de alquiler hasta ${ipc}, tómalo como un suelo; estimado)`;
+    if (ipc === null) return `Alquiler de contrato nuevo: ${rango} (contratos de ${anio} con la brecha de los nuevos de la AEAT, tómalo como un suelo; estimado)`;
+    return `Alquiler de contrato nuevo: ${rango} (contratos de ${anio} actualizados con el IPC de alquiler hasta ${ipc} y con la brecha de los nuevos de la AEAT, tómalo como un suelo; estimado)`;
   }
   const intervalo = ic === null ? "sin intervalo publicado" : `intervalo de la estimación, de ${euros.format(ic[0])} a ${euros.format(ic[1])} €`;
-  return `Alquiler estimado: ${rango} (año ${anio}${ipc === null ? "" : `, actualizado con el IPC de alquiler hasta ${ipc}`}; ${intervalo})`;
+  return `Alquiler estimado: ${rango} (año ${anio}${ipc === null ? "" : `, actualizado con el IPC de alquiler hasta ${ipc}`}, con la brecha de los contratos nuevos; ${intervalo})`;
 }
 
 /**
@@ -278,10 +286,13 @@ export function lineasFicha(nombre, zona, metrica, ctx) {
   const quien = ctx.sueldos > 1 ? "Cada sueldo del hogar cobra de media" : "Tu trabajo te paga";
   const piso = (ESFUERZO_RECOMENDADO * zona.neto * ctx.m2) / zona.alquiler;
   lineas.push(
+    `Si firmas hoy un contrato nuevo, te ${sobra(zona.sobra) ? "sobran" : "faltan"} unos ${eur(zona.sobra)} al mes (estimado)`,
     fraseBanda(zona.sobra_banda),
+    `Con lo que pagan los inquilinos actuales te ${sobra(zona.sobra_contrato) ? "sobrarían" : "faltarían"} ${eur(zona.sobra_contrato)} al mes (estimado; los contratos nuevos cuestan más; fuente: ${AEAT})`,
     `Neto del hogar: ${euros.format(zona.neto)} € al mes${ctx.netoEstimado ? " (estimado)" : ""}`,
     fraseAlquiler(zona, ctx),
     ...(ctx.impreciso ? [`Impreciso: pocos alquileres declarados (${ctx.testigos} en ${ctx.anio}, menos de ${ctx.minTestigos}): unos pocos mueven la cifra (fuente: SERPAVI, MIVAU)`] : []),
+    ...(ctx.brechaImprecisa ? [`En este distrito la estimación del contrato nuevo es poco precisa: sus códigos postales se reparten entre varios distritos (estimado; fuente: ${AEAT})`] : []),
     `Transporte: ${conCentimos.format(zona.transporte)} € al mes (${[...new Set(ctx.titulos)].join(" y ")}) (estimado)`,
     fraseCesta(zona, ctx),
     `Viaje al trabajo${ctx.porPersona ? " del hogar" : ""}: ${unDecimal.format(zona.horas)} h al mes, ida y vuelta (estimado)`,
@@ -324,7 +335,7 @@ export function avisos(alquiler) {
   // shortcut: aviso global; si conviven zonas con y sin IPC no lo dice por zona, mejorar entonces.
   const conIpc = zonas.some((z) => z.factor_ipc !== 1);
   const lineas = [
-    `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? `, y la cifra está actualizada con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. Lo más probable es que te sobre menos de lo que ves aquí.`,
+    `El alquiler sale de contratos ya firmados y declarados, no de anuncios${conIpc ? `, y la cifra está actualizada con el IPC de alquiler hasta ${mesIpc(alquiler.meta.ipc_hasta)} (estimado)` : ""}. Va por debajo de lo que piden hoy: tómalo como un suelo. El precio de contrato nuevo también es un suelo: se actualiza con el IPC de los contratos en vigor, que sube menos que el de los nuevos. Lo más probable es que te sobre menos de lo que ves aquí.`,
     `El dato de alquiler es de ${alquiler.meta.anio_dato}${anterior ? "; en alguna zona, de un año anterior, y lo dice su ficha" : ""}.`,
   ];
   const estimadas = cuantas("estimado");
