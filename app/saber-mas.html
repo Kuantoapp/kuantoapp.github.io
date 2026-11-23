@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-  <!-- «Saber más» de la portada (#388): cómo funciona Kuanto, con qué datos y qué dicen ya. Sin JS: lo interactivo es CSS. -->
+  <!-- «Saber más» de la portada (#388): cómo funciona Kuanto, con qué datos y qué dicen ya. Lo interactivo es CSS; el JS solo resalta en el índice la sección activa. -->
   <nav class="navegacion" aria-label="Kuanto">
     <div class="navegacion-interior">
       <a href="index.html" class="marca">Kuanto</a>
@@ -26,14 +26,19 @@
     <section class="bloque heroe" aria-labelledby="titulo-saber">
       <h1 id="titulo-saber">Cómo funciona Kuanto.</h1>
       <p class="entradilla">Kuanto junta en una cifra tu sueldo neto, el alquiler, el transporte y la cesta básica de cada zona. Todo sale de datos públicos, cada número dice de dónde viene y la cuenta se hace en tu navegador.</p>
-      <ul class="indice">
+    </section>
+
+    <!-- Índice fijo bajo la barra (#417): fuera del héroe, para que `sticky` valga en toda la página. -->
+    <nav class="indice" aria-label="En esta página">
+      <ul>
         <li><a href="#pasos">De los datos al mapa</a></li>
         <li><a href="#piezas">Cada pieza</a></li>
         <li><a href="#datos">Lo que dicen los datos</a></li>
         <li><a href="#perfiles">Según tu sueldo</a></li>
+        <li><a href="#confianza">Cómo comprobarlo</a></li>
         <li><a href="#fuentes">Fuentes y licencias</a></li>
       </ul>
-    </section>
+    </nav>
 
     <section class="bloque" id="pasos" aria-labelledby="titulo-pasos">
       <h2 id="titulo-pasos">De los datos al mapa, en cuatro pasos.</h2>
@@ -86,7 +91,7 @@
           <p>La media esconde el reparto: en 2024, el centro y el sur de la capital cargan con más (fuente: <code>datos/analisis.json</code>), y por eso Kuanto mira zona a zona y no la media de la ciudad.</p>
         </div>
         <figure class="dato-imagen">
-          <img src="img/esfuerzo_cambio.png" width="811" height="1125" loading="lazy" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024 por municipio y distrito, en puntos porcentuales, con colores divergentes centrados en cero: unas zonas suben y otras bajan.">
+          <a href="img/esfuerzo_cambio.png" class="ampliar" title="Ver la imagen a tamaño completo"><img src="img/esfuerzo_cambio.png" width="811" height="1125" loading="lazy" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024 por municipio y distrito, en puntos porcentuales, con colores divergentes centrados en cero: unas zonas suben y otras bajan."></a>
           <figcaption>Cambio del esfuerzo de alquiler entre 2015 y 2024, en puntos porcentuales. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
         </figure>
       </div>
@@ -164,5 +169,6 @@
       <a href="index.html?herramienta" class="boton-principal">Calcular lo que te sobra</a>
     </section>
   </main>
+  <script type="module" src="indice.js"></script>
 </body>
 </html>

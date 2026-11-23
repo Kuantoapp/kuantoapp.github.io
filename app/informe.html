@@ -3,113 +3,183 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- El hash es el del bloque de estilos: si cambia el estilo, tests/test_csp_informe.py da el nuevo. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'sha256-klayEcGmL/G8fvZPEH8kWmzLD1tfylUMAwincPz/+rc='; base-uri 'none'; form-action 'none'">
-  <title>Kuanto · Informe de esfuerzo y Bono</title>
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Kuanto · Metodología</title>
   <link rel="icon" href="data:,">
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 0 1rem 2rem; background: #fff; color: #222; font: 1rem/1.55 system-ui, sans-serif; } /* sin-fuente: estilos */
-    main { max-width: 48rem; margin: 0 auto; }
-    h1 { margin: 1.5rem 0 0.25rem; font-size: 1.6rem; line-height: 1.25; }
-    h2 { margin: 2rem 0 0.5rem; font-size: 1.25rem; border-bottom: 1px solid #ccc; }
-    h3 { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; }
-    figure { margin: 1rem 0; }
-    img { display: block; width: 100%; height: auto; border: 1px solid #ddd; } /* sin-fuente: estilos */
-    figcaption, .pie { color: #555; font-size: 0.85rem; } /* sin-fuente: estilos */
-    blockquote { margin: 1rem 0; padding: 0.5rem 1rem; border-left: 4px solid #4a6fa5; background: #f2f5fa; }
-    li { margin: 0.3rem 0; }
-    code { font-size: 0.9em; }
-    a { color: #1f4e8c; }
-  </style>
+  <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-<main>
-  <h1>Esfuerzo de alquiler y Bono Alquiler Joven en la Comunidad de Madrid</h1>
-  <p class="pie">Informe para la Administración del proyecto Kuanto. Página estática: los datos están en <a href="datos/analisis.json"><code>datos/analisis.json</code></a> y se regeneran con <code>python -m mesobra.pipeline_analisis</code>.</p>
+  <!-- Metodología (#417): el informe de esfuerzo y Bono con la barra común y por capas. Textos y cifras, los de antes. -->
+  <nav class="navegacion" aria-label="Kuanto">
+    <div class="navegacion-interior">
+      <a href="index.html" class="marca">Kuanto</a>
+      <ul>
+        <li><a href="saber-mas.html">Cómo funciona</a></li>
+        <li class="nav-metodologia"><a href="informe.html" aria-current="page">Metodología</a></li>
+        <li><a href="index.html?herramienta" class="boton-nav">Calcular</a></li>
+      </ul>
+    </div>
+  </nav>
 
-  <h2>Qué se mide</h2>
-  <p><strong>Esfuerzo de alquiler.</strong> Es la cuantía mediana mensual de los alquileres de vivienda colectiva declarados a Hacienda (SERPAVI) dividida entre la renta neta media mensual por hogar (Atlas de Distribución de Renta de los Hogares del INE). Se calcula para cada municipio y para cada distrito de Madrid, de 2015 a 2024 (fuente: SERPAVI, MIVAU; ADRH, INE; elaboración propia). El año es el ejercicio del IRPF en las dos fuentes, así que no hay desfase entre numerador y denominador.</p>
-  <p>Un esfuerzo de la quinta parte quiere decir que el alquiler mediano de la zona equivale a la quinta parte de la renta media de sus hogares. Sirve para comparar zonas y años. No es lo que paga una persona concreta: eso lo calcula la herramienta de la <a href="index.html">página principal</a>.</p>
-  <p><strong>Bono Alquiler Joven.</strong> Son las solicitudes, aceptadas y rechazadas de la convocatoria de 2022 en cada municipio, divididas entre sus jóvenes de 18 a 35 años a 1 de enero de 2023 (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual de población, INE). La necesidad de cada municipio es su esfuerzo de alquiler de 2023, el año en que cae la mayor parte del plazo y del crédito de la convocatoria.</p>
+  <main class="pagina informe">
+    <section class="bloque heroe" aria-labelledby="titulo-informe">
+      <h1 id="titulo-informe">Esfuerzo de alquiler y Bono Alquiler Joven en la Comunidad de Madrid</h1>
+      <p class="entradilla">Informe para la Administración del proyecto Kuanto.</p>
+      <p class="aparte">Página estática: los datos están en <a href="datos/analisis.json"><code>datos/analisis.json</code></a> y se regeneran con <code>python -m mesobra.pipeline_analisis</code>.</p>
+    </section>
 
-  <h2>Cómo leer los mapas</h2>
-  <p>Cada mapa pinta los municipios y, en el recuadro, los 21 distritos de Madrid, que a la escala de la Comunidad apenas se verían (fuente: <code>datos/zonas.geojson</code>). El gris con trama marca las zonas sin dato: municipios sin dato publicado en el SERPAVI, que no publica la cifra cuando hay pocos contratos, y, desde 2020, los de menos de 100 residentes, a los que el INE asigna la renta común de su comarca (fuente: ADRH, INE). Madrid entero no se pinta como una zona más: se ve a través de sus distritos.</p>
-  <p>El borde negro marca las zonas con menos de 70 alquileres declarados de vivienda colectiva en el SERPAVI (los «testigos»: inmuebles con ingresos de alquiler declarados): en el mapa de 2024, ese año; en el del cambio, en 2015 o en 2024. Su valor es impreciso, porque con tan pocos alquileres un puñado mueve la mediana (fuente: SERPAVI, MIVAU).</p>
-  <p>Con 70 alquileres declarados, el alquiler mediano de una zona tendría un margen de unos ±8 % en el caso típico, y de más de ±12 % en algo más de una de cada diez zonas, las de alquileres más dispersos (intervalo del 95 % de la mediana; estimado; fuente: SERPAVI, elaboración propia). Con más alquileres declarados, el margen de una zona baja, pero ninguna está libre de error.</p>
+    <nav class="indice" aria-label="En esta página">
+      <ul>
+        <li><a href="#mide">Qué se mide</a></li>
+        <li><a href="#mapas">Cómo leer los mapas</a></li>
+        <li><a href="#esfuerzo">El esfuerzo en 2024</a></li>
+        <li><a href="#cambio">Cambio desde 2015</a></li>
+        <li><a href="#bono">Bono Alquiler Joven</a></li>
+        <li><a href="#limitaciones">Limitaciones</a></li>
+        <li><a href="#fuentes">Fuentes</a></li>
+      </ul>
+    </nav>
 
-  <h2>El esfuerzo en 2024</h2>
-  <figure>
-    <img src="img/esfuerzo_ultimo.png" alt="Mapa de la Comunidad de Madrid con el esfuerzo de alquiler de 2024 por municipio y distrito en cinco clases de igual número de zonas. Los valores más altos están en los distritos del centro y el sur de la capital; muchos municipios pequeños del norte y del este salen en gris, sin dato.">
-    <figcaption>Esfuerzo de alquiler en 2024 por zona, en quintiles. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
-  </figure>
-  <p>Los quintiles reparten las zonas con dato en cinco grupos del mismo tamaño, así que el mapa enseña la posición de cada zona respecto a las demás y no la distancia entre ellas. Con quintiles, 17 de los 21 distritos caen en el grupo más alto; con cinco intervalos iguales entre el 10,7 % y el 24,0 %, solo llegan 8, y casi la mitad de las zonas (77 de 157) queda entre el 13,3 % y el 16,0 % (fuente: SERPAVI y ADRH, 2024, elaboración propia).</p>
-  <p>En 2024 hay dato en 157 de las 199 zonas, y en la zona mediana el alquiler equivale al 15,3 % de la renta media del hogar (fuente: SERPAVI y ADRH, <code>datos/analisis.json</code>).</p>
-  <p>Los valores más altos están en el centro y el sur de la capital: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 %; Carabanchel, 22,6 %; Latina, 22,3 %; Villaverde, 22,1 % (fuente: SERPAVI y ADRH, 2024).</p>
-  <p>En el norte de la capital el esfuerzo baja: Chamartín, 16,0 %; Moncloa-Aravaca, 16,1 %; Salamanca, 19,0 % (fuente: SERPAVI y ADRH, 2024). Para Madrid entero es del 19,6 % (fuente: SERPAVI y ADRH, 2024).</p>
-  <p>Entre las zonas con al menos 70 alquileres declarados, los valores más bajos son los de Villanueva de la Cañada, 12,6 %; Algete, 12,8 %, y Cobeña, 12,9 % (fuente: SERPAVI y ADRH, 2024). Cadalso de los Vidrios sale con un 10,7 %, y Santa María de la Alameda y Navas del Rey con un 11,6 %, pero con 53, 11 y 45 alquileres declarados su valor es impreciso (fuente: SERPAVI y ADRH, 2024). El umbral de 70 es una elección propia: con 100 saldrían las mismas tres zonas; con 50 entrarían Cadalso de los Vidrios y Colmenar del Arroyo, 12,4 % (fuente: SERPAVI y ADRH, 2024).</p>
-  <p>El norte no sale más bajo por tener alquileres baratos. En Chamartín el alquiler mediano es de 1.126 € al mes, más que en Centro (950 €), pero la renta media del hogar es de 7.051 € al mes, un 78 % más que en Centro (3.965 €) (fuente: SERPAVI y ADRH, 2024).</p>
+    <section class="bloque" id="mide" aria-labelledby="titulo-mide">
+      <h2 id="titulo-mide">Qué se mide</h2>
+      <div class="piezas">
+        <article class="pieza">
+          <h3>Esfuerzo de alquiler</h3>
+          <p>Es la cuantía mediana mensual de los alquileres de vivienda colectiva declarados a Hacienda (SERPAVI) dividida entre la renta neta media mensual por hogar (Atlas de Distribución de Renta de los Hogares del INE). Se calcula para cada municipio y para cada distrito de Madrid, de 2015 a 2024 (fuente: SERPAVI, MIVAU; ADRH, INE; elaboración propia). El año es el ejercicio del IRPF en las dos fuentes, así que no hay desfase entre numerador y denominador.</p>
+          <p>Un esfuerzo de la quinta parte quiere decir que el alquiler mediano de la zona equivale a la quinta parte de la renta media de sus hogares. Sirve para comparar zonas y años. No es lo que paga una persona concreta: eso lo calcula la herramienta de la <a href="index.html">página principal</a>.</p>
+        </article>
+        <article class="pieza">
+          <h3>Bono Alquiler Joven</h3>
+          <p>Son las solicitudes, aceptadas y rechazadas de la convocatoria de 2022 en cada municipio, divididas entre sus jóvenes de 18 a 35 años a 1 de enero de 2023 (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual de población, INE). La necesidad de cada municipio es su esfuerzo de alquiler de 2023, el año en que cae la mayor parte del plazo y del crédito de la convocatoria.</p>
+        </article>
+      </div>
+    </section>
 
-  <h2>Cambio desde 2015</h2>
-  <figure>
-    <img src="img/esfuerzo_cambio.png" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024, en puntos porcentuales, con colores divergentes centrados en cero. Hay zonas que suben y zonas que bajan repartidas por todo el territorio, sin un patrón general de subida.">
-    <figcaption>Cambio del esfuerzo entre 2015 y 2024, en puntos porcentuales; los cortes son simétricos en torno a cero. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
-  </figure>
-  <p>De las 142 zonas con dato en 2015 y en 2024, el esfuerzo sube en 68 y la mediana del cambio es de −0,06 puntos porcentuales: prácticamente plano (fuente: SERPAVI y ADRH, sin la fila de Madrid entero).</p>
-  <p>Los cortes del mapa son simétricos en torno a 0. Con cortes fijos de ±0,5 y ±1 punto, 15 de las 142 zonas cambiarían de clase (17 si cada corte se asigna a la clase de abajo) y el mensaje sería el mismo: 91 zonas se mueven menos de un punto (fuente: SERPAVI y ADRH, elaboración propia).</p>
-  <p>En Madrid entero pasa del 19,1 % en 2015 a un máximo del 21,0 % en 2020 y vuelve al 19,6 % en 2024 (fuente: SERPAVI y ADRH). Entre las zonas con al menos 70 alquileres declarados en 2015 y en 2024, el esfuerzo baja más en Chinchón (3,1 puntos) y en Moraleja de Enmedio (2,6) y sube más en los distritos de Salamanca (2,3) y Retiro (1,8) (fuente: SERPAVI y ADRH, 2015-2024). Pelayos de la Presa baja 4,0 puntos, pero con 34 alquileres declarados en 2015 ese cambio es impreciso (fuente: SERPAVI y ADRH). Las mayores bajadas dependen del umbral: Chinchón tiene 76 en uno de los dos años y Moraleja, 80, y con 100 serían Mejorada del Campo (2,2 puntos) y Loeches (1,8). Salamanca y Retiro siguen siendo las mayores subidas con 30, 50, 70 o 100 (fuente: SERPAVI y ADRH, 2015-2024).</p>
-  <p>Esto no dice que alquilar hoy cueste lo mismo que en 2015. El SERPAVI recoge todos los inmuebles con ingresos de alquiler declarados en el año, incluidos los contratos firmados hace tiempo, y no el precio de los contratos nuevos (fuente: metodología del SERPAVI, MIVAU, 18-03-2026, §3.1). Con los contratos declarados, el peso del alquiler sobre la renta media apenas ha cambiado desde 2015; quien firma ahora un contrato puede estar pagando bastante más.</p>
+    <section class="bloque" id="mapas" aria-labelledby="titulo-mapas">
+      <h2 id="titulo-mapas">Cómo leer los mapas</h2>
+      <div class="capas">
+        <p>Cada mapa pinta los municipios y, en el recuadro, los 21 distritos de Madrid, que a la escala de la Comunidad apenas se verían (fuente: <code>datos/zonas.geojson</code>). El gris con trama marca las zonas sin dato: municipios sin dato publicado en el SERPAVI, que no publica la cifra cuando hay pocos contratos, y, desde 2020, los de menos de 100 residentes, a los que el INE asigna la renta común de su comarca (fuente: ADRH, INE). Madrid entero no se pinta como una zona más: se ve a través de sus distritos.</p>
+        <details><summary>Borde negro: zonas imprecisas</summary>
+          <p>El borde negro marca las zonas con menos de 70 alquileres declarados de vivienda colectiva en el SERPAVI (los «testigos»: inmuebles con ingresos de alquiler declarados): en el mapa de 2024, ese año; en el del cambio, en 2015 o en 2024. Su valor es impreciso, porque con tan pocos alquileres un puñado mueve la mediana (fuente: SERPAVI, MIVAU).</p>
+          <p>Con 70 alquileres declarados, el alquiler mediano de una zona tendría un margen de unos ±8 % en el caso típico, y de más de ±12 % en algo más de una de cada diez zonas, las de alquileres más dispersos (intervalo del 95 % de la mediana; estimado; fuente: SERPAVI, elaboración propia). Con más alquileres declarados, el margen de una zona baja, pero ninguna está libre de error.</p>
+        </details>
+      </div>
+    </section>
 
-  <h2>Bono Alquiler Joven frente a la necesidad</h2>
-  <figure>
-    <img src="img/bono_dispersion.png" alt="Gráfico de dispersión con un punto por municipio: en horizontal, el esfuerzo de alquiler de 2023; en vertical, las solicitudes aceptadas del Bono por cada mil jóvenes. Las líneas discontinuas marcan los terciles. Madrid y los siete municipios con necesidad alta y ayuda baja van rotulados.">
-    <figcaption>Esfuerzo de 2023 frente a solicitudes aceptadas por 1.000 jóvenes de 18 a 35 años, por municipio; el tamaño del punto crece con la población joven (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual, INE; SERPAVI y ADRH).</figcaption>
-  </figure>
-  <h3>Los datos</h3>
-  <p>La convocatoria de 2022 tuvo 51.735 solicitudes y 11.477 aceptadas (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid). De ellas, 3.352 solicitudes van en una fila «Otro», sin municipio, y ninguna se aceptó (fuente: Bono Alquiler Joven 2022).</p>
-  <p>Contando esa fila se aceptó el 22,2 % de las solicitudes; sin ella, el 23,7 % (fuente: Bono Alquiler Joven 2022, elaboración propia).</p>
-  <p>Hay solicitudes en 159 municipios. En 134 se puede calcular el esfuerzo; los otros 25, con 74 solicitudes, no tienen alquileres de vivienda colectiva en el SERPAVI y quedan fuera del gráfico y de los cálculos, nunca como cero (fuente: Bono 2022 y SERPAVI, elaboración propia).</p>
-  <p>Madrid tuvo 30.961 solicitudes y 7.324 aceptadas, 9,6 aceptadas por cada 1.000 jóvenes; en el municipio mediano de los 134 fueron 4,0 (fuente: Bono 2022; Censo anual, INE; elaboración propia).</p>
-  <p>Siete municipios están en el tercio con más esfuerzo y en el tercio con menos aceptadas por joven: Boadilla del Monte, Majadahonda, Talamanca de Jarama, Carabaña, Quijorna, Santorcaz y Villamanrique de Tajo (fuente: Bono 2022, Censo anual, SERPAVI y ADRH).</p>
-  <p>Cinco de ellos tienen menos de 800 jóvenes y en cuatro no se aceptó ninguna solicitud. Con tan pocos casos, una sola solicitud mueve mucho la tasa, así que esta lista sirve para mirar esos municipios de cerca, no para ordenarlos (fuente: Bono 2022 y Censo anual, INE).</p>
+    <section class="bloque" id="esfuerzo" aria-labelledby="titulo-esfuerzo">
+      <div class="dato">
+        <div class="dato-texto capas">
+          <h2 id="titulo-esfuerzo">El esfuerzo en 2024</h2>
+          <p class="destacado"><span class="cifra-grande">15,3 %</span> En 2024 hay dato en 157 de las 199 zonas, y en la zona mediana el alquiler equivale al 15,3 % de la renta media del hogar (fuente: SERPAVI y ADRH, <code>datos/analisis.json</code>).</p>
+        <details><summary>Dónde es más alto</summary>
+          <p>Los valores más altos están en el centro y el sur de la capital: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 %; Carabanchel, 22,6 %; Latina, 22,3 %; Villaverde, 22,1 % (fuente: SERPAVI y ADRH, 2024).</p>
+        </details>
+        <details><summary>Dónde es más bajo, y Madrid entero</summary>
+          <p>En el norte de la capital el esfuerzo baja: Chamartín, 16,0 %; Moncloa-Aravaca, 16,1 %; Salamanca, 19,0 % (fuente: SERPAVI y ADRH, 2024). Para Madrid entero es del 19,6 % (fuente: SERPAVI y ADRH, 2024).</p>
+          <p>Entre las zonas con al menos 70 alquileres declarados, los valores más bajos son los de Villanueva de la Cañada, 12,6 %; Algete, 12,8 %, y Cobeña, 12,9 % (fuente: SERPAVI y ADRH, 2024). Cadalso de los Vidrios sale con un 10,7 %, y Santa María de la Alameda y Navas del Rey con un 11,6 %, pero con 53, 11 y 45 alquileres declarados su valor es impreciso (fuente: SERPAVI y ADRH, 2024). El umbral de 70 es una elección propia: con 100 saldrían las mismas tres zonas; con 50 entrarían Cadalso de los Vidrios y Colmenar del Arroyo, 12,4 % (fuente: SERPAVI y ADRH, 2024).</p>
+        </details>
+        <details><summary>Por qué el norte sale más bajo</summary>
+          <p>El norte no sale más bajo por tener alquileres baratos. En Chamartín el alquiler mediano es de 1.126 € al mes, más que en Centro (950 €), pero la renta media del hogar es de 7.051 € al mes, un 78 % más que en Centro (3.965 €) (fuente: SERPAVI y ADRH, 2024).</p>
+        </details>
+        <details><summary>Por qué el mapa va en quintiles</summary>
+          <p>Los quintiles reparten las zonas con dato en cinco grupos del mismo tamaño, así que el mapa enseña la posición de cada zona respecto a las demás y no la distancia entre ellas. Con quintiles, 17 de los 21 distritos caen en el grupo más alto; con cinco intervalos iguales entre el 10,7 % y el 24,0 %, solo llegan 8, y casi la mitad de las zonas (77 de 157) queda entre el 13,3 % y el 16,0 % (fuente: SERPAVI y ADRH, 2024, elaboración propia).</p>
+        </details>
+        </div>
+        <figure class="dato-imagen">
+          <a href="img/esfuerzo_ultimo.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="811" height="1100" loading="lazy" src="img/esfuerzo_ultimo.png" alt="Mapa de la Comunidad de Madrid con el esfuerzo de alquiler de 2024 por municipio y distrito en cinco clases de igual número de zonas. Los valores más altos están en los distritos del centro y el sur de la capital; muchos municipios pequeños del norte y del este salen en gris, sin dato."></a>
+          <figcaption>Esfuerzo de alquiler en 2024 por zona, en quintiles. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
+        </figure>
+      </div>
+    </section>
 
-  <h3>Qué dice la estadística</h3>
-  <blockquote>En los municipios donde el alquiler se come más renta, más jóvenes piden el Bono. A todos se les rechaza en la misma proporción, así que hay más rechazos porque hay más solicitudes. La relación es débil y en parte se explica porque allí alquilan más jóvenes: es una pista, no una prueba.</blockquote>
-  <p>De dónde sale esa lectura, con las cifras de <code>bono_inferencia.json</code> (<code>python -m mesobra.bono_inferencia</code>):</p>
-  <ul>
-    <li>Más solicitudes donde el esfuerzo es mayor: en una binomial negativa de las solicitudes con la población joven como exposición, el esfuerzo tiene un efecto positivo al límite de la significación, p = 0,051, y esa p es optimista porque los residuos tienen autocorrelación espacial (I de Moran 0,19, p = 0,004) (fuente: <code>bono_inferencia.json</code>; estimado).</li>
-    <li>Modelo principal: regresión con error espacial (SEM con heterocedasticidad, GMM iterado) de las rechazadas por 1.000 jóvenes sobre el esfuerzo de 2023, con la renta media del hogar y el tope de alquiler del Bono como controles. Da β ≈ 87 y p = 0,043 con 5 vecinos y 0,048 con 8, en 134 municipios (fuente: <code>bono_inferencia.json</code>; estimado). Un punto más de esfuerzo va con unas 0,9 rechazadas más por 1.000 jóvenes (fuente: <code>bono_inferencia.json</code>; estimado).</li>
-    <li>La segunda vía, mínimos cuadrados con errores robustos a la autocorrelación (HAC), no lo confirma: p = 0,17 (fuente: <code>bono_inferencia.json</code>; estimado). Por eso la conclusión es «indicio» y no «relación robusta». El modelo principal y su regla se eligieron después de ver los datos.</li>
-    <li>La correlación parcial fijada antes de ver el resultado da r = 0,137, con p = 0,118 (fuente: <code>bono_inferencia.json</code>; estimado).</li>
-    <li>Más volumen, misma proporción: entre quienes solicitan, la proporción aceptada no cambia con el esfuerzo (p = 0,82, modelo quasi-binomial; fuente: <code>bono_inferencia.json</code>; estimado). «Rechazadas por 1.000 jóvenes» mide sobre todo cuántos piden el Bono, no que allí se rechace más.</li>
-    <li>En 112 de los 134 municipios, los que tienen porcentaje de jóvenes en alquiler del Censo 2021 (los que tienen dato publicado y al menos 300 personas de 20 a 34 años), ese porcentaje se correlaciona +0,27 con el esfuerzo y +0,61 con las solicitudes por 1.000 (fuente: Censo 2021, INE; <code>bono_inferencia.json</code>; estimado).</li>
-    <li>Teniendo en cuenta ese porcentaje, el efecto baja a β = 46 (p = 0,22) con 5 vecinos y a β = 34 (p = 0,37) con 8. Es un análisis exploratorio (fuente: <code>bono_inferencia.json</code>; estimado).</li>
-    <li>Sensibilidad, sin elegir la que más conviene: en esos 112 municipios el modelo principal sale significativo (p = 0,022 y 0,030), y con los jóvenes en vivienda alquilada como denominador no es concluyente (r = 0,153) (fuente: <code>bono_inferencia.json</code>; estimado).</li>
-  </ul>
-  <p>Los rechazos no se pueden leer como «demanda sin crédito»: mezclan a quien no cumplía los requisitos y a quien llegó cuando el crédito ya se había agotado, y el conjunto de datos abiertos por municipio no separa los motivos (fuente: Orden de 1-08-2024, BOCM-20240816-2, y Orden de 6-11-2023, BOCM-20231114-19).</p>
+    <section class="bloque" id="cambio" aria-labelledby="titulo-cambio">
+      <div class="dato">
+        <div class="dato-texto capas">
+          <h2 id="titulo-cambio">Cambio desde 2015</h2>
+          <p class="destacado"><span class="cifra-grande">68 de 142</span> De las 142 zonas con dato en 2015 y en 2024, el esfuerzo sube en 68 y la mediana del cambio es de −0,06 puntos porcentuales: prácticamente plano (fuente: SERPAVI y ADRH, sin la fila de Madrid entero).</p>
+          <p>Esto no dice que alquilar hoy cueste lo mismo que en 2015. El SERPAVI recoge todos los inmuebles con ingresos de alquiler declarados en el año, incluidos los contratos firmados hace tiempo, y no el precio de los contratos nuevos (fuente: metodología del SERPAVI, MIVAU, 18-03-2026, §3.1). Con los contratos declarados, el peso del alquiler sobre la renta media apenas ha cambiado desde 2015; quien firma ahora un contrato puede estar pagando bastante más.</p>
+        <details><summary>Madrid entero y los mayores cambios</summary>
+          <p>En Madrid entero pasa del 19,1 % en 2015 a un máximo del 21,0 % en 2020 y vuelve al 19,6 % en 2024 (fuente: SERPAVI y ADRH). Entre las zonas con al menos 70 alquileres declarados en 2015 y en 2024, el esfuerzo baja más en Chinchón (3,1 puntos) y en Moraleja de Enmedio (2,6) y sube más en los distritos de Salamanca (2,3) y Retiro (1,8) (fuente: SERPAVI y ADRH, 2015-2024). Pelayos de la Presa baja 4,0 puntos, pero con 34 alquileres declarados en 2015 ese cambio es impreciso (fuente: SERPAVI y ADRH). Las mayores bajadas dependen del umbral: Chinchón tiene 76 en uno de los dos años y Moraleja, 80, y con 100 serían Mejorada del Campo (2,2 puntos) y Loeches (1,8). Salamanca y Retiro siguen siendo las mayores subidas con 30, 50, 70 o 100 (fuente: SERPAVI y ADRH, 2015-2024).</p>
+        </details>
+        <details><summary>Si los cortes fueran otros</summary>
+          <p>Los cortes del mapa son simétricos en torno a 0. Con cortes fijos de ±0,5 y ±1 punto, 15 de las 142 zonas cambiarían de clase (17 si cada corte se asigna a la clase de abajo) y el mensaje sería el mismo: 91 zonas se mueven menos de un punto (fuente: SERPAVI y ADRH, elaboración propia).</p>
+        </details>
+        </div>
+        <figure class="dato-imagen">
+          <a href="img/esfuerzo_cambio.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="811" height="1125" loading="lazy" src="img/esfuerzo_cambio.png" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024, en puntos porcentuales, con colores divergentes centrados en cero. Hay zonas que suben y zonas que bajan repartidas por todo el territorio, sin un patrón general de subida."></a>
+          <figcaption>Cambio del esfuerzo entre 2015 y 2024, en puntos porcentuales; los cortes son simétricos en torno a cero. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
+        </figure>
+      </div>
+    </section>
 
-  <h2>Limitaciones</h2>
-  <ul>
-    <li>La renta es la media de todos los hogares, propietarios incluidos, que suelen ganar más que quien alquila. El indicador subestima el esfuerzo de los inquilinos, y al ser una media los ingresos altos la empujan hacia arriba.</li>
-    <li>El SERPAVI son contratos declarados, no precios de oferta, y solo vivienda colectiva. Incluye contratos antiguos, así que va por detrás del mercado.</li>
-    <li>Del Bono hay un solo año, la convocatoria de 2022, comparada con el esfuerzo de 2023. Con un año no se puede ver si la ayuda sigue a la necesidad con el tiempo.</li>
-    <li>El conjunto de datos por municipio no da el motivo de los rechazos: no cumplir requisitos y crédito agotado van juntos. La Orden de 1-08-2024 mandó publicar en la sede electrónica el listado de excluidos con su motivo, solicitante a solicitante; este informe no lo usa (fuente: Orden de 1-08-2024, BOCM-20240816-2).</li>
-    <li>Con menos de 70 alquileres declarados en el SERPAVI, el esfuerzo de una zona es impreciso. Los mapas lo marcan con borde negro, y los extremos del texto se dan solo entre zonas con más alquileres declarados (fuente: SERPAVI, MIVAU, recuento de inmuebles por zona).</li>
-    <li>La solicitud cuenta en el municipio del piso, no en el de residencia; cuenta solicitudes, no personas, y el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen los requisitos.</li>
-    <li>Son datos por municipio: lo que pasa en un municipio no se puede atribuir a cada joven que vive en él (falacia ecológica). Madrid entra en el Bono como un solo municipio.</li>
-    <li>Los municipios sin esfuerzo son pequeños o rurales, así que el resultado del Bono habla de los municipios urbanos.</li>
-    <li>Es una correlación entre municipios, no un efecto causal.</li>
-  </ul>
+    <section class="bloque" id="bono" aria-labelledby="titulo-bono">
+      <h2 id="titulo-bono">Bono Alquiler Joven frente a la necesidad</h2>
+      <figure class="dato-imagen figura-ancha">
+        <a href="img/bono_dispersion.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="1129" height="909" loading="lazy" src="img/bono_dispersion.png" alt="Gráfico de dispersión con un punto por municipio: en horizontal, el esfuerzo de alquiler de 2023; en vertical, las solicitudes aceptadas del Bono por cada mil jóvenes. Las líneas discontinuas marcan los terciles. Madrid y los siete municipios con necesidad alta y ayuda baja van rotulados."></a>
+        <figcaption>Esfuerzo de 2023 frente a solicitudes aceptadas por 1.000 jóvenes de 18 a 35 años, por municipio; el tamaño del punto crece con la población joven (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual, INE; SERPAVI y ADRH).</figcaption>
+      </figure>
+      <div class="capas">
+        <h3>Qué dice la estadística</h3>
+        <blockquote>En los municipios donde el alquiler se come más renta, más jóvenes piden el Bono. A todos se les rechaza en la misma proporción, así que hay más rechazos porque hay más solicitudes. La relación es débil y en parte se explica porque allí alquilan más jóvenes: es una pista, no una prueba.</blockquote>
+        <details><summary>Las cifras del modelo</summary>
+          <p>De dónde sale esa lectura, con las cifras de <code>bono_inferencia.json</code> (<code>python -m mesobra.bono_inferencia</code>):</p>
+          <ul>
+          <li>Más solicitudes donde el esfuerzo es mayor: en una binomial negativa de las solicitudes con la población joven como exposición, el esfuerzo tiene un efecto positivo al límite de la significación, p = 0,051, y esa p es optimista porque los residuos tienen autocorrelación espacial (I de Moran 0,19, p = 0,004) (fuente: <code>bono_inferencia.json</code>; estimado).</li>
+          <li>Modelo principal: regresión con error espacial (SEM con heterocedasticidad, GMM iterado) de las rechazadas por 1.000 jóvenes sobre el esfuerzo de 2023, con la renta media del hogar y el tope de alquiler del Bono como controles. Da β ≈ 87 y p = 0,043 con 5 vecinos y 0,048 con 8, en 134 municipios (fuente: <code>bono_inferencia.json</code>; estimado). Un punto más de esfuerzo va con unas 0,9 rechazadas más por 1.000 jóvenes (fuente: <code>bono_inferencia.json</code>; estimado).</li>
+          <li>La segunda vía, mínimos cuadrados con errores robustos a la autocorrelación (HAC), no lo confirma: p = 0,17 (fuente: <code>bono_inferencia.json</code>; estimado). Por eso la conclusión es «indicio» y no «relación robusta». El modelo principal y su regla se eligieron después de ver los datos.</li>
+          <li>La correlación parcial fijada antes de ver el resultado da r = 0,137, con p = 0,118 (fuente: <code>bono_inferencia.json</code>; estimado).</li>
+          <li>Más volumen, misma proporción: entre quienes solicitan, la proporción aceptada no cambia con el esfuerzo (p = 0,82, modelo quasi-binomial; fuente: <code>bono_inferencia.json</code>; estimado). «Rechazadas por 1.000 jóvenes» mide sobre todo cuántos piden el Bono, no que allí se rechace más.</li>
+          <li>En 112 de los 134 municipios, los que tienen porcentaje de jóvenes en alquiler del Censo 2021 (los que tienen dato publicado y al menos 300 personas de 20 a 34 años), ese porcentaje se correlaciona +0,27 con el esfuerzo y +0,61 con las solicitudes por 1.000 (fuente: Censo 2021, INE; <code>bono_inferencia.json</code>; estimado).</li>
+          <li>Teniendo en cuenta ese porcentaje, el efecto baja a β = 46 (p = 0,22) con 5 vecinos y a β = 34 (p = 0,37) con 8. Es un análisis exploratorio (fuente: <code>bono_inferencia.json</code>; estimado).</li>
+          <li>Sensibilidad, sin elegir la que más conviene: en esos 112 municipios el modelo principal sale significativo (p = 0,022 y 0,030), y con los jóvenes en vivienda alquilada como denominador no es concluyente (r = 0,153) (fuente: <code>bono_inferencia.json</code>; estimado).</li>
+          </ul>
+        </details>
+        <p>Los rechazos no se pueden leer como «demanda sin crédito»: mezclan a quien no cumplía los requisitos y a quien llegó cuando el crédito ya se había agotado, y el conjunto de datos abiertos por municipio no separa los motivos (fuente: Orden de 1-08-2024, BOCM-20240816-2, y Orden de 6-11-2023, BOCM-20231114-19).</p>
+        <details><summary>Los datos</summary>
+          <p>La convocatoria de 2022 tuvo 51.735 solicitudes y 11.477 aceptadas (fuente: Bono Alquiler Joven 2022, Comunidad de Madrid). De ellas, 3.352 solicitudes van en una fila «Otro», sin municipio, y ninguna se aceptó (fuente: Bono Alquiler Joven 2022).</p>
+          <p>Contando esa fila se aceptó el 22,2 % de las solicitudes; sin ella, el 23,7 % (fuente: Bono Alquiler Joven 2022, elaboración propia).</p>
+          <p>Hay solicitudes en 159 municipios. En 134 se puede calcular el esfuerzo; los otros 25, con 74 solicitudes, no tienen alquileres de vivienda colectiva en el SERPAVI y quedan fuera del gráfico y de los cálculos, nunca como cero (fuente: Bono 2022 y SERPAVI, elaboración propia).</p>
+          <p>Madrid tuvo 30.961 solicitudes y 7.324 aceptadas, 9,6 aceptadas por cada 1.000 jóvenes; en el municipio mediano de los 134 fueron 4,0 (fuente: Bono 2022; Censo anual, INE; elaboración propia).</p>
+          <p>Siete municipios están en el tercio con más esfuerzo y en el tercio con menos aceptadas por joven: Boadilla del Monte, Majadahonda, Talamanca de Jarama, Carabaña, Quijorna, Santorcaz y Villamanrique de Tajo (fuente: Bono 2022, Censo anual, SERPAVI y ADRH).</p>
+          <p>Cinco de ellos tienen menos de 800 jóvenes y en cuatro no se aceptó ninguna solicitud. Con tan pocos casos, una sola solicitud mueve mucho la tasa, así que esta lista sirve para mirar esos municipios de cerca, no para ordenarlos (fuente: Bono 2022 y Censo anual, INE).</p>
+        </details>
+      </div>
+    </section>
 
-  <h2>Fuentes</h2>
-  <ul>
-    <li>SERPAVI, base de datos 2011-2024, vivienda colectiva. Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09 (fuente: <a href="https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx">MIVAU</a>).</li>
-    <li>Atlas de Distribución de Renta de los Hogares, tabla 31097, actualizada el 2026-10-15, y Censo anual de población, tabla 68542, actualizada el 2025-12-02. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/jaxiT3/Tabla.htm?t=31097">INE</a>).</li>
-    <li>Bono Alquiler Joven 2022, actualizado el 2026-02-03. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/ff697366-36f4-41a1-a966-f5ccf3b6db7c">portal de datos abiertos</a>).</li>
-    <li>Censo de Población 2021, personas por régimen de tenencia y edad, consulta a medida con referencia a 1-1-2021, hecha el 2026-11-16. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/Censo2021/">INE</a>).</li>
-    <li>Normas del Bono Alquiler Joven 2022: Acuerdo del Consejo de Gobierno de 14-09-2022 (extracto BOCM-20220920-16, apartados Primero y Quinto: edad de 18 a 35 años, tope de 600 o 900 € según el Anexo II y concesión mientras haya crédito disponible; texto completo en BDNS 648964); Orden de 6-11-2023 (BOCM-20231114-19), que declara agotado el crédito, y Orden de 1-08-2024 (BOCM-20240816-2), que excluye por no reunir los requisitos o por crédito agotado (art. 9 del Acuerdo) (fuente: <a href="https://www.bocm.es/bocm-20220920-16">BOCM</a>).</li>
-  </ul>
-  <p class="pie">Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Comunidad de Madrid participan en este proyecto ni lo patrocinan.</p>
-</main>
+    <section class="bloque" id="limitaciones" aria-labelledby="titulo-limitaciones">
+      <h2 id="titulo-limitaciones">Limitaciones</h2>
+      <ul class="avisos-portada">
+        <li>La renta es la media de todos los hogares, propietarios incluidos, que suelen ganar más que quien alquila. El indicador subestima el esfuerzo de los inquilinos, y al ser una media los ingresos altos la empujan hacia arriba.</li>
+        <li>El SERPAVI son contratos declarados, no precios de oferta, y solo vivienda colectiva. Incluye contratos antiguos, así que va por detrás del mercado.</li>
+        <li>Del Bono hay un solo año, la convocatoria de 2022, comparada con el esfuerzo de 2023. Con un año no se puede ver si la ayuda sigue a la necesidad con el tiempo.</li>
+        <li>El conjunto de datos por municipio no da el motivo de los rechazos: no cumplir requisitos y crédito agotado van juntos. La Orden de 1-08-2024 mandó publicar en la sede electrónica el listado de excluidos con su motivo, solicitante a solicitante; este informe no lo usa (fuente: Orden de 1-08-2024, BOCM-20240816-2).</li>
+        <li>Con menos de 70 alquileres declarados en el SERPAVI, el esfuerzo de una zona es impreciso. Los mapas lo marcan con borde negro, y los extremos del texto se dan solo entre zonas con más alquileres declarados (fuente: SERPAVI, MIVAU, recuento de inmuebles por zona).</li>
+        <li>La solicitud cuenta en el municipio del piso, no en el de residencia; cuenta solicitudes, no personas, y el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen los requisitos.</li>
+        <li>Son datos por municipio: lo que pasa en un municipio no se puede atribuir a cada joven que vive en él (falacia ecológica). Madrid entra en el Bono como un solo municipio.</li>
+        <li>Los municipios sin esfuerzo son pequeños o rurales, así que el resultado del Bono habla de los municipios urbanos.</li>
+        <li>Es una correlación entre municipios, no un efecto causal.</li>
+      </ul>
+    </section>
+
+    <section class="bloque" id="fuentes" aria-labelledby="titulo-fuentes">
+      <h2 id="titulo-fuentes">Fuentes</h2>
+      <ul class="lista-fuentes">
+        <li>SERPAVI, base de datos 2011-2024, vivienda colectiva. Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09 (fuente: <a href="https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx">MIVAU</a>).</li>
+        <li>Atlas de Distribución de Renta de los Hogares, tabla 31097, actualizada el 2026-10-15, y Censo anual de población, tabla 68542, actualizada el 2025-12-02. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/jaxiT3/Tabla.htm?t=31097">INE</a>).</li>
+        <li>Bono Alquiler Joven 2022, actualizado el 2026-02-03. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/ff697366-36f4-41a1-a966-f5ccf3b6db7c">portal de datos abiertos</a>).</li>
+        <li>Censo de Población 2021, personas por régimen de tenencia y edad, consulta a medida con referencia a 1-1-2021, hecha el 2026-11-16. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/Censo2021/">INE</a>).</li>
+        <li>Normas del Bono Alquiler Joven 2022: Acuerdo del Consejo de Gobierno de 14-09-2022 (extracto BOCM-20220920-16, apartados Primero y Quinto: edad de 18 a 35 años, tope de 600 o 900 € según el Anexo II y concesión mientras haya crédito disponible; texto completo en BDNS 648964); Orden de 6-11-2023 (BOCM-20231114-19), que declara agotado el crédito, y Orden de 1-08-2024 (BOCM-20240816-2), que excluye por no reunir los requisitos o por crédito agotado (art. 9 del Acuerdo) (fuente: <a href="https://www.bocm.es/bocm-20220920-16">BOCM</a>).</li>
+      </ul>
+      <p class="fuentes-portada">Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Comunidad de Madrid participan en este proyecto ni lo patrocinan.</p>
+    </section>
+
+    <section class="bloque cierre" aria-labelledby="titulo-cierre">
+      <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
+      <p class="entradilla">Elige tu sueldo, tu hogar y dónde trabajas, y mira el mapa entero de la Comunidad.</p>
+      <a href="index.html?herramienta" class="boton-principal">Calcular lo que te sobra</a>
+    </section>
+  </main>
+  <script type="module" src="indice.js"></script>
 </body>
 </html>

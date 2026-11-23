@@ -20,6 +20,8 @@
   --r-3: 16px;
   --curva: cubic-bezier(0.2, 0, 0, 1);
   --alto-nav: 56px;
+  --relleno-bloque: clamp(64px, 10vw, 128px); /* arriba y abajo de cada bloque; el salto del índice lo descuenta */
+  --alto-indice: 61px; /* índice fijo de «Cómo funciona» y la metodología: 44 px de píldora, 16 de aire y la línea */
   --pierdes: #b2182b; /* extremos de la paleta divergente del mapa (vista.js) */
   --ganas: #01665e;
   --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -210,7 +212,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .navegacion .boton-nav:focus-visible { outline-color: var(--texto); outline-offset: 2px; }
 .pagina a { color: var(--acento); text-underline-offset: 3px; }
 .pagina a:hover { color: var(--acento-fuerte); }
-.bloque { padding-block: clamp(64px, 10vw, 128px); border-bottom: 1px solid var(--linea); }
+.bloque { padding-block: var(--relleno-bloque); border-bottom: 1px solid var(--linea); }
 .pagina h1, .pagina h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; }
 .pagina h1 { max-width: 14ch; font-size: clamp(40px, 7.5vw, 88px); }
 .pagina h2 { max-width: 18ch; font-size: clamp(32px, 5vw, 56px); }
@@ -243,13 +245,15 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .remate { grid-column: 2; margin: 8px 0 0; font-size: 21px; line-height: 1.4; }
 
 /* El dato: la cifra grande y tabular junto al mapa del informe. */
-.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; } /* arriba: al saltar desde el índice, la figura queda entera a la vista */
 .destacado { margin: 32px 0 16px; color: var(--texto-2); font-size: 21px; line-height: 1.4; }
 .cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .dato-texto p:not(.destacado) { color: var(--texto-2); }
 .dato-texto > a { display: inline-flex; align-items: center; min-height: 44px; }
 .dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
-.dato-imagen img { display: block; width: 100%; max-height: 640px; height: auto; object-fit: contain; border-radius: 4px; }
+/* La imagen entera en la zona visible: bajo la barra y el índice, con aire para el relleno y el pie (#417). */
+.dato-imagen img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 136px); margin-inline: auto; object-fit: contain; border-radius: 4px; }
+.ampliar { display: block; width: fit-content; max-width: 100%; margin-inline: auto; cursor: zoom-in; }
 .dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
 
 /* Así sale la cifra: la fórmula en la tarjeta de firma (blanca, radio de 16 px y línea fina). */
@@ -292,10 +296,24 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* «Cómo funciona» (#388): mismo sistema que la portada; lo interactivo, sin JS. */
 .pagina h3 { margin: 0 0 8px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
-.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
-.indice a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--linea-control); border-radius: 999px; color: var(--texto); font-size: 15px; text-decoration: none; transition: border-color 0.15s var(--curva); }
+/* Índice de la página: se queda fijo bajo la barra al bajar; en pantallas estrechas se desplaza en horizontal. */
+.indice { position: sticky; top: var(--alto-nav); z-index: 9; height: var(--alto-indice); background: var(--fondo); border-bottom: 1px solid var(--linea); }
+.indice ul { display: flex; gap: 8px; width: min(72rem, 100% - 48px); height: 100%; margin: 0 auto; padding: 8px 0; overflow-x: auto; list-style: none; scrollbar-width: none; } /* las píldoras cortadas en el borde ya dicen que se desplaza */
+.indice ul::-webkit-scrollbar { display: none; }
+.indice a:focus-visible { outline-offset: -3px; } /* por dentro: la lista recorta lo que sobresale */
+/* Con ratón no hay gesto para desplazar en horizontal: barra fina visible. */
+@media (hover: hover) and (pointer: fine) {
+  .indice ul { padding: 4px 0 0; overflow-y: hidden; scrollbar-width: thin; } /* 4 + 44 + la barra (unos 10 px) caben en el alto */
+  .indice ul::-webkit-scrollbar { display: block; }
+}
+@media (max-width: 40rem) {
+  .indice ul { width: calc(100% - 32px); }
+}
+.indice a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--linea-control); border-radius: 999px; color: var(--texto); font-size: 15px; text-decoration: none; white-space: nowrap; transition: border-color 0.15s var(--curva); }
 .pagina .indice a:hover { border-color: var(--acento); color: var(--acento); }
-.pagina section[id] { scroll-margin-top: var(--alto-nav); }
+.pagina .indice a[aria-current="location"] { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+/* Al saltar desde el índice, el relleno superior de la sección queda bajo el índice y el título, 24 px por debajo: así la figura cabe entera. */
+.pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) - var(--relleno-bloque) + 24px); }
 .pasos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin: 48px 0 0; padding: 0; list-style: none; counter-reset: paso; }
 .pasos li { position: relative; padding-top: 56px; counter-increment: paso; }
 .pasos li::before { content: counter(paso); position: absolute; top: 0; left: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--linea-control); border-radius: 50%; background: var(--superficie); color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -368,3 +386,18 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .pasos, .serie { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .barras li { grid-template-columns: 2rem minmax(0, 1fr) 4rem; gap: 8px; }
 }
+
+/* Metodología (#417): el informe por capas. Se ve la idea de cada sección y el detalle se despliega. */
+.capas > p, .capas > h3 { margin: 16px 0 0; }
+.capas > p { color: var(--texto-2); }
+.capas > h3 { margin-top: 40px; }
+.capas details { margin-top: 8px; border-top: 1px solid var(--linea); border-radius: 0; }
+.capas details:last-of-type { border-bottom: 1px solid var(--linea); }
+.capas details > :not(summary) { margin: 0 0 16px; color: var(--texto-2); font-size: 16px; }
+.capas details li { margin: 8px 0; }
+.capas .destacado { margin-top: 24px; }
+.informe blockquote { margin: 16px 0 24px; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-size: clamp(19px, 2.4vw, 24px); line-height: 1.4; letter-spacing: -0.01em; }
+.figura-ancha { margin: 32px 0 0; }
+.figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 296px); } /* además, el titular de dos líneas que va encima */
+.lista-fuentes { margin: 32px 0 0; padding-left: 20px; color: var(--texto-2); font-size: 16px; }
+.lista-fuentes li { margin: 12px 0; overflow-wrap: anywhere; }
