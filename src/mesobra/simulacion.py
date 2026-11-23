@@ -41,13 +41,15 @@ Decisiones y sentido de su sesgo:
    parentesco de 1.er grado o todos de hasta 35 años y firma el contrato (la pareja de 29); la madre suma su hijo, sin
    ingresos; en habitación, solo la persona arrendataria. El RD suma los de los convivientes: con esa regla la pareja
    queda fuera (sensibilidad `hogar`).
-10. Los ingresos son los del último ejercicio con plazo vencido antes de la solicitud (FAQ 2024, pregunta 2): 2024
-    hasta el 30-6-2026 y 2025 después. Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
+10. Los ingresos son los del último ejercicio con plazo vencido antes de la solicitud (FAQ 2024, pregunta 2): 2023
+    hasta el 30-6-2025, 2024 del 1-7-2025 al 30-6-2026 y 2025 después. Supuesto: solicitud en ese tramo (ejercicio
+    2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
     (`sueldos_2024`), no el llevado a 2026 (con el de 2026 la pareja, de 24.215 a 25.769 € de base, pasaría de los
     25.200 € y quedaría fuera por un ajuste de precios, no de ingresos reales). Con 2025 (ETCL ×1,0333, estimado) la
     base de la pareja sería de unos 25.089 €: dentro por 111 €. El SMI y la enfermera usan su sueldo de 2026: el SMI
     está por debajo del umbral en los dos años; la nómina del SERMAS de 2024 no está cargada y la enfermera queda
-    fuera por 1.244 € (base de 26.444 €). El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
+    fuera por 1.244 € con 2026 (base de 26.444 €) y por unos 824 € con 2025 (su bruto sin la subida del 1,5 %,
+    29.971,80 €, estimado); con 2024 el margen sería estrecho y depende de la subida de 2025, sin verificar. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
     de 2024) también lo usa la regla del art. 301 LGSS junto al SMI y el transporte de 2026: no cambia ningún
     resultado (el salario supera el SMI mensual en 484 € o más y el 20 % del salario es de al menos 341 € al mes).
     La cotización y el art. 20 son los de 2026: en la pareja y la madre el art. 20 es 0 y la diferencia es de pocos
