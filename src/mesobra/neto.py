@@ -2,8 +2,10 @@
 
 `cuota_irpf` es la cuota anual de la declaración de 2026, no la retención de la nómina.
 Supuestos: sin deducciones reembolsables (arts. 81 y 81 bis LIRPF) ni autonómicas, así que
-neto <= bruto (lo exige `_netos` de `api_estatica`); sin el art. 81 bis el neto de un monoparental
-con dos hijos queda hasta 1.200 €/año por debajo del real (la app debe decirlo); tributación individual; menor de 65 años;
+neto <= bruto (lo exige `_netos` de `api_estatica`); sin ellas el neto real es mayor para la familia numerosa
+o el monoparental con dos hijos (81 bis.1.c: 1.200 €/año la general, 2.400 la especial, +600 por hijo sobre el mínimo
+de la categoría), por cada descendiente con discapacidad (81 bis.1.a: 1.200) y con la deducción de Madrid por alquiler
+de menores de 40 años (DL 1/2010, art. 8: hasta 1.237,20); la app avisa de la de familia numerosa; tributación individual; menor de 65 años;
 contrato indefinido; hijos de 3 a 24 años; sin otras rentas; bajo el SMI se supone jornada parcial y
 se cotiza por el bruto, sin base mínima; el mínimo por descendientes se prorratea (1/2 cada uno si
 no es monoparental, entero si lo es: convivencia solo con este progenitor, sin custodia compartida);
@@ -24,7 +26,7 @@ from mesobra import parametros_2026 as p
 CENTIMO = D("0.01")
 MESES = 12
 PAGAS = (12, 14)
-HIJOS = (0, 1, 2)
+HIJOS = tuple(range(6))
 BRUTOS = sorted({*range(12_000, 120_001, 250), *range(16_500, 21_501, 50)})
 
 
@@ -75,7 +77,9 @@ def _cuota(base: D, minimo: D, tramos: tuple[tuple[D, D, D], ...]) -> D:
 
 
 def _minimo(contribuyente: D, descendientes: tuple[D, ...], hijos: int, factor: D) -> D:
-    return contribuyente + factor * sum(descendientes[:hijos], D(0))
+    return contribuyente + factor * sum(
+        (descendientes[min(i, len(descendientes) - 1)] for i in range(hijos)), D(0)
+    )
 
 
 def cuota_irpf(bruto: D, cotiza: D, *, hijos: int, monoparental: bool) -> D:
@@ -132,7 +136,7 @@ def neto_mensual(
 
 
 def rejilla() -> pd.DataFrame:
-    """Tabla `netos`: bruto de la rejilla x 6 configuraciones, validada con su contrato."""
+    """Tabla `netos`: bruto de la rejilla x 12 configuraciones, validada con su contrato."""
     filas = []
     for bruto, hijos, mono in product(BRUTOS, HIJOS, (False, True)):
         cotiza = cotizacion(D(bruto))

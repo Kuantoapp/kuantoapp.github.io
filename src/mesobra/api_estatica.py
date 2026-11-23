@@ -341,7 +341,7 @@ def _alquiler(o):
     return p
 
 
-CONFIGURACION = {"hijos": ("entero", 0, 2), "monoparental": "booleano"}
+CONFIGURACION = {"hijos": ("entero", 0, 5), "monoparental": "booleano"}
 
 
 def _netos(o):
