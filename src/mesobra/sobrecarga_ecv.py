@@ -7,7 +7,8 @@ Eurostat la escribe con HY070G; en la ECV 2025 HY070G = HY070N en los 29.369 hog
 - El «reducido» de Eurostat es HH021 4 o 5 (alquiler inferior al de mercado o cesión gratuita).
 - Denominador ≤ 0 cuenta como sobrecargado, también en la cifra de control: por eso sale 36,0 % y
   no el 35,9 % de #190, que dejaba fuera un hogar con HY020 = −2.501 €.
-- Los blancos son «no aplicable»: se excluyen (resultado NaN).
+- Los blancos de HH070 son «falta el dato» (HH070_F = −1): se excluyen (resultado NaN); la cota de su
+  efecto está en docs/verificaciones/renta-vivienda.md.
 - El fichero público no trae DB050 ni DB060: el error estándar va por linealización con el hogar
   como unidad, y el intervalo usa un efecto de diseño 2 (supuesto).
 
@@ -23,6 +24,8 @@ import pandas as pd
 
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw/ine_ecv_microdatos_2025_2026-11-18"
+RAW_2024 = RAIZ / "data/raw/ine_ecv_microdatos_2024_2026-11-23"
+RAW_2023 = RAIZ / "data/raw/ine_ecv_microdatos_2023_2026-11-23"
 MADRID = "ES30"
 INQUILINOS = (3, 4)
 # shortcut: sin estrato ni sección (DB050, DB060) en el fichero público, efecto de diseño supuesto; mejorar si el INE los publica
@@ -34,14 +37,20 @@ def _leer(ruta: Path, columnas: list[str]) -> pd.DataFrame:
     return pd.read_csv(ruta, usecols=columnas, skipinitialspace=True)
 
 
-def hogares(carpeta: Path = RAW) -> pd.DataFrame:
-    """Una fila por hogar: región, peso del hogar, tenencia, rentas, gastos y peso de sus personas."""
-    d = _leer(carpeta / "ECV_Td_2025/CSV/esudb25d.csv", ["DB030", "DB040", "DB090"])
+def hogares(carpeta: Path = RAW, anio: int = 2025) -> pd.DataFrame:
+    """Una fila por hogar: región, peso del hogar, tenencia, rentas, gastos y peso de sus personas.
+
+    `anio` es el de la carpeta (2023, 2024 o 2025): los tres ficheros del INE tienen el mismo diseño.
+    """
+    aa = f"{anio % 100:02d}"
+    d = _leer(
+        carpeta / f"ECV_Td_{anio}/CSV/esudb{aa}d.csv", ["DB030", "DB040", "DB090"]
+    )
     h = _leer(
-        carpeta / "ECV_Th_2025/CSV/esudb25h.csv",
+        carpeta / f"ECV_Th_{anio}/CSV/esudb{aa}h.csv",
         ["HB030", "HH021", "HH060", "HH070", "HY020", "HY070N", "HX240"],
     )
-    r = _leer(carpeta / "ECV_Tr_2025/CSV/esudb25r.csv", ["RB030", "RB050"])
+    r = _leer(carpeta / f"ECV_Tr_{anio}/CSV/esudb{aa}r.csv", ["RB030", "RB050"])
     m = d.merge(
         h,
         left_on="DB030",

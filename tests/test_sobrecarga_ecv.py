@@ -10,6 +10,8 @@ from mesobra.sobrecarga_ecv import (
     INQUILINOS,
     MADRID,
     RAW,
+    RAW_2023,
+    RAW_2024,
     _supera,
     alquiler_30,
     control_f306,
@@ -78,6 +80,15 @@ def test_hogares_sin_personas(carpeta):
     ruta.write_text("\n".join(lineas[:-1]) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="sin personas"):
         hogares(carpeta)
+
+
+def test_hogares_otro_anio(carpeta):
+    # los ficheros de 2023 y 2024 son iguales salvo el año en las rutas (#274)
+    for ruta in sorted(carpeta.rglob("*25*"), key=lambda r: -len(r.parts)):
+        ruta.rename(ruta.with_name(ruta.name.replace("25", "24")))
+    assert len(hogares(carpeta, 2024)) == 5
+    with pytest.raises(FileNotFoundError):
+        hogares(carpeta, 2025)
 
 
 def test_reglas_a_mano(carpeta):
@@ -184,6 +195,70 @@ def test_eurostat_espana(h, tenencias, esperado):
 def test_eurostat_madrid(h):
     # Eurostat ilc_lvho07_r, ES30 2025
     assert _eurostat(h[h.DB040 == MADRID]) == pytest.approx(9.9, abs=0.05)
+
+
+CARPETAS = {2023: RAW_2023, 2024: RAW_2024}
+otro_anio = pytest.mark.parametrize(
+    "anio",
+    [
+        pytest.param(
+            a,
+            marks=pytest.mark.skipif(
+                not c.exists(), reason=f"faltan los microdatos de {a}"
+            ),
+        )
+        for a, c in CARPETAS.items()
+    ],
+)
+
+
+@otro_anio
+def test_eurostat_madrid_otros_anios(anio):
+    # Eurostat ilc_lvho07_r, ES30: 9,1 % (2023) y 11,2 % (2024), con la misma regla que 2025 (#274)
+    m = hogares(CARPETAS[anio], anio)
+    m = m[m.DB040 == MADRID]
+    esperado = {2023: 9.1, 2024: 11.2}[anio]
+    assert _eurostat(m) == pytest.approx(esperado, abs=0.05)
+
+
+@otro_anio
+def test_control_otros_anios(anio):
+    # Tabla de docs/verificaciones/renta-vivienda.md: misma regla (renta ≤ 0 sobrecargada) que 2025 (#274)
+    c = control_f306(hogares(CARPETAS[anio], anio))
+    tasas, ees, n = {
+        2023: ((31.0, 35.5), (2.4, 2.5), 526),
+        2024: ((37.6, 44.0), (2.5, 2.6), 614),
+    }[anio]
+    assert c.tasa.tolist() == pytest.approx(tasas, abs=0.05)
+    assert c.ee.tolist() == pytest.approx(ees, abs=0.05)
+    assert (c.n == n).all()
+
+
+@real
+@pytest.mark.skipif(
+    not all(c.exists() for c in CARPETAS.values()), reason="faltan 2023 o 2024"
+)
+def test_control_tres_anios_juntos(h):
+    # Fila «2023 a 2025 juntas» de la tabla: los hogares de los tres años en un solo DataFrame (#274)
+    tres = pd.concat(
+        [h, *(hogares(c, a) for a, c in CARPETAS.items())], ignore_index=True
+    )
+    c = control_f306(tres)
+    assert c.tasa.tolist() == pytest.approx((35.0, 40.5), abs=0.05)
+    assert c.ee.tolist() == pytest.approx((1.5, 1.5), abs=0.05)
+    assert (c.n == 1702).all()
+
+
+@real
+def test_cota_sin_gasto(h):
+    # 18 de los 580 inquilinos de ES30 no tienen HH070 (ni HH060): se acota la tasa de 2025 con ninguno
+    # y con todos sobrecargados (#274). El 36,0 % de control queda dentro.
+    q = h[(h.DB040 == MADRID) & h.HH021.isin(INQUILINOS)]
+    y = sobrecarga_control(q)
+    assert len(q) == 580 and y.isna().sum() == 18 and q.HH060[y.isna()].isna().all()
+    ninguno, todos = (tasa(y.fillna(v), q.DB090)[0] for v in (0.0, 1.0))
+    assert (ninguno, todos) == pytest.approx((35.1, 37.5), abs=0.05)
+    assert ninguno < control_f306(h).loc["gasto_40", "tasa"] < todos
 
 
 @real
