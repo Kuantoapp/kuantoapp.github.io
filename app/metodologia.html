@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Kuanto · Nota metodológica</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <!-- Nota metodológica de la herramienta (#109): describe el código y los ficheros de datos/ de main, no la ficha. -->
+  <nav class="navegacion" aria-label="Kuanto">
+    <div class="navegacion-interior">
+      <a href="index.html" class="marca">Kuanto</a>
+      <ul>
+        <li><a href="saber-mas.html">Cómo funciona</a></li>
+        <li class="nav-metodologia"><a href="informe.html">Metodología</a></li>
+        <li><a href="index.html?herramienta" class="boton-nav">Calcular</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="pagina informe">
+    <section class="bloque heroe" aria-labelledby="titulo-nota">
+      <h1 id="titulo-nota">Nota metodológica de la herramienta</h1>
+      <p class="entradilla">Qué calcula Kuanto, con qué datos, qué supone, dónde falla y cómo se ha comprobado.</p>
+      <p class="aparte">Describe el código y los ficheros de <a href="datos/"><code>datos/</code></a> publicados en el repositorio. El análisis del esfuerzo de alquiler y del Bono Alquiler Joven tiene su propia página: la <a href="informe.html">metodología del informe</a>.</p>
+    </section>
+
+    <nav class="indice" aria-label="En esta página">
+      <ul>
+        <li><a href="#calculo">Qué se calcula</a></li>
+        <li><a href="#fuentes">Fuentes</a></li>
+        <li><a href="#supuestos">Supuestos</a></li>
+        <li><a href="#cuota">Cuota, no retención</a></li>
+        <li><a href="#limites">Límites</a></li>
+        <li><a href="#validacion">Validación</a></li>
+        <li><a href="#mantenimiento">Mantenimiento</a></li>
+      </ul>
+    </nav>
+
+    <section class="bloque" id="calculo" aria-labelledby="titulo-calculo">
+      <h2 id="titulo-calculo">Qué se calcula</h2>
+      <div class="capas">
+        <p>La herramienta parte de un hogar, uno o dos sueldos y el lugar de trabajo de cada uno. Para cada zona donde ese hogar podría vivir da tres cifras: lo que le sobra al mes, las horas que pasa en el viaje al trabajo y lo que gana o pierde por cada hora de viaje de más. Las zonas son los 178 municipios de la Comunidad de Madrid distintos de la capital y los 21 distritos de Madrid, 199 en total (fuente: <code>datos/zonas.geojson</code>).</p>
+        <p>La cuenta está escrita dos veces, en Python (<code>src/mesobra/calculo.py</code>) para el servidor MCP y en JavaScript (<code>app/calculo.js</code>) para la web, y un test comprueba que las dos dan lo mismo.</p>
+      </div>
+      <div class="piezas">
+        <article class="pieza">
+          <h3>Lo que sobra</h3>
+          <p>Neto mensual del hogar menos alquiler, menos transporte y menos cesta básica, en euros al mes (fuente: <code>calculo.py</code>, supuesto 1). El neto mensual es el neto anual entre 12, sin repartir por pagas: con 14 pagas, cada nómina es menor que esa cifra, pero el total del año es el mismo.</p>
+        </article>
+        <article class="pieza">
+          <h3>Alquiler</h3>
+          <p>€/m² mediano de la zona × factor del IPC × factor de contrato nuevo × m² del hogar ÷ número de hogares que pagan el piso (fuente: <code>calculo.py</code>, supuesto 2). Los percentiles 25 y 75 del mismo dato dan la banda del sobrante: el alquiler barato da el sobrante alto y el caro, el bajo.</p>
+        </article>
+        <article class="pieza">
+          <h3>Transporte</h3>
+          <p>En transporte público, el título más barato al mes de cada persona que trabaja, más un Abono Joven por cada hijo de 15 a 25 años si se dan las edades (fuente: <code>datos/tarifas.json</code>, BOCM-20251231-2). En coche, 2 × km × días × semanas al mes × 0,26 €/km (fuente: Orden HFP/792/2023, art. único.1).</p>
+        </article>
+        <article class="pieza">
+          <h3>Cesta</h3>
+          <p>Alimentación, suministros del hogar (luz, gas, agua) y teléfono e Internet: el gasto medio por unidad de consumo de los hogares de Madrid, multiplicado por las unidades de consumo del hogar en la escala OCDE modificada (fuente: INE, Encuesta de Presupuestos Familiares de 2025, actualizada con el IPC hasta 2026-10; estimado).</p>
+        </article>
+        <article class="pieza">
+          <h3>Horas y precio de la hora</h3>
+          <p>Horas al mes = minutos de ida × 2 × días × 3,7833 semanas ÷ 60, sumadas para cada sueldo (fuente: <code>datos/tarifas.json</code>, calendario laboral de 2026, Decreto 75/2025). El precio de la hora es la diferencia de sobrante con la zona de referencia dividida entre la diferencia de horas: cuánto ganas o pierdes al mes por cada hora más de viaje.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="bloque" id="fuentes" aria-labelledby="titulo-fuentes">
+      <h2 id="titulo-fuentes">De dónde sale cada pieza</h2>
+      <p class="aparte">Cada fichero de <code>datos/</code> lleva en su bloque <code>meta</code> las fuentes con su enlace, su licencia y la fecha de actualización. Aquí va el resumen.</p>
+      <ul class="lista-fuentes">
+        <li><strong>Alquiler:</strong> SERPAVI 2011-2024 del Ministerio de Vivienda y Agenda Urbana, alquileres de vivienda colectiva declarados a Hacienda, último año 2024, actualizado el 2026-07-09 (condiciones de reutilización del MIVAU, RD 1495/2011). IPC del alquiler de la Comunidad de Madrid, INE tabla 76137, hasta 2026-10 (CC BY 4.0). Estadística de viviendas declaradas en el IRPF 2024 de la Agencia Tributaria, para el contrato nuevo (reutilización citando la fuente) (fuente: <code>datos/alquiler.json</code>).</li>
+        <li><strong>Neto:</strong> Ley del IRPF, Decreto Legislativo 1/2010 de la Comunidad de Madrid, Orden PJC/297/2026 de cotización y RDL 5/2026, con los parámetros de 2026 (textos del BOE; reutilización citando la fuente) (fuente: <code>datos/netos.json</code>).</li>
+        <li><strong>Transporte público:</strong> precios de 2026 del BOCM de 31-12-2025 (BOCM-20251231-2 con descuento y BOCM-20251231-3 sin él), RDL 17/2025, calendario laboral del Decreto 75/2025, fichas del CRTM y coronas tarifarias del CRTM de abril de 2025 (disposiciones oficiales y licencia de datos abiertos del CRTM) (fuente: <code>datos/tarifas.json</code>).</li>
+        <li><strong>Tiempos de viaje:</strong> los seis GTFS del CRTM descargados el 2026-11-15 (licencia de datos abiertos del CRTM, «Powered by CRTM») y el extracto de OpenStreetMap de Geofabrik del 2026-11-13 (© los colaboradores de OpenStreetMap, ODbL 1.0), calculados con r5py (fuente: <code>datos/tiempos.json</code>). Los ficheros de tiempos, zonas y alquiler, que usan datos de OpenStreetMap, se publican con ODbL; el método está en el <a href="https://github.com/yeraybc/DataMad-hackaton-2026">repositorio</a>.</li>
+        <li><strong>Coche:</strong> 0,26 €/km de la Orden HFP/792/2023 (BOE-A-2023-16461) y la red viaria de OpenStreetMap (fuente: <code>datos/tiempos.json</code>).</li>
+        <li><strong>Cesta:</strong> Encuesta de Presupuestos Familiares de 2025 de la Comunidad de Madrid (catálogo regional, CC BY 4.0), IPC del INE por subgrupos (tablas 76137 y 76127) y EPF de España de 2025 por nivel de ingresos (tablas 73809 y 73795) para el escenario por tramo (fuente: <code>datos/hogares.json</code>).</li>
+      </ul>
+      <p class="fuentes-portada">Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Agencia Tributaria, ni el CRTM, ni la Comunidad de Madrid participan en este proyecto ni lo patrocinan.</p>
+    </section>
+
+    <section class="bloque" id="supuestos" aria-labelledby="titulo-supuestos">
+      <h2 id="titulo-supuestos">Supuestos</h2>
+      <div class="capas">
+        <p>Cada supuesto está también en el código que lo aplica y en la nota <code>meta</code> del fichero de datos.</p>
+        <details><summary>El hogar y el piso</summary>
+          <ul>
+            <li>Cuatro perfiles de hogar: persona sola, piso compartido, pareja y familia monoparental. El formulario deja cambiar los adultos, los hijos (hasta 5), los m² y cuántos hogares comparten el piso (fuente: <code>datos/hogares.json</code>, formulario de la herramienta).</li>
+            <li>Vivienda de 69 m² para todos los perfiles: la mediana de la superficie mediana de las zonas en el SERPAVI, ponderada por alquileres declarados. Sobrestima el alquiler de quien vive solo (fuente: <code>datos/hogares.json</code>, SERPAVI).</li>
+            <li>Reparto del piso: el alquiler se divide entre los hogares que lo pagan (3 en el perfil «comparte»; 1 en la pareja, que suma dos sueldos, y en la monoparental, donde el hijo no paga). Cada hogar compra su comida. Los suministros y las comunicaciones se reparten contando cada hogar de más como un adulto, 0,5 unidades de consumo, lo que se queda corto si el otro hogar es una pareja o tiene hijos (fuente: <code>src/mesobra/hogares.py</code>).</li>
+            <li>Cada hijo cuenta 0,3 unidades de consumo, como un menor de 14 años (fuente: <code>hogares.py</code>, escala OCDE modificada de la EPF).</li>
+            <li>Edad de 30 años por defecto si no se da otra; la edad decide el Abono Joven, hasta los 25 años (fuente: <code>app/app.js</code>, ficha del Abono Joven del CRTM).</li>
+          </ul>
+        </details>
+        <details><summary>El alquiler</summary>
+          <ul>
+            <li>El precio de una zona es la mediana del €/m² de los contratos declarados de vivienda colectiva, sin unifamiliares, de su último año con dato: 2024 en 157 zonas y 2023 en una (fuente: <code>datos/alquiler.json</code>, SERPAVI).</li>
+            <li>Se lleva a 2026-10 con el IPC del alquiler de la Comunidad de Madrid, igual para todas las zonas (fuente: INE, serie IPC297196; estimado).</li>
+            <li>Contrato nuevo: se multiplica por el cociente entre el €/m² de los contratos firmados en 2024 y el de todos los contratos. En los 36 municipios de más de 20.000 habitantes se usa el suyo; en los 21 distritos de Madrid, el de sus códigos postales, repartidos con los portales de OpenStreetMap y ponderados por viviendas arrendadas; en los otros 142 municipios, la mediana de los municipios de 20.001 a 50.000 habitantes, 1,143 (fuente: <code>datos/alquiler.json</code>, Agencia Tributaria, IRPF 2024; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
+          </ul>
+        </details>
+        <details><summary>El neto</summary>
+          <ul>
+            <li>Cotización del trabajador e IRPF estatal y de Madrid de 2026, como cuota anual de la declaración (ver el apartado siguiente). Tributación individual, contrato indefinido, menor de 65 años, sin otras rentas (fuente: <code>datos/netos.json</code>, <code>src/mesobra/neto.py</code>).</li>
+            <li>Hijos de 3 a 24 años. El mínimo por descendientes va a la mitad entre los dos progenitores, salvo en el hogar monoparental, que se queda el entero (fuente: LIRPF, arts. 58 y 61; <code>neto.py</code>).</li>
+            <li>El neto sale de una rejilla de brutos de 12.000 a 120.000 € al año, interpolada; fuera de ella no se calcula (fuente: <code>datos/netos.json</code>).</li>
+          </ul>
+        </details>
+        <details><summary>El transporte público</summary>
+          <ul>
+            <li>Cada mes se elige lo más barato entre el abono que cubre las coronas del recorrido (normal si entra en la zona A, interzonal si no), el sencillo o el 10 viajes de cada producto (Metro, EMT, interurbano…), el Abono Joven y, en Cercanías, el abono mensual de Renfe de 20 € (fuente: <code>src/mesobra/transporte.py</code>, RDL 17/2025, art. 3.2.a).</li>
+            <li>Calendario laboral: 227 días de trabajo al año, 3,7833 semanas al mes, con 22 laborables de vacaciones en un solo bloque y 2 festivos locales en día laborable. El abono de 30 días se compra 335/30 veces al año y el 10 viajes se prorratea porque no caduca (fuente: <code>datos/tarifas.json</code>, Decreto 75/2025; ficha del CRTM: «Validez: Ilimitada»).</li>
+            <li>Colectivos: precio ordinario, familia numerosa general o especial y discapacidad igual o superior al 65 %, con la columna de cada uno en el BOCM. La discapacidad del 33 al 64 % no tiene columna y no se modela (fuente: <code>transporte.py</code>, BOCM-20251231-2).</li>
+            <li>Todo el hogar: cada persona que trabaja paga su título y cada hijo de 15 a 25 años suma un Abono Joven todos los meses; los menores de 15 no pagan (fuente: <code>calculo.py</code>, supuesto 5; BOCM-20251231-2, pág. 66; RDL 17/2025, art. 8.a).</li>
+            <li>Viajes de ocio: 0, 8 u 16 al mes, por la misma ruta del trabajo, lo que favorece al abono; en el mes de vacaciones se pagan por viaje (fuente: <code>transporte.py</code>).</li>
+            <li>El sencillo de Metro de la zona A se cuenta a 1,50 €. Con el prorrateo nunca se elige, porque el 10 viajes sale más barato por viaje (fuente: <code>datos/tarifas.json</code>, BOCM-20251231-2).</li>
+            <li>El Abono +65 está en la tabla pero no se usa, porque el neto supone menores de 65 años. No se modela el Bonotren de Renfe, que va por zonas de Renfe y no por coronas (fuente: <code>calculo.py</code>, <code>transporte.py</code>).</li>
+            <li>Escenario «sin descuento»: los precios oficiales sin la ayuda de 2026, que solo vale ese año (fuente: BOCM-20251231-3, RDL 17/2025).</li>
+          </ul>
+        </details>
+        <details><summary>El coche</summary>
+          <ul>
+            <li>Los minutos salen de r5py sobre la red de OpenStreetMap sin tráfico, así que se quedan cortos en hora punta. No se cuentan aparcamiento ni peajes (fuente: <code>datos/tiempos.json</code>).</li>
+            <li>Los km son la línea recta × 1,3, un factor sin fuente; el coste en coche es estimado (fuente: <code>datos/tiempos.json</code>, <code>src/mesobra/coche.py</code>).</li>
+            <li>0,26 €/km es lo que Hacienda deja compensar sin impuestos por viajes de trabajo en coche propio, no un coste medido, y la norma no lo fija para ir al trabajo (fuente: Orden HFP/792/2023, art. único.1).</li>
+          </ul>
+        </details>
+        <details><summary>Los tiempos y los destinos</summary>
+          <ul>
+            <li>El viaje va del centro de población de la zona de residencia al de la zona de trabajo, a pie y en transporte público. Dentro de la misma zona, la mediana desde sus secciones censales hasta su centro (fuente: <code>datos/tiempos.json</code>).</li>
+            <li>Además hay 16 polos de empleo con nombre (hospitales, polígonos, el aeropuerto, AZCA…), elegidos a mano: es una lista propia, no sale de datos de movilidad (fuente: <code>src/mesobra/datos/polos.csv</code>, <code>datos/tiempos.json</code>).</li>
+            <li>Mediana de las salidas entre las 7:30 y las 8:30 del martes 2026-11-17. Más de 120 minutos cuenta como «sin ruta» (fuente: <code>datos/tiempos.json</code>).</li>
+          </ul>
+        </details>
+        <details><summary>La cesta</summary>
+          <ul>
+            <li>Es el gasto medio de los hogares de Madrid, no un mínimo, sin comidas fuera de casa y sin ajustar al tamaño del piso ni al clima (fuente: <code>datos/hogares.json</code>; estimado).</li>
+            <li>Escenario «cesta de tu tramo de ingresos»: la alimentación se multiplica por el cociente entre lo que gasta en comida el tramo de ingresos del hogar y la media, con la EPF de España porque la de Madrid no lo da por tramo. Al cruzar un corte la cesta salta de golpe, unos 27 €/mes entre 1.499 y 1.500 € (fuente: <code>datos/hogares.json</code>, INE tablas 73809 y 73795; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
+          </ul>
+        </details>
+        <details><summary>La zona de referencia y el mapa</summary>
+          <ul>
+            <li>La zona de referencia es, por defecto, la de menos horas de viaje entre las que tienen sobrante; se puede elegir otra (fuente: <code>calculo.py</code>, supuesto 8).</li>
+            <li>Si una zona está a menos de 5 horas al mes de la referencia, se marca «mismo tiempo» y no tiene precio de la hora (fuente: <code>app/calculo.js</code>, <code>UMBRAL_HORAS</code>).</li>
+            <li>El mapa clasifica por cuantiles; el precio de la hora y lo que sobra se cortan por separado a cada lado del 0 (fuente: <code>app/vista.js</code>).</li>
+          </ul>
+        </details>
+        <details><summary>Lo que se planeó y no está</summary>
+          <ul>
+            <li>La ruta real de cada viaje: la tarifa sale de la recta entre los centros de las zonas (ver «Límites»). r5py agotaba la memoria al reconstruir trayectos (fuente: <code>docs/decisiones.md</code>, 2026-11-20).</li>
+            <li>Las zonas con alquiler imputado: el fichero publicado no tiene ninguna; las zonas sin dato del SERPAVI salen sin cifra (fuente: <code>datos/alquiler.json</code>).</li>
+            <li>La sobrecarga de los hogares inquilinos con el cociente de inquilinos del Censo 2021 está en el código, pero no en los ficheros publicados, así que la web no la usa (fuente: <code>datos/analisis.json</code>, <code>src/mesobra/sobrecarga.py</code>).</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="cuota" aria-labelledby="titulo-cuota">
+      <h2 id="titulo-cuota">Por qué la cuota anual y no la retención</h2>
+      <div class="capas">
+        <p>La retención de la nómina es un adelanto: a quien declara, Hacienda le devuelve o le cobra la diferencia con la cuota. Lo que una persona se queda en el año es su bruto menos la cotización y menos la cuota, así que esa es la cifra que se resta. La retención además usa solo la escala estatal y la cuota suma la de Madrid (fuente: LIRPF, arts. 63, 74 y 101; <code>neto.py</code>).</p>
+        <p>Quien no está obligado a declarar se queda con lo que le retienen, que puede ser distinto de la cuota. Para él, el neto de la herramienta es una aproximación.</p>
+        <details><summary>Lo que el neto deja fuera</summary>
+          <ul>
+            <li>Las deducciones reembolsables del art. 81 bis LIRPF: hasta 1.200 € al año para familia numerosa general o monoparental con dos hijos, 2.400 € la especial, 600 € más por cada hijo por encima del mínimo de su categoría y hasta 1.200 € por cada descendiente con discapacidad. En esos hogares el neto real puede ser mayor (fuente: <code>datos/netos.json</code>, LIRPF art. 81 bis).</li>
+            <li>La deducción de Madrid por alquiler para menores de 40 años, el 30 % hasta 1.237,20 € si el alquiler supera el 20 % de la base imponible, y el resto de deducciones de Madrid (fuente: <code>datos/netos.json</code>, DL 1/2010, art. 8).</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="limites" aria-labelledby="titulo-limites">
+      <h2 id="titulo-limites">Límites</h2>
+      <ul class="avisos-portada">
+        <li>El alquiler es un suelo. Sale de contratos declarados, no de anuncios, y el ajuste a contrato nuevo usa el IPC de los contratos en vigor, que sube menos que los nuevos: en la provincia de Madrid, en 2024, +2,7 % frente a +9,2 % (fuente: INE, IPVA, tabla 59005; <code>docs/decisiones.md</code>, 2026-11-19).</li>
+        <li>El factor de contrato nuevo divide medias, no medianas, y se aplica a una mediana. Los de municipio llevan dentro que los contratos nuevos se concentran en zonas caras, y por eso salen algo mayores: en Madrid capital, 1,20 frente a 1,17 con sus códigos postales (fuente: <code>datos/alquiler.json</code>, Agencia Tributaria; estimado).</li>
+        <li>41 de las 199 zonas no tienen alquiler publicado y salen sin cifra. En 39 hay menos de 70 alquileres declarados y la mediana es imprecisa (fuente: <code>datos/alquiler.json</code>, SERPAVI).</li>
+        <li>«Sin ruta» no quiere decir que no haya transporte: puede faltar el horario de una línea en el GTFS. De 42.785 pares de transporte público, 31.606 (el 73,9 %) quedan sin ruta en 120 minutos (fuente: <code>docs/decisiones.md</code>, 2026-11-21, #105).</li>
+        <li>2.405 de los 11.179 pares con ruta (el 21,5 %) usan líneas u horarios que el CRTM publica sin viajes o con horas imposibles, reconstruidos por el proyecto. Pueden salir más cortos que los reales, y el fichero no dice cuáles son (fuente: <code>datos/tiempos.json</code>; estimado).</li>
+        <li>No se reconstruyen las líneas 728, N702, N908, I1 de Algete, 414, SE de Valdemoro ni 3A de Getafe. Las mejoras de menos de 5 minutos no se aplican (fuente: <code>docs/decisiones.md</code>, #181).</li>
+        <li>Los tiempos salen de un simulador que no da lo mismo dos veces: en dos pasadas iguales, la diferencia llega a 7 minutos en algún par. No los leas al minuto (fuente: <code>docs/decisiones.md</code>, 2026-11-21; medido el 2026-11-16 sobre 10.780 pares).</li>
+        <li>La tarifa de cada par sale de la recta entre centros, que no ve el paso por un intercambiador de Madrid. A quien tiene de 26 a 64 años y va de una periferia a otra se le puede cobrar el abono interzonal y no el normal: hasta unos 13,50 €/mes de menos hasta B2 y 19 €/mes hasta B3, C1 o C2, con descuento. Lo que sobra sale más alto de lo real; no afecta al Abono Joven ni a los pares con un extremo en la zona A (fuente: <code>datos/tarifas.json</code>, <code>clave_estimada</code>; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
+        <li>Los cortes de los tramos de la cesta son euros de 2025 y el neto es de 2026: un hogar justo en un corte puede caer en el tramo de al lado. El tramo solo ve los sueldos, no otras rentas del hogar (fuente: <code>docs/decisiones.md</code>, #420).</li>
+        <li>Del Bono Alquiler Joven solo hay un año, la convocatoria de 2022. Donde el alquiler pesa más hay más solicitudes rechazadas por joven porque hay más solicitudes, no porque se rechace a una proporción mayor; parte de ese volumen coincide con que allí alquilan más jóvenes, y teniéndolo en cuenta el efecto que queda es menor e incierto. El detalle está en la <a href="informe.html#bono">metodología del informe</a>.</li>
+      </ul>
+    </section>
+
+    <section class="bloque" id="validacion" aria-labelledby="titulo-validacion">
+      <h2 id="titulo-validacion">Validación</h2>
+      <div class="capas">
+        <p>Lo que está contrastado con una fuente, y lo que no, tal como ha salido.</p>
+        <details><summary>El neto</summary>
+          <ul>
+            <li>La escala estatal y su mínimo, la escala de Madrid y la reducción del art. 20 coinciden con los ejemplos resueltos del Manual práctico de Renta de la AEAT, al céntimo o con un céntimo de diferencia, porque el manual trunca un resultado parcial (fuente: <code>tests/test_neto.py</code>, manuales de Renta 2024 y 2025 de la AEAT).</li>
+            <li>Ocho casos completos de 2026, de 17.094 a 80.000 € y de 0 a 5 hijos, calculados a mano sobre el BOE por un auditor independiente; el código da lo mismo al céntimo. Ninguno se ha contrastado todavía con Renta Web de la AEAT (fuente: <code>tests/test_neto.py</code>).</li>
+            <li>El neto crece con el bruto y nunca lo supera, y la interpolación de la rejilla se aparta menos de 1 €/mes del cálculo exacto (fuente: <code>tests/test_neto.py</code>).</li>
+            <li>Los ejemplos de Madrid del manual usan un mínimo autonómico de 5.777,55 €, el de 2022. El código usa 5.956,65 €, el vigente desde 2023, que es el que da la propia AEAT en su página de mínimos de Madrid (fuente: DL 1/2010, art. 2.a; issue #155).</li>
+            <li>Sin contrastar: un caso completo de 2026 con Renta Web, que no abre hasta 2027; la deducción por SMI de 2026; y la cotización, aunque sus tipos están comprobados en el BOE. Las nóminas reales para contrastar el neto siguen pendientes (fuente: issue #115).</li>
+          </ul>
+        </details>
+        <details><summary>Las tarifas, los tiempos y el cálculo</summary>
+          <ul>
+            <li>Los precios de cada título se comprueban contra precios de control del BOCM, también los interzonales y los transbordos (fuente: <code>tests/test_transporte.py</code>, BOCM-20251231-2 y BOCM-20251231-3).</li>
+            <li>El método de reconstruir horarios se probó borrando el horario de 30 líneas con horario real y reconstruyéndolo: en 494 viajes, el cociente reconstruido entre real tiene mediana 1,06, pero el error absoluto medio es de 20,7 minutos. Acierta de media y puede fallar mucho en una línea (fuente: <code>docs/decisiones.md</code>, 2026-11-20, #311; estimado).</li>
+            <li>Python y JavaScript dan la misma cifra en los casos de referencia (fuente: <code>tests/test_paridad.py</code>, <code>tests/fixtures/casos_referencia.json</code>).</li>
+          </ul>
+        </details>
+        <details><summary>El informe</summary>
+          <p>La relación entre el esfuerzo y las rechazadas del Bono sale al límite: p = 0,043 en el modelo principal con 5 vecinos, y la segunda vía no la confirma, p = 0,17. Por eso se presenta como indicio (fuente: <code>bono_inferencia.json</code>, <a href="informe.html#bono">metodología del informe</a>; estimado).</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="mantenimiento" aria-labelledby="titulo-mantenimiento">
+      <h2 id="titulo-mantenimiento">Mantenimiento</h2>
+      <div class="capas">
+        <p>La web es estática: HTML, JavaScript y ficheros JSON, sin servidor ni base de datos. Se publica en GitHub Pages desde el repositorio público, sin coste para el proyecto; Pages solo sería de pago con el repositorio privado (fuente: <code>docs/decisiones.md</code>, 2026-11-21).</p>
+        <p><code>python -m mesobra</code> comprueba que las descargas son las mismas que las del equipo, regenera todos los ficheros de <code>datos/</code> y los valida. Su tiempo total está sin medir. Lo medido son los pasos previos con r5py: unos 52 minutos la matriz de transporte público y 3 la de coche (fuente: <code>docs/decisiones.md</code>, 2026-11-21, #105). El <code>README.md</code> también lo da como pendiente de medir.</p>
+        <details><summary>Cuándo caduca cada dato</summary>
+          <ul>
+            <li>IPC del INE: mensual. El censo anual de población cambia cada diciembre (fuente: <code>data/README.md</code>).</li>
+            <li>SERPAVI: el último fichero, con datos hasta 2024, se actualizó el 2026-07-09 (fuente: <code>datos/alquiler.json</code>).</li>
+            <li>Tarifas: los precios con descuento dependen del RDL 17/2025, que solo vale para 2026. Para 2027 hay que bajar las tarifas nuevas del BOCM (fuente: <code>datos/tarifas.json</code>).</li>
+            <li>Neto: los parámetros son de 2026 (cotización, escalas, SMI) y hay que revisarlos cada año (fuente: <code>src/mesobra/parametros_2026.py</code>).</li>
+            <li>GTFS: el calendario de Cercanías del fichero usado acaba el 2026-11-28 y el de la EMT el 2026-12-31; el de Metro ya había caducado el 2026-05-27 y se prolonga como supuesto (fuente: <code>datos/tiempos.json</code>).</li>
+            <li><code>data/README.md</code> no recoge cada cuánto publican las demás fuentes; ahí va la fecha de cada descarga y su huella SHA-256.</li>
+          </ul>
+        </details>
+        <details><summary>Lo que hace una persona</summary>
+          <ul>
+            <li>El Censo 2021 a medida del INE no tiene API: se baja desde el asistente web y cada consulta redondea al azar de nuevo (fuente: <code>data/README.md</code>).</li>
+            <li>Las matrices de tiempos necesitan Java 21 y r5py en local; no corren en la CI (fuente: <code>README.md</code>).</li>
+            <li>Los ficheros congelados de <code>datos/</code> solo se regeneran con la firma de las dos personas del equipo, y cada cambio pasa por los revisores automáticos de su área (fuente: <code>docs/decisiones.md</code>, <code>AGENTS.md</code>).</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque cierre" aria-labelledby="titulo-cierre">
+      <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
+      <p class="entradilla">Elige tu sueldo, tu hogar y dónde trabajas, y mira el mapa entero de la Comunidad.</p>
+      <a href="index.html?herramienta" class="boton-principal">Calcular lo que te sobra</a>
+    </section>
+  </main>
+  <script type="module" src="indice.js"></script>
+</body>
+</html>
