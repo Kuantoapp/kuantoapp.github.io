@@ -5,7 +5,7 @@ import { calcular } from "./calculo.js";
 import {
   CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, contorno, cortesCuantiles, entradaEscenario, hayEscenario,
   erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia, lineaTooltip,
-  lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar,
+  lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar, valorDeEjemplo,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -896,4 +896,28 @@ test("las zonas reales comparten bordes: el contorno es una parte pequeña de su
 test("el importe inactivo de la segunda persona tampoco se cuela desde el enlace", () => {
   const { valores } = estadoDeEnlace("perfil=pareja&adultos=2&fuente2=bruto&neto2=texto%20libre", NEUTRO, real);
   assert.equal(valores.neto2, NEUTRO.neto2);
+});
+
+test("«Usar el valor de ejemplo» deja cada campo que falla en uno que valida (#389)", () => {
+  const conEjemplo = (campo, cambios) => {
+    const v = { ...BASE, ...cambios };
+    const arreglado = { ...v, ...valorDeEjemplo(campo, v, real, BASE) };
+    return { arreglado, errores: validar(arreglado, real).errores };
+  };
+  // el hogar vuelve a lo del perfil elegido
+  assert.deepEqual(conEjemplo("m2", { m2: "" }), { arreglado: { ...BASE }, errores: undefined });
+  assert.equal(conEjemplo("personas", { perfil: "comparte", personas: "" }).arreglado.personas, String(real.hogares.perfiles.comparte.personas_comparten));
+  assert.equal(conEjemplo("adultos", { perfil: "pareja", adultos: "1" }).errores, undefined);
+  // un neto que falta vuelve a «Doy el bruto» con el bruto de ejemplo
+  const neto = conEjemplo("neto", { fuente: "neto", neto: "", bruto: "" });
+  assert.equal(neto.errores, undefined);
+  assert.equal(neto.arreglado.fuente, "bruto");
+  assert.equal(neto.arreglado.bruto, BASE.bruto);
+  // una edad de hijo suelta se vacía con las demás
+  const hijos = conEjemplo("hijo1", { hijos: "2", hijo1: "abc", hijo2: "7" });
+  assert.equal(hijos.errores, undefined);
+  assert.deepEqual([hijos.arreglado.hijo1, hijos.arreglado.hijo2], ["", ""]);
+  // el resto, el valor de la página al abrirse
+  assert.deepEqual(conEjemplo("destino", { destino: "Narnia" }).arreglado.destino, BASE.destino);
+  assert.equal(conEjemplo("bruto", { bruto: "" }).errores, undefined);
 });

@@ -487,6 +487,21 @@ export function validar(v, api) {
   return { entrada: { hogar, sueldos, ...(ref === "" ? {} : { ref }) } };
 }
 
+/**
+ * Valores que devuelven `campo` al ejemplo («Usar el valor de ejemplo» del recorrido guiado, #389): los del perfil elegido para el
+ * hogar (como al cambiar de perfil), el bruto de ejemplo si falta el neto, ninguna edad de hijo (valen todas o ninguna) y, para el
+ * resto, el valor de la página al abrirse (`inicial`).
+ */
+export function valorDeEjemplo(campo, v, api, inicial) {
+  const p = api.hogares.perfiles[v.perfil];
+  const delPerfil = p && { adultos: p.adultos, hijos: p.hijos, m2: p.m2, personas: p.personas_comparten }[campo];
+  if (delPerfil !== undefined) return { [campo]: String(delPerfil) };
+  const neto = /^neto(2?)$/.exec(campo);
+  if (neto) return { [`fuente${neto[1]}`]: "bruto", [`bruto${neto[1]}`]: inicial[`bruto${neto[1]}`] };
+  if (/^hijo\d+$/.test(campo)) return Object.fromEntries(Object.keys(v).filter((k) => /^hijo\d+$/.test(k)).map((k) => [k, ""]));
+  return { [campo]: inicial[campo] };
+}
+
 // --- Escenarios «¿y si…?» y estado en el enlace ------------------------------------------------
 // Campos del formulario de escenarios (todos son select o deslizador: siempre traen valor) y su valor «sin escenario».
 export const ESCENARIO_NEUTRO = { tarifas: "vigente_2026", subida: "0", cumple26: "no", dias_esc: "", cesta: "media" };
