@@ -25,7 +25,7 @@ if (typeof document !== "undefined") {
     const activa = seccionActiva(secciones.map((s) => s.getBoundingClientRect().top), linea, alFinal);
     if (activa === actual) return;
     actual = activa;
-    enlaces.forEach((a, i) => (i === activa ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current")));
+    enlaces.forEach((a, i) => (i === activa ? a.setAttribute("aria-current", "location") : a.removeAttribute("aria-current")));
     // En pantalla estrecha el índice se desplaza en horizontal: la entrada activa se trae a la vista.
     if (activa >= 0) lista.scrollTo({ left: enlaces[activa].offsetLeft - lista.offsetLeft - 16, behavior: suave });
   };

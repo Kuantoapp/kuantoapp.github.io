@@ -244,7 +244,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .remate { grid-column: 2; margin: 8px 0 0; font-size: 21px; line-height: 1.4; }
 
 /* El dato: la cifra grande y tabular junto al mapa del informe. */
-.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.dato { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; } /* arriba: al saltar desde el índice, la figura queda entera a la vista */
 .destacado { margin: 32px 0 16px; color: var(--texto-2); font-size: 21px; line-height: 1.4; }
 .cifra-grande { display: block; margin-bottom: 8px; color: var(--acento); font-size: clamp(64px, 10vw, 120px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .dato-texto p:not(.destacado) { color: var(--texto-2); }
@@ -252,6 +252,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
 /* La imagen entera en la zona visible: bajo la barra y el índice, con aire para el relleno y el pie (#417). */
 .dato-imagen img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 136px); margin-inline: auto; object-fit: contain; border-radius: 4px; }
+.ampliar { display: block; cursor: zoom-in; }
 .dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
 
 /* Así sale la cifra: la fórmula en la tarjeta de firma (blanca, radio de 16 px y línea fina). */
@@ -309,8 +310,9 @@ a { color: var(--acento); text-underline-offset: 2px; }
 }
 .indice a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--linea-control); border-radius: 999px; color: var(--texto); font-size: 15px; text-decoration: none; white-space: nowrap; transition: border-color 0.15s var(--curva); }
 .pagina .indice a:hover { border-color: var(--acento); color: var(--acento); }
-.pagina .indice a[aria-current="true"] { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
-.pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice)); }
+.pagina .indice a[aria-current="location"] { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+/* Al saltar desde el índice, el relleno superior de la sección queda bajo el índice y el título, 24 px por debajo: así la figura cabe entera. */
+.pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) - clamp(64px, 10vw, 128px) + 24px); }
 .pasos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin: 48px 0 0; padding: 0; list-style: none; counter-reset: paso; }
 .pasos li { position: relative; padding-top: 56px; counter-increment: paso; }
 .pasos li::before { content: counter(paso); position: absolute; top: 0; left: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--linea-control); border-radius: 50%; background: var(--superficie); color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -395,5 +397,6 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .capas .destacado { margin-top: 24px; }
 .informe blockquote { margin: 16px 0 24px; padding: clamp(24px, 4vw, 40px); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); font-size: clamp(19px, 2.4vw, 24px); line-height: 1.4; letter-spacing: -0.01em; }
 .figura-ancha { margin: 32px 0 0; }
+.figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 296px); } /* además, el titular de dos líneas que va encima */
 .lista-fuentes { margin: 32px 0 0; padding-left: 20px; color: var(--texto-2); font-size: 16px; }
 .lista-fuentes li { margin: 12px 0; overflow-wrap: anywhere; }
