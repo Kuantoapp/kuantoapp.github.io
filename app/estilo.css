@@ -25,7 +25,34 @@
   --pierdes: #b2182b; /* extremos de la paleta divergente del mapa (vista.js) */
   --ganas: #01665e;
   --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color-scheme: light dark;
   accent-color: var(--acento);
+}
+/* Modo noche: los mismos roles con el sistema del navegador; el acento es el mismo azul, aclarado para el fondo oscuro. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #111214;
+    --superficie: #1c1d20;
+    --elevado: #2a2c30;
+    --linea: rgb(245 245 247 / 14%);
+    --linea-control: #8a8d94;
+    --texto: #f5f5f7;
+    --texto-2: #c7c9ce;
+    --texto-3: #a9acb3;
+    --acento: #78aef0;
+    --acento-fuerte: #a6c9f5;
+    --acento-suave: rgb(120 174 240 / 12%);
+    --seleccion: rgb(120 174 240 / 30%);
+    --error: #f28b82;
+    --diferencia: #f0b46a;
+    --sombra: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+    --pierdes: #d6604d; /* el paso anterior de RdBu y BrBG: los extremos no llegan a 3:1 sobre la superficie oscura */
+    --ganas: #35978f;
+  }
+  /* Los controles de MapLibre traen fondo blanco e iconos negros fijos: toman la superficie y el texto del tema. */
+  .maplibregl-ctrl-group { background: var(--superficie) !important; }
+  .maplibregl-ctrl-group button + button { border-top-color: var(--linea) !important; }
+  .maplibregl-ctrl-icon { filter: invert(1); }
 }
 
 * { box-sizing: border-box; }
@@ -39,9 +66,9 @@ body:not(.en-herramienta) #herramienta { visibility: hidden; }
 body.mapa-completo .navegacion { display: none; }
 body.mapa-completo #herramienta { top: 0; }
 main { position: relative; display: flex; flex: 1; min-height: 0; }
-aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
+aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: opacity 0.2s var(--curva), transform 0.3s var(--curva); }
 /* Panel plegado con su pestaña: deja de recibir el foco (`visibility`) y el mapa ocupa el hueco. */
-body.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s linear 0.3s; }
+body.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; opacity: 0; transform: translateX(-16px); transition: none; }
 /* «Mapa completo»: fuera la barra de filtros, el panel y su pestaña. */
 body.mapa-completo #barra-filtros, body.mapa-completo aside, body.mapa-completo #plegar-panel { display: none; }
 h2 { margin: 32px 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }

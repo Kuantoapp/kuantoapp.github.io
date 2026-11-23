@@ -125,7 +125,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const pct = new Intl.NumberFormat("es-ES", { style: "percent", signDisplay: "exceptZero" });
   const metodo = m.cortes ? `Cortes fijos en el ${m.cortes.map((c) => pct.format(c)).join(", ")} ${m.base}` : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
-  cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
+  cont.replaceChildren(elemento("p", `${m.titulo}, en ${m.corta} (estimado)${usaAlquiler ? `, con el alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
