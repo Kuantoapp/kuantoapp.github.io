@@ -66,7 +66,7 @@
         </article>
         <article class="pieza">
           <h3>Horas y precio de la hora</h3>
-          <p>Horas al mes = minutos de ida × 2 × días × 3,7833 semanas ÷ 60, sumadas para cada sueldo (fuente: <code>datos/tarifas.json</code>, calendario laboral de 2026, Decreto 75/2025). El precio de la hora es la diferencia de sobrante con la zona de referencia dividida entre la diferencia de horas: cuánto ganas o pierdes al mes por cada hora más de viaje.</p>
+          <p>Horas al mes = minutos de ida × 2 × días × 3,7833 semanas ÷ 60, sumadas para cada sueldo (fuente: <code>datos/tarifas.json</code>, calendario laboral de 2026, Decreto 75/2025; las semanas son estimadas). El precio de la hora es la diferencia de sobrante con la zona de referencia dividida entre la diferencia de horas: cuánto ganas o pierdes al mes por cada hora más de viaje.</p>
         </article>
       </div>
     </section>
@@ -115,7 +115,7 @@
         <details><summary>El transporte público</summary>
           <ul>
             <li>Cada mes se elige lo más barato entre el abono que cubre las coronas del recorrido (normal si entra en la zona A, interzonal si no), el sencillo o el 10 viajes de cada producto (Metro, EMT, interurbano…), el Abono Joven y, en Cercanías, el abono mensual de Renfe de 20 € (fuente: <code>src/mesobra/transporte.py</code>, RDL 17/2025, art. 3.2.a).</li>
-            <li>Calendario laboral: 227 días de trabajo al año, 3,7833 semanas al mes, con 22 laborables de vacaciones en un solo bloque y 2 festivos locales en día laborable. El abono de 30 días se compra 335/30 veces al año y el 10 viajes se prorratea porque no caduca (fuente: <code>datos/tarifas.json</code>, Decreto 75/2025; ficha del CRTM: «Validez: Ilimitada»).</li>
+            <li>Calendario laboral: 227 días de trabajo al año, 3,7833 semanas al mes, con 22 laborables de vacaciones en un solo bloque y 2 festivos locales en día laborable. El abono de 30 días se compra 335/30 veces al año y el 10 viajes se prorratea porque no caduca (fuente: <code>datos/tarifas.json</code>, Decreto 75/2025, estimado con esos supuestos; ficha del CRTM: «Validez: Ilimitada»).</li>
             <li>Colectivos: precio ordinario, familia numerosa general o especial y discapacidad igual o superior al 65 %, con la columna de cada uno en el BOCM. La discapacidad del 33 al 64 % no tiene columna y no se modela (fuente: <code>transporte.py</code>, BOCM-20251231-2).</li>
             <li>Todo el hogar: cada persona que trabaja paga su título y cada hijo de 15 a 25 años suma un Abono Joven todos los meses; los menores de 15 no pagan (fuente: <code>calculo.py</code>, supuesto 5; BOCM-20251231-2, pág. 66; RDL 17/2025, art. 8.a).</li>
             <li>Viajes de ocio: 0, 8 u 16 al mes, por la misma ruta del trabajo, lo que favorece al abono; en el mes de vacaciones se pagan por viaje (fuente: <code>transporte.py</code>).</li>
@@ -141,7 +141,7 @@
         <details><summary>La cesta</summary>
           <ul>
             <li>Es el gasto medio de los hogares de Madrid, no un mínimo, sin comidas fuera de casa y sin ajustar al tamaño del piso ni al clima (fuente: <code>datos/hogares.json</code>; estimado).</li>
-            <li>Escenario «cesta de tu tramo de ingresos»: la alimentación se multiplica por el cociente entre lo que gasta en comida el tramo de ingresos del hogar y la media, con la EPF de España porque la de Madrid no lo da por tramo. Al cruzar un corte la cesta salta de golpe, unos 27 €/mes entre 1.499 y 1.500 € (fuente: <code>datos/hogares.json</code>, INE tablas 73809 y 73795; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
+            <li>Escenario «cesta de tu tramo de ingresos»: la alimentación se multiplica por el cociente entre lo que gasta en comida el tramo de ingresos del hogar y la media, con la EPF de España porque la de Madrid no lo da por tramo. Al cruzar un corte la cesta salta de golpe, unos 27 €/mes entre 1.499 y 1.500 € para quien vive solo (fuente: <code>datos/hogares.json</code>, INE tablas 73809 y 73795; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
           </ul>
         </details>
         <details><summary>La zona de referencia y el mapa</summary>
@@ -164,7 +164,7 @@
     <section class="bloque" id="cuota" aria-labelledby="titulo-cuota">
       <h2 id="titulo-cuota">Por qué la cuota anual y no la retención</h2>
       <div class="capas">
-        <p>La retención de la nómina es un adelanto: a quien declara, Hacienda le devuelve o le cobra la diferencia con la cuota. Lo que una persona se queda en el año es su bruto menos la cotización y menos la cuota, así que esa es la cifra que se resta. La retención además usa solo la escala estatal y la cuota suma la de Madrid (fuente: LIRPF, arts. 63, 74 y 101; <code>neto.py</code>).</p>
+        <p>La retención de la nómina es un adelanto: a quien declara, Hacienda le devuelve o le cobra la diferencia con la cuota. Lo que una persona se queda en el año es su bruto menos la cotización y menos la cuota, así que esa es la cifra que se resta. La retención usa una escala única para toda España, sin la propia de Madrid; la cuota aplica la escala estatal y la de Madrid (fuente: LIRPF, arts. 63, 74 y 101; <code>neto.py</code>).</p>
         <p>Quien no está obligado a declarar se queda con lo que le retienen, que puede ser distinto de la cuota. Para él, el neto de la herramienta es una aproximación.</p>
         <details><summary>Lo que el neto deja fuera</summary>
           <ul>
@@ -183,10 +183,10 @@
         <li>41 de las 199 zonas no tienen alquiler publicado y salen sin cifra. En 39 hay menos de 70 alquileres declarados y la mediana es imprecisa (fuente: <code>datos/alquiler.json</code>, SERPAVI).</li>
         <li>«Sin ruta» no quiere decir que no haya transporte: puede faltar el horario de una línea en el GTFS. De 42.785 pares de transporte público, 31.606 (el 73,9 %) quedan sin ruta en 120 minutos (fuente: <code>docs/decisiones.md</code>, 2026-11-21, #105).</li>
         <li>2.405 de los 11.179 pares con ruta (el 21,5 %) usan líneas u horarios que el CRTM publica sin viajes o con horas imposibles, reconstruidos por el proyecto. Pueden salir más cortos que los reales, y el fichero no dice cuáles son (fuente: <code>datos/tiempos.json</code>; estimado).</li>
-        <li>No se reconstruyen las líneas 728, N702, N908, I1 de Algete, 414, SE de Valdemoro ni 3A de Getafe. Las mejoras de menos de 5 minutos no se aplican (fuente: <code>docs/decisiones.md</code>, #181).</li>
+        <li>No se reconstruyen las líneas 728, N702, N908, I1 de Algete, 414, SE de Valdemoro ni 3A de Getafe. Las mejoras de menos de 5 minutos no se aplican. Las líneas reconstruidas 72x y 635 no paran en los tramos que comparten con otras y su tiempo sale entre un 3 y un 8 % optimista, y las rurales largas 725 y 726 se suponen cada 20 minutos, probablemente también optimista (fuente: <code>docs/decisiones.md</code>, #181; estimado).</li>
         <li>Los tiempos salen de un simulador que no da lo mismo dos veces: en dos pasadas iguales, la diferencia llega a 7 minutos en algún par. No los leas al minuto (fuente: <code>docs/decisiones.md</code>, 2026-11-21; medido el 2026-11-16 sobre 10.780 pares).</li>
         <li>La tarifa de cada par sale de la recta entre centros, que no ve el paso por un intercambiador de Madrid. A quien tiene de 26 a 64 años y va de una periferia a otra se le puede cobrar el abono interzonal y no el normal: hasta unos 13,50 €/mes de menos hasta B2 y 19 €/mes hasta B3, C1 o C2, con descuento. Lo que sobra sale más alto de lo real; no afecta al Abono Joven ni a los pares con un extremo en la zona A (fuente: <code>datos/tarifas.json</code>, <code>clave_estimada</code>; <code>docs/decisiones.md</code>, 2026-11-20; estimado).</li>
-        <li>Los cortes de los tramos de la cesta son euros de 2025 y el neto es de 2026: un hogar justo en un corte puede caer en el tramo de al lado. El tramo solo ve los sueldos, no otras rentas del hogar (fuente: <code>docs/decisiones.md</code>, #420).</li>
+        <li>Los cortes de los tramos de la cesta son euros de 2025 y el neto es de 2026: un hogar justo en un corte puede caer en el tramo de al lado. El tramo solo ve los sueldos, no otras rentas del hogar (fuente: <code>docs/decisiones.md</code>, 2026-11-20 y 2026-11-23).</li>
         <li>Del Bono Alquiler Joven solo hay un año, la convocatoria de 2022. Donde el alquiler pesa más hay más solicitudes rechazadas por joven porque hay más solicitudes, no porque se rechace a una proporción mayor; parte de ese volumen coincide con que allí alquilan más jóvenes, y teniéndolo en cuenta el efecto que queda es menor e incierto. El detalle está en la <a href="informe.html#bono">metodología del informe</a>.</li>
       </ul>
     </section>
@@ -198,7 +198,7 @@
         <details><summary>El neto</summary>
           <ul>
             <li>La escala estatal y su mínimo, la escala de Madrid y la reducción del art. 20 coinciden con los ejemplos resueltos del Manual práctico de Renta de la AEAT, al céntimo o con un céntimo de diferencia, porque el manual trunca un resultado parcial (fuente: <code>tests/test_neto.py</code>, manuales de Renta 2024 y 2025 de la AEAT).</li>
-            <li>Ocho casos completos de 2026, de 17.094 a 80.000 € y de 0 a 5 hijos, calculados a mano sobre el BOE por un auditor independiente; el código da lo mismo al céntimo. Ninguno se ha contrastado todavía con Renta Web de la AEAT (fuente: <code>tests/test_neto.py</code>).</li>
+            <li>Ocho casos completos de 2026, de 17.094 a 80.000 € y de 0 a 5 hijos, calculados a mano sobre el BOE por un agente revisor del proyecto, aparte del código; el código da lo mismo al céntimo. Ninguno se ha contrastado todavía con Renta Web de la AEAT (fuente: <code>tests/test_neto.py</code>).</li>
             <li>El neto crece con el bruto y nunca lo supera, y la interpolación de la rejilla se aparta menos de 1 €/mes del cálculo exacto (fuente: <code>tests/test_neto.py</code>).</li>
             <li>Los ejemplos de Madrid del manual usan un mínimo autonómico de 5.777,55 €, el de 2022. El código usa 5.956,65 €, el vigente desde 2023, que es el que da la propia AEAT en su página de mínimos de Madrid (fuente: DL 1/2010, art. 2.a; issue #155).</li>
             <li>Sin contrastar: un caso completo de 2026 con Renta Web, que no abre hasta 2027; la deducción por SMI de 2026; y la cotización, aunque sus tipos están comprobados en el BOE. Las nóminas reales para contrastar el neto siguen pendientes (fuente: issue #115).</li>
