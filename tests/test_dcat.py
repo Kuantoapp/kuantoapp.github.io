@@ -18,6 +18,8 @@ FICHEROS = sorted(
     if p.suffix in {".json", ".geojson"}
 )
 CON_META = [f for f in FICHEROS if not f.startswith("sdm/")]
+# usan OpenStreetMap sin citarlo en meta.fuentes (docs/decisiones.md, 2026-11-24, #110)
+DERIVA_DE_OSM = {"analisis.json", "tarifas.json"}
 SDM = [f for f in FICHEROS if f.startswith("sdm/")]
 # cita obligatoria de cada publicador, según un trozo de la URL de su fuente
 CITAS = {
@@ -122,8 +124,8 @@ def test_ninguna_distribucion_apunta_a_un_fichero_inexistente(distribuciones):
 
 
 @pytest.mark.parametrize("fichero", CON_META)
-def test_licencia_odbl_si_cita_openstreetmap(distribuciones, fichero):
-    osm = any(
+def test_licencia_odbl_si_usa_openstreetmap(distribuciones, fichero):
+    osm = fichero in DERIVA_DE_OSM or any(
         "openstreetmap" in (s["nombre"] + s["licencia"] + s["url"]).lower()
         for s in _fuentes(fichero)
     )
@@ -204,6 +206,8 @@ def test_cita_obligatoria_de_cada_publicador(distribuciones, fichero):
         for trozo, cita in CITAS.items():
             if trozo in s["url"]:
                 assert cita in derechos, f"{fichero}: falta «{cita}»"
+    if fichero in DERIVA_DE_OSM:
+        assert CITAS["geofabrik.de"] in derechos
 
 
 @pytest.mark.parametrize("fichero", SDM)

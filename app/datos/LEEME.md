@@ -17,10 +17,10 @@ La licencia de cada fichero es la de los datos derivados. Las fuentes conservan 
 | `alquiler.json` | ODbL 1.0 | Reparte códigos postales con portales de OpenStreetMap |
 | `tiempos.json` | ODbL 1.0 | Usa la red viaria y los edificios de OpenStreetMap |
 | `zonas.geojson` | ODbL 1.0 | El centro de cada zona sale de los edificios de OpenStreetMap |
-| `analisis.json` | CC BY 4.0 | No usa OpenStreetMap |
+| `analisis.json` | ODbL 1.0 | Las simulaciones usan los tiempos de `tiempos.json` y las coronas de `tarifas.json`, que salen de OpenStreetMap |
+| `tarifas.json` | ODbL 1.0 | El rango de coronas de cada ruta sale de los centros de las zonas, calculados con edificios de OpenStreetMap |
 | `hogares.json` | CC BY 4.0 | No usa OpenStreetMap |
 | `netos.json` | CC BY 4.0 | No usa OpenStreetMap |
-| `tarifas.json` | CC BY 4.0 | No usa OpenStreetMap |
 | `sdm/alquiler_eur_m2_p50.json` | CC BY 4.0 | Solo usa la mediana del SERPAVI, no OpenStreetMap, y sigue las condiciones del Ministerio de Vivienda y Agenda Urbana |
 | `sdm/esfuerzo.json` | CC BY 4.0 | Combina el SERPAVI y la renta del INE |
 
@@ -37,10 +37,10 @@ Además, cada fuente pide su cita. Quien reutilice un fichero debe incluir las d
 - INE: «Elaboración propia con datos extraídos del sitio web del INE: www.ine.es». El INE no participa, patrocina ni apoya este proyecto, y ninguna cifra derivada debe presentarse como si fuera del INE.
 - Ministerio de Vivienda y Agenda Urbana (SERPAVI): «Origen de los datos: Ministerio de Vivienda y Agenda Urbana», con la fecha de actualización del fichero. El Ministerio no avala el proyecto.
 - Comunidad de Madrid: «Fuente de los datos: Comunidad de Madrid», con la fecha de actualización, indicando que los datos se han modificado.
-- OpenStreetMap: «© OpenStreetMap contributors».
-- Consorcio Regional de Transportes de Madrid: «Powered by CRTM».
-- Boletín Oficial del Estado: «Basado en datos de la Agencia Estatal Boletín Oficial del Estado».
-- Agencia Tributaria: «Fuente: Agencia Tributaria», sin desnaturalizar la información.
+- OpenStreetMap: «© OpenStreetMap contributors», con enlace a https://www.openstreetmap.org/copyright, indicando que los datos están disponibles con la ODbL 1.0. Lo necesitan también `analisis.json` y `tarifas.json`, que usan OpenStreetMap a través de los tiempos y de los centros de las zonas.
+- Consorcio Regional de Transportes de Madrid: «Powered by CRTM», con enlace a https://www.crtm.es, citando al CRTM como fuente e indicando que son datos explotados, no en bruto.
+- Boletín Oficial del Estado: «Basado en datos de la Agencia Estatal Boletín Oficial del Estado», con enlace a https://www.boe.es; los textos consolidados tienen carácter meramente informativo.
+- Agencia Tributaria: «Fuente: Agencia Tributaria», sin desnaturalizar la información y con la fecha de actualización cuando la publica.
 
 ## Qué está estimado
 
@@ -84,11 +84,11 @@ Grano: origen por destino. Clave: la posición en `origenes` y en `destinos`. A�
 | `origenes` | lista de texto | `zona_id` de cada fila, 199 zonas[^recuento] |
 | `destinos` | lista de objetos | `destino_id`, `nombre`, `tipo` (`zona` o `polo`) y, solo en los polos, `zona_id`; 215 destinos, 16 de ellos polos de empleo con nombre[^recuento] |
 | `tp` | matriz de enteros | minutos puerta a puerta en transporte público, `tp[origen][destino]`; `null` si pasa de 120 min, no hay ruta o falta el horario <!-- sin-fuente: umbral del cálculo --> |
-| `coche` | matriz de enteros | minutos en coche, sin tráfico |
-| `km_coche` | matriz de decimales | kilómetros, estimados: línea recta por un factor de rodeo |
+| `coche` | matriz de enteros | minutos en coche, sin tráfico; `null` si no hay ruta |
+| `km_coche` | matriz de decimales | kilómetros, estimados: línea recta por un factor de rodeo; `null` si no hay ruta |
 | `coste_coche.eur_km` | decimal | euros por kilómetro, un supuesto |
 
-Parte de los tiempos en transporte público es estimada: se reconstruyen líneas u horarios que el CRTM publica incompletos, y el fichero no dice cuáles. La nota da los detalles y el calendario supuesto de Metro. Fuentes: CRTM (GTFS y coronas), OpenStreetMap y el BOE para el coste por kilómetro.
+Parte de los tiempos en transporte público es estimada: se reconstruyen líneas u horarios que el CRTM publica incompletos, y el fichero no dice cuáles. La nota da los detalles y el calendario supuesto de Metro. Fuentes: CRTM (GTFS), OpenStreetMap y el BOE para el coste por kilómetro.
 
 ### `alquiler.json`
 
@@ -137,7 +137,7 @@ Grano: título de transporte por escenario, edad, corona y días de trabajo. Añ
 | `claves` | lista de texto | rango de coronas y producto de cada ruta, con la forma `A-B1\|interurbano` |
 | `clave_tarifa` | matriz de enteros | posición en `claves` de cada ruta, `clave_tarifa[origen][destino]` |
 | `transbordo` | lista de enteros o null | para cada clave, la posición de la misma ruta con transbordo |
-| `colectivos`, `edades` | listas de texto | colectivos de precio (ordinario, discapacidad y familia numerosa) y tramos de edad |
+| `colectivos`, `edades` | listas de texto | colectivos de precio (`ordinario`, `discapacidad`, `fn_general`, `fn_especial`, `fn_general_discapacidad` y `fn_especial_discapacidad`) y tramos de edad (`joven`, `general` y `mayor_65`) |
 | `no_laborables` | lista de enteros | viajes de ocio al mes que admite el cálculo |
 | `tarifas_ruta` | objeto | `[escenario][colectivo][edad][clave][ocio]` es la lista de cinco costes mensuales por días de trabajo |
 
@@ -165,7 +165,7 @@ Cuatro bloques, cada uno con su grano. Año del dato: 2024; el bloque `esfuerzo`
 | Bloque | Grano y clave | Campos |
 |---|---|---|
 | `esfuerzo` | zona por año: `zona_id`, `anio` | `alquiler_mes_p50` y `renta_hogar_mes` (decimales, euros al mes); `esfuerzo` (decimal, fracción de la renta); null si falta alguno. Además de las 199 zonas lleva `28079`, Madrid entero[^recuento] |
-| `bono` | municipio: `municipio_id` | `solicitudes`, `aceptadas`, `rechazadas` y `poblacion_joven` (enteros, convocatoria de 2022); `necesidad` (decimal); `indicador_necesidad` (texto); `grupo` (texto, cruce de necesidad y ayuda, o `sin_dato`) |
+| `bono` | municipio: `municipio_id` | `solicitudes`, `aceptadas` y `rechazadas` (enteros, convocatoria de 2022); `poblacion_joven` (entero, jóvenes de 18 a 35 años a 1-1-2023; fuente: `meta.nota` de `analisis.json`, censo anual del INE, tabla 68542); `necesidad` (decimal o null, null en los municipios de `grupo` `sin_dato`); `indicador_necesidad` (texto); `grupo` (texto, cruce de necesidad y ayuda, o `sin_dato`) |
 | `simulacion` | perfil por municipio por criterio | `perfil`, `municipio_id`, `criterio` (textos); `elegible` (booleano); `eur_mes` (decimal, euros al mes); `estimado` (booleano); `pct_ocupados_elegibles` (decimal, % de los ocupados de la zona, null si no aplica); `marca_imputada`, `marca_excluida` y `marca_pocos` (calidad del municipio) |
 | `titulares` | titular | `texto` y `fuente` |
 
@@ -182,8 +182,8 @@ Indicadores `alquiler_eur_m2_p50` y `esfuerzo` como entidades NGSI-LD del modelo
 | INE | CC BY 4.0 | `zonas`, `alquiler`, `analisis`, `hogares`, `sdm/esfuerzo` |
 | Ministerio de Vivienda y Agenda Urbana (SERPAVI) | Condiciones de reutilización del MIVAU (RD 1495/2011) <!-- sin-fuente: número de la norma --> | `alquiler`, `analisis`, `hogares`, `sdm` |
 | Comunidad de Madrid, catálogo de datos abiertos | CC BY 4.0 | `alquiler`, `analisis`, `hogares` |
-| OpenStreetMap (extracto de Geofabrik) | ODbL 1.0 | `zonas`, `tiempos`, `alquiler` |
-| CRTM | Licencia de datos abiertos del CRTM y aviso legal de crtm.es | `zonas`, `tiempos`, `tarifas` |
+| OpenStreetMap (extracto de Geofabrik) | ODbL 1.0 | `zonas`, `tiempos`, `alquiler`; de forma indirecta, `analisis` y `tarifas` |
+| CRTM | Licencia de datos abiertos del CRTM y aviso legal de crtm.es | `zonas`, `tiempos`, `tarifas`; de forma indirecta, `analisis` |
 | Boletín Oficial del Estado | Reutilización con cita de la fuente | `netos`, `tarifas`, `tiempos`, `analisis` |
 | BOCM | Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI) <!-- sin-fuente: número de artículo --> | `analisis`, `tarifas` |
 | Agencia Tributaria | Reutilización citando la fuente y sin desnaturalizar | `alquiler` |

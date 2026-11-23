@@ -3,6 +3,8 @@
 Una línea por decisión, la más reciente arriba. Los agentes leen esto antes de trabajar.
 Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 
+- 2026-11-24 · **Licencia ODbL 1.0 también para `analisis.json` y `tarifas.json`** (amplía la del 2026-11-20, que solo miraba qué ficheros citan OpenStreetMap en `meta.fuentes`). Los dos se construyen sobre derivados de OpenStreetMap sin citarlo. Las simulaciones de `analisis.json` usan los tiempos de `tiempos.json` (red viaria de OSM) y las coronas de `tarifas.json`. El rango de coronas de `tarifas.json` sale de la recta entre los centros de las zonas (`transporte.rango_coronas`), calculados con los edificios de OSM. Siguen con CC BY 4.0 `hogares.json`, `netos.json` y los dos de `sdm/`: `alquiler_eur_m2_p50` solo usa la mediana del SERPAVI y `esfuerzo` el bloque de esfuerzo (SERPAVI y ADRH), sin OSM. `app/datos/dcat.jsonld` y su LEEME lo recogen, con la cita de OSM en los dos ficheros, y `tests/test_dcat.py` lo comprueba · se aplica el mismo criterio de la más exigente del 20-11: tratarlos como «Produced Work» (ODbL §4.3) sería un criterio propio, no un dictamen. Lo detectó `dm-verificador-fuentes` (NO APTO) · decisión de Yeray · #110
+
 - 2026-11-23 · **El bloque `simulacion` se publica en `app/datos/analisis.json` (F3-09).**
   - **Qué entra:** las filas de vivienda de `simulacion.simulacion` (6 perfiles × 138 municipios × 3 criterios), `fin_descuento` y `fin_descuento_rdl` (adulto y joven × 179 municipios), y dos sensibilidades con sufijo en `criterio`:
     - `_bruto`: ingresos medidos con el bruto, solo para la pareja y el joven, que van siempre como banda;
