@@ -218,9 +218,7 @@ def test_eurostat_madrid_otros_anios(anio):
     m = hogares(CARPETAS[anio], anio)
     m = m[m.DB040 == MADRID]
     esperado = {2023: 9.1, 2024: 11.2}[anio]
-    assert tasa(sobrecarga_eurostat(m), m.peso_personas)[0] == pytest.approx(
-        esperado, abs=0.05
-    )
+    assert _eurostat(m) == pytest.approx(esperado, abs=0.05)
 
 
 @otro_anio

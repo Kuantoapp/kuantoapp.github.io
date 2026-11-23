@@ -42,7 +42,7 @@ def hogares(carpeta: Path = RAW, anio: int = 2025) -> pd.DataFrame:
 
     `anio` es el de la carpeta (2023, 2024 o 2025): los tres ficheros del INE tienen el mismo diseño.
     """
-    aa = anio % 100
+    aa = f"{anio % 100:02d}"
     d = _leer(
         carpeta / f"ECV_Td_{anio}/CSV/esudb{aa}d.csv", ["DB030", "DB040", "DB090"]
     )
