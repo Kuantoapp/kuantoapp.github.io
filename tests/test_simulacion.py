@@ -877,6 +877,7 @@ def test_leer_perceptores_falla_si_falta_un_tramo(tmp_path):
 
 def test_umbral_bruto_invierte_la_base_al_centimo():
     u = simulacion.umbral_bruto()
+    assert u == D("29090.91")  # la cifra que se publica (decisión 34)
     assert simulacion.base_imponible(u) <= simulacion.UMBRAL_INGRESOS
     assert simulacion.base_imponible(u + D("0.01")) > simulacion.UMBRAL_INGRESOS
 

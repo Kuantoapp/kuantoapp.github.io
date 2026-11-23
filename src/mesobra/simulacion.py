@@ -50,8 +50,9 @@ Decisiones y sentido de su sesgo:
 10. Los ingresos son los del «periodo impositivo inmediatamente anterior con plazo de presentación vencido a la
     solicitud» (Acuerdo, art. 4.4, certificado del ACG, BDNS 805618, doc. 1560529; FAQ 2024, pregunta 2). Las fechas
     son inferencia nuestra, la FAQ no las da: 2023 hasta el fin de la campaña del IRPF 2024 (30-6-2025), 2024
-    hasta el de 2025 y 2025 después. Cuadra con el motivo de exclusión 7.1 de la ronda 2024 («ingresos
-    correspondientes al ejercicio 2023»), porque el plazo abrió el 3-2-2025. Para quien pidió entonces, el ejercicio
+    hasta el de 2025 y 2025 después. Cuadra con el motivo de incumplimiento 7.1 de la ronda 2024 («ingresos
+    correspondientes al ejercicio 2023»; sede.comunidad.madrid/medias/motivosdeincumplimientocompletobaj2024pdf/
+    download, leído por el verificador el 2026-11-23, sin copia en data/raw), porque el plazo abrió el 3-2-2025. Para quien pidió entonces, el ejercicio
     era 2023, con ingresos menores: entrarían al menos los mismos (sin cargar sueldos de 2023). Supuesto: solicitud
     tras la campaña de 2024 (ejercicio 2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
     (`sueldos_2024`), no el llevado a 2026 (con el de 2026 la pareja, de 24.215 a 25.769 € de base, pasaría de los
@@ -182,7 +183,8 @@ Escalado a personas y coste (#302, `escalado`; registro previo de `docs/decision
     limita de verdad. A = asalariados de 18 a 35 años con ingresos ≤ 3 × IPREM: el umbral en bruto (la base de
     25.200 € invertida con `base_imponible`) sobre las decilas de la AEAT 2024 (Madrid, decilas nacionales,
     interpolación lineal en el SME del centil y reparto uniforme dentro de la decila), aplicado a los perceptores
-    del catálogo regional. Sesgos: A, hacia abajo (el SME anualiza y quien está bajo el SMI no se cuenta); el cruce
+    del catálogo regional. `umbral_bruto` aplica la cotización de 2026 a salarios de 2024: con un tipo 0,15 puntos
+    menor el umbral sería de 29.044,31 € (mismo centil 61) y A, un 0,16 % menor. Sesgos: A, hacia abajo (el SME anualiza y quien está bajo el SMI no se cuenta); el cruce
     de pob_joven y alquiler_joven, sin signo conocido (incluye a quien vive en el piso alquilado de sus padres, y el
     asalariado se emancipa más; repartir por población sobrepesa a Madrid); f, hacia abajo (el P50 y el P75 de 69 m²
     sobreestiman la renta de un joven, decisión 11). Los municipios con alquiler_joven nulo quedan fuera de la tabla
@@ -260,7 +262,7 @@ PERCEPTORES = bono.RAW / "cm_perceptores_asalariados_edad_2026-11-23.csv"
 CREDITO_2024 = 31_800_000
 # Registro previo de #302: parte de los contratos bajo el tope según el percentil SERPAVI que lo cumple.
 BANDAS_F = {"p75": (0.75, 1.0), "p50": (0.5, 0.75), "sobre": (0.0, 0.5)}
-EUR_PERSONA = 3000  # 250 € × 12 meses
+EUR_PERSONA = int(CUANTIA) * 12  # € al año por persona beneficiaria
 IDS = (
     "smi_30",
     "teleoperador_23",
@@ -972,12 +974,12 @@ def escalado(
     que es de al menos 600 €, así que min(250, renta) = 250.
     """
     d = pd.DataFrame({"pob": pob_joven, "alq": alquiler_joven}).dropna()
-    sin = df_p50[~df_p50["municipio_id"].isin(d.index)]
-    LOG.info(
-        "escalado: %d municipios de `simulacion` sin alquiler_joven o población quedan fuera: %s; su población joven (cuenta en Σ, su parte de A se pierde): %d",
-        len(sin), sorted(sin["municipio_id"]), pob_joven[~pob_joven.index.isin(d.index)].sum(),
-    )  # fmt: skip
     m = df_p50.set_index("municipio_id").join(d, how="inner")
+    fuera = pob_joven.index.difference(m.index)
+    LOG.info(
+        "escalado: %d municipios sin fila (sin alquiler_joven, población o fila en `simulacion`): %s; su población joven (cuenta en Σ, su parte de A se pierde): %d",
+        len(fuera), sorted(fuera), pob_joven[fuera].sum(),
+    )  # fmt: skip
     m["p75"] = df_p75.set_index("municipio_id")["elegible"].reindex(m.index)
     if m["p75"].isna().any():
         raise ValueError(f"sin fila con el P75: {sorted(m.index[m['p75'].isna()])}")
@@ -1055,13 +1057,13 @@ def main() -> None:
         censo2021.pct_alquiler_joven(),
         a,
     )
+    comprobar_parada(esc, bono.leer_bono())
     esc.to_csv(PROCESSED / "simulacion_escalado.csv", index=False)
     LOG.info(
         "escalado (estimado): A %.0f; Comunidad:\n%s\ncrédito %d €: %.0f personas-año en 2025-2026 (la mitad por año)\n28079:\n%s",
         a, esc[["techo", "personas_min", "personas_max", "coste_min", "coste_max"]].sum().round(0).to_string(),
         CREDITO_2024, CREDITO_2024 / EUR_PERSONA, esc[esc["municipio_id"] == "28079"].round(2).T.to_string(),
     )  # fmt: skip
-    comprobar_parada(esc, bono.leer_bono())
     fin = fin_descuento(api)
     fin.to_csv(PROCESSED / "simulacion_fin_descuento.csv", index=False)
     _log_tabla(
