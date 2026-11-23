@@ -3,7 +3,7 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  ESCENARIO_NEUTRO, METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
+  ESCENARIO_NEUTRO, METRICAS, avisoPrueba, baseEscala, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
   lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar, valorDeEjemplo,
 } from "./vista.js";
 
@@ -122,7 +122,8 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
   const hayImprecisas = imprecisas(alquiler).size > 0 && m.datos.includes("alquiler");
   const usaAlquiler = m.datos.includes("alquiler");
-  const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
+  const pct = new Intl.NumberFormat("es-ES", { style: "percent", signDisplay: "exceptZero" });
+  const metodo = m.cortes ? `Cortes fijos en el ${m.cortes.map((c) => pct.format(c)).join(", ")} ${m.base}` : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
   cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
@@ -179,13 +180,13 @@ const VELO = { type: "Feature", properties: {}, geometry: { type: "Polygon", coo
 // Colores del mapa (no de la web) en cada tema. Los de las clases no cambian: son los datos. `marca` y `bajoMarca` son las
 // líneas de zona imprecisa, estimada, de referencia y elegida, y el halo que las separa de la clase de debajo.
 const TEMAS = {
-  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", textoProvincia: "#5c6069", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
-  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", textoProvincia: "#a9b0ba", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
+  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", interior: "#d9e6f6", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", textoProvincia: "#5c6069", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
+  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", interior: "#1d3352", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", textoProvincia: "#a9b0ba", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
 };
 // [capa, propiedad de pintura, color de TEMAS]
 const PINTURA_TEMA = [
   ["mar", "background-color", "mar"], ["vecinos", "fill-color", "vecino"], ["provincias", "fill-color", "provincia"],
-  ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"],
+  ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"], ["comunidad-interior", "fill-color", "interior"],
   ["comunidad", "line-color", "contorno"], ["zonas-borde", "line-color", "bordeZona"], ["zonas-nombre", "text-color", "texto"],
   ["zonas-nombre", "text-halo-color", "halo"], ["provincias-nombre", "text-color", "textoProvincia"], ["provincias-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
   ["zonas-elegida", "line-color", "marca"], ["zonas-imprecisas-fondo", "line-color", "bajoMarca"], ["zonas-imprecisas", "line-color", "marca"],
@@ -243,6 +244,8 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
     mapa.addSource("comunidad", { type: "geojson", data: { type: "Feature", properties: {}, geometry: contorno(zonas.features) } });
+    // Interior de la Comunidad (las zonas la cubren entera), un azul claro del acento: solo en la vista previa del recorrido (#389).
+    mapa.addLayer({ id: "comunidad-interior", type: "fill", source: "zonas", paint: { "fill-color": t.interior, "fill-opacity": 0 } });
     mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.85 } });
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 1.4 } });
     mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
@@ -391,7 +394,8 @@ async function main() {
     const algunaZona = Object.values(actual.zonas)[0];
     // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
     if (v.fuente === "bruto") formulario().elements.neto.value = entrada.sueldos.length === 1 ? String(Math.round(algunaZona.neto)) : "";
-    const pintado = pintar(api.zonas, estado.resultado, estado.metrica, imprecisas(api.alquiler));
+    const base = baseEscala(estado.metrica, api, estado.entrada, estado.resultado);
+    const pintado = pintar(api.zonas, estado.resultado, estado.metrica, { pocas: imprecisas(api.alquiler), base });
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
     const simulacion = tituloEscenario(v, api.tarifas.edad_max_joven + 1);
@@ -513,6 +517,9 @@ async function main() {
       mapa.setPaintProperty(capa, `${propiedad}-transition`, transicion);
       mapa.setPaintProperty(capa, propiedad, vista ? 0 : opaca);
     }
+    // El interior claro, al revés: se ve en la vista previa y se va en el mapa final para no teñir las clases.
+    mapa.setPaintProperty("comunidad-interior", "fill-opacity-transition", transicion);
+    mapa.setPaintProperty("comunidad-interior", "fill-opacity", vista ? 1 : 0);
   };
   mapa.on("load", () => pintarModo(guiado()));
   alCambiarModo = (vista) => {
@@ -714,8 +721,8 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
-  e.preventDefault();
-  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final // sin recargar: se conservan el mapa y lo que hayas elegido
+  e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
+  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final
   if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
