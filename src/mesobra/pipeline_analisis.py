@@ -69,7 +69,7 @@ FUENTES = [
     {
         "nombre": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado. Ley 6/2011, de 28 de diciembre, de Medidas Fiscales y Administrativas de la Comunidad de Madrid, DA 1.ª (BOE-A-2012-2980; jornada del SERMAS)",
         "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2012-2980",
-        "licencia": "Reutilización con cita de la fuente (aviso legal del BOE): «Basado en datos de la Agencia Estatal Boletín Oficial del Estado»",
+        "licencia": "Reutilización con cita de la fuente (aviso legal del BOE): «Basado en datos de la Agencia Estatal Boletín Oficial del Estado»; el texto consolidado tiene carácter meramente informativo (https://www.boe.es)",
     },
     {
         "nombre": "Orden de 3 de febrero de 2026, instrucciones de nóminas de la Comunidad de Madrid para 2026 (BOCM-20260209-6), anexo V (sueldo de los titulares)",
