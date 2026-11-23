@@ -80,7 +80,7 @@ MENCIONES = {
     "agenciatributaria.gob.es": "Fuente: Agencia Tributaria",
     "geofabrik.de": "© OpenStreetMap contributors",
     "bocm.es": "Fuente: Boletín Oficial de la Comunidad de Madrid",
-    "boe.es": "Fuente: Boletín Oficial del Estado",
+    "boe.es": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado",
 }
 # la AEAT pide la fecha de la última actualización «cuando esté disponible»; si no la publica, la de consulta
 # shortcut: «consultada el» vale para cualquier fuente; limitarlo por dominio si otra fuente con fecha lo usa
