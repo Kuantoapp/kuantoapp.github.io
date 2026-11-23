@@ -284,7 +284,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .nav-metodologia { display: none; }
 }
 @media (max-width: 40rem) {
-  .navegacion-interior, .bloque, .indice ul { width: calc(100% - 32px); }
+  .navegacion-interior, .bloque { width: calc(100% - 32px); }
   .navegacion a, .boton-nav { padding: 0 8px; font-size: 14px; }
   .boton-nav { padding: 0 12px; }
   .cifras-heroe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
@@ -297,6 +297,15 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .indice { position: sticky; top: var(--alto-nav); z-index: 9; height: var(--alto-indice); background: var(--fondo); border-bottom: 1px solid var(--linea); }
 .indice ul { display: flex; gap: 8px; width: min(72rem, 100% - 48px); height: 100%; margin: 0 auto; padding: 8px 0; overflow-x: auto; list-style: none; scrollbar-width: none; } /* las píldoras cortadas en el borde ya dicen que se desplaza */
 .indice ul::-webkit-scrollbar { display: none; }
+.indice a:focus-visible { outline-offset: -3px; } /* por dentro: la lista recorta lo que sobresale */
+/* Con ratón no hay gesto para desplazar en horizontal: barra fina visible. */
+@media (hover: hover) and (pointer: fine) {
+  .indice ul { scrollbar-width: thin; }
+  .indice ul::-webkit-scrollbar { display: block; height: 6px; }
+}
+@media (max-width: 40rem) {
+  .indice ul { width: calc(100% - 32px); }
+}
 .indice a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--linea-control); border-radius: 999px; color: var(--texto); font-size: 15px; text-decoration: none; white-space: nowrap; transition: border-color 0.15s var(--curva); }
 .pagina .indice a:hover { border-color: var(--acento); color: var(--acento); }
 .pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice)); }
@@ -375,8 +384,9 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* Metodología (#417): el informe por capas. Se ve la idea de cada sección y el detalle se despliega. */
 .capas > p, .capas > h3 { margin: 16px 0 0; }
+.capas > p { color: var(--texto-2); }
 .capas > h3 { margin-top: 40px; }
-.capas details { margin-top: 8px; border-top: 1px solid var(--linea); }
+.capas details { margin-top: 8px; border-top: 1px solid var(--linea); border-radius: 0; }
 .capas details:last-of-type { border-bottom: 1px solid var(--linea); }
 .capas details > :not(summary) { margin: 0 0 16px; color: var(--texto-2); font-size: 16px; }
 .capas details li { margin: 8px 0; }
