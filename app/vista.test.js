@@ -188,6 +188,15 @@ test("la ficha avisa de pocos alquileres declarados con menos de min_testigos y 
   assert.ok(!lineas(conTestigos(49), "28092", casos.find((c) => c.nombre.startsWith("coche"))).some((l) => l.startsWith("Impreciso")), "estimada: testigos null");
 });
 
+test("los textos fijos de la web citan el umbral de testigos de alquiler.json", () => {
+  for (const f of ["index.html", "saber-mas.html", "informe.html"]) {
+    const html = readFileSync(new URL(f, import.meta.url), "utf8");
+    const umbrales = [...html.matchAll(/(?:menos de|al menos) (\d+) (?:viviendas|alquileres)/g)].map((m) => Number(m[1]));
+    assert.ok(umbrales.length > 0, `${f} no cita el umbral`);
+    assert.deepEqual([...new Set(umbrales)], [real.alquiler.meta.min_testigos], `${f}: umbral distinto de min_testigos`);
+  }
+});
+
 test("imprecisas con datos reales: 39 zonas, entre ellas Titulcia", () => {
   const pocas = imprecisas(real.alquiler);
   assert.equal(pocas.size, 39);
