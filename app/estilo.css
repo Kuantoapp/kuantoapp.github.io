@@ -300,8 +300,8 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .indice a:focus-visible { outline-offset: -3px; } /* por dentro: la lista recorta lo que sobresale */
 /* Con ratón no hay gesto para desplazar en horizontal: barra fina visible. */
 @media (hover: hover) and (pointer: fine) {
-  .indice ul { scrollbar-width: thin; }
-  .indice ul::-webkit-scrollbar { display: block; height: 6px; }
+  .indice ul { padding: 4px 0 0; overflow-y: hidden; scrollbar-width: thin; } /* 4 + 44 + la barra (unos 10 px) caben en el alto */
+  .indice ul::-webkit-scrollbar { display: block; }
 }
 @media (max-width: 40rem) {
   .indice ul { width: calc(100% - 32px); }
