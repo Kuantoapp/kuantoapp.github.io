@@ -84,7 +84,8 @@ def tabla_umbral(u: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(filas).round(1)
 
 
-def extremos(zona: pd.DataFrame, umbral: int) -> dict[str, str]:
+def esfuerzo_y_cambio(zona: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Esfuerzo de 2024 con sus testigos y cambio 2015-2024 con los testigos del año con menos (`tmin`)."""
     e = pd.read_parquet(PROCESSED / "esfuerzo.parquet")
     nombres = gpd.read_parquet(PROCESSED / "zonas.parquet")[["zona_id", "nombre"]]
     t = e.merge(
@@ -99,22 +100,34 @@ def extremos(zona: pd.DataFrame, umbral: int) -> dict[str, str]:
     c = a24.merge(t[t.anio == 2015], on=["zona_id", "nombre"], suffixes=("", "_15"))
     c["cambio"] = (c.esfuerzo - c.esfuerzo_15) * 100
     c["tmin"] = c[["testigos", "testigos_15"]].min(axis=1)
+    return a24, c
+
+
+def lista(df: pd.DataFrame, col: str, testigos: str, escala: float = 1) -> str:
+    """«Nombre valor (testigos)» de cada fila."""
+    return ", ".join(
+        f"{r.nombre} {getattr(r, col) * escala:.1f} ({getattr(r, testigos):.0f})"
+        for r in df.itertuples()
+    )
+
+
+def extremos(a24: pd.DataFrame, c: pd.DataFrame, umbral: int) -> dict[str, str]:
     ok = c[c.tmin >= umbral]
-
-    def lista(df, col, escala=1):
-        return ", ".join(
-            f"{r.nombre} {getattr(r, col) * escala:.1f}" for r in df.itertuples()
-        )
-
     return {
         "2024 más bajos": lista(
-            a24[a24.testigos >= umbral].nsmallest(3, "esfuerzo"), "esfuerzo", 100
+            a24[a24.testigos >= umbral].nsmallest(3, "esfuerzo"),
+            "esfuerzo",
+            "testigos",
+            100,
         ),
         "2024 imprecisos más bajos": lista(
-            a24[a24.testigos < umbral].nsmallest(3, "esfuerzo"), "esfuerzo", 100
+            a24[a24.testigos < umbral].nsmallest(3, "esfuerzo"),
+            "esfuerzo",
+            "testigos",
+            100,
         ),
-        "mayores bajadas": lista(ok.nsmallest(3, "cambio"), "cambio"),
-        "mayores subidas": lista(ok.nlargest(3, "cambio"), "cambio"),
+        "mayores bajadas": lista(ok.nsmallest(3, "cambio"), "cambio", "tmin"),
+        "mayores subidas": lista(ok.nlargest(3, "cambio"), "cambio", "tmin"),
         "zonas marcadas 2024 / cambio": f"{(a24.testigos < umbral).sum()} / {(c.tmin < umbral).sum()}",
     }
 
@@ -128,7 +141,22 @@ if __name__ == "__main__":
     fila50 = tabla.set_index("n").loc[50]
     assert (fila50.eur_m2_med, fila50.zonas_bajo_n) == (12.0, 33), fila50
     print(tabla.to_string(index=False))
+    t = tabla.set_index("n")
+    a24, c = esfuerzo_y_cambio(zona)
+    entran = u[(u.testigos >= 50) & (u.testigos < 70)]
+    print(f"\nTestigos de las 158 zonas: {int(u.testigos.sum())}")
+    print(f"Entran con 70 (50 a 69): {', '.join(sorted(entran.zona_id))}")
+    print(
+        f"Interpolación frente a simulación con 70: sobrestima un {(1 - t.loc[70].sim_med / t.loc[70].eur_m2_med) * 100:.0f} %"
+    )
+    print(
+        f"€/m² con 70 a la cobertura de 50 (escala 1/√n desde 50): {t.loc[50].eur_m2_med * (50 / 70) ** 0.5:.1f} %"
+    )
+    mediano = a24.esfuerzo.median() * 100
+    print(
+        f"Cambio entre años con 70 en los dos: ±{mediano * t.loc[70].cuantia_med / 100 * 2**0.5:.1f} puntos (esfuerzo mediano 2024 {mediano:.1f} %)"
+    )
     for umbral in (50, 70, 100):
         print(f"\n== umbral {umbral}")
-        for k, v in extremos(zona, umbral).items():
+        for k, v in extremos(a24, c, umbral).items():
             print(f"  {k}: {v}")
