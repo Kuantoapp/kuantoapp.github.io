@@ -599,9 +599,10 @@ function prepararVista(mapa) {
       if (e.relatedTarget && !menu.contains(e.relatedTarget)) menu.querySelector(".menu-boton").setAttribute("aria-expanded", "false");
     });
   }
-  // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también sin transición o al acabarla.
+  // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también al pulsar y al acabar una transición
+  // de la barra. El panel ya no anima su ancho (#434): le basta `ajustar`.
   const ajustar = () => requestAnimationFrame(() => mapa.resize());
-  for (const id of ["panel", "barra-filtros"]) $(id).addEventListener("transitionend", (e) => e.target === e.currentTarget && mapa.resize());
+  $("barra-filtros").addEventListener("transitionend", (e) => e.target === e.currentTarget && mapa.resize());
   const pestana = $("plegar-panel");
   pestana.addEventListener("click", () => {
     const abierto = pestana.getAttribute("aria-expanded") === "true";

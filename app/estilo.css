@@ -53,6 +53,8 @@
   .maplibregl-ctrl-group { background: var(--superficie) !important; }
   .maplibregl-ctrl-group button + button { border-top-color: var(--linea) !important; }
   .maplibregl-ctrl-icon { filter: invert(1); }
+  /* Las figuras del análisis son PNG con fondo blanco: se bajan un poco para que no deslumbren sobre el fondo oscuro. */
+  .dato-imagen img { filter: brightness(0.88); }
 }
 
 * { box-sizing: border-box; }
