@@ -176,6 +176,28 @@ def test_factor_2026_desde_la_etcl():
             assert "estimado" in p["fuente"] and "×1,0593" in p["fuente"]
 
 
+ETCL_CSV = calculo.RAIZ / "data/raw/ine_etcl_coste_laboral_ccaa_2026-11-23.csv"
+
+
+@pytest.mark.skipif(not ETCL_CSV.exists(), reason="falta data/raw")
+def test_trimestres_etcl_iguales_al_csv_del_ine():
+    df = pd.read_csv(ETCL_CSV, sep=";", encoding="utf-8-sig", dtype=str)
+    df = df[
+        df.iloc[:, 0].str.startswith("13 Madrid")
+        & df.iloc[:, 1].str.startswith("B_S")
+        & (df.iloc[:, 2] == "Coste salarial total")
+    ].set_index("Periodo")["Total"]
+    valor = df.str.replace(".", "", regex=False).str.replace(",", ".").astype(float)
+    trimestres = [
+        *(f"2024T{i}" for i in range(1, 5)),
+        "2025T3",
+        "2025T4",
+        "2026T1",
+        "2026T2",
+    ]
+    assert valor[trimestres].tolist() == [*titulares.ETCL_2024, *titulares.ETCL_ULTIMO]
+
+
 def test_joven_mediano_desde_las_tablas_del_ine():
     # P50 de 25-34 en Madrid 2022 (t=36850) × media del tramo 2024 / 2022 (t=28201), redondeado al céntimo
     assert titulares.JOVEN_2024 == 25209.48
