@@ -257,6 +257,7 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "zonas-imprecisas-fondo", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#fff", "line-width": 3 } });
     mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
     // Cada marca lleva su halo (`bajoMarca`) para verse sobre clases claras y oscuras en los dos temas.
+    // Una marca nueva se suma también a `MARCAS` (en `main`), o se vería en el mapa de vista previa del recorrido.
     const estimada = ["==", ["get", "estimado"], true];
     const referencia = ["==", ["get", "referencia"], true];
     mapa.addLayer({ id: "zonas-estimadas-fondo", type: "line", source: "zonas", filter: estimada, paint: { "line-color": "#fff", "line-width": 4 } });
@@ -443,8 +444,8 @@ async function main() {
     actualizarBotones();
   };
   // Aplica un estado del enlace a los formularios y repinta.
-  const ir = (texto) => {
-    aplicarValores(estadoDeEnlace(texto, valoresFormulario(), api).valores);
+  const ir = (valores) => {
+    aplicarValores(valores);
     mostrarSegunda();
     mostrarHijos(); // las casillas de edad de los hijos siguen al número de hijos del estado al que se vuelve
     recalcular();
@@ -459,7 +460,7 @@ async function main() {
     actualizarBotones();
   });
   $("cancelar").addEventListener("click", () => {
-    ir(inicial);
+    ir(estadoDeEnlace(inicial, valoresFormulario(), api).valores);
     guardarPaso(); // también se puede deshacer
   });
   $("quitar-escenario").addEventListener("click", () => {
@@ -468,7 +469,7 @@ async function main() {
     guardarPaso();
   });
   window.addEventListener("popstate", () => {
-    ir(location.hash.slice(1));
+    ir(estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api).valores);
     confirmado = estadoAEnlace(valoresFormulario());
     actualizarBotones();
   });
@@ -503,34 +504,41 @@ async function main() {
   // Recorrido guiado (#389): el mismo mapa, solo para mirar (fondo, contorno, bordes y nombres), hasta «Ver el mapa».
   const MARCAS = ["zonas-encima-halo", "zonas-encima", "zonas-elegida-halo", "zonas-elegida", "zonas-imprecisas-fondo", "zonas-imprecisas", "zonas-estimadas-fondo", "zonas-estimadas", "zonas-referencia-fondo", "zonas-referencia"];
   const pintarModo = (vista) => {
+    $("mapa").setAttribute("aria-label", vista ? "Mapa de la Comunidad de Madrid, solo para mirar" : "Mapa de las zonas coloreadas por la métrica elegida");
     if (!mapa.getLayer("zonas-relleno")) return; // antes de cargar: lo aplica el `load` de abajo
-    const fundido = vista || reducido() ? 0 : 700; // las zonas se colorean mientras entra el mapa final
-    mapa.setPaintProperty("zonas-relleno", "fill-opacity-transition", { duration: fundido, delay: fundido && 200 });
-    mapa.setPaintProperty("zonas-relleno", "fill-opacity", vista ? 0 : 0.85);
-    for (const capa of MARCAS) mapa.setLayoutProperty(capa, "visibility", vista ? "none" : "visible");
+    // Al llegar al mapa final, el color y las marcas se funden juntos mientras entran la barra y la leyenda.
+    const fundido = vista || reducido() ? 0 : 700;
+    const transicion = { duration: fundido, delay: fundido && 200 };
+    for (const [capa, propiedad, opaca] of [["zonas-relleno", "fill-opacity", 0.85], ...MARCAS.map((c) => [c, "line-opacity", 1])]) {
+      mapa.setPaintProperty(capa, `${propiedad}-transition`, transicion);
+      mapa.setPaintProperty(capa, propiedad, vista ? 0 : opaca);
+    }
   };
   mapa.on("load", () => pintarModo(guiado()));
   alCambiarModo = (vista) => {
     pintarModo(vista);
     marcarEncima(null);
     tooltip.hidden = true;
-    $("mapa").setAttribute("aria-label", vista ? "Mapa de la Comunidad de Madrid, solo para mirar" : "Mapa de las zonas coloreadas por la métrica elegida");
     // Tras el cambio de disposición: la Comunidad entera en el hueco nuevo; al llegar al mapa final, con vuelo.
     requestAnimationFrame(() => encuadrar(vista || reducido() ? { animate: false } : { duration: 800 }));
   };
   // «Siguiente»: si falla un campo de la tarjeta, se señala el primero y se ofrece su valor de ejemplo.
   tarjetaValida = (menu) => {
-    const errores = (validar(valoresFormulario(), api).errores ?? []).filter(({ campo }) => menu.contains(controlDe(campo)));
-    if (errores.length === 0) return true;
+    let errores = (validar(valoresFormulario(), api).errores ?? []).filter(({ campo }) => menu.contains(controlDe(campo)));
     recalcular(); // pinta los errores junto a sus campos
+    // Una zona de referencia sin alquiler o sin ruta no la rechaza `validar` sino `calcular`, que lo dice en `#estado`.
+    if (errores.length === 0 && menu.contains(controlDe("ref")) && $("estado").textContent.startsWith("La zona de referencia")) {
+      errores = [{ campo: "ref", mensaje: $("estado").textContent }];
+      mostrarErrores(errores);
+    }
+    if (errores.length === 0) return true;
     for (const { campo } of errores) {
-      const boton = elemento("button", "Usar el valor de ejemplo", "usar-ejemplo");
+      // El neto vuelve al bruto y una edad de hijo vacía todas (valorDeEjemplo): el botón dice lo que hace.
+      const texto = /^neto2?$/.test(campo) ? "Volver al bruto de ejemplo" : /^hijo\d+$/.test(campo) ? "Dejar vacías las edades" : "Usar el valor de ejemplo";
+      const boton = elemento("button", texto, "usar-ejemplo");
       boton.type = "button";
       boton.addEventListener("click", () => {
-        aplicarValores(valorDeEjemplo(campo, valoresFormulario(), api, deEjemplo));
-        mostrarSegunda();
-        mostrarHijos();
-        recalcular();
+        ir(valorDeEjemplo(campo, valoresFormulario(), api, deEjemplo));
         guardarPaso();
         controlDe(campo).focus();
       });
@@ -683,13 +691,17 @@ function terminarGuia() {
     $("mejores-titulo").focus();
   };
   if (reducido()) return llegar();
+  if (herramienta.classList.contains("saliendo")) return; // doble pulsación
   herramienta.classList.add("saliendo");
-  $("guia-tarjeta").addEventListener("animationend", llegar, { once: true });
+  // La animación de salida de la propia tarjeta (no las de dentro): si se cancela porque se cierra el recorrido, no llega.
+  const sale = $("guia-tarjeta").getAnimations()[0];
+  if (sale) sale.finished.then(llegar, () => {});
+  else llegar();
 }
 
 $("guia-atras").addEventListener("click", () => verTarjeta(tarjeta - 1));
 $("guia-siguiente").addEventListener("click", () => {
-  if (!tarjetaValida(menuDe(tarjeta))) return;
+  if (!guiado() || !tarjetaValida(menuDe(tarjeta))) return; // fuera del recorrido (doble pulsación al llegar al mapa)
   if (tarjeta < TARJETAS) verTarjeta(tarjeta + 1);
   else terminarGuia();
 });
@@ -702,7 +714,8 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
-  e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
+  e.preventDefault();
+  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final // sin recargar: se conservan el mapa y lo que hayas elegido
   if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
