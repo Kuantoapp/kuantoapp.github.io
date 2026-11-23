@@ -226,6 +226,15 @@ def test_base_de_la_pareja_y_la_madre():
     assert simulacion.base_imponible(titulares.ENFERMERA) == D("26443.99")
 
 
+def test_banda_del_joven_base_frente_a_bruto():
+    # decisión 8: con la base entra; con el bruto (25.209,48 > 25.200) queda fuera por ingresos
+    base = simulacion.base_imponible(titulares.JOVEN_2024)
+    assert requisitos(30, base, D(0), None) == []
+    assert requisitos(30, D(str(titulares.JOVEN_2024)), D(0), None) == [
+        "ingresos > 3 × IPREM (RD art. 6.1.d; Acuerdo, art. 4.1.d)"
+    ]
+
+
 def test_vtt_es_la_proporcion_del_coste_laboral_de_madrid():
     assert round(simulacion.VTT, 2) == 9.76
     assert [round(v, 2) for v in simulacion.BANDA_VTT] == [7.50, 12.01]
@@ -765,4 +774,215 @@ def test_ingresos_del_bono_son_los_de_2024_y_la_pareja_sigue_dentro():
         pares[pares["perfil"] == "pareja_mediana"]["ingresos_bruto"]
         .eq(titulares.EAES_2024)
         .all()
+    )
+
+
+def _miles(n: int) -> str:
+    return f"{n:,}".replace(",", ".")
+
+
+def _html_decilas(filas: list[list[int]], total: list[int]) -> str:
+    cuerpo = "".join(
+        f"<td>Decil {i}{' Mediana' if i == 5 else ''}</td>"
+        + "".join(f"<td>{_miles(x)}</td>" for x in f)
+        for i, f in enumerate(filas, 1)
+    )
+    return (
+        "<td>Mayor de 65 años</td><td>Total</td>"
+        + "".join(f"<td>{_miles(x)}</td>" for x in total)
+        + cuerpo
+    )
+
+
+def _filas_decilas() -> list[list[int]]:
+    return [[1000 * i + 100 * j for j in range(7)] for i in range(1, 11)]
+
+
+def test_leer_decilas(tmp_path):
+    filas = _filas_decilas()
+    ruta = tmp_path / "d.html"
+    ruta.write_text(
+        _html_decilas(filas, [sum(c) for c in zip(*filas, strict=True)]),
+        encoding="utf-8",
+    )
+    df = simulacion.leer_decilas(ruta)
+    assert df.shape == (10, 7)
+    assert df.loc[10, "hasta25"] == 10_100
+    assert df.loc[5, "de26a35"] == 5_200
+
+
+def test_leer_decilas_falla_si_no_suman_el_total(tmp_path):
+    filas = _filas_decilas()
+    total = [sum(c) for c in zip(*filas, strict=True)]
+    total[1] += 1
+    ruta = tmp_path / "d.html"
+    ruta.write_text(_html_decilas(filas, total), encoding="utf-8")
+    with pytest.raises(ValueError, match="no suman"):
+        simulacion.leer_decilas(ruta)
+
+
+def _html_centilas(n: int) -> str:
+    return (
+        "".join(
+            f"<td>{c}</td><td>1.000</td><td>{_miles(c * 500 - 250)}</td>"
+            f"<td>{_miles((c - 1) * 500)}</td><td>{_miles(c * 500)}</td><td>500</td><td>9,86%</td>"
+            for c in range(1, n + 1)
+        )
+        + "<td>Decil 7</td><td>1.418.717</td><td>30.918</td><td>28.730</td><td>33.432</td><td>4.702</td><td>-</td>"
+    )
+
+
+def test_leer_centilas(tmp_path):
+    ruta = tmp_path / "c.html"
+    ruta.write_text(_html_centilas(100), encoding="utf-8")
+    df = simulacion.leer_centilas(ruta)
+    assert len(df) == 100
+    assert df.loc[61, ["inf", "sup"]].tolist() == [30_000, 30_500]
+
+
+def test_leer_centilas_falla_si_faltan_centiles(tmp_path):
+    ruta = tmp_path / "c.html"
+    ruta.write_text(_html_centilas(99), encoding="utf-8")
+    with pytest.raises(ValueError, match="100 centiles"):
+        simulacion.leer_centilas(ruta)
+
+
+_CSV = "Año;Concepto;Tipo territorio;Código territorio;Territorio;Sexo;Nacionalidad;Valor;Unidad;Estado dato\n"
+
+
+def _fila_csv(anio, tramo, sexo="Total", nac="Total", valor=1):
+    return f"{anio};Total asalariados de {tramo} años desde la óptica del perceptor;Otros;;;{sexo};{nac};{valor};Número;\n"
+
+
+def test_leer_perceptores(tmp_path):
+    ruta = tmp_path / "p.csv"
+    ruta.write_text(
+        _CSV
+        + _fila_csv(2024, "18 a 25", valor=381070)
+        + _fila_csv(2024, "26 a 35", valor=748781)
+        + _fila_csv(2023, "26 a 35", valor=5)
+        + _fila_csv(2024, "26 a 35", sexo="Hombres", valor=7)
+        + _fila_csv(2024, "26 a 35", nac="Extranjera", valor=9),
+        encoding="utf-8-sig",
+    )
+    assert simulacion.leer_perceptores(ruta) == (381070, 748781)
+
+
+def test_leer_perceptores_falla_si_falta_un_tramo(tmp_path):
+    ruta = tmp_path / "p.csv"
+    ruta.write_text(_CSV + _fila_csv(2024, "18 a 25"), encoding="utf-8-sig")
+    with pytest.raises(ValueError, match="una fila por tramo"):
+        simulacion.leer_perceptores(ruta)
+
+
+def test_umbral_bruto_invierte_la_base_al_centimo():
+    u = simulacion.umbral_bruto()
+    assert simulacion.base_imponible(u) <= simulacion.UMBRAL_INGRESOS
+    assert simulacion.base_imponible(u + D("0.01")) > simulacion.UMBRAL_INGRESOS
+
+
+def test_asalariados_bajo_umbral_con_decilas_a_mano():
+    # centil c cubre [(c-1)·500, c·500): 29.090,91 € cae en el 59 con fracción 90,91 ÷ 500
+    df = pd.DataFrame(
+        {
+            "inf": [(c - 1) * 500 for c in range(1, 101)],
+            "sup": [c * 500 for c in range(1, 101)],
+        },
+        index=pd.RangeIndex(1, 101, name="centil"),
+    )
+    pos = simulacion.posicion_en_centiles(df, D("29090.91"))
+    assert pos == pytest.approx(58 + 90.91 / 500)
+    assert simulacion.parte_bajo(pd.Series([10] * 10), 25.0) == pytest.approx(0.25)
+    # seis decilas completas y la mitad de la séptima, que pesa 4 de 10
+    assert simulacion.parte_bajo(
+        pd.Series([1, 1, 1, 1, 1, 1, 4, 0, 0, 0]), 65.0
+    ) == pytest.approx(0.8)
+    decilas = pd.DataFrame({"hasta25": [10] * 10, "de26a35": [10] * 10})
+    a = simulacion.asalariados_bajo_umbral(decilas, df, (100, 200))
+    assert a == pytest.approx(300 * pos / 100)
+
+
+def test_posicion_en_centiles_falla_fuera_de_rango():
+    df = pd.DataFrame({"inf": [0, 10], "sup": [10, 20]}, index=pd.RangeIndex(1, 3))
+    with pytest.raises(ValueError, match="ningún centil"):
+        simulacion.posicion_en_centiles(df, D(25))
+
+
+def _sim(filas):
+    return pd.DataFrame(filas, columns=["municipio_id", "elegible", "eur_mes"])
+
+
+def test_escalado_una_banda_por_municipio_y_sin_alquiler_nulo():
+    df50 = _sim(
+        [("A", True, 250.0), ("B", True, 200.0), ("C", False, 0.0), ("D", True, 250.0)]
+    )
+    df75 = _sim(
+        [("A", True, 250.0), ("B", False, 0.0), ("C", False, 0.0), ("D", True, 250.0)]
+    )
+    pob = pd.Series({"A": 1000, "B": 2000, "C": 3000, "D": 4000})
+    alq = pd.Series({"A": 0.5, "B": 0.2, "C": 0.1, "D": float("nan")})
+    e = simulacion.escalado(df50, df75, pob, alq, 600.0).set_index("municipio_id")
+    assert (
+        list(e.index)
+        == [
+            "A",
+            "B",
+            "C",
+        ]
+    )  # D, con alquiler nulo, queda fuera de la tabla, pero cuenta en Σ pob_joven (su parte de A se pierde)
+    assert e["techo"].tolist() == pytest.approx(
+        [30, 24, 18]
+    )  # 600 ÷ 10.000 × pob × alquiler
+    assert e["f_min"].tolist() == [0.75, 0.5, 0.0]
+    assert e["f_max"].tolist() == [1.0, 0.75, 0.5]
+    assert e["personas_min"].tolist() == pytest.approx([22.5, 12, 0])
+    assert e["personas_max"].tolist() == pytest.approx([30, 18, 9])
+    # C no es elegible con el P50: cuantía de 250 €; B, la renta de 200 €
+    assert e["coste_min"].tolist() == pytest.approx([22.5 * 3000, 12 * 2400, 0])
+    assert e["coste_max"].tolist() == pytest.approx([30 * 3000, 18 * 2400, 9 * 3000])
+    assert e["estimado"].all()
+    with pytest.raises(ValueError, match="P75"):
+        simulacion.escalado(df50, df75.iloc[:2], pob, alq, 600.0)
+
+
+def test_comprobar_parada():
+    bono_2022 = pd.DataFrame(
+        {"municipio_id": ["28001", "28002", None], "aceptadas": [100, 10, 0]}
+    )
+    esc = pd.DataFrame(
+        {
+            "municipio_id": ["28001", "28002"],
+            "techo": [60_000.0, 0.0],
+            "personas_max": [100.0, 0.0],
+        }
+    )
+    simulacion.comprobar_parada(
+        esc, bono_2022
+    )  # 28002 tiene menos de 50 aceptadas: no cuenta
+    with pytest.raises(RuntimeError, match="28001"):
+        simulacion.comprobar_parada(esc.assign(personas_max=[99.0, 0.0]), bono_2022)
+    with pytest.raises(RuntimeError, match="techo"):
+        simulacion.comprobar_parada(esc.assign(techo=[1.0, 0.0]), bono_2022)
+
+
+@pytest.mark.skipif(
+    not all(
+        p.exists()
+        for p in (simulacion.DECILAS, simulacion.CENTILAS, simulacion.PERCEPTORES)
+    ),
+    reason="faltan los ficheros de data/raw de #302",
+)
+def test_valores_de_control_de_a_con_los_ficheros_reales():
+    d, c, p = (
+        simulacion.leer_decilas(),
+        simulacion.leer_centilas(),
+        simulacion.leer_perceptores(),
+    )
+    assert simulacion.umbral_bruto() == D("29090.91")
+    pos = simulacion.posicion_en_centiles(c, simulacion.umbral_bruto())
+    assert (int(pos) + 1, pos % 1) == (61, pytest.approx(0.889, abs=0.001))
+    assert simulacion.parte_bajo(d["hasta25"], pos) == pytest.approx(0.8646, abs=1e-4)
+    assert simulacion.parte_bajo(d["de26a35"], pos) == pytest.approx(0.5607, abs=1e-4)
+    assert simulacion.asalariados_bajo_umbral(d, c, p) == pytest.approx(
+        749_300, abs=100
     )

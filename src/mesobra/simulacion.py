@@ -32,18 +32,28 @@ Decisiones y sentido de su sesgo:
    y que garaje, trastero y gastos van en la renta del SERPAVI, sin la valoración del 80, 95 o 75 % de la FAQ p. 12:
    sobreestima los elegibles.
 7. Cada parámetro va con su cita, arriba de este módulo (`parametros_2026.py` queda fuera de la issue).
-8. «Ingresos» = base imponible general (supuesto de la referencia §5): bruto − cotización − 2.000 € (art. 19.2.f) −
-   reducción del art. 20, como `neto.cuota_irpf`. La norma no fija la medida («rentas anuales», «información del
-   IRPF»; Acuerdo, arts. 4.1.d y 4.4) y decide a la pareja: con la base (24.215 €) entra; con el bruto (28.038 €), no.
-   La madre (20.323 € de base, 23.875 € de bruto) entra con las dos. Se presentan siempre con la sensibilidad
-   `ingresos="bruto"`.
+8. «Ingresos» = base imponible general + del ahorro (arts. 48 y 49 LIRPF). Es un supuesto bien fundado, no lo fija el BAJ:
+   el Acuerdo solo dice «rentas anuales» e «información del IRPF» (arts. 4.1.d y 4.4), y tampoco aparece en el RD
+   42/2022, la Orden 3479/2022, las FAQ 2024 ni el Anexo I. El mismo órgano lo define así en la ayuda hermana del plan:
+   «base imponible general y del ahorro» (Orden de 22-10-2025, art. 11, BDNS 864406, doc. 1342309). Lo hacen igual
+   Extremadura (DOE 02-07-2026) y Andalucía (BOJA 194/2022). Sin consulta a la Comunidad (decisión de #302).
+   Un asalariado sin ahorro tiene solo la base general: bruto − cotización − 2.000 € (art. 19.2.f) − reducción del
+   art. 20, como `neto.cuota_irpf`. La medida decide a la pareja y al joven: con la base (24.215 y 21.571 €) entran;
+   con el bruto (28.038 y 25.209,48 €; el joven, por 9,48 €), no. La madre (20.323 € de base, 23.875 € de bruto)
+   entra con las dos. El bruto es la cota inferior de elegibles (`ingresos="bruto"`), y la pareja y el joven se
+   presentan siempre como banda. Sin resolver: cómo se agregan las imputaciones de quien no declara (no afecta a
+   ningún perfil).
 9. Cuentan solo los ingresos de la persona solicitante, el primer sueldo: Acuerdo, art. 4.1.d, si conviven jóvenes sin
    parentesco de 1.er grado o todos de hasta 35 años y firma el contrato (la pareja de 29); la madre suma su hijo, sin
    ingresos; en habitación, solo la persona arrendataria. El RD suma los de los convivientes: con esa regla la pareja
    queda fuera (sensibilidad `hogar`).
-10. Los ingresos son los del último ejercicio con plazo vencido antes de la solicitud (FAQ 2024, pregunta 2): 2023
-    hasta el 30-6-2025, 2024 del 1-7-2025 al 30-6-2026 y 2025 después. Supuesto: solicitud en ese tramo (ejercicio
-    2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
+10. Los ingresos son los del «periodo impositivo inmediatamente anterior con plazo de presentación vencido a la
+    solicitud» (Acuerdo, art. 4.4, certificado del ACG, BDNS 805618, doc. 1560529; FAQ 2024, pregunta 2). Las fechas
+    son inferencia nuestra, la FAQ no las da: 2023 hasta el fin de la campaña del IRPF 2024 (30-6-2025), 2024
+    hasta el de 2025 y 2025 después. Cuadra con el motivo de exclusión 7.1 de la ronda 2024 («ingresos
+    correspondientes al ejercicio 2023»), porque el plazo abrió el 3-2-2025. Para quien pidió entonces, el ejercicio
+    era 2023, con ingresos menores: entrarían al menos los mismos (sin cargar sueldos de 2023). Supuesto: solicitud
+    tras la campaña de 2024 (ejercicio 2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
     (`sueldos_2024`), no el llevado a 2026 (con el de 2026 la pareja, de 24.215 a 25.769 € de base, pasaría de los
     25.200 € y quedaría fuera por un ajuste de precios, no de ingresos reales). Con 2025 (ETCL ×1,0333, estimado) la
     base de la pareja sería de unos 25.089 €: dentro por 111 €. El SMI y la enfermera usan su sueldo de 2026: el SMI
@@ -57,6 +67,10 @@ Decisiones y sentido de su sesgo:
 11. Vivienda de 69 m² para los 5 perfiles; los 3 «solo» se repiten como habitación con el hogar `comparte` (alquiler
     repartido entre `personas_comparten`), aproximación a la renta de una habitación. 69 m² sobreestima la renta de
     quien vive solo: menos entran por el tope. La habitación (un tercio del piso) es una cota inferior de su renta.
+    No hay una fuente de precio de habitación que se pueda reutilizar (buscado el 2026-11-23, #302). El catálogo
+    regional y datos.madrid.es no tienen precio de habitación, y el SERPAVI y el INE solo cubren vivienda completa.
+    Los portales privados (idealista) publican cifras sin metodología y con condiciones no comprobadas (su aviso
+    legal dio 403). La cota inferior queda declarada y las cifras de habitación no van al pitch.
 12. Alquiler P50 del SERPAVI con `factor_ipc`: suelo del precio (parque de contratos, no oferta nueva); más entran
     por el tope y menos por esfuerzo (sensibilidad con el P75).
 13. Las alternativas sustituyen el tope y mantienen edad e ingresos; misma cuantía; son simulados e ilustrativos, no
@@ -120,7 +134,7 @@ Decisiones y sentido de su sesgo:
 24. `perfil` = identificador por perfil y tipo de vivienda (`smi_30`, `smi_30_habitacion`...): choca con el enumerado
     de `api_estatica.PERFILES` (#103).
 25. `estimado` = True siempre: el alquiler es una mediana estimada, no un contrato.
-26. Ser elegible no es cobrar: la concesión va por orden de llegada hasta agotar el crédito. Sin personas ni coste.
+26. Ser elegible no es cobrar: la concesión va por orden de llegada hasta agotar el crédito. Personas y coste: decisión 34.
 
 Fin del descuento del abono (#102, ficha A §7.5), `fin_descuento`: por municipio, € al mes que pierde un adulto y
 un joven (15 a 25 años) si en 2027 no se prorroga el descuento, = coste_mes(`sin_descuento`) −
@@ -159,11 +173,29 @@ coste_mes(`vigente_2026`) de la forma v1 de `tarifas.json`, cada escenario con s
 33. Sensibilidad de `fin_descuento` por corona con 3 y 5 días × 2 y 4 viajes al día (`fin_coronas`, #378), de la
     forma v1 de `tarifas.json`. No es monótona: con 3 días y 2 viajes C1 pierde 27,69 € y C2 22,32 €, porque con
     descuento C1 usa el 10 viajes (40,41 €) y C2 el abono (45,78 €), y sin él los dos pasan al sencillo (68,10 €).
+
+Escalado a personas y coste (#302, `escalado`; registro previo de `docs/decisiones.md`, 2026-11-23):
+34. Orden de magnitud, `estimado`, fuera del contrato `simulacion` y del pitch. techo(m) = A ÷ Σ pob_joven ×
+    pob_joven(m) × alquiler_joven(m); con el tope, techo × f, con f acotada por el P50 y el P75 del SERPAVI
+    (P75 ≤ tope: 0,75 a 1; solo P50 ≤ tope: 0,5 a 0,75; tope < P50: 0 a 0,5). Coste = personas × min(250 €, renta)
+    × 12, junto al crédito de la convocatoria (31,8 millones; ACG, BDNS 805618, doc. 1560529, p. 1), que es lo que
+    limita de verdad. A = asalariados de 18 a 35 años con ingresos ≤ 3 × IPREM: el umbral en bruto (la base de
+    25.200 € invertida con `base_imponible`) sobre las decilas de la AEAT 2024 (Madrid, decilas nacionales,
+    interpolación lineal en el SME del centil y reparto uniforme dentro de la decila), aplicado a los perceptores
+    del catálogo regional. Sesgos: A, hacia abajo (el SME anualiza y quien está bajo el SMI no se cuenta); el cruce
+    de pob_joven y alquiler_joven, sin signo conocido (incluye a quien vive en el piso alquilado de sus padres, y el
+    asalariado se emancipa más; repartir por población sobrepesa a Madrid); f, hacia abajo (el P50 y el P75 de 69 m²
+    sobreestiman la renta de un joven, decisión 11). Los municipios con alquiler_joven nulo quedan fuera de la tabla
+    y su parte de A se pierde (Σ pob_joven es la de toda la Comunidad). En los no elegibles con el P50 la cuantía es
+    250 € (su renta pasa del tope, de al menos 600 €). Sin la vía
+    de habitación (su renta es una cota inferior, decisión 11).
 """
 
 import logging
+import re
 from decimal import Decimal as D
 from fractions import Fraction as F
+from pathlib import Path
 from typing import NamedTuple
 
 import pandas as pd
@@ -171,6 +203,7 @@ import pandas as pd
 from mesobra import (
     bono,
     calculo,
+    censo2021,
     contratos,
     matriz_trabajo,
     neto,
@@ -218,6 +251,16 @@ POCOS_OCUPADOS = 100  # se marca a los municipios con menos ocupados observados
 LGSS_TIEMPO, LGSS_COSTE = 0.25, 0.20
 # «Salario mensual» = bruto anual ÷ pagas: 12 por defecto; ÷ 14 es la sensibilidad (el umbral baja).
 PAGAS_LGSS = {"lgss_2015": 12, "lgss_2015_14": 14}
+# Escalado de #302 (decisión 34): AEAT, «Mercado de trabajo y pensiones en las fuentes tributarias» 2024.
+DECILAS = bono.RAW / "aeat_asalariados_decilas_edad_madrid_2024_2026-11-23.html"
+CENTILAS = bono.RAW / "aeat_recorrido_sme_centilas_2024_2026-11-23.html"
+# Catálogo regional, perceptores asalariados por edad (CC BY 4.0).
+PERCEPTORES = bono.RAW / "cm_perceptores_asalariados_edad_2026-11-23.csv"
+# Certificado del ACG, BDNS 805618, doc. 1560529, p. 1: crédito de la ronda 2024, plurianual 2025-2026.
+CREDITO_2024 = 31_800_000
+# Registro previo de #302: parte de los contratos bajo el tope según el percentil SERPAVI que lo cumple.
+BANDAS_F = {"p75": (0.75, 1.0), "p50": (0.5, 0.75), "sobre": (0.0, 0.5)}
+EUR_PERSONA = 3000  # 250 € × 12 meses
 IDS = (
     "smi_30",
     "teleoperador_23",
@@ -809,6 +852,171 @@ def fin_coronas(api: dict) -> pd.DataFrame:
     )  # fmt: skip
 
 
+def _texto(ruta: Path) -> str:
+    return re.sub(
+        r"\s+", " ", re.sub(r"<[^>]+>", " ", ruta.read_text(encoding="utf-8"))
+    )
+
+
+def _num(x: str) -> int:
+    return int(x.replace(".", ""))
+
+
+_N = r"(\d{1,3}(?:\.\d{3})*)"
+
+
+def leer_decilas(ruta: Path = DECILAS) -> pd.DataFrame:
+    """Asalariados de Madrid por decila nacional del SME y tramo de edad (AEAT 2024); falla si no cuadra."""
+    t = _texto(ruta)
+    cols = ["total", "hasta25", "de26a35", "de36a45", "de46a55", "de56a65", "mas65"]
+    filas = re.findall(rf"Decil (\d+)(?: Mediana)?{(' ' + _N) * 7}", t)
+    total = re.search(rf"Mayor de 65 años Total{(' ' + _N) * 7}", t)
+    if [f[0] for f in filas] != [str(i) for i in range(1, 11)] or total is None:
+        raise ValueError(f"Se esperaban 10 decilas y la fila Total, y hay {len(filas)}")
+    df = pd.DataFrame(
+        [[_num(x) for x in f[1:]] for f in filas], columns=cols, index=range(1, 11)
+    )
+    if (df.sum() != [_num(x) for x in total.groups()]).any():
+        raise ValueError(
+            f"Las decilas no suman el Total:\n{df.sum()}\n{total.groups()}"
+        )
+    return df
+
+
+def leer_centilas(ruta: Path = CENTILAS) -> pd.DataFrame:
+    """Centiles del SME (AEAT 2024): n, sme, inf, sup y recorrido; falla si no son los 100 contiguos."""
+    filas = re.findall(rf"(?<!\S)(\d{{1,3}}){(' ' + _N) * 5} \d+,\d+%", _texto(ruta))
+    df = pd.DataFrame(
+        [[_num(x) for x in f] for f in filas],
+        columns=["centil", "n", "sme", "inf", "sup", "recorrido"],
+    ).set_index("centil")
+    contiguos = (df["inf"].iloc[1:].to_numpy() == df["sup"].iloc[:-1].to_numpy()).all()
+    if list(df.index) != list(range(1, 101)) or not contiguos:
+        raise ValueError(f"Se esperaban 100 centiles contiguos y hay {len(df)}")
+    return df
+
+
+def leer_perceptores(ruta: Path = PERCEPTORES) -> tuple[int, int]:
+    """Perceptores asalariados de 18 a 25 y de 26 a 35 años en 2024 (Total sexos y nacionalidades)."""
+    df = pd.read_csv(ruta, sep=";", encoding="utf-8-sig", dtype=str)
+    df = df[
+        (df["Año"] == "2024")
+        & (df["Sexo"] == "Total")
+        & (df["Nacionalidad"] == "Total")
+    ]
+    v = [
+        df.loc[
+            df["Concepto"].str.startswith(f"Total asalariados de {tramo} años"), "Valor"
+        ]
+        for tramo in ("18 a 25", "26 a 35")
+    ]
+    if any(len(x) != 1 for x in v):
+        raise ValueError(f"Se esperaba una fila por tramo y hay {[len(x) for x in v]}")
+    return int(v[0].iloc[0]), int(v[1].iloc[0])
+
+
+def umbral_bruto() -> D:
+    """Mayor bruto (al céntimo) cuya base imponible no pasa de `UMBRAL_INGRESOS`, por bisección."""
+    lo, hi = 0, 10_000_000  # céntimos; base_imponible no decrece con el bruto
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if base_imponible(D(mid) / 100) <= UMBRAL_INGRESOS:
+            lo = mid
+        else:
+            hi = mid - 1
+    return D(lo) / 100
+
+
+def posicion_en_centiles(centilas: pd.DataFrame, umbral: D) -> float:
+    """Centiles completos bajo `umbral` más la fracción del que lo contiene (interpolación lineal en el SME)."""
+    u = float(umbral)
+    c = centilas[(centilas["inf"] <= u) & (u < centilas["sup"])]
+    if len(c) != 1:
+        raise ValueError(f"El umbral {u} no cae en ningún centil")
+    c = c.iloc[0]
+    return float(c.name - 1 + (u - c["inf"]) / (c["sup"] - c["inf"]))
+
+
+def parte_bajo(decilas: pd.Series, pos: float) -> float:
+    """Parte de un tramo bajo `pos` centiles: decilas completas y reparto uniforme en la del corte."""
+    d, resto = divmod(pos, 10)
+    return float(
+        (decilas.iloc[: int(d)].sum() + decilas.iloc[int(d)] * resto / 10)
+        / decilas.sum()
+    )
+
+
+def asalariados_bajo_umbral(
+    decilas: pd.DataFrame, centilas: pd.DataFrame, perceptores: tuple[int, int]
+) -> float:
+    """A: asalariados de 18 a 35 años con ingresos ≤ 3 × IPREM = Σ parte bajo el umbral × perceptores del tramo."""
+    pos = posicion_en_centiles(centilas, umbral_bruto())
+    return (
+        parte_bajo(decilas["hasta25"], pos) * perceptores[0]
+        + parte_bajo(decilas["de26a35"], pos) * perceptores[1]
+    )
+
+
+def escalado(
+    df_p50: pd.DataFrame,
+    df_p75: pd.DataFrame,
+    pob_joven: pd.Series,
+    alquiler_joven: pd.Series,
+    a: float,
+) -> pd.DataFrame:
+    """Personas y coste por municipio (decisión 34): techo = A ÷ Σ pob_joven × pob_joven × alquiler_joven.
+
+    `df_p50` y `df_p75`: `simulacion` con `bono_vigente` y `smi_30` con el alquiler P50 y con el P75. Σ pob_joven es
+    la de toda la Comunidad: los municipios con `alquiler_joven` nulo (el INE suprime celdas) no reciben fila y su
+    parte de A se pierde (subestima). La cuantía de los no elegibles con el P50 es 250 €: su renta pasa del tope,
+    que es de al menos 600 €, así que min(250, renta) = 250.
+    """
+    d = pd.DataFrame({"pob": pob_joven, "alq": alquiler_joven}).dropna()
+    sin = df_p50[~df_p50["municipio_id"].isin(d.index)]
+    LOG.info(
+        "escalado: %d municipios de `simulacion` sin alquiler_joven o población quedan fuera: %s; su población joven (cuenta en Σ, su parte de A se pierde): %d",
+        len(sin), sorted(sin["municipio_id"]), pob_joven[~pob_joven.index.isin(d.index)].sum(),
+    )  # fmt: skip
+    m = df_p50.set_index("municipio_id").join(d, how="inner")
+    m["p75"] = df_p75.set_index("municipio_id")["elegible"].reindex(m.index)
+    if m["p75"].isna().any():
+        raise ValueError(f"sin fila con el P75: {sorted(m.index[m['p75'].isna()])}")
+    banda = (
+        pd.Series("sobre", index=m.index)
+        .mask(m["elegible"], "p50")
+        .mask(m["p75"], "p75")
+    )
+    f = pd.DataFrame(
+        banda.map(BANDAS_F).tolist(), index=m.index, columns=["f_min", "f_max"]
+    )
+    out = f.assign(techo=a / pob_joven.sum() * m["pob"] * m["alq"])
+    eur = m["eur_mes"].where(m["elegible"], float(CUANTIA))
+    for lado in ("min", "max"):
+        out[f"personas_{lado}"] = out["techo"] * out[f"f_{lado}"]
+        out[f"coste_{lado}"] = out[f"personas_{lado}"] * eur * 12
+    return out.assign(estimado=True).rename_axis("municipio_id").reset_index()
+
+
+def comprobar_parada(esc: pd.DataFrame, bono_2022: pd.DataFrame) -> None:
+    """Criterios de parada del registro: cota superior bajo las aceptadas de 2022 (50 o más) o techo < solicitudes."""
+    ace = bono_2022.dropna(subset=["municipio_id"]).set_index("municipio_id")[
+        "aceptadas"
+    ]
+    ace = ace[ace >= 50]
+    cota = esc.set_index("municipio_id")["personas_max"].reindex(ace.index).fillna(0)
+    bajo = cota[cota < ace]
+    techo = esc["techo"].sum()
+    if len(bajo) or techo < bono.TOTALES[0]:
+        raise RuntimeError(
+            f"Criterio de parada de #302: techo {techo:.0f} (solicitudes de 2022: {bono.TOTALES[0]}); "
+            f"cota superior bajo las aceptadas de 2022 en {len(bajo)} municipios:\n"
+            + pd.DataFrame({"personas_max": cota, "aceptadas": ace})
+            .loc[bajo.index]
+            .round(0)
+            .to_string()
+        )
+
+
 def _log_tabla(titulo: str, t: pd.DataFrame) -> None:
     LOG.info("%s:\n%s", titulo, t.round(3).to_string())
 
@@ -836,6 +1044,24 @@ def main() -> None:
     PROCESSED.mkdir(parents=True, exist_ok=True)
     df.to_csv(PROCESSED / "simulacion.csv", index=False)
     LOG.info("simulacion.csv: %d filas", len(df))
+    df_p50 = df[(df["criterio"] == "bono_vigente") & (df["perfil"] == "smi_30")]
+    df_p75 = simulacion(pares, ("bono_vigente",), alquiler="alquiler_p75")
+    df_p75 = df_p75[df_p75["perfil"] == "smi_30"]
+    a = asalariados_bajo_umbral(leer_decilas(), leer_centilas(), leer_perceptores())
+    esc = escalado(
+        df_p50,
+        df_p75,
+        bono.poblacion_joven(bono._edades()),
+        censo2021.pct_alquiler_joven(),
+        a,
+    )
+    esc.to_csv(PROCESSED / "simulacion_escalado.csv", index=False)
+    LOG.info(
+        "escalado (estimado): A %.0f; Comunidad:\n%s\ncrédito %d €: %.0f personas-año en 2025-2026 (la mitad por año)\n28079:\n%s",
+        a, esc[["techo", "personas_min", "personas_max", "coste_min", "coste_max"]].sum().round(0).to_string(),
+        CREDITO_2024, CREDITO_2024 / EUR_PERSONA, esc[esc["municipio_id"] == "28079"].round(2).T.to_string(),
+    )  # fmt: skip
+    comprobar_parada(esc, bono.leer_bono())
     fin = fin_descuento(api)
     fin.to_csv(PROCESSED / "simulacion_fin_descuento.csv", index=False)
     _log_tabla(
