@@ -3,6 +3,7 @@
 Una línea por decisión, la más reciente arriba. Los agentes leen esto antes de trabajar.
 Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
 
+- 2026-11-23 · **Modo noche de toda la web con `prefers-color-scheme`.** Mismos roles de `:root` con valores oscuros (fondo `#111214`, superficie `#1c1d20`, textos `#f5f5f7`, `#c7c9ce` y `#a9acb3`) y el mismo acento azul, aclarado a `#78aef0`; el gráfico de barras usa el paso anterior de RdBu y BrBG (`#d6604d` y `#35978f`). Sin familia ni acento nuevos. El tema del mapa sigue siendo aparte y se recuerda en el navegador · la issue pide las cuatro páginas en claro y noche, y solo se puede pulir a menos de tres días del cierre de `app/` · Alex · #434
 - 2026-11-23 · **El bloque `simulacion` se publica en `app/datos/analisis.json` (F3-09).**
   - **Qué entra:** las filas de vivienda de `simulacion.simulacion` (6 perfiles × 138 municipios × 3 criterios), `fin_descuento` y `fin_descuento_rdl` (adulto y joven × 179 municipios), y dos sensibilidades con sufijo en `criterio`:
     - `_bruto`: ingresos medidos con el bruto, solo para la pareja y el joven, que van siempre como banda;
