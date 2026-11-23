@@ -62,6 +62,16 @@ def test_alquiler_ultimo_anio_sin_madrid_y_sin_dato():
     assert obj["meta"]["anio_dato"] == 2024
 
 
+def test_solo_los_consolidados_del_boe_dicen_meramente_informativo():
+    fuentes = pipeline_euros.FUENTES_NETOS + pipeline_euros.FUENTES_TARIFAS
+    del_boe = [f for f in fuentes if "boe.es/buscar/" in f["url"]]
+    assert {"act.php", "doc.php"} <= {
+        re.search(r"\w+\.php", f["url"])[0] for f in del_boe
+    }
+    for f in del_boe:
+        assert ("meramente informativo" in f["licencia"]) == ("/act.php" in f["url"]), f
+
+
 def test_m2_por_defecto_es_la_mediana_ponderada():
     zona = _zona(
         [

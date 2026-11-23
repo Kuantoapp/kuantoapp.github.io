@@ -1,0 +1,11 @@
+# Reglas por defecto de gitleaks más una excepción por ruta.
+[extend]
+useDefault = true
+
+# Los ids de Smart Data Models (urn:ngsi-ld:KeyPerformanceIndicator:<indicador>-<zona>-<año>) disparan
+# generic-api-key; app/datos/sdm/ solo tiene JSON generados por src/mesobra/sdm.py (#106).
+# shortcut: excluye todas las reglas en esa carpeta porque la CI usa gitleaks 8.24 (sin `targetRules`);
+# limitarlo a generic-api-key con [[allowlists]] cuando la acción use 8.25 o posterior.
+[allowlist]
+description = "Entidades de Smart Data Models generadas por sdm.py"
+paths = ['''^app/datos/sdm/[^/]+\.json$''']

@@ -60,7 +60,10 @@ OSM_PORTALES = {
 }
 LICENCIA_BOE = (
     "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
-    "Estatal Boletín Oficial del Estado; el texto consolidado tiene carácter meramente informativo"
+    "Estatal Boletín Oficial del Estado"
+)
+LICENCIA_BOE_CONSOLIDADO = (
+    f"{LICENCIA_BOE}; el texto consolidado tiene carácter meramente informativo"
 )
 LICENCIA_BOCM = "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI, BOE-A-1996-8930)"
 LICENCIA_RDL = f"{LICENCIA_BOCM}; reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia Estatal Boletín Oficial del Estado"
@@ -81,7 +84,9 @@ EPF = (
 
 
 def _boe(nombre: str, url: str) -> dict[str, str]:
-    return {"nombre": nombre, "url": url, "licencia": LICENCIA_BOE}
+    # act.php es el texto consolidado; doc.php, el original publicado (#186)
+    licencia = LICENCIA_BOE_CONSOLIDADO if "/act.php" in url else LICENCIA_BOE
+    return {"nombre": nombre, "url": url, "licencia": licencia}
 
 
 FUENTES_NETOS = [
