@@ -122,7 +122,7 @@ CONTRATOS: dict[str, dict] = {
             "perfil": "texto",  # {solo, comparte, pareja, monoparental}
             "adultos": "entero",
             "hijos": "entero",
-            "personas_comparten": "entero",  # personas que reparten el alquiler
+            "personas_comparten": "entero",  # hogares que pagan el alquiler, el tuyo incluido; pareja e hijos = 1
             "alimentacion": "decimal",  # €/mes
             "suministros": "decimal",  # €/mes
             "comunicaciones": "decimal",  # €/mes
