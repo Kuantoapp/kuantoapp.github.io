@@ -131,7 +131,7 @@ def _fila(renta=500.0, transporte=0.0, horas_extra=0.0, **kw) -> dict:
     return {
         "municipio_id": "28079", "tipo": "vivienda", "edad": 30, "ingresos_base": 10000.0,
         "ingresos_bruto": 12000.0, "renta": renta, "transporte": transporte, "horas_extra": horas_extra,
-        "horas": 0.0, "minutos": 10, "neto": 1000.0, "horas_trab": 151.3, "n_sueldos": 1,
+        "horas": 0.0, "minutos": 10, "neto": 1000.0, "horas_dia": 8, "horas_trab": 151.3, "n_sueldos": 1,
         "beneficiarios": 1, **kw,
     }  # fmt: skip
 
@@ -221,8 +221,8 @@ def test_edad_minima_y_moraleja():
 
 def test_base_de_la_pareja_y_la_madre():
     # cotización del 6,5 %; rnt > 19.747,50, así que el art. 20 es 0
-    assert simulacion.base_imponible(titulares.EAES) == D("25768.93")
-    assert simulacion.base_imponible(titulares.MADRE) == D("21645.88")
+    assert simulacion.base_imponible(titulares.EAES_2024) == D("24215.30")
+    assert simulacion.base_imponible(titulares.MADRE_2024) == D("20322.93")
     assert simulacion.base_imponible(titulares.ENFERMERA) == D("26443.99")
 
 
@@ -729,3 +729,40 @@ def test_fin_coronas_no_es_monotona_con_3_dias():
     # los dos pasan al sencillo (68,10)
     assert s["C1", "adulto", 3, 2] == pytest.approx(68.10 - 40.41, abs=0.005)
     assert s["C2", "adulto", 3, 2] == pytest.approx(68.10 - 45.78, abs=0.005)
+
+
+def test_colocacion_inadecuada_mide_el_25_por_ciento_de_su_jornada():
+    # ida y vuelta de 116 min: 25 % de 8 h = 120 min (adecuada) y de 7,5 h (SERMAS) = 112,5 min (inadecuada)
+    f = _fila(minutos=58, ingresos_bruto=40000.0)
+    assert not simulacion._colocacion_inadecuada(f, 12)
+    assert simulacion._colocacion_inadecuada({**f, "horas_dia": 7.5}, 12)
+
+
+def test_horas_trab_de_la_enfermera_son_las_de_37_5_h():
+    pares = _pares()
+    horas = _api2()["tarifas"]["semanas_mes"] * 37.5
+    enf = pares[pares["perfil"] == "enfermera_26"]
+    assert not enf.empty and set(enf["horas_dia"]) == {7.5}
+    assert enf["horas_trab"].tolist() == pytest.approx([horas] * len(enf))
+    assert set(pares[~pares["perfil"].str.startswith("enfermera_26")]["horas_dia"]) == {
+        8
+    }
+
+
+def test_ingresos_del_bono_son_los_de_2024_y_la_pareja_sigue_dentro():
+    # con el bruto de 2026 la base de la pareja (25.768,93 €) pasaría de 25.200 €; el Acuerdo mira 2024
+    pareja = next(p for p in titulares.PERFILES if p["perfil"] == "pareja")
+    assert pareja["sueldos_2024"] == [
+        (titulares.EAES_2024, 5),
+        (titulares.EAES_2024, 2),
+    ]
+    assert (
+        requisitos(29, simulacion.base_imponible(titulares.EAES_2024), D(0), None) == []
+    )
+    assert requisitos(29, simulacion.base_imponible(titulares.EAES), D(0), None) != []
+    pares = _pares()
+    assert (
+        pares[pares["perfil"] == "pareja_mediana"]["ingresos_bruto"]
+        .eq(titulares.EAES_2024)
+        .all()
+    )

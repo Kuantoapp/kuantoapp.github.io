@@ -7,15 +7,16 @@ Tesis 2: con sueldos típicos, en muchas zonas no sobra nada. Todo sale de `meso
 (regla fijada antes de ver los datos). La tesis 2 se da con la cifra, sin umbral.
 
 Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
-1. Horas trabajadas al mes = `semanas_mes` × 5 × 8 (jornada de 40 h, ET art. 34.1, BOE-A-2015-11430),
-   igual para todos: 151,3 h/mes efectivas (227 días × 8 h ÷ 12). Con las horas pagadas (40 × 52 ÷ 12 =
+1. Horas trabajadas al mes = `semanas_mes` × 5 × horas del perfil (8 h, jornada de 40 h del ET art. 34.1,
+   BOE-A-2015-11430; la enfermera, 37,5 h): 151,3 h/mes efectivas para los de 8 h (227 días × 8 h ÷ 12). Con las horas pagadas (40 × 52 ÷ 12 =
    173,3) el neto/hora bajaría un 13 % (SMI: 7,68 € en vez de 8,80 €) y más pares lo alcanzarían, en
    contra de la tesis 1 (SMI: 1.544 pares, 14,9 %, frente a 1.316, 12,7 %), sin cambiar el veredicto;
    con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
    (y de la EES) incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo,
    en contra, y bruto de jornada completa infravalorado, más zonas negativas (a favor de la tesis 2).
-   La enfermera tiene su jornada: 37,5 h semanales de promedio (Ley 6/2011 de la Comunidad de Madrid,
-   DA 1.ª.1, BOE-A-2012-2980, vigente; verificado el 2026-11-23), 7,5 h × 5 días. No hay norma de 35 h ni
+   La enfermera tiene su jornada: 37,5 h semanales, mínimo de promedio que fija la Ley 6/2011 de la Comunidad de Madrid («no inferior a 37 h 30 min»,
+   DA 1.ª.1, BOE-A-2012-2980, vigente; verificado el 2026-11-23), 7,5 h × 5 días. La ley dice «no inferior a»:
+   si la real es mayor, el neto/hora bajaría (en contra de la tesis 1). No hay norma de 35 h ni
    jornada anual de 2026 publicada en el BOCM (la última, de 2012, BOCM-20120229-7, la da por turno): la
    semanal es la media de todos los turnos.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
@@ -65,10 +66,12 @@ from mesobra.figuras import es
 
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
-JORNADA_SERMAS = 37.5  # h/semana de promedio: Ley 6/2011 CM, DA 1.ª.1 (BOE-A-2012-2980)
+JORNADA_SERMAS = (
+    37.5  # h/semana, mínimo de promedio: Ley 6/2011 CM, DA 1.ª.1 (BOE-A-2012-2980)
+)
 FUENTE_CALCULO = (
     "elaboración propia con mesobra.calculo (alquiler del SERPAVI actualizado con el IPC de alquiler del INE (IPC297196) hasta {ipc_hasta}, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de {horas_semana} h "
-    "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
+    "semanales ({norma_jornada}) y 227 días de trabajo al año (Decreto 75/2025)"
 )
 LLEVADA_A_2026 = (
     "llevada a 2026 con el coste salarial total por trabajador de la Encuesta Trimestral de Coste Laboral (INE, "
@@ -96,7 +99,7 @@ FUENTE_ENFERMERA = (
     "(BOCM-20260209-6), anexo V, tabla 2.1.a de atención hospitalaria, pág. 65: enfermero/a del SERMAS en unidades de hospitalización, "
     "quirófanos, urgencias, UCI y UVI (A2, nivel 21), sueldo base, complementos de destino y específico, "
     "productividad fija y pagas extra, 30.421,38 € al año; sin trienios, noches ni guardias: por debajo de lo "
-    "que cobra una enfermera con turnos; jornada de 37,5 h semanales de promedio (Ley 6/2011 de la Comunidad de "
+    "que cobra una enfermera con turnos; jornada de 37,5 h semanales, mínimo de promedio (Ley 6/2011 de la Comunidad de "
     "Madrid, DA 1.ª.1, BOE-A-2012-2980)"
 )
 FUENTE_JOVEN = (
@@ -132,7 +135,8 @@ ENFERMERA = round(
     12 * (1199.52 + 592.11 + 177.99 + 1.89 + 289.45) + 2 * 1466.94 + 2 * 177.99, 2
 )
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra).
-# `sueldos`: (bruto €/año, días a la semana en el destino).
+# `sueldos`: (bruto €/año, días a la semana en el destino). `sueldos_2024`: el bruto de 2024 de los que se llevan
+# a 2026 (el Bono mira los ingresos del ejercicio 2024).
 PERFILES = [
     {
         "nombre": "Persona sola con el SMI",
@@ -153,6 +157,7 @@ PERFILES = [
         "perfil": "pareja",
         "edad": 29,
         "sueldos": [(EAES, 5), (EAES, 2)],
+        "sueldos_2024": [(EAES_2024, 5), (EAES_2024, 2)],
         "fuente": FUENTE_EAES,
     },
     {
@@ -160,6 +165,7 @@ PERFILES = [
         "perfil": "monoparental",
         "edad": 34,
         "sueldos": [(MADRE, 5)],
+        "sueldos_2024": [(MADRE_2024, 5)],
         "fuente": FUENTE_MADRE,
     },
     {
@@ -167,6 +173,7 @@ PERFILES = [
         "perfil": "solo",
         "edad": 29,
         "sueldos": [(JOVEN, 5)],
+        "sueldos_2024": [(JOVEN_2024, 5)],
         "fuente": FUENTE_JOVEN,
     },
     {
@@ -175,6 +182,7 @@ PERFILES = [
         "edad": 26,
         "sueldos": [(ENFERMERA, 5)],
         "horas_dia": JORNADA_SERMAS / DIAS_SEMANA,
+        "norma_jornada": "Ley 6/2011 de la Comunidad de Madrid, DA 1.ª.1",
         "fuente": FUENTE_ENFERMERA,
     },
 ]
@@ -284,7 +292,13 @@ def titulares(res: list[tuple[dict, dict]]) -> list[dict]:
     """Dos entradas `{"texto", "fuente"}` por perfil; descriptivas, con n y banda, todo «estimado»."""
     salida = []
     for perfil, r in res:
-        fuente = f"{FUENTE_CALCULO.format(ipc_hasta=r['ipc_hasta'], horas_semana=es(horas_dia(perfil) * DIAS_SEMANA, 1).removesuffix(',0'))}; sueldo: {perfil['fuente']}"
+        horas_semana = es(horas_dia(perfil) * DIAS_SEMANA, 1).removesuffix(",0")
+        calculo_fuente = FUENTE_CALCULO.format(
+            ipc_hasta=r["ipc_hasta"],
+            horas_semana=horas_semana,
+            norma_jornada=perfil.get("norma_jornada", "ET art. 34.1"),
+        )
+        fuente = f"{calculo_fuente}; sueldo: {perfil['fuente']}"
         coronas = ", ".join(
             f"{c} {es(m, 2)} € (n = {es(n, 0)})" for c, (m, n) in r["coronas"].items()
         )
