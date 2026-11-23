@@ -139,7 +139,7 @@ ENFERMERA = round(
     12 * (1199.52 + 592.11 + 177.99 + 1.89 + 289.45) + 2 * 1466.94 + 2 * 177.99, 2
 )
 # Misma fila en la Orden de nóminas de 2024 (BOCM-20240806-11, anexo V, tabla 2.1.a, pág. 100): 29.098,22 €,
-# con el 2 % de 2024 y sin el 0,5 % adicional (RDL 4/2024, art. 6.2), abonable como atrasos desde agosto de 2025 (BOCM-20250721-1).
+# con el 2 % de 2024 y sin el 0,5 % adicional (RDL 4/2024, art. 6.2), abonable como atrasos en la primera nómina posible (BOCM-20250721-1).
 ENFERMERA_2024 = round(
     12 * (1147.35 + 566.36 + 170.25 + 1.81 + 276.85) + 2 * 1403.14 + 2 * 170.25, 2
 )
