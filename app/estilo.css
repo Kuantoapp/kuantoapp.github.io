@@ -25,36 +25,7 @@
   --pierdes: #b2182b; /* extremos de la paleta divergente del mapa (vista.js) */
   --ganas: #01665e;
   --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  color-scheme: light dark;
   accent-color: var(--acento);
-}
-/* Modo noche: los mismos roles con el sistema del navegador; el acento es el mismo azul, aclarado para el fondo oscuro. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #111214;
-    --superficie: #1c1d20;
-    --elevado: #2a2c30;
-    --linea: rgb(245 245 247 / 14%);
-    --linea-control: #8a8d94;
-    --texto: #f5f5f7;
-    --texto-2: #c7c9ce;
-    --texto-3: #a9acb3;
-    --acento: #78aef0;
-    --acento-fuerte: #a6c9f5;
-    --acento-suave: rgb(120 174 240 / 12%);
-    --seleccion: rgb(120 174 240 / 30%);
-    --error: #f28b82;
-    --diferencia: #f0b46a;
-    --sombra: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
-    --pierdes: #d6604d; /* el paso anterior de RdBu y BrBG: los extremos no llegan a 3:1 sobre la superficie oscura */
-    --ganas: #35978f;
-  }
-  /* Los controles de MapLibre traen fondo blanco e iconos negros fijos: toman la superficie y el texto del tema. */
-  .maplibregl-ctrl-group { background: var(--superficie) !important; }
-  .maplibregl-ctrl-group button + button { border-top-color: var(--linea) !important; }
-  .maplibregl-ctrl-icon { filter: invert(1); }
-  /* Las figuras del análisis son PNG con fondo blanco: se bajan un poco para que no deslumbren sobre el fondo oscuro. */
-  .dato-imagen img { filter: brightness(0.88); }
 }
 
 * { box-sizing: border-box; }
@@ -321,7 +292,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* Cuatro cuentas: ficha técnica en dos columnas, el titular fijo a la izquierda mientras se leen. */
 .cuentas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; align-items: start; }
-.cuentas h2 { position: sticky; top: 32px; }
+.cuentas h2 { position: sticky; top: calc(var(--alto-nav) + 32px); } /* bajo la barra fija, que lo tapaba */
 .ficha-tecnica { margin: 0; }
 .ficha-tecnica div { padding: 24px 0; border-top: 1px solid var(--linea); }
 .ficha-tecnica div:first-child { padding-top: 0; border-top: 0; }
@@ -486,3 +457,16 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 296px); } /* además, el titular de dos líneas que va encima */
 .lista-fuentes { margin: 32px 0 0; padding-left: 20px; color: var(--texto-2); font-size: 16px; }
 .lista-fuentes li { margin: 12px 0; overflow-wrap: anywhere; }
+/* Metodología resumida (#434): figuras a un tamaño que se lee y un índice de cinco entradas que cabe en una línea. */
+.informe .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 96px); }
+.informe .indice ul { overflow: visible; }
+.fuentes-informe { margin-top: 32px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
+.fuentes-informe .lista-fuentes { margin-top: 8px; }
+@media (max-width: 40rem) {
+  .informe .indice ul { justify-content: space-between; gap: 2px; }
+  .informe .indice a { padding: 0 8px; font-size: 14px; }
+}
+@media (max-width: 22.5rem) { /* a 320 px no caben cinco bordes: solo lleva borde la entrada activa */
+  .informe .indice a { padding: 0 2px; }
+  .informe .indice a:not([aria-current]) { border-color: transparent; }
+}
