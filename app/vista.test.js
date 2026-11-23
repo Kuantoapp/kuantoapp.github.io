@@ -4,8 +4,8 @@ import test from "node:test";
 import { calcular } from "./calculo.js";
 import {
   CATEGORIAS, ESCENARIO_NEUTRO, METRICAS, PALETA, SIN_DATO, avisoPrueba, avisos, categoria, colorPara, contextoFicha, contorno, cortesCuantiles, entradaEscenario, hayEscenario,
-  erroresEscenario, escalaDivergente, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia, lineaTooltip,
-  lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar,
+  baseEscala, erroresEscenario, escalaRelativa, escalaSecuencial, estadoAEnlace, estadoDeEnlace, fuentes, imprecisas, leyenda, licencias, lineaDiferencia, lineaTooltip,
+  lineasFicha, mejores, modosDisponibles, avisosEntrada, pintar, resolverDestino, tituloEscenario, validar, valorDeEjemplo,
 } from "./vista.js";
 
 const leer = (ruta) => JSON.parse(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8"));
@@ -50,24 +50,40 @@ test("sin valores, con nulos o con un solo valor no falla", () => {
   assert.deepEqual(cortesCuantiles([]), []);
   assert.deepEqual(cortesCuantiles([null, undefined, NaN]), []);
   assert.deepEqual(escalaSecuencial([null]), []);
-  assert.deepEqual(escalaDivergente([null, NaN]), []);
   assert.equal(colorPara(10, []), SIN_DATO);
   assert.equal(colorPara(null, escalaSecuencial([1, 2])), SIN_DATO);
   assert.equal(colorPara(5, escalaSecuencial([5])), PALETA[0]);
-  assert.equal(escalaDivergente([-3]).length, 1);
-  assert.equal(escalaDivergente([4]).length, 1);
 });
 
-test("la escala divergente tiene el 0 como borde: lo negativo a un lado de la paleta y lo demás al otro", () => {
-  const valores = [-40, -20, -10, -1, 0, 2, 5, 9, 30];
-  const clases = escalaDivergente(valores);
-  assert.equal(clases.length, 4);
-  assert.deepEqual(clases.map((c) => c.desde), [-40, -10, 0, 5]);
-  assert.equal(clases[1].hasta, 0);
-  assert.equal(new Set(clases.map((c) => c.color)).size, 4);
-  assert.equal(colorPara(-0.5, clases), clases[1].color);
-  assert.equal(colorPara(0, clases), clases[2].color);
-  assert.equal(colorPara(30, clases), clases[3].color);
+test("la escala relativa: colores fijos por tramos de la base, el 0 como borde y los extremos abiertos (#389)", () => {
+  const clases = escalaRelativa(2000, METRICAS.sobra.cortes); // un neto de 2000 €/mes: cortes en −200, 0, 200, 500 y 1000
+  assert.deepEqual(clases.map((c) => [c.desde, c.hasta]), [[-Infinity, -200], [-200, 0], [0, 200], [200, 500], [500, 1000], [1000, Infinity]]);
+  assert.equal(new Set(clases.map((c) => c.color)).size, 6);
+  assert.equal(colorPara(-5000, clases), clases[0].color);
+  assert.equal(colorPara(-1, clases), clases[1].color);
+  assert.equal(colorPara(0, clases), clases[2].color); // llega justo: amarillo
+  assert.equal(colorPara(199, clases), clases[2].color);
+  assert.equal(colorPara(200, clases), clases[3].color);
+  assert.equal(colorPara(999, clases), clases[4].color);
+  assert.equal(colorPara(9000, clases), clases[5].color);
+  assert.deepEqual(leyenda(clases, [], "sobra").map((e) => e.texto), ["menos de -200", "-200 – 0", "0 – 200", "200 – 500", "500 – 1000", "1000 o más"]);
+  // El precio de la hora, con cinco: los mismos rojos y amarillo, y los verdes claro y oscuro (los extremos de las dos escalas coinciden)
+  const precio = escalaRelativa(10, METRICAS.precio_hora.cortes);
+  assert.deepEqual(precio.map((c) => [c.desde, c.hasta]), [[-Infinity, -2.5], [-2.5, 0], [0, 2.5], [2.5, 10], [10, Infinity]]);
+  assert.deepEqual([precio[0].color, precio[2].color, precio.at(-1).color], [clases[0].color, clases[2].color, clases.at(-1).color]);
+  assert.equal(precio[3].color, clases[3].color);
+  for (const mala of [0, -1, null, NaN]) assert.throws(() => escalaRelativa(mala, METRICAS.sobra.cortes), /importe positivo/);
+});
+
+test("la base de la escala: el neto del hogar para lo que sobra y el neto por hora trabajada para el precio de la hora", () => {
+  const resultado = calcular(real, SOLO);
+  const neto = Object.values(resultado.zonas)[0].neto;
+  assert.equal(baseEscala("sobra", real, SOLO, resultado), neto);
+  assert.equal(baseEscala("precio_hora", real, SOLO, resultado), neto / (40 * real.tarifas.semanas_mes));
+  assert.equal(baseEscala("horas", real, SOLO, resultado), null);
+  // Con dos sueldos, el neto por hora es el de cada uno (como en la ficha)
+  const dos = { ...SOLO, sueldos: [SOLO.sueldos[0], SOLO.sueldos[0]] };
+  assert.equal(baseEscala("precio_hora", real, dos, resultado), neto / (40 * real.tarifas.semanas_mes * 2));
 });
 
 // --- pintar: categorías, nulos y leyenda --------------------------------------------------------
@@ -79,11 +95,13 @@ test("una zona sin cifra no se pinta con color de clase ni se escribe como cero,
   const ids = ["2807901", "2807913", "28065"];
   const zonas3 = { ...ejemplo.zonas, features: ejemplo.zonas.features.filter((f) => ids.includes(f.properties.zona_id)) };
   const entrada = { hogar: { perfil: "solo", edad: 30 }, sueldos: [{ bruto: 22000, destino: "2807901", dias: 3, modo: "tp" }], zonas: ids };
-  const pintadas = pintar(zonas3, calcular(ejemplo, entrada), "sobra").zonas.features.map((f) => f.properties);
+  const res3 = calcular(ejemplo, entrada);
+  const pintadas = pintar(zonas3, res3, "sobra", { base: baseEscala("sobra", ejemplo, entrada, res3) }).zonas.features.map((f) => f.properties);
   assert.ok(pintadas.every((p) => (p.valor === null) === (p.categoria !== null)));
   assert.ok(pintadas.every((p) => p.valor === null || p.color !== SIN_DATO));
   // Con los datos reales: sin cifra no es cero, y el color es el del motivo.
-  const props = pintar(real.zonas, calcular(real, SOLO), "sobra").zonas.features.map((f) => f.properties);
+  const resSolo = calcular(real, SOLO);
+  const props = pintar(real.zonas, resSolo, "sobra", { base: baseEscala("sobra", real, SOLO, resSolo) }).zonas.features.map((f) => f.properties);
   const sinCifra = props.filter((p) => p.valor === null);
   assert.equal(sinCifra.length, 100);
   assert.ok(sinCifra.every((p) => Object.values(CATEGORIAS).some((c) => c.texto === p.categoria && c.color === p.color)));
@@ -92,7 +110,7 @@ test("una zona sin cifra no se pinta con color de clase ni se escribe como cero,
 
 test("Getafe con datos reales: 99 zonas con cifra, 59 solo sin ruta, 1 solo sin alquiler y 40 sin alquiler y sin ruta", () => {
   const resultado = calcular(real, SOLO);
-  const { zonas, categorias } = pintar(real.zonas, resultado, "sobra");
+  const { zonas, categorias } = pintar(real.zonas, resultado, "sobra", { base: baseEscala("sobra", real, SOLO, resultado) });
   const props = zonas.features.map((f) => f.properties);
   const cuenta = (texto) => props.filter((p) => p.categoria === texto).length;
   assert.equal(props.length, 199);
@@ -110,7 +128,7 @@ test("Getafe con datos reales: 99 zonas con cifra, 59 solo sin ruta, 1 solo sin 
 
 test("el precio de la hora distingue la referencia y «mismo tiempo» de la falta de dato", () => {
   const resultado = calcular(real, SOLO);
-  const { zonas } = pintar(real.zonas, resultado, "precio_hora");
+  const { zonas } = pintar(real.zonas, resultado, "precio_hora", { base: baseEscala("precio_hora", real, SOLO, resultado) });
   const ref = zonas.features.find((f) => f.properties.zona_id === resultado.ref).properties;
   assert.equal(ref.referencia, true);
   assert.equal(ref.categoria, CATEGORIAS.referencia.texto);
@@ -131,15 +149,19 @@ test("pintar rechaza formatos y métricas inesperados", () => {
   assert.throws(() => pintar({}, { zonas: {} }, "sobra"), /Formato inesperado/);
   assert.throws(() => pintar(real.zonas, {}, "sobra"), /Formato inesperado/);
   assert.throws(() => pintar(real.zonas, { zonas: {} }, "nada"), /Métrica desconocida/);
-  assert.throws(() => pintar(real.zonas, { zonas: {} }, "sobra"), /no tiene resultado/);
+  assert.throws(() => pintar(real.zonas, { zonas: {} }, "sobra", { base: 1 }), /no tiene resultado/);
 });
 
 test("la leyenda tiene una entrada por clase más una por cada motivo de «sin cifra»", () => {
   const resultado = calcular(real, SOLO);
-  const { clases, categorias } = pintar(real.zonas, resultado, "sobra");
+  const { clases, categorias } = pintar(real.zonas, resultado, "sobra", { base: baseEscala("sobra", real, SOLO, resultado) });
   const entradas = leyenda(clases, categorias, "sobra");
   assert.equal(entradas.length, clases.length + categorias.length);
-  assert.match(entradas[0].texto, /^-?[\d.]+ – -?[\d.]+$/);
+  assert.match(entradas[0].texto, /^menos de -[\d.]+$/);
+  assert.match(entradas[1].texto, /^-[\d.]+ – 0$/);
+  // Una métrica sin cortes (las horas) sigue por cuantiles y no necesita base
+  assert.ok(pintar(real.zonas, resultado, "horas").clases.length > 1);
+  assert.throws(() => pintar(real.zonas, resultado, "sobra"), /importe positivo/);
   assert.equal(entradas.at(-1).texto, categorias.at(-1).texto);
 });
 
@@ -207,7 +229,7 @@ test("pintar marca impreciso con 49 testigos y no con 50, y nunca en horas", () 
   const resultado = { zonas: Object.fromEntries(ejemplo.zonas.features.map((f) => [f.properties.zona_id, { sobra: 1, horas: 1 }])) };
   const marca = (n, metrica = "sobra") => {
     const api = conTestigos(n);
-    return pintar(api.zonas, resultado, metrica, imprecisas(api.alquiler)).zonas.features.filter((f) => f.properties.impreciso).map((f) => f.properties.zona_id);
+    return pintar(api.zonas, resultado, metrica, { pocas: imprecisas(api.alquiler), base: 1 }).zonas.features.filter((f) => f.properties.impreciso).map((f) => f.properties.zona_id);
   };
   assert.deepEqual(marca(49), ["28065"]);
   assert.deepEqual(marca(50), []);
@@ -896,4 +918,28 @@ test("las zonas reales comparten bordes: el contorno es una parte pequeña de su
 test("el importe inactivo de la segunda persona tampoco se cuela desde el enlace", () => {
   const { valores } = estadoDeEnlace("perfil=pareja&adultos=2&fuente2=bruto&neto2=texto%20libre", NEUTRO, real);
   assert.equal(valores.neto2, NEUTRO.neto2);
+});
+
+test("«Usar el valor de ejemplo» deja cada campo que falla en uno que valida (#389)", () => {
+  const conEjemplo = (campo, cambios) => {
+    const v = { ...BASE, ...cambios };
+    const arreglado = { ...v, ...valorDeEjemplo(campo, v, real, BASE) };
+    return { arreglado, errores: validar(arreglado, real).errores };
+  };
+  // el hogar vuelve a lo del perfil elegido
+  assert.deepEqual(conEjemplo("m2", { m2: "" }), { arreglado: { ...BASE }, errores: undefined });
+  assert.equal(conEjemplo("personas", { perfil: "comparte", personas: "" }).arreglado.personas, String(real.hogares.perfiles.comparte.personas_comparten));
+  assert.equal(conEjemplo("adultos", { perfil: "pareja", adultos: "1" }).errores, undefined);
+  // un neto que falta vuelve a «Doy el bruto» con el bruto de ejemplo
+  const neto = conEjemplo("neto", { fuente: "neto", neto: "", bruto: "" });
+  assert.equal(neto.errores, undefined);
+  assert.equal(neto.arreglado.fuente, "bruto");
+  assert.equal(neto.arreglado.bruto, BASE.bruto);
+  // una edad de hijo suelta se vacía con las demás
+  const hijos = conEjemplo("hijo1", { hijos: "2", hijo1: "abc", hijo2: "7" });
+  assert.equal(hijos.errores, undefined);
+  assert.deepEqual([hijos.arreglado.hijo1, hijos.arreglado.hijo2], ["", ""]);
+  // el resto, el valor de la página al abrirse
+  assert.deepEqual(conEjemplo("destino", { destino: "Narnia" }).arreglado.destino, BASE.destino);
+  assert.equal(conEjemplo("bruto", { bruto: "" }).errores, undefined);
 });

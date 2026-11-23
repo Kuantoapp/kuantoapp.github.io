@@ -90,8 +90,8 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .acciones { position: absolute; top: 50%; right: 16px; display: flex; gap: 8px; transform: translateY(-50%); }
 .acciones button { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 0; }
 .acciones .texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.acciones button, #quitar-escenario { min-height: 44px; padding: 8px 14px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
-.acciones button:hover:not(:disabled), #quitar-escenario:hover:not(:disabled) { background: var(--acento-suave); border-color: var(--acento); }
+.acciones button, #quitar-escenario, .usar-ejemplo { min-height: 44px; padding: 8px 14px; border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--acento); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--curva), border-color 0.15s var(--curva); }
+.acciones button:hover:not(:disabled), #quitar-escenario:hover:not(:disabled), .usar-ejemplo:hover { background: var(--acento-suave); border-color: var(--acento); }
 .acciones button:disabled, #quitar-escenario:disabled { border-style: dashed; color: var(--texto-3); cursor: default; }
 #quitar-escenario { margin-top: 4px; }
 /* Iconos de línea: un trazo, del color del texto del botón. */
@@ -191,6 +191,62 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #mapa { position: relative; inset: auto; flex: 1; min-height: 12rem; }
   #leyenda { position: static; width: auto; max-height: 35%; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
   #leyenda .fila { display: inline-flex; margin-right: 12px; }
+}
+
+/* Recorrido guiado (#389): bajo la barra, la tarjeta de cada paso a la izquierda y el mapa, solo para mirar, a la derecha.
+   Las tarjetas son los paneles de la barra (`data-tarjeta`); fuera del recorrido, su envoltorio no cuenta (`display: contents`). */
+#guia-tarjeta { display: contents; }
+.guia-cabecera, .guia-pie, .consejo { display: none; }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#herramienta.guiado { flex-direction: row; }
+#herramienta.guiado #barra-filtros { display: block; flex: 0 0 min(34rem, 46%); overflow-y: auto; scrollbar-gutter: stable; padding: 24px; border: 0; border-right: 1px solid var(--linea); background: var(--fondo); }
+#herramienta.guiado #guia-tarjeta { display: flex; flex-direction: column; gap: 20px; padding: 32px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); }
+#herramienta.guiado .guia-cabecera, #herramienta.guiado .consejo { display: block; }
+#herramienta.guiado :is(.menu:not(.tarjeta-actual), .menu-boton, .acciones, aside, #plegar-panel, #leyenda, #mapa-completo, #tooltip, #estado, #quitar-escenario:disabled) { display: none; } /* los errores, junto a su campo; del mapa, solo zoom y tema */
+#guia-titulo { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+#guia-titulo:focus, #mejores-titulo:focus { outline: none; } /* el foco llega por programa (tarjeta nueva, mapa final); no son controles */
+#guia-entradilla { margin: 8px 0 0; color: var(--texto-2); font-size: 16px; line-height: 1.45; }
+/* Dentro de la tarjeta, los paneles y sus fieldset son planos (sin tarjeta dentro de tarjeta). */
+#herramienta.guiado .menu-panel { position: static; display: block; width: auto; max-height: none; overflow: visible; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+#herramienta.guiado .menu-panel fieldset { margin: 0; padding: 0; background: none; border: 0; border-radius: 0; }
+#herramienta.guiado .menu-panel fieldset + fieldset { margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--linea-control); }
+#herramienta.guiado .menu-panel fieldset:first-of-type > legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* lo dice el titular */
+#herramienta.guiado .menu-panel .aviso { margin: 0 0 8px; }
+.consejo { margin: 2px 0 0; color: var(--texto-3); font-size: 14px; }
+/* El pie se queda a la vista al desplazar una tarjeta larga: «Siguiente» y el contador siempre se ven. `bottom` negativo,
+   del relleno de la columna, para que no asome contenido por debajo. */
+.guia-pie { position: sticky; bottom: -24px; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 -32px -32px; padding: 16px 32px 24px; border-top: 1px solid var(--linea); border-radius: 0 0 var(--r-3) var(--r-3); background: var(--superficie); }
+#herramienta.guiado .guia-pie { display: flex; }
+#guia-atras { background: none; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+#guia-atras:hover { background: var(--acento-suave); }
+#guia-siguiente { margin-left: auto; }
+.guia-contador { flex-basis: 100%; margin: 0; color: var(--texto-3); font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; }
+.usar-ejemplo { margin-top: 8px; }
+@media (max-width: 40rem) {
+  #herramienta.guiado { flex-direction: column; }
+  #herramienta.guiado #barra-filtros { flex: 1 1 auto; padding: 16px; border-right: 0; border-bottom: 1px solid var(--linea); }
+  #herramienta.guiado main { flex: 0 0 30dvh; }
+  #herramienta.guiado #mapa { min-height: 0; }
+  #herramienta.guiado #guia-tarjeta { gap: 16px; padding: 20px 16px; }
+  .guia-pie { bottom: -16px; margin: 0 -16px -20px; padding: 12px 16px 16px; }
+  #guia-titulo { font-size: 24px; }
+  #herramienta.guiado .guia-pie :is(#guia-atras, #guia-siguiente) { width: auto; }
+  #guia-siguiente { flex: 1 1 auto; }
+}
+
+/* Movimiento del recorrido: entre tarjetas, la nueva sube un poco; al acabar, la tarjeta sale hacia la izquierda y entran,
+   escalonados, la barra de filtros, el panel y la leyenda (las zonas se colorean en el mapa a la vez, desde app.js). */
+@keyframes entra-tarjeta { from { opacity: 0; transform: translateY(8px); } }
+@keyframes sale-tarjeta { to { opacity: 0; transform: translateX(-16px); } }
+@keyframes entra-arriba { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes entra-lado { from { opacity: 0; transform: translateX(-16px); } }
+@keyframes entra-abajo { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: no-preference) {
+  #herramienta.guiado .tarjeta-actual { animation: entra-tarjeta 240ms var(--curva); }
+  #herramienta.saliendo #guia-tarjeta { animation: sale-tarjeta 220ms var(--curva) forwards; }
+  #herramienta.entrando #barra-filtros { animation: entra-arriba 360ms var(--curva) both; }
+  #herramienta.entrando :is(aside, #plegar-panel) { animation: entra-lado 400ms var(--curva) 50ms both; }
+  #herramienta.entrando :is(#leyenda, .controles-mapa) { animation: entra-abajo 400ms var(--curva) 100ms both; }
 }
 
 /* Portada (#388): modo persuadir. Titulares grandes a la izquierda, una idea por bloque y mucho aire. */

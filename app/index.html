@@ -112,8 +112,14 @@
   <div id="herramienta">
   <!-- Filtros en una barra superior: cada variable despliega su panel al pasar el ratón, al pulsar o con el teclado. -->
   <header id="barra-filtros">
+    <!-- Recorrido guiado (#389): con `.guiado`, cada `.menu` es una tarjeta (`data-tarjeta`) y esto la envuelve; en la barra, `display: contents`. -->
+    <div id="guia-tarjeta">
+    <div class="guia-cabecera">
+      <h2 id="guia-titulo" tabindex="-1"><span id="guia-paso" class="solo-lector"></span><span id="guia-nombre"></span></h2>
+      <p id="guia-entradilla"></p>
+    </div>
     <form id="formulario" class="menus" novalidate autocomplete="off">
-      <div class="menu">
+      <div class="menu" data-tarjeta="5" data-titulo="Qué pinta el mapa" data-entradilla="Elige la cifra que colorea cada zona. En el mapa la puedes cambiar cuando quieras.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-metricas">Filtro principal</button>
         <div class="menu-panel" id="m-metricas">
         <fieldset id="metricas">
@@ -121,7 +127,7 @@
         </fieldset>
         </div>
       </div>
-      <div class="menu">
+      <div class="menu" data-tarjeta="2" data-titulo="Tu sueldo" data-entradilla="Lo que cobras: el bruto del año o lo que te llega cada mes.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-sueldo">Sueldo</button>
         <div class="menu-panel" id="m-sueldo">
         <p class="aviso">Valores de ejemplo: cámbialos por los tuyos. Tu sueldo no sale de este navegador.</p>
@@ -131,8 +137,8 @@
             <label><input type="radio" name="fuente" value="bruto" checked> Doy el bruto</label>
             <label><input type="radio" name="fuente" value="neto"> Doy el neto</label>
           </div>
-          <label>Bruto anual (€) <input name="bruto" inputmode="decimal" value="24000"></label>
-          <label>Neto mensual medio (€) <input name="neto" inputmode="decimal"></label>
+          <label>Bruto anual (€) <span class="consejo">Lo que pone tu contrato para todo el año, antes de impuestos.</span> <input name="bruto" inputmode="decimal" value="24000"></label>
+          <label>Neto mensual medio (€) <span class="consejo">Lo que te ingresan de media cada mes.</span> <input name="neto" inputmode="decimal"></label>
           <p class="ayuda">Neto anual dividido entre doce. Si das el bruto, se calcula solo (estimado con la normativa de IRPF y cotizaciones; fuente: BOE y BOCM, ver la nota metodológica); puedes corregirlo a mano.</p>
           <label>Pagas
             <select name="pagas">
@@ -187,7 +193,7 @@
         </fieldset>
         </div>
       </div>
-      <div class="menu">
+      <div class="menu" data-tarjeta="1" data-titulo="Tu hogar" data-entradilla="Con quién vives y qué piso necesitáis. De aquí salen el alquiler, la cesta y parte del abono.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-hogar">Hogar</button>
         <div class="menu-panel" id="m-hogar">
         <fieldset>
@@ -201,7 +207,7 @@
             </select>
           </label>
           <p class="ayuda">El perfil rellena los datos siguientes; ajústalos si no son los tuyos.</p>
-          <label>Adultos
+          <label>Adultos <span class="consejo">Tú y, si la hay, tu pareja.</span>
             <select name="adultos"><option value="1">Uno</option><option value="2">Dos</option></select>
           </label>
           <label>Hijos <span id="max-hijos">(hasta 5 hijos)</span>
@@ -218,21 +224,21 @@
             </select>
           </label>
           <p class="ayuda">Con dos hijos solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003 (por ejemplo, un hijo con discapacidad); con tres o más hijos lo es por regla general (art. 2.1). Aplica los precios de familia numerosa del BOCM a todo el hogar.</p>
-          <label>Vivienda (m²) <input name="m2" type="number" inputmode="decimal"></label>
+          <label>Vivienda (m²) <span class="consejo">Si no lo sabes, deja el que trae el perfil.</span> <input name="m2" type="number" inputmode="decimal"></label>
           <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
           <label>Hogares que pagáis el alquiler, el tuyo incluido <input name="personas" type="number" inputmode="numeric"></label>
           <p class="ayuda">Tu pareja y tus hijos son tu hogar. Si no compartes piso, pon uno. En los gastos del piso, cada hogar más cuenta como un adulto.</p>
         </fieldset>
         </div>
       </div>
-      <div class="menu">
+      <div class="menu" data-tarjeta="3" data-titulo="Tu trabajo" data-entradilla="Dónde trabajas y cuántos días vas. Con eso se calculan el viaje y el abono.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-trabajo">Trabajo</button>
         <div class="menu-panel" id="m-trabajo">
         <fieldset>
           <legend>Trabajo</legend>
-          <label>Lugar de trabajo <input name="destino" list="destinos" value="Getafe"></label>
+          <label>Lugar de trabajo <span class="consejo">Escribe tu municipio, distrito o centro de trabajo y elígelo de la lista.</span> <input name="destino" list="destinos" value="Getafe"></label>
           <datalist id="destinos"></datalist>
-          <label>Días presenciales a la semana
+          <label>Días presenciales a la semana <span class="consejo">Los días que vas a tu puesto; los de teletrabajo no cuentan.</span>
             <select name="dias">
               <option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option>
               <option value="4">Cuatro</option><option value="5" selected>Cinco</option>
@@ -259,7 +265,7 @@
         </fieldset>
         </div>
       </div>
-      <div class="menu">
+      <div class="menu" data-tarjeta="4" data-titulo="Zona de referencia" data-entradilla="La zona con la que se compara el resto.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-referencia">Zona de referencia</button>
         <div class="menu-panel" id="m-referencia">
         <fieldset>
@@ -273,7 +279,7 @@
       </div>
     </form>
     <form id="escenario" class="menus" novalidate autocomplete="off">
-      <div class="menu">
+      <div class="menu" data-tarjeta="6" data-titulo="Otros escenarios" data-entradilla="Opcional: mira qué pasaría si algo cambia, o pasa ya al mapa. Desde el mapa también puedes añadirlos.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-escenario">Otros escenarios</button>
         <div class="menu-panel" id="m-escenario">
         <fieldset>
@@ -311,6 +317,12 @@
         </div>
       </div>
     </form>
+    <div class="guia-pie">
+      <button type="button" id="guia-atras" class="boton-secundario">Atrás</button>
+      <button type="button" id="guia-siguiente" class="boton-principal">Siguiente</button>
+      <p id="guia-contador" class="guia-contador" aria-hidden="true"></p>
+    </div>
+    </div>
     <div class="acciones" role="group" aria-label="Cambios">
       <button type="button" id="deshacer" disabled title="Deshacer"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg><span class="texto">Deshacer</span></button>
       <button type="button" id="rehacer" disabled title="Rehacer"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg><span class="texto">Rehacer</span></button>
@@ -321,7 +333,7 @@
     <aside id="panel">
       <section id="ficha" aria-live="polite" tabindex="0"></section>
       <section id="mejores">
-        <h2 id="mejores-titulo">Las diez mejores zonas</h2>
+        <h2 id="mejores-titulo" tabindex="-1">Las diez mejores zonas</h2>
         <ol id="mejores-lista"></ol>
         <p class="ayuda">Pincha una para verla en el mapa y abrir su ficha.</p>
       </section>

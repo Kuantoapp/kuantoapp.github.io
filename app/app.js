@@ -3,14 +3,15 @@
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
 import { calcular } from "./calculo.js";
 import {
-  ESCENARIO_NEUTRO, METRICAS, avisoPrueba, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
-  lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar,
+  ESCENARIO_NEUTRO, METRICAS, avisoPrueba, baseEscala, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
+  lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar, valorDeEjemplo,
 } from "./vista.js";
 
 const $ = (id) => document.getElementById(id);
 const formulario = () => $("formulario");
 const NOMBRES = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
 const EDAD_POR_DEFECTO = 30; // supuesto: hogares.json no trae edad; decide el Abono Joven (hasta 25 años)
+const reducido = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Siempre `datos/` junto a la página: sin parámetro, porque en github.io el origen lo comparten otros repos (#255).
 const CARPETA_DATOS = new URL("datos/", location.href);
@@ -89,12 +90,17 @@ function prepararFormulario(api) {
   formulario().elements.edad.value = String(EDAD_POR_DEFECTO);
 }
 
+/** El control de un campo (el primero de un grupo de radios), o el formulario si no existe. */
+function controlDe(campo) {
+  const control = formulario().elements[campo];
+  return control?.nodeType === 1 ? control : (control?.[0] ?? formulario());
+}
+
 function mostrarErrores(errores) {
-  for (const el of formulario().querySelectorAll(".error")) el.remove();
+  for (const el of formulario().querySelectorAll(".error, .usar-ejemplo")) el.remove();
   for (const el of formulario().querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
   for (const { campo, mensaje } of errores) {
-    const control = formulario().elements[campo];
-    const destino = control?.nodeType === 1 ? control : (control?.[0] ?? formulario());
+    const destino = controlDe(campo);
     const aviso = elemento("span", mensaje, "error");
     aviso.id = `error-${campo}`;
     aviso.setAttribute("role", "alert");
@@ -116,7 +122,8 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const hayEstimadas = Object.values(alquiler.zonas).some((z) => z.origen === "estimado");
   const hayImprecisas = imprecisas(alquiler).size > 0 && m.datos.includes("alquiler");
   const usaAlquiler = m.datos.includes("alquiler");
-  const metodo = m.divergente ? "Cuantiles por separado a cada lado del 0" : "Cuantiles";
+  const pct = new Intl.NumberFormat("es-ES", { style: "percent", signDisplay: "exceptZero" });
+  const metodo = m.cortes ? `Cortes fijos en el ${m.cortes.map((c) => pct.format(c)).join(", ")} ${m.base}` : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
   cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
@@ -173,13 +180,13 @@ const VELO = { type: "Feature", properties: {}, geometry: { type: "Polygon", coo
 // Colores del mapa (no de la web) en cada tema. Los de las clases no cambian: son los datos. `marca` y `bajoMarca` son las
 // líneas de zona imprecisa, estimada, de referencia y elegida, y el halo que las separa de la clase de debajo.
 const TEMAS = {
-  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", textoProvincia: "#5c6069", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
-  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", textoProvincia: "#a9b0ba", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
+  claro: { mar: "#dfe6ec", vecino: "#ecece8", provincia: "#f7f7f5", lineaProvincia: "#c9ccd1", lineaPais: "#a9adb4", velo: "#f5f5f7", interior: "#d9e6f6", contorno: "#0b4f9c", bordeZona: "#ffffff", texto: "#1d1d1f", textoProvincia: "#5c6069", halo: "#ffffff", marca: "#111111", bajoMarca: "#ffffff" },
+  oscuro: { mar: "#11161c", vecino: "#181d24", provincia: "#232a33", lineaProvincia: "#3a4350", lineaPais: "#56606e", velo: "#0d1117", interior: "#1d3352", contorno: "#7fb2ff", bordeZona: "#0d1117", texto: "#e6e8eb", textoProvincia: "#a9b0ba", halo: "#0d1117", marca: "#f5f5f7", bajoMarca: "#0d1117" },
 };
 // [capa, propiedad de pintura, color de TEMAS]
 const PINTURA_TEMA = [
   ["mar", "background-color", "mar"], ["vecinos", "fill-color", "vecino"], ["provincias", "fill-color", "provincia"],
-  ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"],
+  ["provincias-borde", "line-color", "lineaProvincia"], ["vecinos-borde", "line-color", "lineaPais"], ["velo", "fill-color", "velo"], ["comunidad-interior", "fill-color", "interior"],
   ["comunidad", "line-color", "contorno"], ["zonas-borde", "line-color", "bordeZona"], ["zonas-nombre", "text-color", "texto"],
   ["zonas-nombre", "text-halo-color", "halo"], ["provincias-nombre", "text-color", "textoProvincia"], ["provincias-nombre", "text-halo-color", "halo"], ["zonas-encima", "line-color", "marca"], ["zonas-elegida-halo", "line-color", "bajoMarca"],
   ["zonas-elegida", "line-color", "marca"], ["zonas-imprecisas-fondo", "line-color", "bajoMarca"], ["zonas-imprecisas", "line-color", "marca"],
@@ -219,9 +226,9 @@ function crearMapa(zonas, fondo) {
   const limites = limitesDe(zonas.features);
   // En pantalla estrecha la leyenda ocupa parte del contenedor cuando se pinta, después de crear el mapa:
   // hay que recalcular su tamaño y encuadrarlo de nuevo, o se corta por abajo.
-  const encuadrar = () => {
+  const encuadrar = (opciones = { animate: false }) => {
     mapa.resize();
-    mapa.fitBounds(limites, { padding: 24, animate: false });
+    mapa.fitBounds(limites, { padding: 24, ...opciones });
   };
   encuadrar();
   let pendiente = null;
@@ -237,6 +244,8 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "velo", type: "fill", source: "velo", paint: { "fill-color": "#f5f5f7", "fill-opacity": 0.55 } });
     mapa.addSource("zonas", { type: "geojson", data: pendiente ?? zonas, promoteId: "zona_id" });
     mapa.addSource("comunidad", { type: "geojson", data: { type: "Feature", properties: {}, geometry: contorno(zonas.features) } });
+    // Interior de la Comunidad (las zonas la cubren entera), un azul claro del acento: solo en la vista previa del recorrido (#389).
+    mapa.addLayer({ id: "comunidad-interior", type: "fill", source: "zonas", paint: { "fill-color": t.interior, "fill-opacity": 0 } });
     mapa.addLayer({ id: "zonas-relleno", type: "fill", source: "zonas", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.85 } });
     mapa.addLayer({ id: "zonas-borde", type: "line", source: "zonas", paint: { "line-color": "#ffffff", "line-width": 1.4 } });
     mapa.addLayer({ id: "comunidad", type: "line", source: "comunidad", paint: { "line-color": "#0b4f9c", "line-width": 2.5 } });
@@ -251,6 +260,7 @@ function crearMapa(zonas, fondo) {
     mapa.addLayer({ id: "zonas-imprecisas-fondo", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#fff", "line-width": 3 } });
     mapa.addLayer({ id: "zonas-imprecisas", type: "line", source: "zonas", filter: ["==", ["get", "impreciso"], true], paint: { "line-color": "#111", "line-width": 1.5, "line-dasharray": [1, 1.5] } });
     // Cada marca lleva su halo (`bajoMarca`) para verse sobre clases claras y oscuras en los dos temas.
+    // Una marca nueva se suma también a `MARCAS` (en `main`), o se vería en el mapa de vista previa del recorrido.
     const estimada = ["==", ["get", "estimado"], true];
     const referencia = ["==", ["get", "referencia"], true];
     mapa.addLayer({ id: "zonas-estimadas-fondo", type: "line", source: "zonas", filter: estimada, paint: { "line-color": "#fff", "line-width": 4 } });
@@ -305,6 +315,7 @@ async function main() {
     etiqueta.append(Object.assign(document.createElement("input"), { name: `hijo${i}`, type: "number", inputMode: "numeric" }));
     $("edades-hijos").append(etiqueta);
   }
+  const deEjemplo = valoresFormulario(); // los de la página al abrirse, antes del enlace: «Usar el valor de ejemplo»
   // El estado de los formularios viaja en el fragmento de la URL, que no se envía a ningún servidor.
   const enlace = estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api);
   aplicarValores(enlace.valores);
@@ -340,7 +351,7 @@ async function main() {
       const boton = elemento("button", texto);
       boton.type = "button";
       boton.addEventListener("click", () => {
-        mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 11, duration: 900 });
+        mapa.fitBounds(limitesDe(api.zonas.features.filter((f) => f.properties.zona_id === zona_id)), { padding: 48, maxZoom: 11, duration: reducido() ? 0 : 900 });
         elegir(zona_id);
       });
       // La zona se marca en el mapa al pasar por la lista, con el ratón o con el teclado.
@@ -383,7 +394,8 @@ async function main() {
     const algunaZona = Object.values(actual.zonas)[0];
     // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
     if (v.fuente === "bruto") formulario().elements.neto.value = entrada.sueldos.length === 1 ? String(Math.round(algunaZona.neto)) : "";
-    const pintado = pintar(api.zonas, estado.resultado, estado.metrica, imprecisas(api.alquiler));
+    const base = baseEscala(estado.metrica, api, estado.entrada, estado.resultado);
+    const pintado = pintar(api.zonas, estado.resultado, estado.metrica, { pocas: imprecisas(api.alquiler), base });
     actualizar(pintado.zonas);
     pintarLeyenda(api, pintado, estado.metrica);
     const simulacion = tituloEscenario(v, api.tarifas.edad_max_joven + 1);
@@ -436,8 +448,8 @@ async function main() {
     actualizarBotones();
   };
   // Aplica un estado del enlace a los formularios y repinta.
-  const ir = (texto) => {
-    aplicarValores(estadoDeEnlace(texto, valoresFormulario(), api).valores);
+  const ir = (valores) => {
+    aplicarValores(valores);
     mostrarSegunda();
     mostrarHijos(); // las casillas de edad de los hijos siguen al número de hijos del estado al que se vuelve
     recalcular();
@@ -452,7 +464,7 @@ async function main() {
     actualizarBotones();
   });
   $("cancelar").addEventListener("click", () => {
-    ir(inicial);
+    ir(estadoDeEnlace(inicial, valoresFormulario(), api).valores);
     guardarPaso(); // también se puede deshacer
   });
   $("quitar-escenario").addEventListener("click", () => {
@@ -461,7 +473,7 @@ async function main() {
     guardarPaso();
   });
   window.addEventListener("popstate", () => {
-    ir(location.hash.slice(1));
+    ir(estadoDeEnlace(location.hash.slice(1), valoresFormulario(), api).valores);
     confirmado = estadoAEnlace(valoresFormulario());
     actualizarBotones();
   });
@@ -475,7 +487,7 @@ async function main() {
     if (id !== null) mapa.setFeatureState({ source: "zonas", id }, { encima: true });
   };
   mapa.on("mousemove", "zonas-relleno", (e) => {
-    if (!estado.resultado) return;
+    if (!estado.resultado || guiado()) return; // en el recorrido el mapa solo se mira
     const id = e.features[0].properties.zona_id;
     if (id !== encima) marcarEncima(id);
     tooltip.textContent = lineaTooltip(lineas(id), METRICAS[estado.metrica].datos.includes("alquiler") ? api.alquiler.zonas[id] : undefined, api.alquiler.meta);
@@ -490,8 +502,60 @@ async function main() {
     mapa.getCanvas().style.cursor = "";
   });
   mapa.on("click", "zonas-relleno", (e) => {
-    if (estado.resultado) elegir(e.features[0].properties.zona_id);
+    if (estado.resultado && !guiado()) elegir(e.features[0].properties.zona_id);
   });
+
+  // Recorrido guiado (#389): el mismo mapa, solo para mirar (fondo, contorno, bordes y nombres), hasta «Ver el mapa».
+  const MARCAS = ["zonas-encima-halo", "zonas-encima", "zonas-elegida-halo", "zonas-elegida", "zonas-imprecisas-fondo", "zonas-imprecisas", "zonas-estimadas-fondo", "zonas-estimadas", "zonas-referencia-fondo", "zonas-referencia"];
+  const pintarModo = (vista) => {
+    $("mapa").setAttribute("aria-label", vista ? "Mapa de la Comunidad de Madrid, solo para mirar" : "Mapa de las zonas coloreadas por la métrica elegida");
+    if (!mapa.getLayer("zonas-relleno")) return; // antes de cargar: lo aplica el `load` de abajo
+    // Al llegar al mapa final, el color y las marcas se funden juntos mientras entran la barra y la leyenda.
+    const fundido = vista || reducido() ? 0 : 700;
+    const transicion = { duration: fundido, delay: fundido && 200 };
+    for (const [capa, propiedad, opaca] of [["zonas-relleno", "fill-opacity", 0.85], ...MARCAS.map((c) => [c, "line-opacity", 1])]) {
+      mapa.setPaintProperty(capa, `${propiedad}-transition`, transicion);
+      mapa.setPaintProperty(capa, propiedad, vista ? 0 : opaca);
+    }
+    // El interior claro, al revés: se ve en la vista previa y se va en el mapa final para no teñir las clases.
+    mapa.setPaintProperty("comunidad-interior", "fill-opacity-transition", transicion);
+    mapa.setPaintProperty("comunidad-interior", "fill-opacity", vista ? 1 : 0);
+  };
+  mapa.on("load", () => pintarModo(guiado()));
+  alCambiarModo = (vista) => {
+    pintarModo(vista);
+    marcarEncima(null);
+    tooltip.hidden = true;
+    // Tras el cambio de disposición: la Comunidad entera en el hueco nuevo; al llegar al mapa final, con vuelo.
+    requestAnimationFrame(() => encuadrar(vista || reducido() ? { animate: false } : { duration: 800 }));
+  };
+  // «Siguiente»: si falla un campo de la tarjeta, se señala el primero y se ofrece su valor de ejemplo.
+  tarjetaValida = (menu) => {
+    let errores = (validar(valoresFormulario(), api).errores ?? []).filter(({ campo }) => menu.contains(controlDe(campo)));
+    recalcular(); // pinta los errores junto a sus campos
+    // Una zona de referencia sin alquiler o sin ruta no la rechaza `validar` sino `calcular`, que lo dice en `#estado`.
+    if (errores.length === 0 && menu.contains(controlDe("ref")) && $("estado").textContent.startsWith("La zona de referencia")) {
+      errores = [{ campo: "ref", mensaje: $("estado").textContent }];
+      mostrarErrores(errores);
+    }
+    if (errores.length === 0) return true;
+    for (const { campo } of errores) {
+      // El neto vuelve al bruto y una edad de hijo vacía todas (valorDeEjemplo): el botón dice lo que hace.
+      const texto = /^neto2?$/.test(campo) ? "Volver al bruto de ejemplo" : /^hijo\d+$/.test(campo) ? "Dejar vacías las edades" : "Usar el valor de ejemplo";
+      const boton = elemento("button", texto, "usar-ejemplo");
+      boton.type = "button";
+      boton.addEventListener("click", () => {
+        ir(valorDeEjemplo(campo, valoresFormulario(), api, deEjemplo));
+        guardarPaso();
+        controlDe(campo).focus();
+      });
+      $(`error-${campo}`).after(boton);
+    }
+    const primero = controlDe(errores[0].campo);
+    primero.focus({ preventScroll: true });
+    primero.scrollIntoView({ block: "center", behavior: reducido() ? "instant" : "smooth" });
+    return false;
+  };
   recalcular(); // pinta la leyenda por primera vez: el mapa ya tiene su tamaño final
   confirmado = estadoAEnlace(valoresFormulario());
   inicial = confirmado;
@@ -584,22 +648,88 @@ const verHerramienta = (visible) => {
 // (`portada`): al volver al mapa se retrocede a su entrada, para que no quede una portada entre los pasos de
 // «Deshacer» (que también usa el historial).
 const vistaDeUrl = () => new URLSearchParams(location.search).has("herramienta");
+
+// --- Recorrido guiado (#389) ---------------------------------------------------------------------
+// «Calcular» abre seis tarjetas, una por menú de la barra (`data-tarjeta`), con el mapa a la derecha solo para mirar. Al acabar
+// llega el mapa final con lo elegido, porque las tarjetas son los mismos paneles del formulario. No usan el historial: así no
+// se cruzan con «Deshacer» (`guardarPaso`, `pasoMax`).
+const TARJETAS = 6;
+let tarjeta = 0;
+let alCambiarModo = () => {}; // `main` los sustituye al crear el mapa y cargar los datos
+let tarjetaValida = () => true;
+const guiado = () => herramienta.classList.contains("guiado");
+const menuDe = (n) => document.querySelector(`.menu[data-tarjeta="${n}"]`);
+
+function verTarjeta(n) {
+  tarjeta = n;
+  const menu = menuDe(n);
+  for (const m of document.querySelectorAll(".menu")) m.classList.toggle("tarjeta-actual", m === menu);
+  $("guia-paso").textContent = `Tarjeta ${n} de ${TARJETAS}: `;
+  $("guia-nombre").textContent = menu.dataset.titulo;
+  $("guia-entradilla").textContent = menu.dataset.entradilla;
+  $("guia-contador").textContent = `${n}/${TARJETAS}`;
+  $("guia-atras").hidden = n === 1;
+  $("guia-siguiente").textContent = n === TARJETAS ? "Ver el mapa" : "Siguiente";
+  $("barra-filtros").scrollTop = 0;
+  $("guia-titulo").focus();
+}
+
+function empezarGuia() {
+  herramienta.classList.remove("entrando", "saliendo");
+  herramienta.classList.add("guiado");
+  alCambiarModo(true);
+  verTarjeta(1);
+}
+
+function cerrarGuia() {
+  herramienta.classList.remove("guiado", "saliendo");
+  for (const m of document.querySelectorAll(".tarjeta-actual")) m.classList.remove("tarjeta-actual");
+  tarjeta = 0;
+  alCambiarModo(false);
+}
+
+// Transición al mapa final: sale la tarjeta, cambia la disposición y entran la barra, el panel y la leyenda mientras las zonas se colorean.
+function terminarGuia() {
+  const llegar = () => {
+    cerrarGuia();
+    herramienta.classList.add("entrando");
+    const animaciones = herramienta.getAnimations({ subtree: true }).map((a) => a.finished);
+    Promise.allSettled(animaciones).then(() => herramienta.classList.remove("entrando"));
+    $("mejores-titulo").focus();
+  };
+  if (reducido()) return llegar();
+  if (herramienta.classList.contains("saliendo")) return; // doble pulsación
+  herramienta.classList.add("saliendo");
+  // La animación de salida de la propia tarjeta (no las de dentro): si se cancela porque se cierra el recorrido, no llega.
+  const sale = $("guia-tarjeta").getAnimations()[0];
+  if (sale) sale.finished.then(llegar, () => {});
+  else llegar();
+}
+
+$("guia-atras").addEventListener("click", () => verTarjeta(tarjeta - 1));
+$("guia-siguiente").addEventListener("click", () => {
+  if (!guiado() || !tarjetaValida(menuDe(tarjeta))) return; // fuera del recorrido (doble pulsación al llegar al mapa)
+  if (tarjeta < TARJETAS) verTarjeta(tarjeta + 1);
+  else terminarGuia();
+});
 for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
   boton.addEventListener("click", () => {
     if (history.state?.portada) history.back();
     else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
-    herramienta.querySelector(".menu-boton").focus();
+    empezarGuia(); // «Calcular» pasa por las tarjetas; el mapa directo es `index.html?herramienta`
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
   e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
+  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final
   if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
 window.addEventListener("popstate", () => {
   const antes = document.body.classList.contains("en-herramienta");
+  if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; volver por URL abre el mapa
   verHerramienta(vistaDeUrl());
   // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
   if (vistaDeUrl() !== antes) (vistaDeUrl() ? herramienta.querySelector(".menu-boton") : $("titulo-portada")).focus();
