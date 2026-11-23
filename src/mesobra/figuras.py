@@ -139,7 +139,7 @@ def _mapa(
             facecolor="none",
             edgecolor="black",
             linewidth=1.3,
-            label=f"pocos contratos (< {MIN_TESTIGOS}): impreciso (n = {int(zonas['pocos'].sum())})",
+            label=f"pocos alquileres declarados (< {MIN_TESTIGOS}): impreciso (n = {int(zonas['pocos'].sum())})",
         )
     )
     ax.legend(

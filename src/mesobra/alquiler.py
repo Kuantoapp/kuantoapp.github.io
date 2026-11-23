@@ -18,7 +18,7 @@ from mesobra import contratos, paso_secciones, zonas
 
 LOG = logging.getLogger(__name__)
 
-MIN_TESTIGOS = 50  # con menos contratos declarados la mediana de la zona es imprecisa (decisión de #246)
+MIN_TESTIGOS = 70  # con menos alquileres declarados la mediana de la zona es imprecisa (#246; €/m² en #368)
 
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw/serpavi_bd_2011_2024_2026-11-15.xlsx"

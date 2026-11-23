@@ -187,9 +187,9 @@ test("la ficha avisa de pocos alquileres declarados con menos de min_testigos y 
   assert.ok(!lineas(conTestigos(49), "28092", casos.find((c) => c.nombre.startsWith("coche"))).some((l) => l.startsWith("Impreciso")), "estimada: testigos null");
 });
 
-test("imprecisas con datos reales: 33 zonas, entre ellas Titulcia", () => {
+test("imprecisas con datos reales: 39 zonas, entre ellas Titulcia", () => {
   const pocas = imprecisas(real.alquiler);
-  assert.equal(pocas.size, 33);
+  assert.equal(pocas.size, 39);
   assert.ok(pocas.has("28147"));
 });
 
