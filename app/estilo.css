@@ -459,14 +459,13 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .lista-fuentes li { margin: 12px 0; overflow-wrap: anywhere; }
 /* Metodología resumida (#434): figuras a un tamaño que se lee y un índice de cinco entradas que cabe en una línea. */
 .informe .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 96px); }
-.informe .indice ul { overflow: visible; }
 .fuentes-informe { margin-top: 32px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
 .fuentes-informe .lista-fuentes { margin-top: 8px; }
 @media (max-width: 40rem) {
-  .informe .indice ul { justify-content: space-between; gap: 2px; }
-  .informe .indice a { padding: 0 8px; font-size: 14px; }
+  .informe .indice ul { justify-content: space-between; gap: 8px; }
+  .informe .indice a { padding: 0 6px; font-size: 14px; }
 }
-@media (max-width: 22.5rem) { /* a 320 px no caben cinco bordes: solo lleva borde la entrada activa */
-  .informe .indice a { padding: 0 2px; }
-  .informe .indice a:not([aria-current]) { border-color: transparent; }
+@media (max-width: 22.5rem) { /* a 320 px no caben cinco píldoras: enlaces subrayados, y la activa en el acento */
+  .informe .indice a { min-width: 44px; justify-content: center; padding: 0; border-width: 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--linea-control); }
+  .pagina.informe .indice a[aria-current="location"] { background: none; text-decoration-color: var(--acento); text-decoration-thickness: 2px; }
 }

@@ -650,7 +650,7 @@ const verHerramienta = (visible) => {
 const vistaDeUrl = () => new URLSearchParams(location.search).has("herramienta");
 
 // --- Recorrido guiado (#389) ---------------------------------------------------------------------
-// «Calcular» abre seis tarjetas, una por menú de la barra (`data-tarjeta`), con el mapa a la derecha solo para mirar. Al acabar
+// «Calcular» abre una bienvenida y seis tarjetas, una por menú de la barra (`data-tarjeta`), con el mapa a la derecha solo para mirar. Al acabar
 // llega el mapa final con lo elegido, porque las tarjetas son los mismos paneles del formulario. No usan el historial: así no
 // se cruzan con «Deshacer» (`guardarPaso`, `pasoMax`).
 const TARJETAS = 6;
@@ -743,20 +743,21 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
     else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
     if (recorridoHecho() === null) empezarGuia(); // la primera vez, por las tarjetas; después, el mapa final
+    else herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
   e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
-  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final
+  if (guiado()) cerrarGuia(); // como «atrás»: volver por el historial abre el mapa final si el recorrido está hecho; si no, la bienvenida
   if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
 window.addEventListener("popstate", () => {
   const antes = document.body.classList.contains("en-herramienta");
-  if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; volver por URL abre el mapa
+  if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; al volver, mapa final o bienvenida
   verHerramienta(vistaDeUrl());
-  if (vistaDeUrl() && !guiado() && recorridoHecho() === null) empezarGuia();
+  if (vistaDeUrl() && !antes && !guiado() && recorridoHecho() === null) empezarGuia(); // solo al entrar: «Deshacer» también usa el historial
   // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
   if (vistaDeUrl() !== antes) (vistaDeUrl() ? (guiado() ? $("guia-titulo") : herramienta.querySelector(".menu-boton")) : $("titulo-portada")).focus();
 });

@@ -65,7 +65,7 @@
         <figcaption>Esfuerzo de alquiler en 2024 por zona, en quintiles. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
       </figure>
       <div class="capas">
-        <p>Los valores más altos están en el centro y el sur de la capital: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 % (fuente: SERPAVI y ADRH, 2024). El norte sale más bajo por la renta y no por el alquiler: en Chamartín el alquiler mediano es de 1.126 € al mes, más que en Centro (950 €), pero la renta media del hogar es un 78 % mayor (fuente: SERPAVI y ADRH, 2024).</p>
+        <p>Los valores más altos están en el centro y el sur de la capital: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 % (fuente: SERPAVI y ADRH, 2024). El norte sale más bajo por la renta y no por el alquiler: en Chamartín el alquiler mediano es de 1.126 € al mes, más que en Centro (950 €), pero la renta media del hogar es un 78 % mayor que en Centro (fuente: SERPAVI y ADRH, 2024).</p>
         <h3>Desde 2015, casi plano</h3>
         <p>De las 142 zonas con dato en 2015 y en 2024, el esfuerzo sube en 68 y la mediana del cambio es de −0,06 puntos porcentuales (fuente: SERPAVI y ADRH, sin la fila de Madrid entero). No quiere decir que alquilar cueste hoy lo mismo: el SERPAVI incluye los contratos antiguos, y quien firma ahora puede estar pagando bastante más (fuente: metodología del SERPAVI, MIVAU, 18-03-2026, §3.1).</p>
         <h3>Sobrecarga de los inquilinos</h3>
@@ -83,7 +83,7 @@
         <blockquote>En los municipios donde el alquiler se come más renta, más jóvenes piden el Bono. A todos se les rechaza en la misma proporción, así que hay más rechazos porque hay más solicitudes. La relación es débil y en parte se explica porque allí alquilan más jóvenes: es una pista, no una prueba.</blockquote>
         <p>Los rechazos mezclan a quien no cumplía los requisitos y a quien llegó con el crédito agotado, y los datos por municipio no separan los motivos (fuente: Orden de 1-08-2024, BOCM-20240816-2).</p>
         <details><summary>Las cifras del modelo</summary>
-          <p>En la regresión con error espacial de las rechazadas por 1.000 jóvenes sobre el esfuerzo de 2023, p = 0,043 con 5 vecinos; la segunda vía, con errores robustos a la autocorrelación, no lo confirma, p = 0,17 (fuente: <code>bono_inferencia.json</code>; estimado). Entre quienes solicitan, la proporción aceptada no cambia con el esfuerzo, p = 0,82 (fuente: <code>bono_inferencia.json</code>; estimado). El resto de pruebas, en la <a href="metodologia.html">nota metodológica</a>.</p>
+          <p>En la regresión con error espacial de las rechazadas por 1.000 jóvenes sobre el esfuerzo de 2023, p = 0,043 con 5 vecinos; la segunda vía, con errores robustos a la autocorrelación, no lo confirma, p = 0,17 (fuente: <code>bono_inferencia.json</code>; estimado). Entre quienes solicitan, la proporción aceptada no cambia con el esfuerzo, p = 0,82 (fuente: <code>bono_inferencia.json</code>; estimado). Teniendo en cuenta el porcentaje de jóvenes que alquilan, el efecto baja a β = 46, p = 0,22, con 5 vecinos (fuente: <code>bono_inferencia.json</code>; estimado). El modelo principal se eligió después de ver los datos.</p>
         </details>
         <h3>Quién cumple el tope del Bono</h3>
         <p>Con una vivienda de 69 m² al alquiler mediano, quien vive solo con el SMI pasa del tope de alquiler del Bono en 16 de los 138 municipios simulados, en 14 de ellos por menos de 80 € al mes; Madrid, por 79,51 € (fuente: <code>datos/analisis.json</code>, bloque <code>simulacion</code>; estimado). Dice si cumpliría los requisitos, no si cobraría la ayuda, que se concede mientras quede crédito.</p>
@@ -100,7 +100,7 @@
         <figcaption>Por perfil: pares en que vivir lejos rinde al menos el neto por hora, y zonas con sobrante mediano negativo con la banda del alquiler, P25 a P75 (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; elaboración propia; estimado).</figcaption>
       </figure>
       <div class="capas">
-        <p>Solo quienes cobran el SMI pasan de una decena de zonas en las que no les sobra nada: 18 de 158, entre 8 y 33 según dónde caiga su alquiler dentro de la banda (fuente: bloque <code>titulares</code>; estimado). Para la persona sola con el SMI, en ninguna corona lo que se ahorra por cada hora extra de viaje llega a su neto por hora, 8,80 € (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; estimado).</p>
+        <p>Solo quienes cobran el SMI pasan de una decena de zonas en las que no les sobra nada: 18 de 158, entre 8 y 33 según dónde caiga su alquiler dentro de la banda (fuente: bloque <code>titulares</code>; estimado). Para la persona sola con el SMI, en ninguna corona la mediana de lo que se ahorra por cada hora extra de viaje llega a su neto por hora, 8,80 € (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; estimado).</p>
         <details><summary>Las cifras de cada perfil</summary>
           <ul>
             <li>Persona sola con el SMI: neto de 8,80 € por hora; vivir lejos rinde al menos eso en 1.218 de 8.620 pares (14,1 %); sobrante negativo en 18 de 158 zonas, entre 8 y 33 con la banda (fuente: bloque <code>titulares</code>; estimado).</li>
@@ -120,6 +120,7 @@
         <li>La renta es la media de todos los hogares, propietarios incluidos, que suelen ganar más que quien alquila: el indicador subestima el esfuerzo de los inquilinos.</li>
         <li>El SERPAVI son contratos declarados de vivienda colectiva, no precios de oferta, e incluye contratos antiguos: va por detrás del mercado.</li>
         <li>Del Bono hay un solo año, la convocatoria de 2022, y son datos por municipio: una correlación entre municipios, no un efecto sobre cada joven.</li>
+        <li>La simulación del Bono usa 69 m² también para quien vive solo, lo que sube su alquiler; la del abono supone que el trayecto pasa por la zona A y que en 2027 siguen las tarifas de 2026 (fuente: <code>simulacion.py</code>, supuestos 11 y 12).</li>
         <li>No se ha podido dar la sobrecarga por zona, las cifras de quien alquila una habitación ni cuántas personas podrían cobrar el Bono.</li>
       </ul>
       <details class="fuentes-informe"><summary>Fuentes</summary>
