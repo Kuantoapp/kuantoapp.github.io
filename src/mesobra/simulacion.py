@@ -34,15 +34,26 @@ Decisiones y sentido de su sesgo:
 7. Cada parámetro va con su cita, arriba de este módulo (`parametros_2026.py` queda fuera de la issue).
 8. «Ingresos» = base imponible general (supuesto de la referencia §5): bruto − cotización − 2.000 € (art. 19.2.f) −
    reducción del art. 20, como `neto.cuota_irpf`. La norma no fija la medida («rentas anuales», «información del
-   IRPF»; Acuerdo, arts. 4.1.d y 4.4) y decide a la pareja y a la madre: con la base (24.215 y 24.427 €) entran; con el
-   bruto (28.038 y 28.264 €), no. Se presentan siempre con la sensibilidad `ingresos="bruto"`.
+   IRPF»; Acuerdo, arts. 4.1.d y 4.4) y decide a la pareja: con la base (24.215 €) entra; con el bruto (28.038 €), no.
+   La madre (20.323 € de base, 23.875 € de bruto) entra con las dos. Se presentan siempre con la sensibilidad
+   `ingresos="bruto"`.
 9. Cuentan solo los ingresos de la persona solicitante, el primer sueldo: Acuerdo, art. 4.1.d, si conviven jóvenes sin
    parentesco de 1.er grado o todos de hasta 35 años y firma el contrato (la pareja de 29); la madre suma su hijo, sin
    ingresos; en habitación, solo la persona arrendataria. El RD suma los de los convivientes: con esa regla la pareja
    queda fuera (sensibilidad `hogar`).
-10. Se usa el bruto de referencia del perfil (de 2024 a 2026) y no el del ejercicio que mira la convocatoria: cuanto
-    más antiguo es el sueldo real, más bajo sería y más perfiles entrarían. La cotización y el art. 20 son los de 2026:
-    en la pareja y la madre el art. 20 es 0 y la diferencia es de pocos euros frente a un margen de 773 a 985 €.
+10. Los ingresos son los del último ejercicio con plazo vencido antes de la solicitud (FAQ 2024, pregunta 2): 2023
+    hasta el 30-6-2025, 2024 del 1-7-2025 al 30-6-2026 y 2025 después. Supuesto: solicitud en ese tramo (ejercicio
+    2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
+    (`sueldos_2024`), no el llevado a 2026 (con el de 2026 la pareja, de 24.215 a 25.769 € de base, pasaría de los
+    25.200 € y quedaría fuera por un ajuste de precios, no de ingresos reales). Con 2025 (ETCL ×1,0333, estimado) la
+    base de la pareja sería de unos 25.089 €: dentro por 111 €. El SMI y la enfermera usan su sueldo de 2026: el SMI
+    está por debajo del umbral en los dos años; la nómina del SERMAS de 2024 no está cargada y la enfermera queda
+    fuera por 1.244 € con 2026 (base de 26.444 €) y por unos 824 € con 2025 (su bruto sin la subida del 1,5 %,
+    29.971,80 €, estimado); con 2024 el margen sería estrecho y depende de la subida de 2025, sin verificar. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
+    de 2024) también lo usa la regla del art. 301 LGSS junto al SMI y el transporte de 2026: no cambia ningún
+    resultado (el salario supera el SMI mensual en 484 € o más y el 20 % del salario es de al menos 341 € al mes).
+    La cotización y el art. 20 son los de 2026: en la pareja y la madre el art. 20 es 0 y la diferencia es de pocos
+    euros frente a un margen de 985 a 4.877 €.
 11. Vivienda de 69 m² para los 5 perfiles; los 3 «solo» se repiten como habitación con el hogar `comparte` (alquiler
     repartido entre `personas_comparten`), aproximación a la renta de una habitación. 69 m² sobreestima la renta de
     quien vive solo: menos entran por el tope. La habitación (un tercio del piso) es una cota inferior de su renta.
@@ -104,7 +115,7 @@ Decisiones y sentido de su sesgo:
     tabla de sensibilidades, no al contrato.
 22. Transporte: modo `tp`, 2 viajes al día, tarifas `vigente_2026` (el descuento solo vale en 2026: favorece el
     transporte barato). El de 23 años usa el Abono Joven (hasta 25 años), tarifa plana por corona.
-23. Horas trabajadas al mes = `semanas_mes` × 5 × 8 por sueldo (151,3 h; solo en `simulacion_296`). Pares sin alquiler
+23. Horas trabajadas al mes = `semanas_mes` × 5 × `horas_dia` del perfil por sueldo (8 h; 37,5 h semanales para la enfermera; solo en `simulacion_296`). Pares sin alquiler
     quedan fuera; los municipios sin alquiler o sin pesos no tienen fila.
 24. `perfil` = identificador por perfil y tipo de vivienda (`smi_30`, `smi_30_habitacion`...): choca con el enumerado
     de `api_estatica.PERFILES` (#103).
@@ -345,7 +356,7 @@ def _carga(r: dict, criterio: str, vtt: float) -> float:
 def _colocacion_inadecuada(r: dict, pagas: int) -> bool:
     """Regla histórica del art. 301 LGSS: ida y vuelta > 25 % de la jornada, coste > 20 % del salario mensual o
     salario mensual menos el coste por debajo del SMI mensual."""
-    viaje = 2 * r["minutos"] > LGSS_TIEMPO * titulares.HORAS_DIA * 60
+    viaje = 2 * r["minutos"] > LGSS_TIEMPO * r["horas_dia"] * 60
     salario, coste = r["ingresos_bruto"] / pagas, r["transporte"] / r["n_sueldos"]
     smi = float(parametros_2026.SMI_ANUAL) / pagas
     return viaje or coste > LGSS_COSTE * salario or salario - coste < smi
@@ -422,23 +433,24 @@ def tabla_pares(
     destinos = [
         (j, d["destino_id"]) for j, d in enumerate(t["destinos"]) if d["tipo"] == "zona"
     ]
-    horas_mes = (
-        api["tarifas"]["semanas_mes"] * titulares.DIAS_SEMANA * titulares.HORAS_DIA
-    )
     contrato = calculo.api_precio_contrato(
         api
     )  # el Bono sigue con el precio de contrato (#301, #329)
     filas, refs = [], {}
     for pid, p, hogar, tipo in variantes():
         # ingresos de quien solicita (decisión 9), de todo el hogar (sensibilidad) y bruto (sensibilidad)
-        bases = [float(base_imponible(b)) for b, _ in p["sueldos"]]
+        ingresos = p.get("sueldos_2024", p["sueldos"])  # ejercicio 2024 (decisión 10)
+        bases = [float(base_imponible(b)) for b, _ in ingresos]
+        horas_dia = titulares.horas_dia(p)
+        horas_mes = api["tarifas"]["semanas_mes"] * titulares.DIAS_SEMANA * horas_dia
         fijos = {
             "perfil": pid,
             "tipo": tipo,
             "edad": p["edad"],
             "ingresos_base": bases[0],
-            "ingresos_bruto": p["sueldos"][0][0],
+            "ingresos_bruto": ingresos[0][0],
             "ingresos_hogar": sum(bases),
+            "horas_dia": horas_dia,
             "horas_trab": horas_mes * len(p["sueldos"]),
             "n_sueldos": len(p["sueldos"]),
             # la pareja de 29: cada una firma y cumple sola (Acuerdo, art. 4.1.d); habitación: una
@@ -508,7 +520,7 @@ def tabla_pares(
 
 MEDIDAS = ("alquiler", "alquiler_p75", "transporte", "horas")
 FIJAS = (
-    "perfil", "tipo", "edad", "ingresos_base", "ingresos_bruto", "ingresos_hogar", "horas_trab", "n_sueldos",
+    "perfil", "tipo", "edad", "ingresos_base", "ingresos_bruto", "ingresos_hogar", "horas_dia", "horas_trab", "n_sueldos",
     "beneficiarios", "neto", "zona_id", "municipio_id",
 )  # fmt: skip
 

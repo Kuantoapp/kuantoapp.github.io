@@ -63,8 +63,14 @@ FUENTES = [
             (28201, "Encuesta Anual de Estructura Salarial"),
             (36846, "Encuesta de Estructura Salarial 2022"),
             (36850, "Encuesta de Estructura Salarial 2022"),
+            (6061, "Encuesta Trimestral de Coste Laboral"),
         )
     ),
+    {
+        "nombre": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado. Ley 6/2011, de 28 de diciembre, de Medidas Fiscales y Administrativas de la Comunidad de Madrid, DA 1.ª (BOE-A-2012-2980; jornada del SERMAS)",
+        "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2012-2980",
+        "licencia": "Reutilización con cita de la fuente (aviso legal del BOE): «Basado en datos de la Agencia Estatal Boletín Oficial del Estado»; el texto consolidado tiene carácter meramente informativo (https://www.boe.es)",
+    },
     {
         "nombre": "Orden de 3 de febrero de 2026, instrucciones de nóminas de la Comunidad de Madrid para 2026 (BOCM-20260209-6), anexo V (sueldo de los titulares)",
         "url": "https://www.bocm.es/boletin/CM_Orden_BOCM/2026/02/09/BOCM-20260209-6.PDF",
@@ -79,11 +85,12 @@ NOTA = (
     + " Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (tabla 31097 actualizada "
     "el 2026-10-15; tabla 68542 actualizada el 2025-12-02; tabla 28191 actualizada el 2026-05-28; tabla "
     "28201 actualizada el 2026-05-28; tabla 36850 actualizada el "
-    "2024-09-23; tabla 36846 actualizada el 2024-09-23; tabla 76137 actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
+    "2024-09-23; tabla 36846 actualizada el 2024-09-23; tabla 6061 actualizada el 2026-09-17; tabla 76137 actualizada el 2026-11-13); el INE no participa ni patrocina este proyecto. "
     "Fuente de los datos: Comunidad de Madrid (Bono Alquiler Joven 2022, actualizado el 2026-02-03; IPC de "
     "alquiler 1934665, control, actualizado el 2026-11-05); la "
     "Comunidad de Madrid no participa ni patrocina este proyecto. Fuente: Boletín Oficial de la Comunidad de "
-    "Madrid (BOCM-20260209-6, nóminas de 2026, consultado el 2026-11-23)."
+    "Madrid (BOCM-20260209-6, nóminas de 2026, consultado el 2026-11-23) y Boletín Oficial del Estado (Ley 6/2011 de la "
+    "Comunidad de Madrid, DA 1.ª, BOE-A-2012-2980, jornada del SERMAS, consultado el 2026-11-23)."
 )
 
 
