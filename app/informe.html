@@ -24,8 +24,8 @@
 
   <main class="pagina informe">
     <section class="bloque heroe" aria-labelledby="titulo-informe">
-      <h1 id="titulo-informe">Esfuerzo de alquiler y Bono Alquiler Joven en la Comunidad de Madrid</h1>
-      <p class="entradilla">Informe para la Administración del proyecto Kuanto.</p>
+      <h1 id="titulo-informe">Alquiler, sueldos y ayudas en la Comunidad de Madrid</h1>
+      <p class="entradilla">Informe para la Administración del proyecto Kuanto: esfuerzo de alquiler, Bono Alquiler Joven, seis sueldos de referencia, sobrecarga de los inquilinos y fin del descuento del abono.</p>
       <p class="aparte">Página estática: los datos están en <a href="datos/analisis.json"><code>datos/analisis.json</code></a> y se regeneran con <code>python -m mesobra.pipeline_analisis</code>.</p>
       <p class="aparte">Cómo calcula la herramienta lo que te sobra, con sus supuestos, límites y validación: <a href="metodologia.html">nota metodológica</a>.</p>
     </section>
@@ -37,6 +37,11 @@
         <li><a href="#esfuerzo">El esfuerzo en 2024</a></li>
         <li><a href="#cambio">Cambio desde 2015</a></li>
         <li><a href="#bono">Bono Alquiler Joven</a></li>
+        <li><a href="#titulares">Sueldos de referencia</a></li>
+        <li><a href="#sobrecarga">Sobrecarga</a></li>
+        <li><a href="#simulacion">Simulación del Bono</a></li>
+        <li><a href="#descuento">Fin del descuento</a></li>
+        <li><a href="#pendiente">Qué falta</a></li>
         <li><a href="#limitaciones">Limitaciones</a></li>
         <li><a href="#fuentes">Fuentes</a></li>
       </ul>
@@ -148,6 +153,123 @@
       </div>
     </section>
 
+    <section class="bloque" id="titulares" aria-labelledby="titulo-titulares">
+      <h2 id="titulo-titulares">Seis sueldos de referencia</h2>
+      <figure class="dato-imagen figura-ancha">
+        <a href="img/titulares_perfiles.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="993" height="1242" loading="lazy" src="img/titulares_perfiles.png" alt="Dos paneles con un punto por cada uno de los seis perfiles. A la izquierda, el porcentaje de pares origen-destino en que vivir lejos rinde al menos el neto por hora: todos entre el 3 y el 15 por ciento. A la derecha, las zonas con sobrante mensual negativo y su banda: solo los dos perfiles del SMI pasan de una decena."></a>
+        <figcaption>Por perfil: pares en que vivir lejos rinde al menos el neto por hora, y zonas con sobrante mediano negativo con la banda del alquiler, P25 a P75 (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; elaboración propia; estimado).</figcaption>
+      </figure>
+      <div class="capas">
+        <h3>Qué se mide</h3>
+        <p>La herramienta se ha pasado por seis casos fijos con sueldo de fuente oficial: una persona sola y un teleoperador de 23 años con el SMI, una pareja de 29 años con el sueldo mediano de Madrid, una madre sola de 34 años con el sueldo mediano de una administrativa, una persona sola de 29 años con el mediano de su edad y una enfermera de 26 años del SERMAS sin trienios, noches ni guardias (fuente: RD 126/2026; EAES y EES, INE; BOCM-20260209-6). Para cada uno se calcula cuánto rinde cada hora extra de viaje al vivir más lejos de un destino, frente al neto por hora trabajada, y en cuántas zonas el sobrante mensual mediano sale negativo.</p>
+        <h3>Qué sale</h3>
+        <p>Para la persona sola con el SMI, en ninguna corona la mediana de lo que se ahorra por cada hora extra de viaje llega a su neto por hora, 8,80 €. En las coronas B3, C1 y C2 ese ahorro es de 1,90 a 4,65 € por hora; en la corona A sale negativo, −8,30 €, porque vivir más lejos de un destino céntrico cuesta tiempo y también dinero (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; estimado). Según el perfil, el ahorro llega al neto por hora en el 3,5 % de los pares, en la pareja, y en el 14,7 %, en el teleoperador (fuente: bloque <code>titulares</code>; estimado). Son pares de zonas, no personas: no están ponderados por cuántos viven y trabajan en cada una, y no incluyen los trayectos sin ruta en 120 minutos.</p>
+        <p>Solo quienes cobran el SMI pasan de una decena de zonas en las que no les sobra nada: 18 de 158, entre 8 y 33 según dónde caiga su alquiler dentro de la banda (fuente: bloque <code>titulares</code>; estimado). La madre sola llega a 7 y el joven a 2; la pareja y la enfermera, a ninguna con el alquiler mediano (fuente: bloque <code>titulares</code>; estimado).</p>
+        <details><summary>Las cifras de cada perfil</summary>
+          <ul>
+            <li>Persona sola con el SMI: neto de 8,80 € por hora; vivir lejos rinde al menos eso en 1.218 de 8.620 pares (14,1 %); sobrante negativo en 18 de 158 zonas, entre 8 y 33 con la banda (fuente: bloque <code>titulares</code>; estimado).</li>
+            <li>Teleoperador de 23 años con el SMI: 8,80 € por hora; 1.268 pares (14,7 %); 18 zonas, entre 8 y 30 (fuente: bloque <code>titulares</code>; estimado).</li>
+            <li>Pareja de 29 años, sueldo mediano de Madrid: 12,80 € por hora; 306 de 8.651 pares (3,5 %); ninguna zona (fuente: bloque <code>titulares</code>; estimado).</li>
+            <li>Madre sola de 34 años, administrativa: 11,41 € por hora; 846 pares (9,8 %); 7 zonas, entre 0 y 14 (fuente: bloque <code>titulares</code>; estimado).</li>
+            <li>Persona sola de 29 años, mediano de su edad: 11,69 € por hora; 816 pares (9,5 %); 2 zonas, entre 0 y 8 (fuente: bloque <code>titulares</code>; estimado).</li>
+            <li>Enfermera de 26 años del SERMAS: 13,94 € por hora con 37,5 horas semanales; 612 pares (7,1 %); ninguna zona, hasta 3 con la banda (fuente: bloque <code>titulares</code>; estimado).</li>
+          </ul>
+        </details>
+        <details><summary>Cómo leerlo y sus límites</summary>
+          <p>Un par es una zona de residencia y un destino de trabajo con ruta en transporte público, alquiler y más horas de viaje que la zona mejor situada para ese destino. Lo que rinde la hora extra es el ahorro de alquiler y cesta frente a esa zona, menos el transporte, dividido entre las horas de más.</p>
+          <p>Los sueldos de la pareja, la madre y el joven son medianas de 2022 o 2024 llevadas a 2026 con la Encuesta Trimestral de Coste Laboral, suponiendo que la mediana crece como la media (fuente: ETCL, INE; estimado). Si creció menos, el bruto está sobrevalorado y el neto por hora sale alto. El sueldo de la enfermera no incluye turnos ni guardias, así que queda por debajo de lo que cobra quien los hace (fuente: BOCM-20260209-6).</p>
+          <p>La banda de las zonas negativas mueve el alquiler entre el percentil 25 y el 75 del SERPAVI. Es la validación que tiene esta cifra: si el resultado de una zona cambia dentro de la banda, no conviene nombrarla (fuente: SERPAVI, MIVAU).</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="sobrecarga" aria-labelledby="titulo-sobrecarga">
+      <h2 id="titulo-sobrecarga">Sobrecarga de los inquilinos</h2>
+      <div class="capas">
+        <p class="destacado"><span class="cifra-grande">36,0 %</span> De los hogares que viven de alquiler en la Comunidad de Madrid, el 36,0 % dedica a la vivienda más del 40 % de su renta, con un intervalo del 95 % de 28,6 a 43,4 (fuente: Encuesta de Condiciones de Vida 2025, microdatos, INE; elaboración propia; estimado).</p>
+        <p>Es una cifra para toda la Comunidad. La encuesta no permite bajar a municipio ni a distrito: en la muestra hay 562 hogares inquilinos de la región (fuente: ECV 2025, INE).</p>
+        <details><summary>Por qué no hay mapa de la sobrecarga</summary>
+          <p>Se intentó estimar la sobrecarga por zona combinando la renta del Atlas de Distribución de Renta con el alquiler del SERPAVI. Antes de ejecutarlo se fijó un control: el agregado de la Comunidad tenía que caer dentro del intervalo de la ECV. No cayó. Por eso no se publica ni la cifra ni la tabla por zona (fuente: <code>docs/decisiones.md</code>, 18-11-2026).</p>
+          <p>La causa principal es la renta de los inquilinos. Dentro de cada sección censal, la renta de todos los hogares tiene una dispersión parecida a la de los inquilinos de toda la región, y al fijar la media eso deja la mediana de los inquilinos un 11 % por debajo de la de la ECV (fuente: ADRH y ECV, INE; elaboración propia; estimado). Pesan menos el alquiler, unos 3 puntos, y la escala de equivalencia de los hogares, unos 2 (fuente: elaboración propia; estimado).</p>
+          <p>Como no se publica, el Bono Alquiler Joven sigue midiendo la necesidad con el esfuerzo de alquiler y no con la sobrecarga.</p>
+        </details>
+        <details><summary>Qué cuenta la ECV</summary>
+          <p>Hogares que alquilan a precio de mercado o reducido, ponderados con el factor de la encuesta. El gasto incluye el alquiler y los gastos de la vivienda, sin descontar ayudas, y se compara con la renta disponible del hogar (fuente: ECV 2025, INE). El intervalo supone un efecto de diseño de 2, porque el fichero público no trae los estratos de la muestra (fuente: elaboración propia; estimado).</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="simulacion" aria-labelledby="titulo-simulacion">
+      <div class="dato">
+        <div class="dato-texto capas">
+          <h2 id="titulo-simulacion">Simulación del Bono Alquiler Joven</h2>
+          <p class="destacado"><span class="cifra-grande">16 de 138</span> Con una vivienda de 69 m² al alquiler mediano, quien vive solo con el SMI pasa del tope de alquiler del Bono en 16 de los 138 municipios simulados; en 14 de ellos, por menos de 80 € al mes (fuente: <code>datos/analisis.json</code>, bloque <code>simulacion</code>; estimado).</p>
+          <p>Es una simulación con los seis perfiles de la sección anterior: dice si cada perfil cumpliría los requisitos en cada municipio, no si cobraría la ayuda, que se concede mientras quede crédito. Madrid está entre esos 16, por 79,51 € al mes: el alquiler de la ciudad es la mediana de sus 21 distritos, y 8 de ellos quedan por debajo del tope (fuente: bloque <code>simulacion</code>; elaboración propia; estimado).</p>
+        <details><summary>Los municipios fuera del tope</summary>
+          <p>Euros al mes en que el alquiler de 69 m² pasa del tope, de menos a más (fuente: <code>datos/analisis.json</code> y <code>datos/alquiler.json</code>; elaboración propia; estimado):</p>
+          <ul>
+            <li>Con tope de 600 €: El Molar, 6,81; Collado Mediano, 24,44; Pedrezuela, 25,88; Navacerrada, 26,19; El Álamo, 32,15; Villalbilla, 32,67; Sevilla la Nueva, 51,31; Manzanares el Real, 52,82; Hoyo de Manzanares, 71,10; Valdemorillo, 75,69 (fuente: elaboración propia; estimado).</li>
+            <li>Con tope de 900 €: Boadilla del Monte, 31,98; Villaviciosa de Odón, 51,93; Majadahonda, 74,31; Madrid, 79,51; Las Rozas de Madrid, 88,60; Pozuelo de Alarcón, 108,24 (fuente: elaboración propia; estimado).</li>
+            <li>Distritos de Madrid por debajo del tope: Villaverde, Vicálvaro, Usera, Puente de Vallecas, Latina, Moratalaz, Carabanchel y Villa de Vallecas (fuente: elaboración propia; estimado).</li>
+          </ul>
+        </details>
+        <details><summary>Qué se mide</summary>
+          <p>El criterio vigente es el de la ronda de 2024 en Madrid: de 18 a 35 años, ingresos de hasta tres veces el IPREM, 25.200 € al año, y un alquiler de hasta 600 €, o 900 € en los 55 municipios del Anexo II (fuente: Acuerdo de 26-12-2024, BOCM-20250110-20; RD 42/2022; Ley 31/2022). El alquiler es el mediano del SERPAVI actualizado con el IPC para 69 m², y los ingresos, la base imponible del IRPF (fuente: SERPAVI, MIVAU; IPC, INE; supuesto propio; estimado).</p>
+          <p>Se comparan dos criterios alternativos, simulados e ilustrativos; no son una propuesta. Los dos quitan el tope y añaden un requisito: que el alquiler y el transporte pasen del 45 % del neto del hogar, o que lo hagan sumando además las horas de viaje de más, valoradas a 9,76 € la hora (fuente: índice H+T del Center for Neighborhood Technology; ETCL, INE; supuestos propios; estimado).</p>
+        </details>
+        <details><summary>Qué sale con los criterios alternativos</summary>
+          <p>Con alquiler y transporte entran menos municipios que hoy: 72 de 138 para quien vive solo con el SMI, 65 para el teleoperador y 14 para la madre sola (fuente: bloque <code>simulacion</code>; estimado). Lo que decide es el requisito de esfuerzo que se añade, más que el tope que se quita.</p>
+          <p>Con horas de viaje, el resultado depende de cómo se traten los trayectos sin ruta en 120 minutos. Para quien vive solo con el SMI va de 112 municipios, sin esos trayectos, a 138, si se les dan 120 minutos; para la madre, de 106 a 135, y para el joven de 29 años, de 104 a 134 (fuente: bloque <code>simulacion</code>, criterios <code>horas_viaje</code> y <code>horas_viaje_sin_imputar</code>; estimado). Según ese tratamiento, el criterio de horas da más o menos municipios que el vigente, con 122: no se puede decir que amplíe el acceso.</p>
+          <p>El valor de 9,76 € por hora de viaje es un supuesto, el 32,5 % del coste laboral por hora de Madrid, y es más alto que el neto por hora de quien cobra el SMI, 8,80 € (fuente: ETCL, INE; bloque <code>titulares</code>; estimado). En la sección de los sueldos de referencia, la hora de viaje se compara con el neto por hora: son dos valores del tiempo distintos.</p>
+        </details>
+        <details><summary>La pareja, el joven y la enfermera</summary>
+          <p>La pareja y el joven entran o no según cómo se midan los ingresos, que el Acuerdo no define. Con la base imponible cumplen el criterio vigente en 122 municipios; con el sueldo bruto, en ninguno (fuente: bloque <code>simulacion</code>, criterios con <code>_bruto</code>; estimado). Por eso se dan siempre como banda. La pareja no se compara entre criterios: los ingresos que cuentan son los de una persona y el esfuerzo es el del hogar.</p>
+          <p>La enfermera está en el umbral: con su nómina de 2024, su base imponible supera el límite en 6,84 € al año con la cotización de 2026 que aplica el modelo, y en 15,57 € con la de 2024; unas cuotas sindicales o colegiales de más de 15,57 € al año (6,84 € con el modelo) la dejarían dentro (fuente: BOCM-20240806-11; RDL 2/2023; elaboración propia; estimado). Al joven, medido con el bruto, le pasa lo mismo por 9,48 € (fuente: elaboración propia; estimado).</p>
+        </details>
+        <details><summary>Límites y validación</summary>
+          <p>Los 69 m² son mucho para quien vive solo: suben su alquiler y hacen que más municipios pasen del tope. El alquiler mediano del SERPAVI incluye contratos antiguos y es un suelo del precio de hoy (fuente: <code>simulacion.py</code>, supuestos 11 y 12).</p>
+          <p>Dónde trabaja la gente sale de los ocupados de 2023 del Censo anual del INE (fuente: matriz de residencia por trabajo, INE). De los 11.840 pares de zona y destino con peso, 4.239 no tienen ruta en 120 minutos con los horarios del CRTM y llevan 120 minutos imputados (fuente: elaboración propia; estimado). Que no haya ruta no significa que no haya transporte: puede faltar el horario de una línea. Algunos horarios del CRTM están reconstruidos, y esos tiempos pueden ser más cortos que los reales. Los tiempos tienen un margen de unos 5 minutos (fuente: <code>docs/decisiones.md</code>, 21-11-2026).</p>
+          <p>En 46 de los 138 municipios, más de la cuarta parte de los desplazamientos va con el tiempo imputado; en 1 queda fuera más de la cuarta parte de los ocupados, por trabajar en otra provincia o sin municipio conocido, y en 1 hay menos de 100 ocupados observados (fuente: bloque <code>simulacion</code>, columnas <code>marca_*</code>; estimado). Los recuentos de horas de viaje de esos municipios son menos fiables.</p>
+          <p>Validación: los recuentos se han recalculado por una segunda vía, desde <code>datos/analisis.json</code> y <code>datos/alquiler.json</code>, y coinciden. El criterio vigente no depende de los tiempos de viaje.</p>
+        </details>
+        </div>
+        <figure class="dato-imagen">
+          <a href="img/bono_tope.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="811" height="1205" loading="lazy" src="img/bono_tope.png" alt="Mapa de la Comunidad de Madrid con las zonas donde el alquiler de 69 metros de una persona sola con el SMI cabe en el tope del Bono Alquiler Joven vigente y aquellas donde lo pasa. Quedan fuera varios municipios del oeste y el norte de la capital; casi todo el sur y el este queda dentro. En el recuadro de Madrid, los distritos del sur y el este caben en el tope y los del centro y el norte no; la ciudad, con la mediana de sus distritos, queda fuera. La lista de los municipios está en el texto."></a>
+          <figcaption>Persona sola con el SMI y el tope del Bono Alquiler Joven vigente, por zona; Madrid cuenta como un municipio y en el recuadro cada distrito va con su propio alquiler. Fuente: Acuerdo de 26-12-2024 (BOCM-20250110-20), SERPAVI (MIVAU) e IPC (INE), elaboración propia; estimado.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="bloque" id="descuento" aria-labelledby="titulo-descuento">
+      <h2 id="titulo-descuento">Si se acaba el descuento del abono</h2>
+      <figure class="dato-imagen figura-ancha">
+        <a href="img/fin_descuento.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="1098" height="838" loading="lazy" src="img/fin_descuento.png" alt="Barras de rango por corona tarifaria, de la A a la C2. Para un adulto el coste extra va de unos 9 a 20 euros al mes en las coronas A y B1, de unos 12 a 26 euros en la B2 y de unos 15 a 33 euros en B3, C1 y C2; el joven paga 9,30 euros más en todas."></a>
+        <figcaption>Euros más al mes si en 2027 no se prorroga el descuento del transporte, por corona; media del año (fuente: BOCM-20251231-2, BOCM-20251231-3, BOCM-20130130-9, BOCM-20211217-35 y RDL 17/2025; elaboración propia; estimado).</figcaption>
+      </figure>
+      <div class="capas">
+        <p>En 2026 los abonos llevan un descuento: una parte la exige el Real Decreto-ley 17/2025 y el resto lo pone el Consorcio Regional de Transportes. No hay prórroga publicada para 2027 a 21 de noviembre de 2026 (fuente: RDL 17/2025, art. 8, BOE-A-2025-26459).</p>
+        <p>Si no se prorroga, un adulto que va a trabajar cinco días a la semana pagaría entre 9,23 y 19,67 € más al mes en las coronas A y B1, entre 12,18 y 26,11 € en la B2 y entre 15,26 y 32,76 € en la B3, la C1 y la C2 (fuente: <code>datos/analisis.json</code>, bloque <code>simulacion</code>; estimado). Un joven con el Abono Joven pagaría 9,30 € más en todas (fuente: bloque <code>simulacion</code>; estimado).</p>
+        <details><summary>Por qué dos cifras</summary>
+          <p>La cifra baja supone que solo se retira el descuento que exige el RDL 17/2025, un 20 % de la tarifa del 30 de noviembre de 2025, o un 50 % en los títulos jóvenes, y el Consorcio mantiene el resto. La alta supone que se acaba todo el descuento y se paga la tarifa oficial de 2026 en lugar del precio con descuento (fuente: RDL 17/2025, art. 8; BOCM-20251231-3 y BOCM-20251231-2). En el joven coinciden, porque el 50 % del RDL es todo su descuento (fuente: RDL 17/2025, art. 8.b).</p>
+          <p>Son medias del año, no el precio de un abono: el abono de 30 días se compra unas 11 veces al año. Por abono, la diferencia de la corona C2 es de 35,20 € y la del joven de 10,00 €; la media del joven sale en 9,30 € y no en 9,31 € porque se restan precios mensuales ya redondeados (fuente: BOCM-20251231-3 y BOCM-20251231-2; elaboración propia; estimado).</p>
+        </details>
+        <details><summary>Límites</summary>
+          <p>El trayecto pasa siempre por la zona A, así que sobrestima a quien trabaja dentro de su propia corona. No tiene en cuenta el abono de Cercanías de Renfe, de 20 € o 10 € para jóvenes, así que subestima a quien lo usa (fuente: RDL 17/2025, art. 3). Supone que en 2027 siguen las tarifas de 2026.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="bloque" id="pendiente" aria-labelledby="titulo-pendiente">
+      <h2 id="titulo-pendiente">Qué no se ha podido hacer</h2>
+      <ul class="avisos-portada">
+        <li>La sobrecarga por municipio y distrito: la estimación no pasó el control de la ECV y no se publica (ver «Sobrecarga de los inquilinos»).</li>
+        <li>Las cifras para quien alquila una habitación: no hay una fuente de precio de habitación que se pueda reutilizar, y la aproximación con un tercio del piso es solo una cota inferior.</li>
+        <li>Cuántas personas podrían cobrar el Bono y cuánto costaría: falta leer la orden de reajuste del crédito de julio de 2026.</li>
+        <li>Los pesos de dónde trabaja la gente son los ocupados de 2023. El INE publica los de 2024 a 2026 el 24 de noviembre de 2026, después de cerrar este informe (fuente: calendario del INE; <code>docs/decisiones.md</code>, 20-11-2026).</li>
+        <!-- sin-fuente: número de artículo --><li>La sensibilidad con la antigua regla de colocación adecuada del art. 301 de la Ley General de la Seguridad Social, que está calculada pero no se presenta.</li>
+      </ul>
+    </section>
+
     <section class="bloque" id="limitaciones" aria-labelledby="titulo-limitaciones">
       <h2 id="titulo-limitaciones">Limitaciones</h2>
       <ul class="avisos-portada">
@@ -171,6 +293,12 @@
         <li>Bono Alquiler Joven 2022, actualizado el 2026-02-03. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/ff697366-36f4-41a1-a966-f5ccf3b6db7c">portal de datos abiertos</a>).</li>
         <li>Censo de Población 2021, personas por régimen de tenencia y edad, consulta a medida con referencia a 1-1-2021, hecha el 2026-11-16. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/Censo2021/">INE</a>).</li>
         <li>Normas del Bono Alquiler Joven 2022: Acuerdo del Consejo de Gobierno de 14-09-2022 (extracto BOCM-20220920-16, apartados Primero y Quinto: edad de 18 a 35 años, tope de 600 o 900 € según el Anexo II y concesión mientras haya crédito disponible; texto completo en BDNS 648964); Orden de 6-11-2023 (BOCM-20231114-19), que declara agotado el crédito, y Orden de 1-08-2024 (BOCM-20240816-2), que excluye por no reunir los requisitos o por crédito agotado (art. 9 del Acuerdo) (fuente: <a href="https://www.bocm.es/bocm-20220920-16">BOCM</a>).</li>
+        <li>Encuesta de Condiciones de Vida 2025, microdatos. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/dyngs/INEbase/operacion.htm?c=Estadistica_C&amp;cid=1254736176807">INE</a>).</li>
+        <li>Censo anual de población, matriz de municipio de residencia por municipio de trabajo (ocupados de 2023), publicada el 2025-12-02. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/metodologia/t20/matriz_ocu_anonim.xlsb">INE</a>).</li>
+        <li>Sueldos de los titulares: Encuesta Anual de Estructura Salarial (tablas 28191 y 28201), Encuesta de Estructura Salarial 2022 (tablas 36846 y 36850) y Encuesta Trimestral de Coste Laboral (tabla 6061), INE; SMI del Real Decreto 126/2026 (BOE-A-2026-3815); nóminas de 2026 de la Comunidad de Madrid (BOCM-20260209-6) y jornada del SERMAS (Ley 6/2011, DA 1.ª, BOE-A-2012-2980) (fuente: <a href="https://www.ine.es/jaxiT3/Tabla.htm?t=28191">INE</a>).</li>
+        <li>Colectivo Empresarial, ocupados por distrito, actualizado el 2025-07-24. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/e40b7dd8-f76b-4c93-980e-12d2531a4e71">portal de datos abiertos</a>).</li>
+        <li>Bono Alquiler Joven de la ronda 2024: Acuerdo del Consejo de Gobierno de 26-12-2024 (BOCM-20250110-20), con el RD 42/2022 (BOE-A-2022-802), y el IPREM de la Ley 31/2022 (BOE-A-2022-22128), prorrogado (fuente: <a href="https://www.bocm.es/boletin/CM_Orden_BOCM/2025/01/10/BOCM-20250110-20.PDF">BOCM</a>).</li>
+        <li>Tarifas del transporte de 2026 (BOCM-20251231-3) y precios de 2026 con el descuento (BOCM-20251231-2), desde el 1-2-2013 (BOCM-20130130-9) y de las coronas B3, C1 y C2 desde el 1-1-2022 (BOCM-20211217-35); descuento de 2026 del Real Decreto-ley 17/2025 (BOE-A-2025-26459). Basado en datos de la Agencia Estatal Boletín Oficial del Estado (fuente: <a href="https://www.bocm.es/boletin/CM_Orden_BOCM/2025/12/31/BOCM-20251231-3.PDF">BOCM</a>).</li>
       </ul>
       <p class="fuentes-portada">Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Comunidad de Madrid participan en este proyecto ni lo patrocinan.</p>
     </section>

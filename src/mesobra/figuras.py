@@ -25,6 +25,24 @@ FUENTE_BONO = (
     "Fuente: Bono Alquiler Joven 2022 (Comunidad de Madrid), Censo anual (INE), SERPAVI (MIVAU) y ADRH (INE), "
     "elaboración propia."
 )
+# líneas cortas, como FUENTE_MAPAS: una línea larga ensancha el PNG y encoge el mapa en la página
+FUENTE_SIMULACION = (
+    "Tope de 600 € (900 € en los municipios del Anexo II), Acuerdo de\n"
+    "26-12-2024 (BOCM-20250110-20). Alquiler: SERPAVI (MIVAU) con el IPC\n"
+    "de alquiler (INE). Simulación propia: cumplir no es cobrar la ayuda."
+)
+FUENTE_DESCUENTO = (
+    "Fuente: precios del CRTM de 2026 con descuento (BOCM-20251231-2) y sin él (BOCM-20251231-3), y\n"
+    "tarifas del 30-11-2025 (BOCM-20130130-9 y BOCM-20211217-35); "
+    "RDL 17/2025, art. 8.\nCaso: 5 días a la semana, ida y vuelta; ruta por la zona A. Sin prórroga publicada a "
+    "21-11-2026. Elaboración propia."
+)
+FUENTE_TITULARES = (
+    "Fuente: elaboración propia con mesobra.calculo: SERPAVI (MIVAU) e IPC (INE),\n"
+    "tiempos con los GTFS del CRTM, tarifas del CRTM, neto con la LIRPF de 2026.\n"
+    "Sueldos: SMI (RD 126/2026), EAES y EES (INE) llevados a 2026 con la ETCL,\n"
+    "nómina del SERMAS de 2026 (BOCM-20260209-6). Todo estimado."
+)
 GRIS = "#e3e3e3"
 TRAMA = "#9a9a9a"
 
@@ -83,7 +101,7 @@ def _mapa(
 ) -> None:
     """Coropleta por clases (`cortes` en fracción) con recuadro ampliado de Madrid.
 
-    `textos`: título de la leyenda, rótulo de cada clase y línea extra del pie. Las zonas con
+    `textos`: título de la leyenda, rótulo de cada clase y pie con la fuente. Las zonas con
     `pocos` van con borde negro grueso encima del color.
     """
     titulo, etiquetas, nota = textos
@@ -149,7 +167,7 @@ def _mapa(
     ax.text(
         0.0,
         -0.2,
-        f"{nota}{FUENTE_MAPAS}",
+        nota,
         transform=ax.transAxes,
         va="top",
         fontsize=8,
@@ -170,7 +188,7 @@ def mapa_esfuerzo(
     )
     cortes = np.nanquantile(g["valor"], np.linspace(0, 1, 6)).tolist()
     titulo = f"Esfuerzo del alquiler en {anio}\n(% de la renta neta media\nmensual del hogar; quintiles)"
-    _mapa(g, cortes, "YlOrRd", (titulo, _rangos(cortes), ""), ruta)
+    _mapa(g, cortes, "YlOrRd", (titulo, _rangos(cortes), FUENTE_MAPAS), ruta)
     return int(g["valor"].isna().sum()), int(g["pocos"].sum())
 
 
@@ -192,9 +210,162 @@ def mapa_cambio(
         f"Cambio del esfuerzo {desde}-{hasta} (p. p.)\n"
         "cortes simétricos en torno a 0:\nterciles de |cambio|"
     )
-    pie = f"Extremos: mínimo {es(100 * g['valor'].min())} y máximo +{es(100 * g['valor'].max())} p. p.\n"
-    _mapa(g, cortes, "RdBu_r", (titulo, etiquetas, pie), ruta)
+    pie = f"Extremos: mínimo {con_signo(g['valor'].min())} y máximo {con_signo(g['valor'].max())} p. p.\n"
+    _mapa(g, cortes, "RdBu_r", (titulo, etiquetas, pie + FUENTE_MAPAS), ruta)
     return int(g["valor"].isna().sum()), int(g["pocos"].sum())
+
+
+def con_signo(x: float) -> str:
+    """Fracción en puntos porcentuales con un decimal y «+» delante si es positiva."""
+    return ("+" if x > 0 else "") + es(100 * x)
+
+
+def mapa_bono_tope(
+    dentro: pd.Series, testigos: pd.Series, zonas: gpd.GeoDataFrame, ruta: Path
+) -> tuple[int, int]:
+    """Zonas cuyo alquiler cabe en el tope del Bono vigente (`dentro` por `zona_id`); cada distrito de Madrid con
+    su propio alquiler. `testigos` por `zona_id` (de `alquiler.json`) marca el alquiler impreciso."""
+    g = _unir(zonas, dentro.astype(float))
+    # sin recuento conocido, también impreciso (`_marcar` ya deja fuera las zonas sin valor)
+    g = _marcar(g, testigos.isna() | (testigos < MIN_TESTIGOS))
+    etiquetas = ["fuera: el alquiler pasa del tope", "dentro del tope"]
+    titulo = "Persona sola con el SMI y el\ntope del Bono Alquiler Joven vigente\n(vivienda de 69 m²; estimado)"
+    pie = (
+        "Madrid cuenta como un municipio: con la mediana de sus distritos\n"
+        "queda fuera; en el recuadro, cada distrito con su propio alquiler.\n"
+        "Sin dato: municipios sin alquiler publicado en el SERPAVI.\n"
+    )
+    # cividis: las dos clases se distinguen también por la luminosidad, no solo por el tono
+    textos = (titulo, etiquetas, pie + FUENTE_SIMULACION)
+    _mapa(g, [-0.5, 0.5, 1.5], "cividis", textos, ruta)
+    return int(g["valor"].isna().sum()), int(g["pocos"].sum())
+
+
+def fin_por_corona(fin: pd.DataFrame, coronas: pd.Series) -> pd.DataFrame:
+    """€/mes por corona (filas) y (criterio, perfil) (columnas); falla si dentro de una corona no es constante."""
+    t = fin.assign(corona=fin["municipio_id"].map(coronas))
+    if t["corona"].isna().any():
+        raise ValueError("Municipios del fin del descuento sin corona")
+    g = t.groupby(["corona", "criterio", "perfil"])["eur_mes"]
+    if (g.nunique() > 1).any():
+        raise ValueError("El fin del descuento cambia dentro de una corona")
+    return g.first().unstack(["criterio", "perfil"])
+
+
+def fin_descuento_coronas(fin: pd.DataFrame, coronas: pd.Series, ruta: Path) -> None:
+    """Por corona: rango del adulto entre `fin_descuento_rdl` y `fin_descuento`, y el joven."""
+    t = fin_por_corona(fin, coronas).sort_index(ascending=False)
+    y = np.arange(len(t))
+    alto, bajo = t[("fin_descuento", "adulto")], t[("fin_descuento_rdl", "adulto")]
+    joven = t[("fin_descuento", "joven")]
+    fig, ax = plt.subplots(figsize=(8, 4.6))
+    ax.hlines(y, bajo, alto, color="#0b4f9c", lw=6, alpha=0.6)
+    ax.scatter(
+        bajo,
+        y,
+        color="#0b4f9c",
+        zorder=3,
+        label="Adulto: solo se retira la parte del RDL 17/2025",
+    )
+    ax.scatter(
+        alto,
+        y,
+        color="#0b4f9c",
+        marker="D",
+        zorder=3,
+        label="Adulto: se acaba todo el descuento",
+    )
+    ax.scatter(
+        joven,
+        y - 0.3,
+        color="#474a52",  # neutro: el marrón no debe repetir un significado de otra figura
+        marker="s",
+        zorder=3,
+        label="Joven (Abono Joven): las dos cotas coinciden",
+    )
+    for yi, b, a, j in zip(y, bajo, alto, joven, strict=True):
+        ax.annotate(
+            f"{es(b, 2)} a {es(a, 2)} €",
+            (a, yi),
+            xytext=(8, -3),
+            textcoords="offset points",
+            fontsize=9,
+        )
+        ax.annotate(
+            f"{es(j, 2)} €",
+            (j, yi - 0.3),
+            xytext=(8, -3),
+            textcoords="offset points",
+            fontsize=8,
+            ha="left",
+        )
+    ax.set_yticks(y, [f"Corona {c}" for c in t.index])
+    ax.set_xlim(0, 1.25 * alto.max())
+    ax.set_xlabel(
+        "€ más al mes si no se prorroga el descuento (media del año; estimado)"
+    )
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.2),
+        frameon=False,
+        fontsize=8,
+        ncols=1,
+    )
+    fig.text(0.01, -0.2, FUENTE_DESCUENTO, fontsize=8, color="#444444", va="top")
+    fig.savefig(ruta, dpi=150, bbox_inches="tight")
+    plt.close(fig)  # fmt: skip
+
+
+# etiquetas cortas, en el orden de `titulares.PERFILES` (zip estricto: falla si cambia el número de perfiles)
+PERFILES_CORTOS = (
+    "Sola, SMI",
+    "Teleoperador, 23, SMI",
+    "Pareja, 29, mediano",
+    "Madre sola, 34, administrativa",
+    "Sola, 29, mediano de su edad",
+    "Enfermera, 26, SERMAS",
+)
+
+
+def titulares_perfiles(res: list[tuple[dict, dict]], ruta: Path) -> None:
+    """Dos paneles, uno encima del otro (se lee en el móvil): % de pares en que vivir lejos rinde al menos el neto
+    por hora, y zonas con sobrante mediano negativo con la banda del alquiler (P25 a P75)."""
+    r = [x for _, x in res]
+    etiquetas = [e for e, _ in zip(PERFILES_CORTOS, res, strict=True)]
+    y = np.arange(len(r))[::-1]
+    pct = [x["pct_encima"] for x in r]
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(6.4, 7.6))
+    a1.scatter(pct, y, color="#0b4f9c", s=50, zorder=3)
+    a1.set_xlim(0, max(20, 1.1 * max(pct)))
+    a1.set_xlabel(
+        "% de pares origen-destino en que vivir lejos\nrinde al menos el neto por hora"
+    )
+    neg = np.array([x["n_zonas_negativas"] for x in r])
+    lo, hi = np.array([x["banda_zonas_negativas"] for x in r]).T
+    a2.hlines(
+        y,
+        lo,
+        hi,
+        color="#0b4f9c",
+        lw=7,
+        alpha=0.6,
+        label="banda: alquiler del P25 al P75",
+    )
+    a2.scatter(neg, y, color="#0b4f9c", s=50, zorder=3, label="alquiler mediano")
+    a2.set_xlim(0, max(hi.max(), 1) * 1.15)
+    a2.set_xlabel(f"zonas (de {r[0]['n_zonas']}) con sobrante mensual mediano negativo")
+    a2.legend(loc="lower right", frameon=False, fontsize=10)
+    for a in (a1, a2):
+        a.set_yticks(y, etiquetas)
+        a.tick_params(labelsize=11)
+        a.xaxis.label.set_size(11)
+        a.spines[["top", "right"]].set_visible(False)
+        a.grid(axis="x", color="#dddddd", lw=0.5)
+    fig.tight_layout(h_pad=2)
+    fig.text(0.01, -0.01, FUENTE_TITULARES, fontsize=8, color="#444444", va="top")
+    fig.savefig(ruta, dpi=150, bbox_inches="tight")
+    plt.close(fig)  # fmt: skip
 
 
 def dispersion_bono(bono: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> None:

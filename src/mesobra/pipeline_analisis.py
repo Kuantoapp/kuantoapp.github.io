@@ -1,12 +1,15 @@
-"""Escribe `app/datos/analisis.json` y las tres figuras de `app/img/` del informe de análisis (#90).
+"""Escribe `app/datos/analisis.json` y las figuras de `app/img/` del informe de análisis (#90, #103).
 
-Calcula el esfuerzo y la tabla del Bono desde `data/raw` con los módulos existentes y les da la forma del
-contrato de `api_estatica`. Ejecutar con `python -m mesobra.pipeline_analisis`.
+Calcula el esfuerzo y la tabla del Bono desde `data/raw`, los titulares de sueldos, la simulación del Bono y el
+fin del descuento (`simulacion.py`) con los módulos existentes, y les da la forma del contrato de `api_estatica`.
+Registra en el log las cifras que cita `app/informe.html`, también la sobrecarga regional de la ECV, que no va al
+JSON (la sobrecarga por zona no se publica, #100). Ejecutar con `python -m mesobra.pipeline_analisis`.
 """
 
 import logging
 from datetime import date
 
+import geopandas as gpd
 import pandas as pd
 
 from mesobra import (
@@ -16,7 +19,10 @@ from mesobra import (
     calculo,
     esfuerzo,
     figuras,
+    matriz_trabajo,
     renta,
+    simulacion,
+    sobrecarga_ecv,
 )
 from mesobra import titulares as titulares_sueldos
 from mesobra.figuras import es
@@ -76,7 +82,37 @@ FUENTES = [
         "url": "https://www.bocm.es/boletin/CM_Orden_BOCM/2026/02/09/BOCM-20260209-6.PDF",
         "licencia": "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI)",
     },
-]
+    # bloque `simulacion` (#103): pesos de destino, tarifas, norma del descuento y del Bono
+    {
+        "nombre": "INE, Censo anual de población, matriz de municipio de residencia por municipio de trabajo (ocupados de 2023; pesos de destino de la simulación del Bono)",
+        "url": "https://www.ine.es/metodologia/t20/matriz_ocu_anonim.xlsb",
+        "licencia": "CC BY 4.0",
+    },
+    {
+        "nombre": "Colectivo Empresarial, ocupados por distrito (Instituto de Estadística de la Comunidad de Madrid; reparto de Madrid como destino)",
+        "url": "https://datos.comunidad.madrid/dataset/e40b7dd8-f76b-4c93-980e-12d2531a4e71/resource/fb2d9895-9a09-4e1d-adc1-dc9d0c5511c4/download/colectivo-empresarial.-base-2015.-unidades-productivas-y-ocupados-por-distrito-y-estrato-de-empl.csv",
+        "licencia": "CC BY 4.0",
+    },
+    *(
+        {
+            "nombre": f"{nombre} ({bocm})",
+            "url": f"https://www.bocm.es/boletin/CM_Orden_BOCM/{bocm[5:9]}/{bocm[9:11]}/{bocm[11:13]}/{bocm}.PDF",
+            "licencia": "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI)",
+        }
+        for bocm, nombre in (
+            ("BOCM-20251231-2", "Precios del transporte público de 2026 con el descuento del RDL 17/2025, Resolución del CRTM (fin del descuento)"),
+            ("BOCM-20251231-3", "Tarifas del transporte público de 2026, Resolución del CRTM (fin del descuento)"),
+            ("BOCM-20130130-9", "Tarifas del transporte público desde el 1-2-2013, Resolución del CRTM (tarifa del 30-11-2025)"),
+            ("BOCM-20211217-35", "Tarifas de las zonas B3, C1 y C2 desde el 1-1-2022, Resolución del CRTM (tarifa del 30-11-2025)"),
+            ("BOCM-20250110-20", "Acuerdo del Consejo de Gobierno de 26-12-2024, Bono Alquiler Joven (topes y requisitos de la simulación)"),
+        )
+    ),
+    {
+        "nombre": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado. Real Decreto-ley 17/2025, art. 8 (BOE-A-2025-26459; descuento del transporte en 2026)",
+        "url": "https://www.boe.es/eli/es/rdl/2025/12/23/17",
+        "licencia": "Reutilización con cita de la fuente (aviso legal del BOE): «Basado en datos de la Agencia Estatal Boletín Oficial del Estado»",
+    },
+]  # fmt: skip
 NOTA = (
     "Esfuerzo: cuantía mediana mensual del alquiler de vivienda colectiva del SERPAVI entre la renta neta "
     "media mensual por hogar del ADRH, por zona y año (2015-2024), sin las filas con renta secreta. Bono: "
@@ -90,7 +126,14 @@ NOTA = (
     "alquiler 1934665, control, actualizado el 2026-11-05); la "
     "Comunidad de Madrid no participa ni patrocina este proyecto. Fuente: Boletín Oficial de la Comunidad de "
     "Madrid (BOCM-20260209-6, nóminas de 2026, consultado el 2026-11-23) y Boletín Oficial del Estado (Ley 6/2011 de la "
-    "Comunidad de Madrid, DA 1.ª, BOE-A-2012-2980, jornada del SERMAS, consultado el 2026-11-23)."
+    "Comunidad de Madrid, DA 1.ª, BOE-A-2012-2980, jornada del SERMAS, consultado el 2026-11-23). "
+    "Simulación del Bono y fin del descuento (bloque simulacion, todo estimado): matriz de residencia por trabajo "
+    "del INE actualizada el 2025-12-02; Colectivo Empresarial (Comunidad de Madrid) actualizado el 2025-07-24; "
+    "BOCM-20251231-2 consultado el 2026-11-20, BOCM-20251231-3 consultado el 2026-11-20, BOCM-20130130-9 consultado el 2026-11-21, BOCM-20211217-35 "
+    "consultado el 2026-11-21 y BOCM-20250110-20 consultado el 2026-11-19; RDL 17/2025 (BOE-A-2025-26459) "
+    "consultado el 2026-11-20. Sin las filas de habitación; `_bruto` = ingresos medidos con el bruto (banda de la "
+    "pareja y el joven); `_sin_imputar` = horas_viaje sin los pares con 120 min imputados; marcas de "
+    "simulacion_calidad por municipio."
 )
 
 
@@ -130,8 +173,55 @@ def _registros(df: pd.DataFrame, columnas: dict) -> list[dict]:
     return df.where(df.notna(), None).to_dict("records")
 
 
-def analisis_json(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> dict:
-    """Contrato `analisis.json`: quita las filas sin renta (secreto del INE) y los NaN pasan a `None`."""
+MARCAS = ["marca_imputada", "marca_excluida", "marca_pocos"]
+# decisión 8 de `simulacion.py`: estos dos entran o no según se midan los ingresos, así que van siempre como banda
+BANDA_INGRESOS = ("pareja_mediana", "joven_mediano")
+
+
+def bloque_simulacion(
+    base: pd.DataFrame,
+    bruto: pd.DataFrame,
+    sin_imputar: pd.DataFrame,
+    fin: pd.DataFrame,
+    calidad: pd.DataFrame,
+) -> pd.DataFrame:
+    """Filas publicadas de `simulacion`: sin habitación (no se presenta hasta #311), la banda de ingresos
+    (`_bruto`) de la pareja y el joven, `horas_viaje` sin pares imputados (`_sin_imputar`) y el fin del
+    descuento; las marcas de `simulacion_calidad` por municipio, nulas en el fin del descuento."""
+
+    def vivienda(df: pd.DataFrame) -> pd.DataFrame:
+        return df[~df["perfil"].str.endswith("_habitacion")]
+
+    def sufijo(df: pd.DataFrame, s: str) -> pd.DataFrame:
+        return df.assign(criterio=df["criterio"] + s)
+
+    bruto, sin_imputar = vivienda(bruto), vivienda(sin_imputar)
+    partes = pd.concat(
+        [
+            vivienda(base),
+            sufijo(bruto[bruto["perfil"].isin(BANDA_INGRESOS)], "_bruto"),
+            sufijo(
+                sin_imputar[sin_imputar["criterio"] == "horas_viaje"], "_sin_imputar"
+            ),
+        ]
+    ).merge(
+        calidad[["municipio_id", *MARCAS]],
+        on="municipio_id",
+        how="left",
+        validate="many_to_one",
+    )
+    if partes[MARCAS].isna().any().any():
+        raise ValueError("Municipios simulados sin fila en simulacion_calidad")
+    return pd.concat([partes, fin], ignore_index=True)
+
+
+def analisis_json(
+    tabla: pd.DataFrame,
+    solicitudes: pd.DataFrame,
+    sim: pd.DataFrame | None = None,
+) -> dict:
+    """Contrato `analisis.json`: quita las filas sin renta (secreto del INE) y los NaN pasan a `None`. Con
+    `sim` (de `bloque_simulacion`), añade el bloque `simulacion`."""
     sin_secreto = tabla[tabla["renta_hogar_mes"].notna()]
     quitadas = tabla[
         tabla["renta_hogar_mes"].isna() & tabla["alquiler_mes_p50"].notna()
@@ -144,6 +234,8 @@ def analisis_json(tabla: pd.DataFrame, solicitudes: pd.DataFrame) -> dict:
         nombre: _registros(df, api_estatica.BLOQUES[nombre][0])
         for nombre, df in (("esfuerzo", sin_secreto), ("bono", solicitudes))
     }
+    if sim is not None:
+        bloques["simulacion"] = _registros(sim, api_estatica.BLOQUES["simulacion"][0])
     meta = {
         "generado": date.today().isoformat(),
         "anio_dato": int(tabla["anio"].max()),
@@ -174,6 +266,112 @@ def _controlar(
         raise ValueError(f"No hay 200 zonas por año:\n{por_anio}")
 
 
+def zonas_tope(pares: pd.DataFrame, perfil: str) -> pd.DataFrame:
+    """Por `zona_id`: municipio, alquiler de vivienda de `perfil` y tope del Bono vigente de su municipio."""
+    z = pares[pares["perfil"] == perfil].drop_duplicates("zona_id")
+    z = z.set_index("zona_id")[["municipio_id", "alquiler"]]
+    return z.assign(
+        tope=[float(simulacion.tope(m, "vivienda")) for m in z["municipio_id"]]
+    )
+
+
+def exceso_tope(zonas: pd.DataFrame, base: pd.DataFrame, perfil: str) -> pd.Series:
+    """€/mes en que el alquiler pasa del tope en los municipios donde `perfil` no cumple el Bono vigente (`zonas`
+    de `zonas_tope`); falla si alguno no cumple por otra causa que el tope (perfiles con ingresos y edad dentro)."""
+    v = base[(base["perfil"] == perfil) & (base["criterio"] == "bono_vigente")]
+    fuera = v.loc[~v["elegible"], "municipio_id"]
+    # como `simulacion._municipios`: el alquiler del municipio es la mediana de sus zonas
+    m = zonas.groupby("municipio_id")[["alquiler", "tope"]].median().loc[fuera]
+    exceso = m["alquiler"] - m["tope"]
+    if not (exceso > 0).all():  # NaN también falla
+        raise ValueError(
+            f"{perfil}: fuera del Bono sin pasar del tope en {list(exceso[~(exceso > 0)].index)}"
+        )
+    return exceso
+
+
+def _simular(api: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Simulación del Bono y fin del descuento, como `simulacion.main` sin sus sensibilidades salvo las que publica
+    el informe (los CSV de `data/processed/` los escribe `simulacion.main`). Devuelve el bloque, la tabla base y
+    los pares."""
+    matriz = matriz_trabajo.leer_matriz()
+    w, excluida = matriz_trabajo.pesos(matriz, matriz_trabajo.leer_cuotas_distritos())
+    pares = simulacion._pares(api, w)
+    base = simulacion.simulacion(pares)
+    bruto = simulacion.simulacion(pares, ingresos="bruto")
+    sin_imputar = simulacion.simulacion(pares[~pares["imputado"]])
+    cal = simulacion.calidad(
+        pares, excluida, matriz_trabajo.ocupados_observados(matriz)
+    )
+    fin = simulacion.fin_descuento(api)
+    una = pares[pares["perfil"] == simulacion.IDS[0]]
+    LOG.info(
+        "Pares (zona, destino) con peso: %d; con 120 min imputados: %d",
+        (una["w"] > 0).sum(),
+        una["imputado"].sum(),
+    )
+    LOG.info(
+        "Marcas de calidad (de %d municipios): %s",
+        len(cal),
+        cal[MARCAS].sum().to_dict(),
+    )
+    for nombre, df in (
+        ("base", base),
+        ("ingresos = bruto", bruto),
+        ("sin pares imputados", sin_imputar),
+    ):
+        LOG.info(
+            "Simulación, %s:\n%s",
+            nombre,
+            simulacion.cambios(df).set_index(["perfil", "criterio"]).to_string(),
+        )
+    return bloque_simulacion(base, bruto, sin_imputar, fin, cal), base, pares  # fmt: skip
+
+
+def _figuras_n1(
+    api: dict,
+    res: list[tuple[dict, dict]],
+    sim: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+    zonas: gpd.GeoDataFrame,
+) -> None:
+    """Figuras de titulares, tope del Bono y fin del descuento, con las cifras que las acompañan en el log."""
+    bloque, base, pares = sim
+    figuras.titulares_perfiles(res, APP_IMG / "titulares_perfiles.png")
+    v = base[(base["perfil"] == "smi_30") & (base["criterio"] == "bono_vigente")]
+    testigos = pd.Series(
+        {z: d["testigos"] for z, d in api["alquiler"]["zonas"].items()}, dtype=float
+    )
+    zt = zonas_tope(pares, "smi_30")
+    dentro = zt["alquiler"] <= zt["tope"]  # «hasta» el tope (simulacion.requisitos)
+    # en los municipios de una sola zona, el mapa por zona tiene que dar lo mismo que la simulación
+    una = zt.groupby("municipio_id")["municipio_id"].transform("size") == 1
+    sim_zona = zt["municipio_id"].map(v.set_index("municipio_id")["elegible"])
+    if (dentro[una] != sim_zona[una]).any():
+        raise ValueError(
+            "El mapa por zona no coincide con la simulación en municipios de una zona"
+        )
+    sin, pocos = figuras.mapa_bono_tope(
+        dentro, testigos, zonas, APP_IMG / "bono_tope.png"
+    )
+    exceso = exceso_tope(zt, base, "smi_30")
+    distritos = dentro[zt["municipio_id"] == figuras.MADRID]
+    LOG.info(
+        "Mapa del tope (smi_30): %d de %d municipios dentro; fuera %d, %d por menos de 80 €/mes; zonas sin dato %d, "
+        "alquiler impreciso %d; distritos de Madrid por debajo del tope: %d de %d; exceso (€/mes):\n%s",
+        v["elegible"].sum(), len(v), len(exceso), (exceso < 80).sum(), sin, pocos,
+        distritos.sum(), len(distritos), exceso.sort_values().round(2).to_string(),
+    )  # fmt: skip
+    coronas = pd.Series(
+        {
+            f["properties"]["municipio_id"]: f["properties"]["corona"]
+            for f in api["zonas"]["features"]
+        }
+    )
+    fin = bloque[bloque["criterio"].str.startswith("fin_")]
+    figuras.fin_descuento_coronas(fin, coronas, APP_IMG / "fin_descuento.png")
+    LOG.info("Fin del descuento por corona (€/mes, media del año):\n%s", figuras.fin_por_corona(fin, coronas).to_string())  # fmt: skip
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
     zona = alquiler.alquiler_zona(alquiler.leer_serpavi())
@@ -183,14 +381,15 @@ def main() -> None:
         crudo, bono.poblacion_joven(bono._edades()), tabla, bono.ANIO
     )
     _controlar(crudo, solicitudes, tabla)
-    objeto = analisis_json(tabla, solicitudes)
+    api = calculo.leer_api(APP_DATOS)
+    sim = _simular(api)
+    objeto = analisis_json(tabla, solicitudes, sim[0])
     LOG.info(
         "Filas de esfuerzo sin renta (secreto del INE) quitadas: %d",
         tabla["renta_hogar_mes"].isna().sum(),
     )
     for t in objeto["titulares"]:
         LOG.info("Titular: %s", t["texto"])
-    api = calculo.leer_api(APP_DATOS)
     res = titulares_sueldos.resumenes(api)
     objeto["titulares"] += titulares_sueldos.titulares(res)
     for perfil, r in res:
@@ -211,6 +410,11 @@ def main() -> None:
         con_testigos, zonas, APP_IMG / "esfuerzo_cambio.png"
     )
     figuras.dispersion_bono(solicitudes, zonas, APP_IMG / "bono_dispersion.png")
+    _figuras_n1(api, res, sim, zonas)
+    LOG.info(
+        "Sobrecarga de los hogares inquilinos de la Comunidad, ECV 2025 (control de F3-06; estimado):\n%s",
+        sobrecarga_ecv.control_f306(sobrecarga_ecv.hogares()).round(1).to_string(),
+    )
     grupos = solicitudes["grupo"].value_counts()
     LOG.info(
         "Mapa 1: sin dato %d, pocos contratos (< %d) %d",
