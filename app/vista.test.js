@@ -180,6 +180,7 @@ test("con factor_ipc distinto de 1 la ficha no dice «contratos de {año}» a se
 
 const conTestigos = (n) => ({ ...ejemplo, alquiler: { ...ejemplo.alquiler, zonas: { ...ejemplo.alquiler.zonas, 28065: { ...ejemplo.alquiler.zonas["28065"], testigos: n } } } });
 
+// el 50 es el min_testigos de la fixture, no el de los datos reales (70): prueba que la ficha lee meta
 test("la ficha avisa de pocos alquileres declarados con menos de min_testigos y no con 50 ni en una zona estimada", () => {
   const lineas = (api, id, caso = casos.find((c) => !("error" in c))) => lineasFicha("Zona", caso.salida.zonas[id], "sobra", contextoFicha(api, caso.entrada, caso.salida, id));
   assert.ok(lineas(conTestigos(49), "28065").some((l) => l.startsWith("Impreciso: pocos alquileres declarados (49 en 2024, menos de 50)")));
