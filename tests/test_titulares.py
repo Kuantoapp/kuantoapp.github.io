@@ -150,7 +150,8 @@ def test_umbral_exacto_cuenta_como_encima():
 
 def test_madre_y_enfermera_desde_sus_fuentes():
     # P50 mujeres administrativas Madrid 2022 (t=36846) × mediana mujeres Madrid 2024 / 2022 (t=28191)
-    assert titulares.MADRE == 23874.79
+    assert titulares.MADRE_2024 == 23874.79
+    assert titulares.MADRE == 25289.71  # × FACTOR_2026, estimado
     # total año de la fila del BOCM-20260209-6, anexo V tabla 2.1.a, igual al del BOCM-20260630-6, anexo II
     assert titulares.ENFERMERA == 30421.38
     perfiles = {p["fuente"]: p for p in titulares.PERFILES}
@@ -166,9 +167,19 @@ def test_madre_y_enfermera_desde_sus_fuentes():
     assert "sin trienios, noches ni guardias" in enfermera["fuente"]
 
 
+def test_factor_2026_desde_la_etcl():
+    # 4 trimestres de 2024 (media 2.809,825 €) y 2025T3 a 2026T2 (2.976,3475 €), tabla 6061 del INE
+    assert pytest.approx(2976.3475 / 2809.825) == titulares.FACTOR_2026
+    assert titulares.EAES_2024 == 28037.75 and titulares.EAES == 29699.39
+    for p in titulares.PERFILES:
+        if p["fuente"] is not titulares.FUENTE_SMI and "enfermero" not in p["fuente"]:
+            assert "estimado" in p["fuente"] and "×1,0593" in p["fuente"]
+
+
 def test_joven_mediano_desde_las_tablas_del_ine():
     # P50 de 25-34 en Madrid 2022 (t=36850) × media del tramo 2024 / 2022 (t=28201), redondeado al céntimo
-    assert titulares.JOVEN == 25209.48
+    assert titulares.JOVEN_2024 == 25209.48
+    assert titulares.JOVEN == 26703.5  # × FACTOR_2026, estimado
     i, joven = next(
         (i, p)
         for i, p in enumerate(titulares.PERFILES)
@@ -183,3 +194,21 @@ def test_joven_mediano_desde_las_tablas_del_ine():
     assert r["neto_hora"] == pytest.approx(
         calculo.neto_mes(api["netos"], titulares.JOVEN, solo) / horas
     )
+
+
+def test_enfermera_con_su_jornada_del_sermas():
+    # 37,5 h semanales (Ley 6/2011 CM, DA 1.ª.1): neto/hora = neto ÷ (semanas_mes × 37,5), no ÷ (× 40)
+    api = _api()
+    i = next(
+        i
+        for i, p in enumerate(titulares.PERFILES)
+        if p["fuente"] is titulares.FUENTE_ENFERMERA
+    )
+    perfil, r = titulares.resumenes(api)[i]
+    solo = {**api["hogares"]["perfiles"]["solo"], "perfil": "solo"}
+    neto = calculo.neto_mes(api["netos"], titulares.ENFERMERA, solo)
+    assert r["neto_hora"] == pytest.approx(
+        neto / (api["tarifas"]["semanas_mes"] * 37.5)
+    )
+    fuente = titulares.titulares([(perfil, r)])[0]["fuente"]
+    assert "37,5" in fuente and "40 h" not in fuente

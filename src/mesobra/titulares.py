@@ -14,22 +14,27 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
    (y de la EES) incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo,
    en contra, y bruto de jornada completa infravalorado, más zonas negativas (a favor de la tesis 2).
-   La jornada del SERMAS es menor de 40 h (sin verificar la de 2026): el neto/hora real de la enfermera
-   es más alto, a favor de la tesis 1.
+   La enfermera tiene su jornada: 37,5 h semanales de promedio (Ley 6/2011 de la Comunidad de Madrid,
+   DA 1.ª.1, BOE-A-2012-2980, vigente; verificado el 2026-11-23), 7,5 h × 5 días. No hay norma de 35 h ni
+   jornada anual de 2026 publicada en el BOCM (la última, de 2012, BOCM-20120229-7, la da por turno): la
+   semanal es la media de todos los turnos.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
-3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
-   y neto/hora más bajo (contra la tesis 1). El joven mediano es la P50 de la EES 2022 llevada a 2024
+3. Pareja, madre y joven: sueldos de 2024 llevados a 2026 con el coste salarial total por trabajador de
+   la ETCL de Madrid (×1,0593: media de 2025T3 a 2026T2 sobre media de 2024; 2026 no está completo y el salto
+   cubre 1,5 años, no 2: infravalora algo la subida). Supone que la mediana crece como el coste salarial
+   medio; si crece menos (la media la tiran los sueldos altos), el bruto queda sobrevalorado: neto/hora más
+   alto (a favor de la tesis 1) y menos zonas negativas (contra la 2). El joven mediano es la P50 de la EES 2022 llevada a 2024
    con la media de su tramo (EAES): si el crecimiento se concentró en los sueldos altos, su bruto queda
    sobrevalorado, con neto/hora más alto (a favor de la tesis 1) y menos zonas negativas (contra la 2).
    La madre es la P50 de 2022 de las mujeres del gran grupo 4 de la CNO-11 en Madrid (EES; incluye
    empleos con atención al público, que cobran menos) llevada a 2024 con la mediana de las mujeres de
    Madrid (EAES): supone que la de su ocupación crece como la de todas. De los factores publicados es el
    más alto (con la media nacional de las empleadas de oficina saldría un 0,5 % menos). La enfermera es la
-   tabla oficial de 2026 del SERMAS, no de 2024 (dos años más de subidas que los demás: no se comparan
-   perfiles entre sí), sin trienios, noches, guardias ni productividad variable: por debajo de lo que
+   tabla oficial de 2026 del SERMAS, sin trienios, noches, guardias ni productividad variable: por debajo de lo que
    cobra una enfermera con turnos (neto/hora más bajo y más zonas negativas). Incluye la subida del 1,5 %
    de 2026 (BOCM-20260209-6, art. 25.1), no el 0,5 % condicionado al IPC de 2026 (RDL 14/2025, art. 2.1),
-   que se pagaría en 2027 si se aplica: unos 150 € al año menos.
+   que se pagaría en 2027 si se aplica: unos 150 € al año menos. Con todos los brutos en 2026 ya se pueden
+   comparar perfiles entre sí, salvo por las diferencias de jornada y de fuente de cada uno.
 4. Alquiler de contratos en vigor declarados, actualizado con el IPC de alquiler (`factor_ipc`) y sin
    `factor_brecha` (no es el de contrato nuevo, #329; suelo del precio): sobrante
    sobrevalorado (contra la tesis 2); diferencias de alquiler menores, precio de la hora más bajo
@@ -60,14 +65,21 @@ from mesobra.figuras import es
 
 # ET art. 34.1 (BOE-A-2015-11430): jornada ordinaria de 40 h semanales; 5 días de 8 h.
 DIAS_SEMANA, HORAS_DIA = 5, 8
+JORNADA_SERMAS = 37.5  # h/semana de promedio: Ley 6/2011 CM, DA 1.ª.1 (BOE-A-2012-2980)
 FUENTE_CALCULO = (
-    "elaboración propia con mesobra.calculo (alquiler del SERPAVI actualizado con el IPC de alquiler del INE (IPC297196) hasta {ipc_hasta}, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de 40 h "
+    "elaboración propia con mesobra.calculo (alquiler del SERPAVI actualizado con el IPC de alquiler del INE (IPC297196) hasta {ipc_hasta}, cesta de la EPF actualizada con el IPC del INE (tablas 76137 y 76127; elaboración propia con datos extraídos del sitio web del INE: www.ine.es), tarifas del CRTM, tiempos con los GTFS del CRTM y OpenStreetMap, neto con la LIRPF y las cotizaciones de 2026); supuesto: jornada de {horas_semana} h "
     "semanales y 227 días de trabajo al año (ET art. 34.1, Decreto 75/2025)"
+)
+LLEVADA_A_2026 = (
+    "llevada a 2026 con el coste salarial total por trabajador de la Encuesta Trimestral de Coste Laboral (INE, "
+    "tabla 6061, Madrid, industria, construcción y servicios; media de 2025T3 a 2026T2 sobre media de 2024: ×1,0593)"
 )
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"
 FUENTE_EAES = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28191: mediana de la ganancia anual "
-    "en la Comunidad de Madrid, 28.037,75 € (de 2024)"
+    "en la Comunidad de Madrid, 28.037,75 € (de 2024), "
+    + LLEVADA_A_2026
+    + ": 29.699,39 €, estimado"
 )
 FUENTE_MADRE = (
     "INE, Encuesta de Estructura Salarial 2022, tabla 36846: mediana (P50) de la ganancia anual de las mujeres "
@@ -75,27 +87,46 @@ FUENTE_MADRE = (
     "empleos de atención al público) en la "
     "Comunidad de Madrid, 21.555,32 € (de 2022), llevada a 2024 con la mediana de las mujeres de Madrid de la "
     "Encuesta Anual de Estructura Salarial, tabla 28191 (22.898,14 € en 2022 y 25.362,11 € en 2024, +10,8 %): "
-    "23.874,79 €, estimado (supuesto: la mediana de su ocupación crece como la de todas las mujeres de Madrid)"
+    "23.874,79 € (de 2024), "
+    + LLEVADA_A_2026
+    + ": 25.289,71 €, estimado (supuesto: la mediana de su ocupación crece como la de todas las mujeres de Madrid)"
 )
 FUENTE_ENFERMERA = (
     "Orden de 3 de febrero de 2026, instrucciones de nóminas de la Comunidad de Madrid para 2026 "
     "(BOCM-20260209-6), anexo V, tabla 2.1.a de atención hospitalaria, pág. 65: enfermero/a del SERMAS en unidades de hospitalización, "
     "quirófanos, urgencias, UCI y UVI (A2, nivel 21), sueldo base, complementos de destino y específico, "
     "productividad fija y pagas extra, 30.421,38 € al año; sin trienios, noches ni guardias: por debajo de lo "
-    "que cobra una enfermera con turnos"
+    "que cobra una enfermera con turnos; jornada de 37,5 h semanales de promedio (Ley 6/2011 de la Comunidad de "
+    "Madrid, DA 1.ª.1, BOE-A-2012-2980)"
 )
 FUENTE_JOVEN = (
     "INE, Encuesta de Estructura Salarial 2022, tabla 36850: mediana (P50) de la ganancia anual de 25 a 34 años "
     "en la Comunidad de Madrid, 22.676,37 € (de 2022), llevada a 2024 con la media de ese tramo en Madrid de la "
     "Encuesta Anual de Estructura Salarial, tabla 28201 (26.411,63 € en 2022 y 29.361,99 € en 2024, +11,2 %): "
-    "25.209,48 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
+    "25.209,48 € (de 2024), "
+    + LLEVADA_A_2026
+    + ": 26.703,50 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
 )
 SMI = float(parametros_2026.SMI_ANUAL)
-EAES = 28037.75
-# P50 2022 (t=36850) × media 2024 / 2022 (t=28201), al céntimo como la cifra citada
-JOVEN = round(22676.37 * 29361.99 / 26411.63, 2)
-# P50 mujeres, gran grupo 4, Madrid 2022 (t=36846) × mediana mujeres Madrid 2024 / 2022 (t=28191)
-MADRE = round(21555.32 * 25362.11 / 22898.14, 2)
+# INE, ETCL (tabla 6061), coste salarial total por trabajador y mes, Madrid, industria, construcción y servicios:
+# los 4 trimestres de 2024 y los 4 últimos publicados (2025T3 a 2026T2). Cuatro trimestres seguidos quitan la
+# estacionalidad (el 4.º es el de las pagas extra). Índice fijado antes de calcular (#416).
+ETCL_2024 = (2778.27, 2885.14, 2632.96, 2942.93)
+ETCL_ULTIMO = (2712.72, 3098.99, 3033.15, 3060.53)
+FACTOR_2026 = (sum(ETCL_ULTIMO) / 4) / (sum(ETCL_2024) / 4)  # 1,0593
+
+
+def a_2026(bruto_2024: float) -> float:
+    """Bruto de 2024 llevado a 2026 con el coste salarial de la ETCL; estimado."""
+    return round(bruto_2024 * FACTOR_2026, 2)
+
+
+# Los de 2024 se conservan al céntimo de las cifras citadas: EAES t=28191; P50 2022 (t=36850) × media 2024 / 2022
+# (t=28201); P50 mujeres, gran grupo 4, Madrid 2022 (t=36846) × mediana mujeres Madrid 2024 / 2022 (t=28191).
+EAES_2024 = 28037.75
+JOVEN_2024 = round(22676.37 * 29361.99 / 26411.63, 2)
+MADRE_2024 = round(21555.32 * 25362.11 / 22898.14, 2)
+EAES, JOVEN, MADRE = a_2026(EAES_2024), a_2026(JOVEN_2024), a_2026(MADRE_2024)
 # 12 meses de (sueldo + destino + específico + prod. fija + prod. fija A.M.S.) + 2 extras + 2 adicionales
 ENFERMERA = round(
     12 * (1199.52 + 592.11 + 177.99 + 1.89 + 289.45) + 2 * 1466.94 + 2 * 177.99, 2
@@ -143,9 +174,15 @@ PERFILES = [
         "perfil": "solo",
         "edad": 26,
         "sueldos": [(ENFERMERA, 5)],
+        "horas_dia": JORNADA_SERMAS / DIAS_SEMANA,
         "fuente": FUENTE_ENFERMERA,
     },
 ]
+
+
+def horas_dia(perfil: dict) -> float:
+    """Horas de la jornada diaria del perfil; las 8 del ET salvo que el perfil traiga la suya."""
+    return perfil.get("horas_dia", HORAS_DIA)
 
 
 def filas(api: dict, perfil: dict) -> pd.DataFrame:
@@ -230,9 +267,9 @@ def resumen(df: pd.DataFrame, neto_hora: float) -> dict:
 
 def resumenes(api: dict) -> list[tuple[dict, dict]]:
     """(perfil, resumen) de cada perfil; el resumen añade `n_ref_distinta` (destinos con otra referencia) e `ipc_hasta`."""
-    horas = api["tarifas"]["semanas_mes"] * DIAS_SEMANA * HORAS_DIA
     salida = []
     for perfil in PERFILES:
+        horas = api["tarifas"]["semanas_mes"] * DIAS_SEMANA * horas_dia(perfil)
         df = filas(api, perfil)
         r = resumen(df, df["neto"].iloc[0] / (len(perfil["sueldos"]) * horas))
         ref = df.groupby("destino")["ref"].first()
@@ -247,7 +284,7 @@ def titulares(res: list[tuple[dict, dict]]) -> list[dict]:
     """Dos entradas `{"texto", "fuente"}` por perfil; descriptivas, con n y banda, todo «estimado»."""
     salida = []
     for perfil, r in res:
-        fuente = f"{FUENTE_CALCULO.format(ipc_hasta=r['ipc_hasta'])}; sueldo: {perfil['fuente']}"
+        fuente = f"{FUENTE_CALCULO.format(ipc_hasta=r['ipc_hasta'], horas_semana=es(horas_dia(perfil) * DIAS_SEMANA, 1).removesuffix(',0'))}; sueldo: {perfil['fuente']}"
         coronas = ", ".join(
             f"{c} {es(m, 2)} € (n = {es(n, 0)})" for c, (m, n) in r["coronas"].items()
         )
