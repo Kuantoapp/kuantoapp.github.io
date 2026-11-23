@@ -279,9 +279,12 @@ def test_alquiler_json_sin_mes_falla():
 
 
 def test_alquiler_json_lleva_la_brecha():
-    z = pipeline_euros.alquiler_json(
+    obj = pipeline_euros.alquiler_json(
         _con_brecha(alquiler.actualizar_ipc(_zona(), _ipc()))
-    )["zonas"]
+    )
+    z = obj["zonas"]
+    # La nota se ve en la app: tiene que decir qué precio muestra (#317).
+    assert "el de contrato nuevo, el que muestra la herramienta" in obj["meta"]["nota"]
     assert z["28001"]["factor_brecha"] == 1.2
     assert z["28001"]["brecha_ambito"] == "codigo_postal"
     assert z["28001"]["brecha_pureza"] == 0.4
