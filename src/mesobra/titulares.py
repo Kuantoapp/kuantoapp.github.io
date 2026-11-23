@@ -18,7 +18,9 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    DA 1.ª.1, BOE-A-2012-2980, vigente; verificado el 2026-11-23), 7,5 h × 5 días. La ley dice «no inferior a»:
    si la real es mayor, el neto/hora bajaría (en contra de la tesis 1). No hay norma de 35 h ni
    jornada anual de 2026 publicada en el BOCM (la última, de 2012, BOCM-20120229-7, la da por turno): la
-   semanal es la media de todos los turnos.
+   semanal es la media de todos los turnos. Con 227 días salen 1.702,5 h/año, un 3,5 % más que las 1.645 h del
+   turno diurno de 2012: si la anual real es esa, el neto/hora sube un 3,5 % (a favor de la tesis 1; el modelo
+   queda del lado conservador).
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Pareja, madre y joven: sueldos de 2024 llevados a 2026 con el coste salarial total por trabajador de
    la ETCL de Madrid (×1,0593: media de 2025T3 a 2026T2 sobre media de 2024; 2026 no está completo y el salto
@@ -75,7 +77,8 @@ FUENTE_CALCULO = (
 )
 LLEVADA_A_2026 = (
     "llevada a 2026 con el coste salarial total por trabajador de la Encuesta Trimestral de Coste Laboral (INE, "
-    "tabla 6061, Madrid, industria, construcción y servicios; media de 2025T3 a 2026T2 sobre media de 2024: ×1,0593)"
+    "tabla 6061, Madrid, industria, construcción y servicios; media de 2025T3 a 2026T2 sobre media de 2024: ×1,0593; "
+    "supuesto: la mediana crece como la media, y si crece menos el bruto queda sobrevalorado)"
 )
 FUENTE_SMI = "Real Decreto 126/2026, art. 3.1 (BOE-A-2026-3815): SMI de 17.094 €/año"
 FUENTE_EAES = (
@@ -108,7 +111,7 @@ FUENTE_JOVEN = (
     "Encuesta Anual de Estructura Salarial, tabla 28201 (26.411,63 € en 2022 y 29.361,99 € en 2024, +11,2 %): "
     "25.209,48 € (de 2024), "
     + LLEVADA_A_2026
-    + ": 26.703,50 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
+    + ": 26.703,50 €, estimado (supuesto: el salto de 2022 a 2024 es sobre todo de 2024)"
 )
 SMI = float(parametros_2026.SMI_ANUAL)
 # INE, ETCL (tabla 6061), coste salarial total por trabajador y mes, Madrid, industria, construcción y servicios:
