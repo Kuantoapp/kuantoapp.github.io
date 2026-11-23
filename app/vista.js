@@ -7,7 +7,9 @@ export const PALETA = ["#deebf7", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];
 // Divergente con el 0 como punto medio: rojo teja = pierdes (la alerta), amarillo = llega justo, verde azulado = ganas.
 // Rojos de RdBu, amarillo de RdYlBu y verdes azulados de BrBG (ColorBrewer): se distinguen con daltonismo porque no
 // enfrentan rojo y verde puros, y el amarillo se separa de ambos por su claridad.
-const DIVERGENTE = ["#b2182b", "#ef8a62", "#fee08b", "#80cdc1", "#01665e"]; // del más negativo al más alto
+const ROJOS = ["#b2182b", "#ef8a62"]; // de lo que más falta a lo que falta poco
+const AMARILLO = "#fee08b";
+const VERDES = ["#80cdc1", "#35978f", "#01665e"]; // de BrBG, del margen menor al mayor
 export const SIN_DATO = "#bdbdbd";
 // Tope de tiempos.json (contrato de api_estatica): más minutos, o sin ruta, es null (ver tiempos.meta.nota).
 const TOPE_RUTA_MIN = 120;
@@ -31,10 +33,9 @@ export const METRICAS = {
     corta: "€ por hora extra",
     datos: TODOS,
     decimales: 1,
-    divergente: true,
     // Cortes en tanto por uno de tu neto por hora trabajada (#389): con el 100 %, la hora extra rinde como la de trabajo.
     cortes: [-0.25, 0, 0.25, 1],
-    base: "de tu neto por hora trabajada",
+    base: "del neto por hora trabajada de cada sueldo",
     nota: "Estimado. En una zona con más horas que la de referencia, positivo es lo que ganas por cada hora de más y negativo, que pierdes dinero y tiempo a la vez. Con menos horas, el signo se invierte.",
   },
   sobra: {
@@ -43,8 +44,9 @@ export const METRICAS = {
     corta: "€/mes",
     datos: TODOS,
     decimales: 0,
-    divergente: true,
-    cortes: [-0.1, 0, 0.1, 0.25], // en tanto por uno del neto mensual del hogar (#389)
+    // En tanto por uno del neto mensual del hogar (#389); el 50 % separa a quien tiene mucho margen, o con sueldos medios
+    // y altos todo el mapa caería en el último verde.
+    cortes: [-0.1, 0, 0.1, 0.25, 0.5],
     base: "del neto mensual del hogar",
     nota: "Negativo: no llega a fin de mes. Estimado con el alquiler mediano (P50) de un contrato nuevo.",
   },
@@ -54,7 +56,6 @@ export const METRICAS = {
     corta: "h/mes",
     datos: ["tiempos", "tarifas"], // horas = minutos de ruta × días × semanas_mes: no entran ni el alquiler ni los netos
     decimales: 1,
-    divergente: false,
     nota: `Estimado. Solo transporte público; más de ${TOPE_RUTA_MIN} min por trayecto cuenta como sin ruta.`,
   },
 };
@@ -89,13 +90,16 @@ export function escalaSecuencial(valores) {
 }
 
 /**
- * Cinco clases divergentes con cortes fijos `cortes` (en tanto por uno) de `base` en euros: la primera abierta por abajo
- * y la última por arriba. Así un color dice lo mismo en cualquier zona y para cada sueldo (#389).
+ * Clases divergentes con cortes fijos `cortes` (en tanto por uno) de `base` en euros: dos rojas bajo el 0, la amarilla
+ * desde el 0 y verdes hasta el final; la primera abierta por abajo y la última por arriba. Así un color dice lo mismo en
+ * cualquier zona y para cada sueldo (#389). Con dos verdes se usan el claro y el oscuro.
  */
 export function escalaRelativa(base, cortes) {
   if (!esNumero(base) || base <= 0) throw new Error(`La base de la escala debe ser un importe positivo: ${base}`);
+  const verdes = cortes.length - 2;
+  const colores = [...ROJOS, AMARILLO, ...(verdes === 2 ? [VERDES[0], VERDES[2]] : VERDES.slice(0, verdes))];
   const bordes = cortes.map((c) => c * base);
-  return DIVERGENTE.map((color, i) => ({ desde: bordes[i - 1] ?? -Infinity, hasta: bordes[i] ?? Infinity, color }));
+  return colores.map((color, i) => ({ desde: bordes[i - 1] ?? -Infinity, hasta: bordes[i] ?? Infinity, color }));
 }
 
 /** Neto por hora trabajada de cada sueldo del hogar (jornada `JORNADA_SEMANA` en las semanas de `tarifas.semanas_mes`). */
@@ -104,7 +108,7 @@ const salarioHora = (neto, api, sueldos) => neto / (JORNADA_SEMANA * api.tarifas
 /** Importe al que se refieren los cortes de `metrica` (`null` si no los tiene): el neto del hogar o el neto por hora. */
 export function baseEscala(metrica, api, entrada, resultado) {
   if (!METRICAS[metrica]?.cortes) return null;
-  const neto = Object.values(resultado.zonas).find((z) => esNumero(z.neto))?.neto; // el neto no depende de la zona
+  const { neto } = Object.values(resultado.zonas)[0]; // el neto no depende de la zona
   return metrica === "sobra" ? neto : salarioHora(neto, api, entrada.sueldos.length);
 }
 

@@ -55,17 +55,23 @@ test("sin valores, con nulos o con un solo valor no falla", () => {
   assert.equal(colorPara(5, escalaSecuencial([5])), PALETA[0]);
 });
 
-test("la escala relativa: cinco colores con cortes fijos de la base, el 0 como borde y los extremos abiertos (#389)", () => {
-  const clases = escalaRelativa(2000, METRICAS.sobra.cortes); // un neto de 2000 €/mes: cortes en −200, 0, 200 y 500
-  assert.deepEqual(clases.map((c) => [c.desde, c.hasta]), [[-Infinity, -200], [-200, 0], [0, 200], [200, 500], [500, Infinity]]);
-  assert.equal(new Set(clases.map((c) => c.color)).size, 5);
+test("la escala relativa: colores fijos por tramos de la base, el 0 como borde y los extremos abiertos (#389)", () => {
+  const clases = escalaRelativa(2000, METRICAS.sobra.cortes); // un neto de 2000 €/mes: cortes en −200, 0, 200, 500 y 1000
+  assert.deepEqual(clases.map((c) => [c.desde, c.hasta]), [[-Infinity, -200], [-200, 0], [0, 200], [200, 500], [500, 1000], [1000, Infinity]]);
+  assert.equal(new Set(clases.map((c) => c.color)).size, 6);
   assert.equal(colorPara(-5000, clases), clases[0].color);
   assert.equal(colorPara(-1, clases), clases[1].color);
   assert.equal(colorPara(0, clases), clases[2].color); // llega justo: amarillo
   assert.equal(colorPara(199, clases), clases[2].color);
   assert.equal(colorPara(200, clases), clases[3].color);
-  assert.equal(colorPara(9000, clases), clases[4].color);
-  assert.deepEqual(leyenda(clases, [], "sobra").map((e) => e.texto), ["menos de -200", "-200 – 0", "0 – 200", "200 – 500", "500 o más"]);
+  assert.equal(colorPara(999, clases), clases[4].color);
+  assert.equal(colorPara(9000, clases), clases[5].color);
+  assert.deepEqual(leyenda(clases, [], "sobra").map((e) => e.texto), ["menos de -200", "-200 – 0", "0 – 200", "200 – 500", "500 – 1000", "1000 o más"]);
+  // El precio de la hora, con cinco: los mismos rojos y amarillo, y los verdes claro y oscuro (los extremos de las dos escalas coinciden)
+  const precio = escalaRelativa(10, METRICAS.precio_hora.cortes);
+  assert.deepEqual(precio.map((c) => [c.desde, c.hasta]), [[-Infinity, -2.5], [-2.5, 0], [0, 2.5], [2.5, 10], [10, Infinity]]);
+  assert.deepEqual([precio[0].color, precio[2].color, precio.at(-1).color], [clases[0].color, clases[2].color, clases.at(-1).color]);
+  assert.equal(precio[3].color, clases[3].color);
   for (const mala of [0, -1, null, NaN]) assert.throws(() => escalaRelativa(mala, METRICAS.sobra.cortes), /importe positivo/);
 });
 
