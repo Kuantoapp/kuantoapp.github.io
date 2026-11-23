@@ -36,7 +36,8 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    tabla oficial de 2026 del SERMAS, sin trienios, noches, guardias ni productividad variable: por debajo de lo que
    cobra una enfermera con turnos (neto/hora más bajo y más zonas negativas). Incluye la subida del 1,5 %
    de 2026 (BOCM-20260209-6, art. 25.1), no el 0,5 % condicionado al IPC de 2026 (RDL 14/2025, art. 2.1),
-   que se pagaría en 2027 si se aplica: unos 150 € al año menos. Con todos los brutos en 2026 ya se pueden
+   que se pagaría en 2027 si se aplica: unos 150 € al año menos. Para el Bono (ejercicio 2024) se usa la
+   misma fila de la tabla oficial de 2024 (`ENFERMERA_2024`), no la de 2026 deflactada. Con todos los brutos en 2026 ya se pueden
    comparar perfiles entre sí, salvo por las diferencias de jornada y de fuente de cada uno.
 4. Alquiler de contratos en vigor declarados, actualizado con el IPC de alquiler (`factor_ipc`) y sin
    `factor_brecha` (no es el de contrato nuevo, #329; suelo del precio): sobrante
@@ -137,9 +138,14 @@ EAES, JOVEN, MADRE = a_2026(EAES_2024), a_2026(JOVEN_2024), a_2026(MADRE_2024)
 ENFERMERA = round(
     12 * (1199.52 + 592.11 + 177.99 + 1.89 + 289.45) + 2 * 1466.94 + 2 * 177.99, 2
 )
+# Misma fila en la Orden de nóminas de 2024 (BOCM-20240806-11, anexo V, tabla 2.1.a, pág. 100): 29.098,22 €,
+# con el 2 % de 2024 y sin el 0,5 % adicional (RDL 4/2024, art. 6.2), abonable como atrasos en la primera nómina posible (BOCM-20250721-1).
+ENFERMERA_2024 = round(
+    12 * (1147.35 + 566.36 + 170.25 + 1.81 + 276.85) + 2 * 1403.14 + 2 * 170.25, 2
+)
 # Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra).
 # `sueldos`: (bruto €/año, días a la semana en el destino). `sueldos_2024`: el bruto de 2024 de los que se llevan
-# a 2026 (el Bono mira los ingresos del ejercicio 2024).
+# a 2026 y de la enfermera (el Bono mira los ingresos del ejercicio 2024).
 PERFILES = [
     {
         "nombre": "Persona sola con el SMI",
@@ -184,6 +190,7 @@ PERFILES = [
         "perfil": "solo",
         "edad": 26,
         "sueldos": [(ENFERMERA, 5)],
+        "sueldos_2024": [(ENFERMERA_2024, 5)],
         "horas_dia": JORNADA_SERMAS / DIAS_SEMANA,
         "norma_jornada": "Ley 6/2011 de la Comunidad de Madrid, DA 1.ª.1",
         "fuente": FUENTE_ENFERMERA,

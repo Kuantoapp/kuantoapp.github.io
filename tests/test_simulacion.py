@@ -777,6 +777,18 @@ def test_ingresos_del_bono_son_los_de_2024_y_la_pareja_sigue_dentro():
     )
 
 
+def test_la_enfermera_con_su_nomina_de_2024_sigue_fuera_por_6_84():
+    # tabla oficial de 2024 (BOCM-20240806-11): base 25.206,84 € > 25.200 €; con la de 2026 eran 26.443,99 €
+    base = simulacion.base_imponible(titulares.ENFERMERA_2024)
+    assert base == D("25206.84")
+    assert requisitos(26, base, D(0), None) == [
+        "ingresos > 3 × IPREM (RD art. 6.1.d; Acuerdo, art. 4.1.d)"
+    ]
+    pares = _pares()
+    enfermera = pares[pares["perfil"].str.startswith("enfermera_26")]["ingresos_bruto"]
+    assert len(enfermera) > 0 and enfermera.eq(titulares.ENFERMERA_2024).all()
+
+
 def _miles(n: int) -> str:
     return f"{n:,}".replace(",", ".")
 
