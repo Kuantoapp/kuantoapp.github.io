@@ -20,6 +20,7 @@
   --r-3: 16px;
   --curva: cubic-bezier(0.2, 0, 0, 1);
   --alto-nav: 56px;
+  --relleno-bloque: clamp(64px, 10vw, 128px); /* arriba y abajo de cada bloque; el salto del índice lo descuenta */
   --alto-indice: 61px; /* índice fijo de «Cómo funciona» y la metodología: 44 px de píldora, 16 de aire y la línea */
   --pierdes: #b2182b; /* extremos de la paleta divergente del mapa (vista.js) */
   --ganas: #01665e;
@@ -211,7 +212,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .navegacion .boton-nav:focus-visible { outline-color: var(--texto); outline-offset: 2px; }
 .pagina a { color: var(--acento); text-underline-offset: 3px; }
 .pagina a:hover { color: var(--acento-fuerte); }
-.bloque { padding-block: clamp(64px, 10vw, 128px); border-bottom: 1px solid var(--linea); }
+.bloque { padding-block: var(--relleno-bloque); border-bottom: 1px solid var(--linea); }
 .pagina h1, .pagina h2 { margin: 0; overflow-wrap: break-word; min-width: 0; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; }
 .pagina h1 { max-width: 14ch; font-size: clamp(40px, 7.5vw, 88px); }
 .pagina h2 { max-width: 18ch; font-size: clamp(32px, 5vw, 56px); }
@@ -252,7 +253,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .dato-imagen { margin: 0; padding: 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
 /* La imagen entera en la zona visible: bajo la barra y el índice, con aire para el relleno y el pie (#417). */
 .dato-imagen img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 136px); margin-inline: auto; object-fit: contain; border-radius: 4px; }
-.ampliar { display: block; cursor: zoom-in; }
+.ampliar { display: block; width: fit-content; max-width: 100%; margin-inline: auto; cursor: zoom-in; }
 .dato-imagen figcaption { margin-top: 12px; color: var(--texto-3); font-size: 14px; }
 
 /* Así sale la cifra: la fórmula en la tarjeta de firma (blanca, radio de 16 px y línea fina). */
@@ -312,7 +313,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .pagina .indice a:hover { border-color: var(--acento); color: var(--acento); }
 .pagina .indice a[aria-current="location"] { border-color: var(--acento); background: var(--acento-suave); color: var(--acento); font-weight: 600; }
 /* Al saltar desde el índice, el relleno superior de la sección queda bajo el índice y el título, 24 px por debajo: así la figura cabe entera. */
-.pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) - clamp(64px, 10vw, 128px) + 24px); }
+.pagina section[id] { scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) - var(--relleno-bloque) + 24px); }
 .pasos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin: 48px 0 0; padding: 0; list-style: none; counter-reset: paso; }
 .pasos li { position: relative; padding-top: 56px; counter-increment: paso; }
 .pasos li::before { content: counter(paso); position: absolute; top: 0; left: 0; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--linea-control); border-radius: 50%; background: var(--superficie); color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
