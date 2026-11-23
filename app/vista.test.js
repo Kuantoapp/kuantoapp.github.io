@@ -191,7 +191,9 @@ test("la ficha avisa de pocos alquileres declarados con menos de min_testigos y 
 test("los textos fijos de la web citan el umbral de testigos de alquiler.json", () => {
   for (const f of ["index.html", "saber-mas.html", "informe.html"]) {
     const html = readFileSync(new URL(f, import.meta.url), "utf8");
-    assert.ok(html.includes(`menos de ${real.alquiler.meta.min_testigos} `), `${f} no cita «menos de ${real.alquiler.meta.min_testigos}»`);
+    const umbrales = [...html.matchAll(/(?:menos de|al menos) (\d+) (?:viviendas|alquileres)/g)].map((m) => Number(m[1]));
+    assert.ok(umbrales.length > 0, `${f} no cita el umbral`);
+    assert.deepEqual([...new Set(umbrales)], [real.alquiler.meta.min_testigos], `${f}: umbral distinto de min_testigos`);
   }
 });
 
