@@ -207,7 +207,14 @@ POCOS_OCUPADOS = 100  # se marca a los municipios con menos ocupados observados
 LGSS_TIEMPO, LGSS_COSTE = 0.25, 0.20
 # «Salario mensual» = bruto anual ÷ pagas: 12 por defecto; ÷ 14 es la sensibilidad (el umbral baja).
 PAGAS_LGSS = {"lgss_2015": 12, "lgss_2015_14": 14}
-IDS = ("smi_30", "teleoperador_23", "pareja_mediana", "madre_oficina", "joven_mediano")
+IDS = (
+    "smi_30",
+    "teleoperador_23",
+    "pareja_mediana",
+    "madre_oficina",
+    "joven_mediano",
+    "enfermera_26",
+)
 
 # Acuerdo CG 26-12-2024, Anexo II: 55 municipios (texto completo en BDNS 805618, doc. 1505247, «Certificado ACG»,
 # leído el 2026-11-19; la FAQ 2024 p. 12 da los mismos 55; la ficha de la sede, 54, sin Moraleja de Enmedio).

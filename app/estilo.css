@@ -329,7 +329,8 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .perfiles:has([value="tele"]:checked) [data-perfil="tele"],
   .perfiles:has([value="joven"]:checked) [data-perfil="joven"],
   .perfiles:has([value="madre"]:checked) [data-perfil="madre"],
-  .perfiles:has([value="pareja"]:checked) [data-perfil="pareja"] { display: grid; }
+  .perfiles:has([value="pareja"]:checked) [data-perfil="pareja"],
+  .perfiles:has([value="enfermera"]:checked) [data-perfil="enfermera"] { display: grid; }
 }
 
 /* Gráfico de coronas: barras divergentes desde el 0, con el valor siempre escrito (no solo el color). */
