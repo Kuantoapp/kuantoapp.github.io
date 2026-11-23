@@ -237,6 +237,21 @@ def test_control_otros_anios(anio):
 
 
 @real
+@pytest.mark.skipif(
+    not all(c.exists() for c in CARPETAS.values()), reason="faltan 2023 o 2024"
+)
+def test_control_tres_anios_juntos(h):
+    # Fila «2023 a 2025 juntas» de la tabla: los hogares de los tres años en un solo DataFrame (#274)
+    tres = pd.concat(
+        [h, *(hogares(c, a) for a, c in CARPETAS.items())], ignore_index=True
+    )
+    c = control_f306(tres)
+    assert c.tasa.tolist() == pytest.approx((35.0, 40.5), abs=0.05)
+    assert c.ee.tolist() == pytest.approx((1.5, 1.5), abs=0.05)
+    assert (c.n == 1702).all()
+
+
+@real
 def test_cota_sin_gasto(h):
     # 18 de los 580 inquilinos de ES30 no tienen HH070 (ni HH060): se acota la tasa de 2025 con ninguno
     # y con todos sobrecargados (#274). El 36,0 % de control queda dentro.

@@ -7,7 +7,8 @@ Eurostat la escribe con HY070G; en la ECV 2025 HY070G = HY070N en los 29.369 hog
 - El «reducido» de Eurostat es HH021 4 o 5 (alquiler inferior al de mercado o cesión gratuita).
 - Denominador ≤ 0 cuenta como sobrecargado, también en la cifra de control: por eso sale 36,0 % y
   no el 35,9 % de #190, que dejaba fuera un hogar con HY020 = −2.501 €.
-- Los blancos son «no aplicable»: se excluyen (resultado NaN).
+- Los blancos de HH070 son «falta el dato» (HH070_F = −1): se excluyen (resultado NaN); la cota de su
+  efecto está en docs/verificaciones/renta-vivienda.md.
 - El fichero público no trae DB050 ni DB060: el error estándar va por linealización con el hogar
   como unidad, y el intervalo usa un efecto de diseño 2 (supuesto).
 
