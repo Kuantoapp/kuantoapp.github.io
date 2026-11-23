@@ -179,6 +179,62 @@ def test_analisis_json_rechaza_perfil_desconocido():
         api_estatica.validar("analisis.json", obj)
 
 
+def _pares_tope(alquileres: dict) -> pd.DataFrame:
+    """Un par por zona: {zona_id: (municipio_id, alquiler)}; Madrid (28079) con dos distritos."""
+    return pd.DataFrame(
+        [
+            {"perfil": "smi_30", "zona_id": z, "municipio_id": m, "alquiler": a}
+            for z, (m, a) in alquileres.items()
+        ]
+    )
+
+
+def _base_tope(fuera: list[str], dentro: list[str]) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "perfil": "smi_30",
+            "criterio": "bono_vigente",
+            "municipio_id": fuera + dentro,
+            "elegible": [False] * len(fuera) + [True] * len(dentro),
+        }
+    )
+
+
+def test_exceso_tope_mediana_de_las_zonas_y_tope_exacto_dentro():
+    t600 = float(simulacion.tope("28001", "vivienda"))
+    t900 = float(simulacion.tope("28079", "vivienda"))
+    zt = pipeline_analisis.zonas_tope(
+        _pares_tope(
+            {
+                "28001": ("28001", t600 + 0.01),  # un céntimo por encima
+                "28002": (
+                    "28002",
+                    float(simulacion.tope("28002", "vivienda")),
+                ),  # igual: dentro
+                "2807901": ("28079", t900 - 100),
+                "2807902": ("28079", t900 + 300),
+                "2807903": ("28079", t900 + 50),  # mediana de los tres distritos
+            }
+        ),
+        "smi_30",
+    )
+    assert zt.loc["2807901", "tope"] == t900
+    ex = pipeline_analisis.exceso_tope(
+        zt, _base_tope(["28001", "28079"], ["28002"]), "smi_30"
+    )
+    assert ex.round(2).to_dict() == {"28001": 0.01, "28079": 50.0}
+
+
+def test_exceso_tope_falla_si_queda_fuera_sin_pasar_del_tope_o_sin_alquiler():
+    t = float(simulacion.tope("28001", "vivienda"))
+    for alquiler in (t - 1, np.nan):
+        zt = pipeline_analisis.zonas_tope(
+            _pares_tope({"28001": ("28001", alquiler)}), "smi_30"
+        )
+        with pytest.raises(ValueError, match="sin pasar del tope"):
+            pipeline_analisis.exceso_tope(zt, _base_tope(["28001"], []), "smi_30")
+
+
 def test_perfiles_publicados_son_los_de_la_simulacion():
     ids = {*simulacion.IDS, *simulacion.EDADES_FIN}
     assert set(api_estatica.PERFILES_SIMULACION) == ids

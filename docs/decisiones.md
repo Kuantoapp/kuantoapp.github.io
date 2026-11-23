@@ -14,6 +14,7 @@ Formato: `AAAA-MM-DD · decisión · por qué · PR/issue`
     - con alquiler + transporte entran menos municipios que con el criterio vigente;
     - el rango de `horas_viaje` (SMI de 112 a 138) contiene el 122 del vigente;
     - la enfermera está en el umbral.
+  - **Mapa del tope** (`app/img/bono_tope.png`): cada zona se pinta con su propio alquiler frente al tope de su municipio. Madrid cuenta como un municipio (mediana de sus 21 distritos, fuera por 79,51 €), pero en el recuadro 8 distritos caben en el tope. Lo pidió `dm-revisor-espacial`: pintarlos con el valor de la ciudad era falso para ellos.
   - **Por qué:** el contrato §2 del plan de desarrollo lo prevé, y F4-03 (#106) coteja las cifras del informe con `analisis.json`. Decisión de Yeray en la sesión de #103.
   - #103
 

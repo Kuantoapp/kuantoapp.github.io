@@ -25,19 +25,23 @@ FUENTE_BONO = (
     "Fuente: Bono Alquiler Joven 2022 (Comunidad de Madrid), Censo anual (INE), SERPAVI (MIVAU) y ADRH (INE), "
     "elaboración propia."
 )
+# líneas cortas, como FUENTE_MAPAS: una línea larga ensancha el PNG y encoge el mapa en la página
 FUENTE_SIMULACION = (
-    "Tope de 600 € (900 € en los municipios del Anexo II), Acuerdo de 26-12-2024 (BOCM-20250110-20). Alquiler: SERPAVI "
-    "(MIVAU) con el IPC de alquiler (INE).\nSimulación propia: es elegible el municipio, no se cobra la ayuda."
+    "Tope de 600 € (900 € en los municipios del Anexo II), Acuerdo de\n"
+    "26-12-2024 (BOCM-20250110-20). Alquiler: SERPAVI (MIVAU) con el IPC\n"
+    "de alquiler (INE). Simulación propia: cumplir no es cobrar la ayuda."
 )
 FUENTE_DESCUENTO = (
-    "Fuente: tarifas del CRTM de 2026 (BOCM-20251231-3) y del 30-11-2025 (BOCM-20130130-9 y BOCM-20211217-35); "
+    "Fuente: precios del CRTM de 2026 con descuento (BOCM-20251231-2) y sin él (BOCM-20251231-3), y\n"
+    "tarifas del 30-11-2025 (BOCM-20130130-9 y BOCM-20211217-35); "
     "RDL 17/2025, art. 8.\nCaso: 5 días a la semana, ida y vuelta; ruta por la zona A. Sin prórroga publicada a "
     "21-11-2026. Elaboración propia."
 )
 FUENTE_TITULARES = (
-    "Fuente: elaboración propia con mesobra.calculo: SERPAVI (MIVAU) e IPC (INE), tiempos con los GTFS del CRTM, "
-    "tarifas del CRTM, neto con la LIRPF de 2026.\nSueldos: SMI (RD 126/2026), EAES y EES (INE) llevados a 2026 "
-    "con la ETCL (estimado), nómina del SERMAS de 2026 (BOCM-20260209-6). Todo estimado."
+    "Fuente: elaboración propia con mesobra.calculo: SERPAVI (MIVAU) e IPC (INE),\n"
+    "tiempos con los GTFS del CRTM, tarifas del CRTM, neto con la LIRPF de 2026.\n"
+    "Sueldos: SMI (RD 126/2026), EAES y EES (INE) llevados a 2026 con la ETCL,\n"
+    "nómina del SERMAS de 2026 (BOCM-20260209-6). Todo estimado."
 )
 GRIS = "#e3e3e3"
 TRAMA = "#9a9a9a"
@@ -217,16 +221,23 @@ def con_signo(x: float) -> str:
 
 
 def mapa_bono_tope(
-    elegible: pd.Series, testigos: pd.Series, zonas: gpd.GeoDataFrame, ruta: Path
+    dentro: pd.Series, testigos: pd.Series, zonas: gpd.GeoDataFrame, ruta: Path
 ) -> tuple[int, int]:
-    """Municipios donde el perfil cumple el Bono vigente (`elegible` por `municipio_id`); los distritos de Madrid
-    toman el valor del municipio. `testigos` por `zona_id` (de `alquiler.json`) marca el alquiler impreciso."""
-    por_zona = zonas.set_index("zona_id")["municipio_id"].map(elegible.astype(float))
-    g = _unir(zonas, por_zona)
-    g = _marcar(g, testigos < MIN_TESTIGOS)
-    etiquetas = ["fuera: el alquiler pasa del tope", "dentro"]
-    titulo = "Persona sola con el SMI y el\nBono Alquiler Joven vigente\n(vivienda de 69 m²; estimado)"
-    _mapa(g, [-0.5, 0.5, 1.5], "BrBG", (titulo, etiquetas, FUENTE_SIMULACION), ruta)
+    """Zonas cuyo alquiler cabe en el tope del Bono vigente (`dentro` por `zona_id`); cada distrito de Madrid con
+    su propio alquiler. `testigos` por `zona_id` (de `alquiler.json`) marca el alquiler impreciso."""
+    g = _unir(zonas, dentro.astype(float))
+    # sin recuento conocido, también impreciso (`_marcar` ya deja fuera las zonas sin valor)
+    g = _marcar(g, testigos.isna() | (testigos < MIN_TESTIGOS))
+    etiquetas = ["fuera: el alquiler pasa del tope", "dentro del tope"]
+    titulo = "Persona sola con el SMI y el\ntope del Bono Alquiler Joven vigente\n(vivienda de 69 m²; estimado)"
+    pie = (
+        "Madrid cuenta como un municipio: con la mediana de sus distritos\n"
+        "queda fuera; en el recuadro, cada distrito con su propio alquiler.\n"
+        "Sin dato: municipios sin alquiler publicado en el SERPAVI.\n"
+    )
+    # cividis: las dos clases se distinguen también por la luminosidad, no solo por el tono
+    textos = (titulo, etiquetas, pie + FUENTE_SIMULACION)
+    _mapa(g, [-0.5, 0.5, 1.5], "cividis", textos, ruta)
     return int(g["valor"].isna().sum()), int(g["pocos"].sum())
 
 
@@ -248,7 +259,7 @@ def fin_descuento_coronas(fin: pd.DataFrame, coronas: pd.Series, ruta: Path) -> 
     alto, bajo = t[("fin_descuento", "adulto")], t[("fin_descuento_rdl", "adulto")]
     joven = t[("fin_descuento", "joven")]
     fig, ax = plt.subplots(figsize=(8, 4.6))
-    ax.hlines(y, bajo, alto, color="#0b4f9c", lw=6, alpha=0.35)
+    ax.hlines(y, bajo, alto, color="#0b4f9c", lw=6, alpha=0.6)
     ax.scatter(
         bajo,
         y,
@@ -267,7 +278,7 @@ def fin_descuento_coronas(fin: pd.DataFrame, coronas: pd.Series, ruta: Path) -> 
     ax.scatter(
         joven,
         y - 0.3,
-        color="#8c510a",
+        color="#474a52",  # neutro: el marrón no debe repetir un significado de otra figura
         marker="s",
         zorder=3,
         label="Joven (Abono Joven): las dos cotas coinciden",
@@ -311,23 +322,24 @@ PERFILES_CORTOS = (
     "Sola, SMI",
     "Teleoperador, 23, SMI",
     "Pareja, 29, mediano",
-    "Madre sola, 34, oficina",
+    "Madre sola, 34, administrativa",
     "Sola, 29, mediano de su edad",
     "Enfermera, 26, SERMAS",
 )
 
 
 def titulares_perfiles(res: list[tuple[dict, dict]], ruta: Path) -> None:
-    """Dos paneles por perfil: % de pares en que vivir lejos rinde al menos el neto por hora, y zonas con sobrante
-    mediano negativo con la banda del alquiler (P25 a P75)."""
+    """Dos paneles, uno encima del otro (se lee en el móvil): % de pares en que vivir lejos rinde al menos el neto
+    por hora, y zonas con sobrante mediano negativo con la banda del alquiler (P25 a P75)."""
     r = [x for _, x in res]
     etiquetas = [e for e, _ in zip(PERFILES_CORTOS, res, strict=True)]
     y = np.arange(len(r))[::-1]
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9, 4.2), sharey=True)
-    a1.scatter([x["pct_encima"] for x in r], y, color="#0b4f9c", zorder=3)
-    a1.set_xlim(0, 20)
+    pct = [x["pct_encima"] for x in r]
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(6.4, 7.6))
+    a1.scatter(pct, y, color="#0b4f9c", s=50, zorder=3)
+    a1.set_xlim(0, max(20, 1.1 * max(pct)))
     a1.set_xlabel(
-        "% de pares origen-destino en que\nvivir lejos rinde ≥ el neto por hora"
+        "% de pares origen-destino en que vivir lejos\nrinde al menos el neto por hora"
     )
     neg = np.array([x["n_zonas_negativas"] for x in r])
     lo, hi = np.array([x["banda_zonas_negativas"] for x in r]).T
@@ -336,21 +348,22 @@ def titulares_perfiles(res: list[tuple[dict, dict]], ruta: Path) -> None:
         lo,
         hi,
         color="#0b4f9c",
-        lw=5,
-        alpha=0.3,
+        lw=7,
+        alpha=0.6,
         label="banda: alquiler del P25 al P75",
     )
-    a2.scatter(neg, y, color="#0b4f9c", zorder=3, label="alquiler mediano")
+    a2.scatter(neg, y, color="#0b4f9c", s=50, zorder=3, label="alquiler mediano")
     a2.set_xlim(0, max(hi.max(), 1) * 1.15)
-    a2.set_xlabel(
-        f"zonas (de {r[0]['n_zonas']}) con sobrante\nmensual mediano negativo"
-    )
-    a2.legend(loc="lower right", frameon=False, fontsize=8)
-    a1.set_yticks(y, etiquetas)
+    a2.set_xlabel(f"zonas (de {r[0]['n_zonas']}) con sobrante mensual mediano negativo")
+    a2.legend(loc="lower right", frameon=False, fontsize=10)
     for a in (a1, a2):
+        a.set_yticks(y, etiquetas)
+        a.tick_params(labelsize=11)
+        a.xaxis.label.set_size(11)
         a.spines[["top", "right"]].set_visible(False)
         a.grid(axis="x", color="#dddddd", lw=0.5)
-    fig.text(0.01, -0.04, FUENTE_TITULARES, fontsize=8, color="#444444", va="top")
+    fig.tight_layout(h_pad=2)
+    fig.text(0.01, -0.01, FUENTE_TITULARES, fontsize=8, color="#444444", va="top")
     fig.savefig(ruta, dpi=150, bbox_inches="tight")
     plt.close(fig)  # fmt: skip
 

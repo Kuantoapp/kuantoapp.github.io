@@ -9,6 +9,7 @@ JSON (la sobrecarga por zona no se publica, #100). Ejecutar con `python -m mesob
 import logging
 from datetime import date
 
+import geopandas as gpd
 import pandas as pd
 
 from mesobra import (
@@ -99,6 +100,7 @@ FUENTES = [
             "licencia": "Disposición oficial, sin derechos de propiedad intelectual (art. 13 del TRLPI)",
         }
         for bocm, nombre in (
+            ("BOCM-20251231-2", "Precios del transporte público de 2026 con el descuento del RDL 17/2025, Resolución del CRTM (fin del descuento)"),
             ("BOCM-20251231-3", "Tarifas del transporte público de 2026, Resolución del CRTM (fin del descuento)"),
             ("BOCM-20130130-9", "Tarifas del transporte público desde el 1-2-2013, Resolución del CRTM (tarifa del 30-11-2025)"),
             ("BOCM-20211217-35", "Tarifas de las zonas B3, C1 y C2 desde el 1-1-2022, Resolución del CRTM (tarifa del 30-11-2025)"),
@@ -127,7 +129,7 @@ NOTA = (
     "Comunidad de Madrid, DA 1.ª, BOE-A-2012-2980, jornada del SERMAS, consultado el 2026-11-23). "
     "Simulación del Bono y fin del descuento (bloque simulacion, todo estimado): matriz de residencia por trabajo "
     "del INE actualizada el 2025-12-02; Colectivo Empresarial (Comunidad de Madrid) actualizado el 2025-07-24; "
-    "BOCM-20251231-3 consultado el 2026-11-20, BOCM-20130130-9 consultado el 2026-11-21, BOCM-20211217-35 "
+    "BOCM-20251231-2 consultado el 2026-11-20, BOCM-20251231-3 consultado el 2026-11-20, BOCM-20130130-9 consultado el 2026-11-21, BOCM-20211217-35 "
     "consultado el 2026-11-21 y BOCM-20250110-20 consultado el 2026-11-19; RDL 17/2025 (BOE-A-2025-26459) "
     "consultado el 2026-11-20. Sin las filas de habitación; `_bruto` = ingresos medidos con el bruto (banda de la "
     "pareja y el joven); `_sin_imputar` = horas_viaje sin los pares con 120 min imputados; marcas de "
@@ -264,25 +266,34 @@ def _controlar(
         raise ValueError(f"No hay 200 zonas por año:\n{por_anio}")
 
 
-def exceso_tope(pares: pd.DataFrame, base: pd.DataFrame, perfil: str) -> pd.Series:
-    """€/mes en que el alquiler pasa del tope en los municipios donde `perfil` no cumple el Bono vigente; falla
-    si alguno no cumple por otra causa que el tope (en los perfiles con ingresos y edad dentro)."""
+def zonas_tope(pares: pd.DataFrame, perfil: str) -> pd.DataFrame:
+    """Por `zona_id`: municipio, alquiler de vivienda de `perfil` y tope del Bono vigente de su municipio."""
+    z = pares[pares["perfil"] == perfil].drop_duplicates("zona_id")
+    z = z.set_index("zona_id")[["municipio_id", "alquiler"]]
+    return z.assign(
+        tope=[float(simulacion.tope(m, "vivienda")) for m in z["municipio_id"]]
+    )
+
+
+def exceso_tope(zonas: pd.DataFrame, base: pd.DataFrame, perfil: str) -> pd.Series:
+    """€/mes en que el alquiler pasa del tope en los municipios donde `perfil` no cumple el Bono vigente (`zonas`
+    de `zonas_tope`); falla si alguno no cumple por otra causa que el tope (perfiles con ingresos y edad dentro)."""
     v = base[(base["perfil"] == perfil) & (base["criterio"] == "bono_vigente")]
     fuera = v.loc[~v["elegible"], "municipio_id"]
-    zonas = pares[pares["perfil"] == perfil].drop_duplicates("zona_id")
     # como `simulacion._municipios`: el alquiler del municipio es la mediana de sus zonas
-    renta = zonas.groupby("municipio_id")["alquiler"].median()[fuera]
-    exceso = renta - [float(simulacion.tope(m, "vivienda")) for m in fuera]
-    if (exceso <= 0).any():
+    m = zonas.groupby("municipio_id")[["alquiler", "tope"]].median().loc[fuera]
+    exceso = m["alquiler"] - m["tope"]
+    if not (exceso > 0).all():  # NaN también falla
         raise ValueError(
-            f"{perfil}: fuera del Bono sin pasar del tope en {list(exceso[exceso <= 0].index)}"
+            f"{perfil}: fuera del Bono sin pasar del tope en {list(exceso[~(exceso > 0)].index)}"
         )
     return exceso
 
 
 def _simular(api: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Simulación del Bono y fin del descuento, como `simulacion.main` sin sus sensibilidades salvo las que publica
-    el informe; escribe los mismos CSV en `data/processed/`. Devuelve el bloque, la tabla base y los pares."""
+    el informe (los CSV de `data/processed/` los escribe `simulacion.main`). Devuelve el bloque, la tabla base y
+    los pares."""
     matriz = matriz_trabajo.leer_matriz()
     w, excluida = matriz_trabajo.pesos(matriz, matriz_trabajo.leer_cuotas_distritos())
     pares = simulacion._pares(api, w)
@@ -293,13 +304,6 @@ def _simular(api: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         pares, excluida, matriz_trabajo.ocupados_observados(matriz)
     )
     fin = simulacion.fin_descuento(api)
-    simulacion.PROCESSED.mkdir(parents=True, exist_ok=True)
-    for nombre, df in (
-        ("simulacion", base),
-        ("simulacion_calidad", cal),
-        ("simulacion_fin_descuento", fin),
-    ):
-        df.to_csv(simulacion.PROCESSED / f"{nombre}.csv", index=False)
     una = pares[pares["perfil"] == simulacion.IDS[0]]
     LOG.info(
         "Pares (zona, destino) con peso: %d; con 120 min imputados: %d",
@@ -324,7 +328,12 @@ def _simular(api: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return bloque_simulacion(base, bruto, sin_imputar, fin, cal), base, pares  # fmt: skip
 
 
-def _figuras_n1(api: dict, res: list, sim: tuple, zonas) -> None:
+def _figuras_n1(
+    api: dict,
+    res: list[tuple[dict, dict]],
+    sim: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+    zonas: gpd.GeoDataFrame,
+) -> None:
     """Figuras de titulares, tope del Bono y fin del descuento, con las cifras que las acompañan en el log."""
     bloque, base, pares = sim
     figuras.titulares_perfiles(res, APP_IMG / "titulares_perfiles.png")
@@ -332,24 +341,26 @@ def _figuras_n1(api: dict, res: list, sim: tuple, zonas) -> None:
     testigos = pd.Series(
         {z: d["testigos"] for z, d in api["alquiler"]["zonas"].items()}, dtype=float
     )
+    zt = zonas_tope(pares, "smi_30")
+    dentro = zt["alquiler"] <= zt["tope"]  # «hasta» el tope (simulacion.requisitos)
+    # en los municipios de una sola zona, el mapa por zona tiene que dar lo mismo que la simulación
+    una = zt.groupby("municipio_id")["municipio_id"].transform("size") == 1
+    sim_zona = zt["municipio_id"].map(v.set_index("municipio_id")["elegible"])
+    if (dentro[una] != sim_zona[una]).any():
+        raise ValueError(
+            "El mapa por zona no coincide con la simulación en municipios de una zona"
+        )
     sin, pocos = figuras.mapa_bono_tope(
-        v.set_index("municipio_id")["elegible"],
-        testigos.dropna(),
-        zonas,
-        APP_IMG / "bono_tope.png",
+        dentro, testigos, zonas, APP_IMG / "bono_tope.png"
     )
-    exceso = exceso_tope(pares, base, "smi_30")
+    exceso = exceso_tope(zt, base, "smi_30")
+    distritos = dentro[zt["municipio_id"] == figuras.MADRID]
     LOG.info(
         "Mapa del tope (smi_30): %d de %d municipios dentro; fuera %d, %d por menos de 80 €/mes; zonas sin dato %d, "
-        "alquiler impreciso %d; exceso (€/mes):\n%s",
-        v["elegible"].sum(),
-        len(v),
-        len(exceso),
-        (exceso < 80).sum(),
-        sin,
-        pocos,
-        exceso.sort_values().round(2).to_string(),
-    )
+        "alquiler impreciso %d; distritos de Madrid por debajo del tope: %d de %d; exceso (€/mes):\n%s",
+        v["elegible"].sum(), len(v), len(exceso), (exceso < 80).sum(), sin, pocos,
+        distritos.sum(), len(distritos), exceso.sort_values().round(2).to_string(),
+    )  # fmt: skip
     coronas = pd.Series(
         {
             f["properties"]["municipio_id"]: f["properties"]["corona"]
