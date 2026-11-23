@@ -176,6 +176,7 @@ def test_factor_2026_desde_la_etcl():
             assert "estimado" in p["fuente"] and "×1,0593" in p["fuente"]
 
 
+# shortcut: solo corre en local (data/raw no está en la CI), pasarlo a un fixture si la fuente se actualiza a menudo
 ETCL_CSV = calculo.RAIZ / "data/raw/ine_etcl_coste_laboral_ccaa_2026-11-23.csv"
 
 

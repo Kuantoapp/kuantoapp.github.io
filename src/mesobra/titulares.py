@@ -111,7 +111,7 @@ FUENTE_JOVEN = (
     "Encuesta Anual de Estructura Salarial, tabla 28201 (26.411,63 € en 2022 y 29.361,99 € en 2024, +11,2 %): "
     "25.209,48 € (de 2024), "
     + LLEVADA_A_2026
-    + ": 26.703,50 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
+    + ": 26.703,50 €, estimado (supuesto: el salto de 2022 a 2024 es sobre todo de 2024)"
 )
 SMI = float(parametros_2026.SMI_ANUAL)
 # INE, ETCL (tabla 6061), coste salarial total por trabajador y mes, Madrid, industria, construcción y servicios:
