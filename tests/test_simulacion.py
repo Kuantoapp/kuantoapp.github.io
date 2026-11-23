@@ -222,7 +222,8 @@ def test_edad_minima_y_moraleja():
 def test_base_de_la_pareja_y_la_madre():
     # cotización del 6,5 %; rnt > 19.747,50, así que el art. 20 es 0
     assert simulacion.base_imponible(titulares.EAES) == D("24215.30")
-    assert simulacion.base_imponible(titulares.OFICINA) == D("24427.16")
+    assert simulacion.base_imponible(titulares.MADRE) == D("20322.93")
+    assert simulacion.base_imponible(titulares.ENFERMERA) == D("26443.99")
 
 
 def test_vtt_es_la_proporcion_del_coste_laboral_de_madrid():

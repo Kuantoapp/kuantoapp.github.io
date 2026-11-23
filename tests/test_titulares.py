@@ -148,6 +148,24 @@ def test_umbral_exacto_cuenta_como_encima():
     assert r["veredicto"] == "plan B"
 
 
+def test_madre_y_enfermera_desde_sus_fuentes():
+    # P50 mujeres administrativas Madrid 2022 (t=36846) × mediana mujeres Madrid 2024 / 2022 (t=28191)
+    assert titulares.MADRE == 23874.79
+    # total año de la fila del BOCM-20260209-6, anexo V tabla 2.1.a, igual al del BOCM-20260630-6, anexo II
+    assert titulares.ENFERMERA == 30421.38
+    perfiles = {p["fuente"]: p for p in titulares.PERFILES}
+    madre = perfiles[titulares.FUENTE_MADRE]
+    enfermera = perfiles[titulares.FUENTE_ENFERMERA]
+    assert (
+        madre["sueldos"] == [(titulares.MADRE, 5)] and madre["perfil"] == "monoparental"
+    )
+    assert (
+        enfermera["sueldos"] == [(titulares.ENFERMERA, 5)] and enfermera["edad"] == 26
+    )
+    assert all(s in madre["fuente"] for s in ("estimado", "36846", "28191"))
+    assert "sin trienios, noches ni guardias" in enfermera["fuente"]
+
+
 def test_joven_mediano_desde_las_tablas_del_ine():
     # P50 de 25-34 en Madrid 2022 (t=36850) × media del tramo 2024 / 2022 (t=28201), redondeado al céntimo
     assert titulares.JOVEN == 25209.48

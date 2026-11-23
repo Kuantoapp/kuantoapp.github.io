@@ -13,13 +13,25 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    contra de la tesis 1 (SMI: 1.544 pares, 14,9 %, frente a 1.316, 12,7 %), sin cambiar el veredicto;
    con jornada real menor (parcial, convenio) sube, a favor de la tesis 1. La ganancia de la EAES
    (y de la EES) incluye el tiempo parcial y aquí se divide por jornada completa: neto/hora más bajo,
-   en contra.
+   en contra, y bruto de jornada completa infravalorado, más zonas negativas (a favor de la tesis 2).
+   La jornada del SERMAS es menor de 40 h (sin verificar la de 2026): el neto/hora real de la enfermera
+   es más alto, a favor de la tesis 1.
 2. neto/hora = neto del hogar ÷ (nº de sueldos × horas trabajadas).
 3. Sueldos de 2024 (EAES) usados como bruto de 2026: neto infravalorado, más zonas negativas (tesis 2)
    y neto/hora más bajo (contra la tesis 1). El joven mediano es la P50 de la EES 2022 llevada a 2024
    con la media de su tramo (EAES): si el crecimiento se concentró en los sueldos altos, su bruto queda
    sobrevalorado, con neto/hora más alto (a favor de la tesis 1) y menos zonas negativas (contra la 2).
-4. Alquiler en euros de 2024 sin IPC, de contratos declarados (suelo del precio): sobrante
+   La madre es la P50 de 2022 de las mujeres del gran grupo 4 de la CNO-11 en Madrid (EES; incluye
+   empleos con atención al público, que cobran menos) llevada a 2024 con la mediana de las mujeres de
+   Madrid (EAES): supone que la de su ocupación crece como la de todas. De los factores publicados es el
+   más alto (con la media nacional de las empleadas de oficina saldría un 0,5 % menos). La enfermera es la
+   tabla oficial de 2026 del SERMAS, no de 2024 (dos años más de subidas que los demás: no se comparan
+   perfiles entre sí), sin trienios, noches, guardias ni productividad variable: por debajo de lo que
+   cobra una enfermera con turnos (neto/hora más bajo y más zonas negativas). Incluye la subida del 1,5 %
+   de 2026 (BOCM-20260209-6, art. 25.1), no el 0,5 % condicionado al IPC de 2026 (RDL 14/2025, art. 2.1),
+   que se pagaría en 2027 si se aplica: unos 150 € al año menos.
+4. Alquiler de contratos en vigor declarados, actualizado con el IPC de alquiler (`factor_ipc`) y sin
+   `factor_brecha` (no es el de contrato nuevo, #329; suelo del precio): sobrante
    sobrevalorado (contra la tesis 2); diferencias de alquiler menores, precio de la hora más bajo
    (favorece la tesis 1).
 5. 69 m² y cesta de gasto medio para todos: sobreestima el gasto de quien vive solo (más negativas).
@@ -57,9 +69,20 @@ FUENTE_EAES = (
     "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28191: mediana de la ganancia anual "
     "en la Comunidad de Madrid, 28.037,75 € (de 2024)"
 )
-FUENTE_OFICINA = (
-    "INE, Encuesta Anual de Estructura Salarial 2024, tabla 28186, serie EAES2540: ganancia media anual "
-    "de las mujeres empleadas de oficina que no atienden al público, total nacional, 28.264,34 € (de 2024)"
+FUENTE_MADRE = (
+    "INE, Encuesta de Estructura Salarial 2022, tabla 36846: mediana (P50) de la ganancia anual de las mujeres "
+    "«empleados contables, administrativos y otros empleados de oficina» (gran grupo 4 de la CNO-11, con los "
+    "empleos de atención al público) en la "
+    "Comunidad de Madrid, 21.555,32 € (de 2022), llevada a 2024 con la mediana de las mujeres de Madrid de la "
+    "Encuesta Anual de Estructura Salarial, tabla 28191 (22.898,14 € en 2022 y 25.362,11 € en 2024, +10,8 %): "
+    "23.874,79 €, estimado (supuesto: la mediana de su ocupación crece como la de todas las mujeres de Madrid)"
+)
+FUENTE_ENFERMERA = (
+    "Orden de 3 de febrero de 2026, instrucciones de nóminas de la Comunidad de Madrid para 2026 "
+    "(BOCM-20260209-6), anexo V, tabla 2.1.a de atención hospitalaria, pág. 65: enfermero/a del SERMAS en unidades de hospitalización, "
+    "quirófanos, urgencias, UCI y UVI (A2, nivel 21), sueldo base, complementos de destino y específico, "
+    "productividad fija y pagas extra, 30.421,38 € al año; sin trienios, noches ni guardias: por debajo de lo "
+    "que cobra una enfermera con turnos"
 )
 FUENTE_JOVEN = (
     "INE, Encuesta de Estructura Salarial 2022, tabla 36850: mediana (P50) de la ganancia anual de 25 a 34 años "
@@ -68,11 +91,16 @@ FUENTE_JOVEN = (
     "25.209,48 €, estimado (supuesto: la mediana crece como la media; el salto es sobre todo de 2024)"
 )
 SMI = float(parametros_2026.SMI_ANUAL)
-EAES, OFICINA = 28037.75, 28264.34
+EAES = 28037.75
 # P50 2022 (t=36850) × media 2024 / 2022 (t=28201), al céntimo como la cifra citada
 JOVEN = round(22676.37 * 29361.99 / 26411.63, 2)
-# Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra). La enfermera de 26 años
-# no entra: el grupo más fino de la EAES (salud y enseñanza, tabla 28186) mezcla medicina y docencia.
+# P50 mujeres, gran grupo 4, Madrid 2022 (t=36846) × mediana mujeres Madrid 2024 / 2022 (t=28191)
+MADRE = round(21555.32 * 25362.11 / 22898.14, 2)
+# 12 meses de (sueldo + destino + específico + prod. fija + prod. fija A.M.S.) + 2 extras + 2 adicionales
+ENFERMERA = round(
+    12 * (1199.52 + 592.11 + 177.99 + 1.89 + 289.45) + 2 * 1466.94 + 2 * 177.99, 2
+)
+# Para añadir un perfil: una entrada con su `fuente` (sin fuente no entra).
 # `sueldos`: (bruto €/año, días a la semana en el destino).
 PERFILES = [
     {
@@ -97,11 +125,11 @@ PERFILES = [
         "fuente": FUENTE_EAES,
     },
     {
-        "nombre": "Madre sola de 34 años con un hijo y el sueldo medio en España de una empleada de oficina",
+        "nombre": "Madre sola de 34 años con un hijo y el sueldo mediano de una empleada de oficina o administrativa en Madrid",
         "perfil": "monoparental",
         "edad": 34,
-        "sueldos": [(OFICINA, 5)],
-        "fuente": FUENTE_OFICINA,
+        "sueldos": [(MADRE, 5)],
+        "fuente": FUENTE_MADRE,
     },
     {
         "nombre": "Persona sola de 29 años con el sueldo mediano de su edad en Madrid",
@@ -109,6 +137,13 @@ PERFILES = [
         "edad": 29,
         "sueldos": [(JOVEN, 5)],
         "fuente": FUENTE_JOVEN,
+    },
+    {
+        "nombre": "Enfermera de 26 años del SERMAS, sin trienios, noches ni guardias",
+        "perfil": "solo",
+        "edad": 26,
+        "sueldos": [(ENFERMERA, 5)],
+        "fuente": FUENTE_ENFERMERA,
     },
 ]
 
