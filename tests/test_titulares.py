@@ -154,6 +154,8 @@ def test_madre_y_enfermera_desde_sus_fuentes():
     assert titulares.MADRE == 25289.71  # × FACTOR_2026, estimado
     # total año de la fila del BOCM-20260209-6, anexo V tabla 2.1.a, igual al del BOCM-20260630-6, anexo II
     assert titulares.ENFERMERA == 30421.38
+    # «TOTAL AÑO» impreso en la misma fila del BOCM-20240806-11, anexo V tabla 2.1.a, pág. 100
+    assert titulares.ENFERMERA_2024 == 29098.22
     perfiles = {p["fuente"]: p for p in titulares.PERFILES}
     madre = perfiles[titulares.FUENTE_MADRE]
     enfermera = perfiles[titulares.FUENTE_ENFERMERA]
@@ -163,6 +165,7 @@ def test_madre_y_enfermera_desde_sus_fuentes():
     assert (
         enfermera["sueldos"] == [(titulares.ENFERMERA, 5)] and enfermera["edad"] == 26
     )
+    assert enfermera["sueldos_2024"] == [(titulares.ENFERMERA_2024, 5)]
     assert all(s in madre["fuente"] for s in ("estimado", "36846", "28191"))
     assert "sin trienios, noches ni guardias" in enfermera["fuente"]
 

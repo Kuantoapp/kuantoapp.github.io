@@ -57,14 +57,22 @@ Decisiones y sentido de su sesgo:
     tras la campaña de 2024 (ejercicio 2024; una de hoy, noviembre de 2026, usaría 2025, con el mismo resultado). Se usa 2024: el bruto de 2024 de la pareja, la madre y el joven
     (`sueldos_2024`), no el llevado a 2026 (con el de 2026 la pareja, de 24.215 a 25.769 € de base, pasaría de los
     25.200 € y quedaría fuera por un ajuste de precios, no de ingresos reales). Con 2025 (ETCL ×1,0333, estimado) la
-    base de la pareja sería de unos 25.089 €: dentro por 111 €. El SMI y la enfermera usan su sueldo de 2026: el SMI
-    está por debajo del umbral en los dos años; la nómina del SERMAS de 2024 no está cargada y la enfermera queda
-    fuera por 1.244 € con 2026 (base de 26.444 €) y por unos 824 € con 2025 (su bruto sin la subida del 1,5 %,
-    29.971,80 €, estimado); con 2024 el margen sería estrecho y depende de la subida de 2025, sin verificar. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
+    base de la pareja sería de unos 25.089 €: dentro por 111 €. El SMI usa su sueldo de 2026: está por debajo del
+    umbral en los dos años. La enfermera usa la misma fila de la nómina oficial de 2024 (`ENFERMERA_2024`,
+    29.098,22 €, BOCM-20240806-11, anexo V, tabla 2.1.a): base de 25.206,84 €, fuera por 6,84 € (con 2026, por
+    1.244 €; con 2025, por unos 824 €, bruto de 29.971,80 € sin la subida del 1,5 %, estimado). El margen es
+    mínimo, así que el veredicto se da con sus sensibilidades. Hacia fuera: con la cotización de 2024 (MEI del
+    trabajador 0,12 % en vez de 0,15 %) la base es de 25.215,57 €; con el 0,5 % adicional de 2024 (RDL 4/2024,
+    art. 6.2, aprobado en julio de 2025 y cobrado como atrasos; no estaba en la declaración de la campaña de 2024),
+    25.342,87 €; con trienios, noches o guardias, más. Hacia dentro, sin modelar (igual que en los demás
+    perfiles): la cuota de un colegio profesional de colegiación obligatoria (LIRPF art. 19.2.d, hasta 500 €)
+    la dejaría dentro con que pasara de 6,84 € al año, y también el incremento por movilidad geográfica (art. 19.2.f)
+    si cambió de municipio por el puesto. Con el modelo común queda fuera, pero por la mínima. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
     de 2024) también lo usa la regla del art. 301 LGSS junto al SMI y el transporte de 2026: no cambia ningún
     resultado (el salario supera el SMI mensual en 484 € o más y el 20 % del salario es de al menos 341 € al mes).
-    La cotización y el art. 20 son los de 2026: en la pareja y la madre el art. 20 es 0 y la diferencia es de pocos
-    euros frente a un margen de 985 a 4.877 €.
+    La cotización y el art. 20 son los de 2026: en la pareja, la madre y la enfermera el art. 20 es 0 y la
+    diferencia es de pocos euros, frente a un margen de 985 a 4.877 € (en la enfermera, unos 9 € que la alejan más
+    del umbral).
 11. Vivienda de 69 m² para los 5 perfiles; los 3 «solo» se repiten como habitación con el hogar `comparte` (alquiler
     repartido entre `personas_comparten`), aproximación a la renta de una habitación. 69 m² sobreestima la renta de
     quien vive solo: menos entran por el tope. La habitación (un tercio del piso) es una cota inferior de su renta.
