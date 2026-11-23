@@ -62,12 +62,14 @@ Decisiones y sentido de su sesgo:
     29.098,22 €, BOCM-20240806-11, anexo V, tabla 2.1.a): base de 25.206,84 €, fuera por 6,84 € (con 2026, por
     1.244 €; con 2025, por unos 824 €, bruto de 29.971,80 € sin la subida del 1,5 %, estimado). El margen es
     mínimo, así que el veredicto se da con sus sensibilidades. Hacia fuera: con la cotización de 2024 (MEI del
-    trabajador 0,12 % en vez de 0,15 %) la base es de 25.215,57 €; con el 0,5 % adicional de 2024 (RDL 4/2024,
-    art. 6.2, aprobado en julio de 2025 y cobrado como atrasos; no estaba en la declaración de la campaña de 2024),
-    25.342,87 €; con trienios, noches o guardias, más. Hacia dentro, sin modelar (igual que en los demás
-    perfiles): la cuota de un colegio profesional de colegiación obligatoria (LIRPF art. 19.2.d, hasta 500 €)
-    la dejaría dentro con que pasara de 6,84 € al año, y también el incremento por movilidad geográfica (art. 19.2.f)
-    si cambió de municipio por el puesto. Con el modelo común queda fuera, pero por la mínima. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
+    trabajador 0,12 % en vez de 0,15 %) la base es de 25.215,57 €; con trienios, noches o guardias, más. El 0,5 %
+    adicional de 2024 (RDL 4/2024, art. 6.2; BOCM-20250721-1) no cuenta: se aprobó en julio de 2025 y se imputa a
+    2025, cuando es exigible (LIRPF art. 14.1.a; criterio de la AEAT del 15-3-2024 para el 0,5 % de 2023); si
+    contara, 25.340,20 € (0,5 % sobre lo vigente a 31-12-2023). Hacia dentro, sin modelar (igual que en los
+    demás perfiles): cuotas sindicales o de un colegio de colegiación obligatoria (LIRPF art. 19.2.d; RIRPF
+    art. 10: las sindicales sin límite, las colegiales hasta 500 €) que pasaran de 6,84 € al año la dejarían
+    dentro, y también el incremento por movilidad (art. 19.2.f) si estaba en paro inscrita y aceptó un puesto que
+    exigía cambiar de residencia (ese año y el siguiente). Con el modelo común queda fuera, por la mínima. El neto y el esfuerzo siguen con el bruto de 2026. `ingresos_bruto` (el
     de 2024) también lo usa la regla del art. 301 LGSS junto al SMI y el transporte de 2026: no cambia ningún
     resultado (el salario supera el SMI mensual en 484 € o más y el 20 % del salario es de al menos 341 € al mes).
     La cotización y el art. 20 son los de 2026: en la pareja, la madre y la enfermera el art. 20 es 0 y la
