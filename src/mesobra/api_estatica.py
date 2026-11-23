@@ -497,10 +497,16 @@ SOBRECARGA = {"zona_id": "zona", "anio": ANIO, "dif_sigma": "decimal?"}
 SOBRECARGA |= {f"pct_{n}_{lado}": PCT for n in (50, 40, 30) for lado in ("inf", "sup")}
 SOBRECARGA |= {f"esfuerzo_mediano_{lado}": PCT for lado in ("inf", "sup")}
 SOBRECARGA["cobertura"] = ("decimal?", 0, 1)
+# los ids de `simulacion.IDS` (vivienda; la habitación no se publica) y los dos del fin del descuento
+PERFILES_SIMULACION = [
+    "smi_30", "teleoperador_23", "pareja_mediana", "madre_oficina", "joven_mediano", "enfermera_26",
+    "adulto", "joven",
+]
 SIMULACION = {
-    "perfil": PERFILES, "municipio_id": "municipio", "criterio": "texto",
+    "perfil": PERFILES_SIMULACION, "municipio_id": "municipio", "criterio": "texto",
     "elegible": "booleano", "eur_mes": POS, "estimado": "booleano",
-    "pct_ocupados_elegibles": ("decimal", 0, 100),
+    "pct_ocupados_elegibles": PCT,  # null en el fin del descuento, que no mira dónde se trabaja
+    "marca_imputada": "booleano?", "marca_excluida": "booleano?", "marca_pocos": "booleano?",
 }
 # bloque -> (columnas, clave); sobrecarga y simulacion son opcionales
 BLOQUES = {

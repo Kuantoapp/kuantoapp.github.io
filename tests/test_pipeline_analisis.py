@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import box
 
-from mesobra import api_estatica, figuras, pipeline_analisis, sdm
+from mesobra import api_estatica, figuras, pipeline_analisis, sdm, simulacion
 
 
 def _esfuerzo() -> pd.DataFrame:
@@ -101,3 +101,99 @@ def test_pocos_contratos():
     )
     assert figuras._pocos(t, [2015, 2024]).to_dict() == {"a": True, "b": False}
     assert figuras._pocos(t, [2015]).to_dict() == {"a": False, "b": False}
+
+
+def _simulacion() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "perfil": ["smi_30", "smi_30_habitacion", "pareja_mediana"],
+            "municipio_id": ["28001", "28001", "28002"],
+            "criterio": "bono_vigente",
+            "elegible": [True, True, False],
+            "eur_mes": [250.0, 250.0, 0.0],
+            "estimado": True,
+            "pct_ocupados_elegibles": [100.0, 100.0, 0.0],
+        }
+    )
+
+
+def _fin() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "perfil": ["adulto", "joven", "adulto", "joven"],
+            "municipio_id": ["28001", "28001", "28002", "28002"],
+            "criterio": ["fin_descuento", "fin_descuento", "fin_descuento_rdl", "fin_descuento_rdl"],
+            "elegible": True,
+            "eur_mes": [32.76, 9.30, 15.26, 9.30],
+            "estimado": True,
+            "pct_ocupados_elegibles": np.nan,
+        }
+    )  # fmt: skip
+
+
+def _calidad() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "municipio_id": ["28001", "28002"],
+            "marca_imputada": [True, False],
+            "marca_excluida": [False, False],
+            "marca_pocos": [False, True],
+        }
+    )
+
+
+def _bloque() -> pd.DataFrame:
+    horas = _simulacion().assign(criterio="horas_viaje")
+    return pipeline_analisis.bloque_simulacion(
+        _simulacion(), _simulacion(), horas, _fin(), _calidad()
+    )
+
+
+def test_bloque_simulacion_sin_habitacion_con_banda_y_marcas():
+    b = _bloque()
+    assert not b["perfil"].str.endswith("_habitacion").any()
+    assert set(b["criterio"]) == {
+        "bono_vigente", "bono_vigente_bruto", "horas_viaje_sin_imputar", "fin_descuento", "fin_descuento_rdl"
+    }  # fmt: skip
+    assert set(b[b["criterio"] == "bono_vigente_bruto"]["perfil"]) == {"pareja_mediana"}
+    smi = b[(b["perfil"] == "smi_30") & (b["criterio"] == "bono_vigente")].iloc[0]
+    assert smi["marca_imputada"] and not smi["marca_pocos"]
+    fin = b[b["criterio"].str.startswith("fin_")]
+    assert fin[["marca_imputada", "pct_ocupados_elegibles"]].isna().all().all()
+
+
+def test_analisis_json_publica_simulacion_y_valida():
+    obj = pipeline_analisis.analisis_json(_esfuerzo(), _bono(), _bloque())
+    api_estatica.validar("analisis.json", obj)
+    assert len(obj["simulacion"]) == len(_bloque())
+    fila = next(f for f in obj["simulacion"] if f["perfil"] == "adulto")
+    assert fila["pct_ocupados_elegibles"] is None and fila["marca_pocos"] is None
+    assert "simulacion" not in pipeline_analisis.analisis_json(_esfuerzo(), _bono())
+
+
+def test_analisis_json_rechaza_perfil_desconocido():
+    obj = pipeline_analisis.analisis_json(
+        _esfuerzo(), _bono(), _bloque().assign(perfil="solo")
+    )
+    with pytest.raises(ValueError, match="perfil"):
+        api_estatica.validar("analisis.json", obj)
+
+
+def test_perfiles_publicados_son_los_de_la_simulacion():
+    ids = {*simulacion.IDS, *simulacion.EDADES_FIN}
+    assert set(api_estatica.PERFILES_SIMULACION) == ids
+
+
+def test_fin_por_corona_y_falla_si_no_es_constante():
+    coronas = pd.Series({"28001": "C2", "28002": "C2"})
+    fin = _fin().assign(criterio="fin_descuento", eur_mes=[32.76, 9.30, 32.76, 9.30])
+    t = figuras.fin_por_corona(fin, coronas)
+    assert t.loc["C2", ("fin_descuento", "adulto")] == 32.76
+    with pytest.raises(ValueError, match="corona"):
+        figuras.fin_por_corona(fin.assign(eur_mes=[1.0, 2.0, 3.0, 4.0]), coronas)
+
+
+def test_con_signo():
+    assert figuras.con_signo(0.023) == "+2,3"
+    assert figuras.con_signo(-0.01) == "−1,0"
+    assert figuras.con_signo(0.0) == "0,0"

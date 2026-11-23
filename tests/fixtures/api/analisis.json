@@ -29,21 +29,21 @@
     {"zona_id":"28001","anio":2024,"pct_40_inf":null,"pct_40_sup":null,"pct_30_inf":null,"pct_30_sup":null,"dif_sigma":null,"pct_50_inf":null,"pct_50_sup":null,"esfuerzo_mediano_inf":null,"esfuerzo_mediano_sup":null,"cobertura":null}
   ],
   "simulacion": [
-    {"perfil":"solo","municipio_id":"28079","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0},
-    {"perfil":"solo","municipio_id":"28079","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0},
-    {"perfil":"solo","municipio_id":"28065","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0},
-    {"perfil":"solo","municipio_id":"28065","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0},
-    {"perfil":"solo","municipio_id":"28092","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0},
-    {"perfil":"solo","municipio_id":"28092","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0},
-    {"perfil":"solo","municipio_id":"28001","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0},
-    {"perfil":"solo","municipio_id":"28001","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0},
-    {"perfil":"pareja","municipio_id":"28079","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0},
-    {"perfil":"pareja","municipio_id":"28079","criterio":"esfuerzo_30","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0},
-    {"perfil":"pareja","municipio_id":"28065","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0},
-    {"perfil":"pareja","municipio_id":"28065","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0},
-    {"perfil":"pareja","municipio_id":"28092","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0},
-    {"perfil":"pareja","municipio_id":"28092","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0},
-    {"perfil":"pareja","municipio_id":"28001","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0},
-    {"perfil":"pareja","municipio_id":"28001","criterio":"esfuerzo_30","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0}
+    {"perfil":"smi_30","municipio_id":"28079","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28079","criterio":"horas_viaje","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28065","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28065","criterio":"horas_viaje","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28092","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28092","criterio":"horas_viaje","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28001","criterio":"bono_vigente","elegible":true,"eur_mes":250.0,"estimado":false,"pct_ocupados_elegibles":100.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"smi_30","municipio_id":"28001","criterio":"horas_viaje","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28079","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28079","criterio":"horas_viaje","elegible":true,"eur_mes":250.0,"estimado":true,"pct_ocupados_elegibles":80.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28065","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28065","criterio":"horas_viaje","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28092","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28092","criterio":"horas_viaje","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28001","criterio":"bono_vigente","elegible":false,"eur_mes":0.0,"estimado":false,"pct_ocupados_elegibles":0.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false},
+    {"perfil":"pareja_mediana","municipio_id":"28001","criterio":"horas_viaje","elegible":false,"eur_mes":0.0,"estimado":true,"pct_ocupados_elegibles":20.0,"marca_imputada":false,"marca_excluida":false,"marca_pocos":false}
   ]
 }
