@@ -61,7 +61,7 @@ NORMA_EUR_KM = {
     "(BOE-A-2023-16461)",
     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2023-16461",
     "licencia": "Reutilización con cita de la fuente: basado en datos de la Agencia Estatal Boletín Oficial del Estado "
-    "(https://www.boe.es/informacion/aviso_legal/index.php)",
+    "(https://www.boe.es/informacion/aviso_legal/index.php); texto original, sin versión consolidada en el BOE",
 }
 # la distancia sale de la línea recta × FACTOR_RODEO, así que nunca baja de la recta; solo absorbe el redondeo de coma flotante
 TOLERANCIA_KM = 1e-6
