@@ -155,6 +155,17 @@ def _tarifas():
     )
 
 
+def test_notas_de_tarifas_congeladas_son_las_del_codigo():
+    # las notas no dependen de las tablas, salvo nota_ruta de si hay claves estimadas (como en _tarifas)
+    congelado = json.loads(
+        (pipeline_euros.APP_DATOS / "tarifas.json").read_text("utf-8")
+    )
+    assert congelado["clave_estimada"] is True
+    meta = _tarifas()["meta"]
+    for clave in ("fuentes", "nota", "nota_ruta", "fuentes_ruta"):
+        assert meta[clave] == congelado["meta"][clave], clave
+
+
 def test_tarifas_trae_los_dos_viajes_al_dia():
     # 10 viajes prorrateado (#162): 3 días = 22,7 viajes × 0,73; con 4 viajes al día, 45,4 × 0,73 = 33,14
     a = _tarifas()["escenarios"]["vigente_2026"]["general"]
