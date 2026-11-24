@@ -224,7 +224,7 @@
       <h2 id="titulo-mantenimiento">Mantenimiento</h2>
       <div class="capas">
         <p>La web es estática: HTML, JavaScript y ficheros JSON, sin servidor ni base de datos. Se publica en GitHub Pages desde el repositorio público, sin coste para el proyecto; Pages solo sería de pago con el repositorio privado (fuente: <code>docs/decisiones.md</code>, 2026-11-21).</p>
-        <p><code>python -m mesobra</code> comprueba que las descargas son las mismas que las del equipo, regenera todos los ficheros de <code>datos/</code> y los valida. Su tiempo total está sin medir. Lo medido son los pasos previos con r5py: unos 52 minutos la matriz de transporte público y 3 la de coche (fuente: <code>docs/decisiones.md</code>, 2026-11-21, #105). El <code>README.md</code> también lo da como pendiente de medir.</p>
+        <p><code>python -m mesobra</code> comprueba que las descargas son las mismas que las del equipo, regenera todos los ficheros de <code>datos/</code> y los valida. Su tiempo total está sin medir. Lo medido son los pasos previos con r5py: unos 52 minutos la matriz de transporte público y 3 la de coche (fuente: <code>docs/decisiones.md</code>, 2026-11-21, #105). La guía <code>docs/reproducir.md</code> también lo da como pendiente de medir.</p>
         <details><summary>Cuándo caduca cada dato</summary>
           <ul>
             <li>IPC del INE: mensual. El censo anual de población cambia cada diciembre (fuente: <code>data/README.md</code>).</li>
@@ -238,7 +238,7 @@
         <details><summary>Lo que hace una persona</summary>
           <ul>
             <li>El Censo 2021 a medida del INE no tiene API: se baja desde el asistente web y cada consulta redondea al azar de nuevo (fuente: <code>data/README.md</code>).</li>
-            <li>Las matrices de tiempos necesitan Java 21 y r5py en local; no corren en la CI (fuente: <code>README.md</code>).</li>
+            <li>Las matrices de tiempos necesitan Java 21 y r5py en local; no corren en la CI (fuente: <code>docs/reproducir.md</code>).</li>
             <li>Los ficheros congelados de <code>datos/</code> solo se regeneran con la firma de las dos personas del equipo, y cada cambio pasa por los revisores automáticos de su área (fuente: <code>docs/decisiones.md</code>, <code>AGENTS.md</code>).</li>
           </ul>
         </details>
