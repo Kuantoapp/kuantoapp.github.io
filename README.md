@@ -16,7 +16,7 @@ Al elegir dónde vivir se compara el alquiler, pero el alquiler es solo una part
 
 ## Qué hace Kuanto
 
-Escribes tu sueldo, cómo es tu hogar y dónde trabajas. Para cada una de las 199 zonas de la Comunidad (los 178 municipios y los 21 distritos de Madrid capital; fuente: [`zonas.geojson`](app/datos/LEEME.md#zonasgeojson)) Kuanto hace esta cuenta y la pinta en un mapa:
+Escribes tu sueldo, cómo es tu hogar y dónde trabajas. Para cada una de las 199 zonas de la Comunidad (los 178 municipios distintos de la capital y los 21 distritos de Madrid; fuente: [`zonas.geojson`](app/datos/LEEME.md#zonasgeojson)) Kuanto hace esta cuenta y la pinta en un mapa:
 
 ```
   sueldo neto (después de IRPF y cotizaciones)
