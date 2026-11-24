@@ -4,6 +4,7 @@ import geopandas as gpd
 import openpyxl
 import pandas as pd
 import pytest
+from scipy.stats import lognorm
 from shapely import Point, box
 
 from mesobra import alquiler, api_estatica, pipeline_euros, sdm
@@ -432,3 +433,38 @@ def test_brecha_por_zona_precedencia(tmp_path):
     assert pureza.iloc[:2].tolist() == pytest.approx([0, 300 / 325])
     assert pureza.iloc[2:].isna().all()
     assert z.attrs["ipc_hasta"] == "2026-10"
+
+
+def test_rangos_mediana_de_control():
+    # los de #246 (50 testigos) y #368 (70), con su cobertura del 96,7 y el 95,9 %
+    assert alquiler.rangos_mediana(50) == (18, 33)
+    assert alquiler.rangos_mediana(70) == (27, 44)
+
+
+def test_semiancho_lognormal_coincide_con_el_teorico():
+    # lognormal conocida (mediana 800, sigma 0,4): p25 y p75 salen de ella y el IC de la mediana con
+    # n = 70 es el de los percentiles 27/70 y 44/70 de esa misma distribución
+    ley = lognorm(s=0.4, scale=800)
+    p25, p75 = pd.Series([ley.ppf(0.25), ley.ppf(0.25)]), pd.Series([ley.ppf(0.75)] * 2)
+    teorico = (ley.ppf(44 / 70) - ley.ppf(27 / 70)) / 2 / 800
+    calculado = alquiler.semiancho_lognormal(p25, p75, 70)
+    assert calculado.to_numpy() == pytest.approx([teorico, teorico], rel=1e-9)
+
+
+def test_semiancho_lognormal_deja_nulas_las_zonas_sin_cuartiles_validos():
+    s = alquiler.semiancho_lognormal(
+        pd.Series([700.0, 900.0, None]), pd.Series([900.0, 900.0, 900.0]), 70
+    )
+    assert s.notna().tolist() == [True, False, False]
+
+
+def test_semiancho_lognormal_con_un_n_por_zona_y_nulo_con_menos_de_9():
+    n = pd.Series([70, 200, 5, 6, 8, 9])
+    p25, p75 = pd.Series([700.0] * len(n)), pd.Series([900.0] * len(n))
+    s = alquiler.semiancho_lognormal(p25, p75, n)
+    assert s.iloc[0] == pytest.approx(
+        alquiler.semiancho_lognormal(p25, p75, 70).iloc[0]
+    )
+    assert s.iloc[1] < s.iloc[0]
+    assert s.iloc[2:5].isna().all()  # con 6 y 8 saldría inf, no un IC
+    assert pd.notna(s.iloc[5]) and s.iloc[5] < float("inf")

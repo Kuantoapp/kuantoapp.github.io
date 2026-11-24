@@ -90,6 +90,7 @@
         </details>
         <details><summary>Por qué el mapa va en quintiles</summary>
           <p>Los quintiles reparten las zonas con dato en cinco grupos del mismo tamaño, así que el mapa enseña la posición de cada zona respecto a las demás y no la distancia entre ellas. Con quintiles, 17 de los 21 distritos caen en el grupo más alto; con cinco intervalos iguales entre el 10,7 % y el 24,0 %, solo llegan 8, y casi la mitad de las zonas (77 de 157) queda entre el 13,3 % y el 16,0 % (fuente: SERPAVI y ADRH, 2024, elaboración propia).</p>
+          <p>Las clases son más estrechas que el error del dato: los cortes de los quintiles (13,9; 14,8; 16,0 y 18,2 %) están a saltos del 6,7, el 8,1 y el 13,7 % de uno al siguiente, y el margen del alquiler de la zona típica, con 70 alquileres declarados, es de ±8 % (intervalo del 95 %; estimado). Con los alquileres declarados de cada zona, el margen cruza al menos un corte en 89 de las 157 zonas con dato (estimado; no incluye el error de la renta). Una zona cerca de un corte puede caer en el quintil de al lado: el color da la posición aproximada, no la clase exacta (fuente: SERPAVI y ADRH, 2024, elaboración propia).</p>
         </details>
         </div>
         <figure class="dato-imagen">
@@ -108,13 +109,14 @@
         <details><summary>Madrid entero y los mayores cambios</summary>
           <p>En Madrid entero pasa del 19,1 % en 2015 a un máximo del 21,0 % en 2020 y vuelve al 19,6 % en 2024 (fuente: SERPAVI y ADRH). Entre las zonas con al menos 70 alquileres declarados en 2015 y en 2024, el esfuerzo baja más en Chinchón (3,1 puntos) y en Moraleja de Enmedio (2,6) y sube más en los distritos de Salamanca (2,3) y Retiro (1,8) (fuente: SERPAVI y ADRH, 2015-2024). Pelayos de la Presa baja 4,0 puntos, pero con 34 alquileres declarados en 2015 ese cambio es impreciso (fuente: SERPAVI y ADRH). Las mayores bajadas dependen del umbral: Chinchón tiene 76 en uno de los dos años y Moraleja, 80, y con 100 serían Mejorada del Campo (2,2 puntos) y Loeches (1,8). Salamanca y Retiro siguen siendo las mayores subidas con 30, 50, 70 o 100 (fuente: SERPAVI y ADRH, 2015-2024).</p>
         </details>
-        <details><summary>Si los cortes fueran otros</summary>
-          <p>Los cortes del mapa son simétricos en torno a 0. Con cortes fijos de ±0,5 y ±1 punto, 15 de las 142 zonas cambiarían de clase (17 si cada corte se asigna a la clase de abajo) y el mensaje sería el mismo: 91 zonas se mueven menos de un punto (fuente: SERPAVI y ADRH, elaboración propia).</p>
+        <details><summary>Qué es «sin cambio claro»</summary>
+          <p>El mapa tiene tres clases: baja, sin cambio claro y sube. Una zona baja o sube solo si su cambio supera su propio error: el del alquiler mediano de cada año, que depende de cuántos alquileres declarados tiene y de lo dispersos que son, multiplicado por el esfuerzo de ese año y combinado el de los dos años (raíz de la suma de sus cuadrados) (intervalo del 95 %; estimado; fuente: SERPAVI y ADRH, elaboración propia). El error mediano es de 0,5 puntos en las zonas con al menos 70 alquileres declarados en los dos años y de 3,0 en las imprecisas (estimado; fuente: SERPAVI y ADRH, elaboración propia).</p>
+          <p>De las 142 zonas con dato en los dos años, 29 bajan (2 de ellas imprecisas), 31 suben (ninguna imprecisa) y 82 no tienen un cambio claro, 31 de ellas imprecisas (estimado; fuente: SERPAVI y ADRH, 2015-2024, elaboración propia). Entre los 21 distritos de Madrid, 12 suben, 3 bajan y 6 no tienen un cambio claro (estimado; fuente: SERPAVI y ADRH, 2015-2024). Con 142 zonas y un intervalo del 95 %, unas 7 saldrían claras por azar aunque nada hubiera cambiado (estimado). No incluye el error de la renta del ADRH ni el del alquiler de los contratos nuevos (fuente: SERPAVI y ADRH, elaboración propia).</p>
         </details>
         </div>
         <figure class="dato-imagen">
-          <a href="img/esfuerzo_cambio.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="811" height="1125" loading="lazy" src="img/esfuerzo_cambio.png" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024, en puntos porcentuales, con colores divergentes centrados en cero. Hay zonas que suben y zonas que bajan repartidas por todo el territorio, sin un patrón general de subida."></a>
-          <figcaption>Cambio del esfuerzo entre 2015 y 2024, en puntos porcentuales; los cortes son simétricos en torno a cero. Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
+          <a href="img/esfuerzo_cambio.png" class="ampliar" title="Ver la imagen a tamaño completo"><img width="811" height="1125" loading="lazy" src="img/esfuerzo_cambio.png" alt="Mapa del cambio del esfuerzo de alquiler entre 2015 y 2024, en tres clases: baja, sin cambio claro y sube. Suben 31 zonas y bajan 29, en bloques repartidos por toda la Comunidad; 82 no tienen un cambio claro y 57 no tienen dato."></a>
+          <figcaption>Cambio del esfuerzo entre 2015 y 2024 en tres clases: una zona baja o sube si su cambio supera el error de su propio alquiler mediano (intervalo del 95 %; estimado). Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</figcaption>
         </figure>
       </div>
     </section>
