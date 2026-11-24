@@ -1,7 +1,7 @@
 // Conecta la página: carga los datos, crea el mapa y lo repinta al cambiar el formulario.
 // La validación, el color y los textos están en vista.js y el cálculo en calculo.js; aquí solo hay DOM.
 // El sueldo no sale del navegador: lo único que se pide por red son los ficheros de `datos/`, del mismo sitio.
-import { calcular } from "./calculo.js";
+import { calcular, netoMes } from "./calculo.js";
 import {
   ESCENARIO_NEUTRO, METRICAS, avisoPrueba, baseEscala, avisos, avisosEntrada, contextoFicha, contorno, entradaEscenario, estadoAEnlace, estadoDeEnlace, hayEscenario, imprecisas, leyenda, licencias, lineaDiferencia,
   lineaTooltip, lineasFicha, mejores, modosDisponibles, nombresFuente, pintar, tituloEscenario, validar, valorDeEjemplo,
@@ -420,9 +420,10 @@ async function main() {
     $("subida-valor").textContent = `${v.subida} %`;
     history.replaceState(history.state, "", `#${estadoAEnlace(v)}`);
     estado.metrica = v.metrica;
-    const algunaZona = Object.values(actual.zonas)[0];
-    // Con dos sueldos `zona.neto` es el del hogar: no es el de la primera persona.
-    if (v.fuente === "bruto") formulario().elements.neto.value = entrada.sueldos.length === 1 ? String(Math.round(algunaZona.neto)) : "";
+    // El neto de cada sueldo dado en bruto, con la misma tabla que `calcular` (con dos sueldos `zona.neto` es el del hogar).
+    entrada.sueldos.forEach((s, k) => {
+      if ("bruto" in s) formulario().elements[`neto${k ? "2" : ""}`].value = String(Math.round(netoMes(api.netos, s.bruto, entrada.hogar)));
+    });
     const base = baseEscala(estado.metrica, api, estado.entrada, estado.resultado);
     const pintado = pintar(api.zonas, estado.resultado, estado.metrica, { pocas: imprecisas(api.alquiler), base });
     actualizar(pintado.zonas);
