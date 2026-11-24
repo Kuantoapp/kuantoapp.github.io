@@ -1,5 +1,7 @@
 # Verificación: licencia de la información del INE
 
+> Qué licencia tienen los datos del INE y qué cita exigen, comprobado en el aviso legal del INE. Es una de las verificaciones de Kuanto; qué significa cada estado y el resto están en el [índice](README.md).
+
 Sigue a [#147](https://github.com/yeraybc/DataMad-hackaton-2026/issues/147); la decisión está en [`docs/decisiones.md`](../decisiones.md) (entrada del 2026-11-16, «Licencia de los datos derivados del INE: CC BY 4.0»).
 
 - **Fecha de consulta:** 2026-11-16.

@@ -1,5 +1,7 @@
 # Verificaciones: precios del transporte por colectivo (2026)
 
+> El precio de cada título de transporte para cada colectivo (joven, familia numerosa, discapacidad), comprobado en los BOCM de tarifas de 2026. Es una de las verificaciones de Kuanto; qué significa cada estado y el resto están en el [índice](README.md).
+
 Evidencia de [#163](https://github.com/yeraybc/DataMad-hackaton-2026/issues/163) (PR [#286](https://github.com/yeraybc/DataMad-hackaton-2026/pull/286)). Sostiene los precios por colectivo de `src/mesobra/transporte.py` y la línea del 18-11 de [decisiones](../decisiones.md).
 
 - **Fecha de consulta:** 2026-11-18, la misma en todas las filas.

@@ -1,5 +1,7 @@
 # Verificaciones: renta, tenencia, sobrecarga y Bono Alquiler Joven
 
+> Las afirmaciones sobre renta, vivienda y el Bono Alquiler Joven de la ficha de la idea, comprobadas con el INE, Eurostat, el catálogo de la Comunidad de Madrid y el BOCM antes de construir nada. Es una de las verificaciones de Kuanto; qué significa cada estado y el resto están en el [índice](README.md).
+
 Resuelve las marcas «(verificar)» de la sección 16 de la [ficha](../../ideas/plan1/idea-definitiva/propuesta-A-unificada.md) que pide la issue F0-04 ([#67](https://github.com/yeraybc/DataMad-hackaton-2026/issues/67)), en el orden de la issue. No cambia la ficha: lo aplica F1-16 ([#84](https://github.com/yeraybc/DataMad-hackaton-2026/issues/84)).
 
 - **Fecha de consulta:** 2026-11-14, la misma en todas las filas.
