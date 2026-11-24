@@ -21,7 +21,7 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           AUTHOR: ${{ github.event.pull_request.user.login }}
           HEAD: ${{ github.event.pull_request.head.sha }}
-          TRUSTED: "yeraybc izan-diaz"
+          TRUSTED: "yeraybc izan-diaz alexjimenez-git"
         run: |
           for t in $TRUSTED; do [ "$AUTHOR" = "$t" ] && { echo "Autor de confianza: $AUTHOR"; exit 0; }; done
           ok=$(gh api "repos/$REPO/pulls/$PR/reviews" --paginate \
