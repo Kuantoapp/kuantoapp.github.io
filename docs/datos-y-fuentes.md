@@ -8,15 +8,15 @@ Todo sale de datos públicos. Ni el INE, ni el Ministerio de Vivienda y Agenda U
 
 | Pieza | Fuente | Año o versión | Escala | Licencia |
 |---|---|---|---|---|
-| Zonas | Secciones censales del INE, población del Atlas de Distribución de Renta de los Hogares (ADRH) y coronas tarifarias del CRTM | Secciones a 1-1-2025, población de 2024 | 178 municipios y 21 distritos | CC BY 4.0 (INE); licencia del CRTM |
+| Zonas | Secciones censales del INE, población del Atlas de Distribución de Renta de los Hogares (ADRH), coronas tarifarias del CRTM y edificios de OpenStreetMap (centro de población) | Secciones a 1-1-2025, población de 2024 | 178 municipios y 21 distritos | CC BY 4.0 (INE); licencia del CRTM; ODbL 1.0 (OpenStreetMap) |
 | Sueldo neto | Ley del IRPF, Decreto Legislativo 1/2010 de la Comunidad de Madrid, Orden PJC/297/2026 de cotización y RDL 5/2026 (BOE) | Parámetros de 2026 | Persona | Reutilización con cita del BOE |
-| Alquiler | SERPAVI del Ministerio de Vivienda y Agenda Urbana: alquileres de vivienda colectiva declarados a Hacienda | Último año 2024, fichero actualizado el 2026-07-09 | Sección censal, agregada a zona | Condiciones de reutilización del Ministerio |
+| Alquiler | SERPAVI del Ministerio de Vivienda y Agenda Urbana: alquileres de vivienda colectiva declarados a Hacienda | Último año 2024, fichero actualizado el 2026-07-09 | Municipio y distrito de Madrid (las secciones censales solo se usan en el informe) | Condiciones de reutilización del Ministerio |
 | Alquiler llevado a hoy | IPC del alquiler de la Comunidad de Madrid (INE) | Hasta 2026-10 | Comunidad | CC BY 4.0 |
-| Ajuste a contrato nuevo | Estadística de viviendas declaradas en el IRPF de la Agencia Tributaria | 2024 | Municipio de más de 20.000 habitantes y código postal | Reutilización citando la fuente |
-| Transporte | Tarifas del CRTM publicadas en el BOCM, descuento del RDL 17/2025, calendario laboral del Decreto 75/2025 y fichas de títulos del CRTM | Precios de 2026 | Corona tarifaria | Disposiciones oficiales; licencia del CRTM |
+| Ajuste a contrato nuevo | Estadística de viviendas declaradas en el IRPF de la Agencia Tributaria | 2024 | Municipio de más de 20.000 habitantes y código postal, repartido a distritos con portales de OpenStreetMap | Reutilización citando la fuente; ODbL 1.0 |
+| Transporte | Tarifas del CRTM publicadas en el BOCM, descuento del RDL 17/2025, calendario laboral del Decreto 75/2025 y fichas de títulos del CRTM | Precios de 2026 | Corona tarifaria | Disposiciones oficiales; aviso legal y licencia de datos abiertos del CRTM; ODbL 1.0 |
 | Tiempos de viaje | Horarios GTFS del CRTM y red de calles de OpenStreetMap, calculados con r5py | GTFS descargados el 2026-11-15; OpenStreetMap del 2026-11-13 | De zona a zona | Licencia del CRTM; ODbL 1.0 |
 | Coche | Coste por kilómetro de la Orden HFP/792/2023 y red de calles de OpenStreetMap | 0,26 €/km, Orden de 2023 | De zona a zona | Reutilización con cita del BOE; ODbL 1.0 |
-| Cesta básica | Encuesta de Presupuestos Familiares (EPF) de la Comunidad de Madrid, IPC por subgrupos del INE y EPF de España por nivel de ingresos | EPF de 2025, IPC hasta 2026-10 | Comunidad | CC BY 4.0 |
+| Cesta básica | Encuesta de Presupuestos Familiares (EPF) de la Comunidad de Madrid, IPC por subgrupos del INE y EPF de España por nivel de ingresos | EPF de 2025, IPC hasta 2026-10 | Comunidad (España para el tramo de ingresos y el IPC del agua) | CC BY 4.0 |
 
 Fuente de la tabla: la sección [De dónde sale cada pieza](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-fuentes) de la nota metodológica y el bloque `meta.fuentes` de cada fichero de [`app/datos/`](../app/datos/LEEME.md).
 

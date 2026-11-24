@@ -30,9 +30,9 @@ Una persona de 30 años que vive sola, gana 24.000 € brutos al año y trabaja 
 | Parla | unos 467 € | unas 26 |
 | Madrid, distrito Centro | unos −378 € (no le llega) | unas 26 |
 
-Fuente: cálculo de Kuanto (`mesobra.calculo`) sobre los ficheros de `app/datos/` congelados el 2026-11-23; estimado, porque el alquiler está actualizado con el IPC y el transporte usa tiempos simulados.
+Fuente: cálculo de Kuanto (`mesobra.calculo`) sobre los ficheros de `app/datos/` del 2026-11-24, con los valores por defecto de la web (piso de 69 m², tarifas de 2026 con descuento, alquiler de un contrato nuevo); estimado, porque el neto se calcula con la normativa, el alquiler se actualiza con el IPC y se ajusta a contrato nuevo, y las horas salen de un simulador. Con lo que pagan los inquilinos actuales sobrarían unos 435 €, 574 € y −127 €.
 
-Parla le deja más dinero que Getafe, pero a cambio de unas 14 horas más de viaje al mes. Kuanto pone las dos cifras juntas para que cada cual decida qué le compensa. La web también da una horquilla del sobrante, porque el alquiler de una zona no es un precio único.
+Parla le deja más dinero que Getafe, pero a cambio de unas 14 horas más de viaje al mes: unos 12,7 € por cada hora extra, la cifra que pinta el mapa al abrir. Kuanto pone las dos cifras juntas para que cada cual decida qué le compensa. La web también da una horquilla del sobrante, porque el alquiler de una zona no es un precio único.
 
 ## Por qué la cuenta se hace en tu navegador
 
@@ -45,7 +45,7 @@ Algunas cifras no son un dato publicado tal cual, sino el resultado de un modelo
 ## Lo que Kuanto no sabe
 
 - El alquiler sale de contratos declarados, no de anuncios, así que es un suelo: firmar hoy suele costar más.
-- El neto supone tributación individual y no incluye deducciones como la de alquiler para jóvenes de Madrid, así que en esos casos el neto real puede ser mayor.
+- El neto supone tributación individual y no incluye deducciones como la de alquiler de Madrid para menores de 40 años, así que en esos casos el neto real puede ser mayor.
 - Los tiempos de viaje salen de un simulador. No los leas al minuto.
 
 La lista completa, con cifras y fuentes, está en [Supuestos](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos) y [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites) de la nota metodológica.
