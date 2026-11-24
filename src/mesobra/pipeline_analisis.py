@@ -406,8 +406,9 @@ def main() -> None:
     sin1, pocos1 = figuras.mapa_esfuerzo(
         con_testigos, zonas, APP_IMG / "esfuerzo_ultimo.png"
     )
+    error = figuras.errores_cambio(tabla, zona)
     sin2, pocos2 = figuras.mapa_cambio(
-        con_testigos, zonas, APP_IMG / "esfuerzo_cambio.png"
+        con_testigos, zonas, APP_IMG / "esfuerzo_cambio.png", error
     )
     figuras.dispersion_bono(solicitudes, zonas, APP_IMG / "bono_dispersion.png")
     _figuras_n1(api, res, sim, zonas)

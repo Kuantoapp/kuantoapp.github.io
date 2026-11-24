@@ -15,7 +15,7 @@ from matplotlib.colors import BoundaryNorm, ListedColormap
 from matplotlib.patches import Patch
 
 from mesobra import esfuerzo as esf
-from mesobra.alquiler import MIN_TESTIGOS
+from mesobra.alquiler import MIN_TESTIGOS, semiancho_lognormal
 from mesobra.zonas import MADRID
 
 ZONAS = Path(__file__).resolve().parents[2] / "app/datos/zonas.geojson"
@@ -56,11 +56,36 @@ def es(x: float, decimales: int = 1) -> str:
     return f"{x:,.{decimales}f}".translate(str.maketrans(",.-", ".,−"))
 
 
-def cortes_simetricos(valores: pd.Series) -> list[float]:
-    """`[-m, -q2, -q1, 0, q1, q2, m]`: terciles y máximo de |valor|, para colorear en torno a 0."""
-    q1, q2 = np.nanquantile(np.abs(valores), [1 / 3, 2 / 3])
-    m = np.nanmax(np.abs(valores))
-    return [-m, -q2, -q1, 0.0, q1, q2, m]
+def errores_cambio(tabla: pd.DataFrame, zona: pd.DataFrame) -> pd.Series:
+    """Semiancho del IC 95 % del cambio del esfuerzo de cada zona, en fracción de la renta (×100 = p. p.).
+
+    √(e₁² + e₂²) con e = esfuerzo × semiancho de la cuantía mensual del SERPAVI de cada año (lognormal
+    ajustada a los p25 y p75 de la zona y a sus propios alquileres declarados, #354). Supone los dos
+    años independientes. `zona` es `alquiler_zona`; es nulo si a la zona le falta algo en un año.
+    """
+    d = tabla[["zona_id", "anio", "esfuerzo"]].merge(
+        zona[["zona_id", "anio", "testigos", "cuantia_p25", "cuantia_p75"]],
+        on=["zona_id", "anio"],
+        validate="one_to_one",
+    )
+    semiancho = semiancho_lognormal(d["cuantia_p25"], d["cuantia_p75"], d["testigos"])
+    d["error"] = d["esfuerzo"] * semiancho
+    e = d.pivot(index="zona_id", columns="anio", values="error")
+    return np.hypot(e[e.columns.min()], e[e.columns.max()]).rename("error")
+
+
+def _clases(cambio: pd.Series, error: pd.Series) -> pd.Series:
+    """0 si baja más que su error, 1 «sin cambio claro», 2 si sube más; nulo si falta el cambio.
+
+    Falla si una zona con cambio no tiene error finito: no se la puede colar en «sin cambio claro».
+    """
+    cambio = cambio.dropna()
+    if sin := sorted(cambio.index[~np.isfinite(error.reindex(cambio.index))]):
+        raise ValueError(f"Zonas con cambio y sin error: {sin}")
+    error = error.reindex(cambio.index)
+    return (1 + (cambio > error).astype(int) - (cambio < -error).astype(int)).rename(
+        "clase"
+    )
 
 
 def _unir(zonas: gpd.GeoDataFrame, serie: pd.Series) -> gpd.GeoDataFrame:
@@ -95,7 +120,7 @@ def _rangos(cortes: list[float]) -> list[str]:
 def _mapa(
     zonas: gpd.GeoDataFrame,
     cortes: list[float],
-    paleta: str,
+    paleta: str | ListedColormap,
     textos: tuple[str, list[str], str],
     ruta: Path,
 ) -> None:
@@ -193,25 +218,33 @@ def mapa_esfuerzo(
 
 
 def mapa_cambio(
-    tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path
+    tabla: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path, error: pd.Series
 ) -> tuple[int, int]:
-    """Cambio del esfuerzo entre el primer y el último año (`tabla` con `testigos`) en 6 clases simétricas en torno a 0."""
+    """Cambio del esfuerzo entre el primer y el último año (`tabla` con `testigos`) en tres clases.
+
+    Cada zona se compara con su propio `error` (de `errores_cambio`, en fracción): «baja» y «sube»
+    son cambios mayores que él; el resto es «sin cambio claro», no distinguible de cero.
+    """
     desde, hasta = int(tabla["anio"].min()), int(tabla["anio"].max())
-    g = _unir(zonas, esf.cambio(tabla).drop(MADRID, errors="ignore"))
+    cambio = esf.cambio(tabla).drop(MADRID, errors="ignore")
+    g = _unir(zonas, _clases(cambio, error))
     g = _marcar(g, _pocos(tabla, [desde, hasta]))
-    cortes = cortes_simetricos(g["valor"])
-    etiquetas = _rangos(cortes)
-    # las clases de los extremos llegan hasta el mínimo y el máximo reales: se rotulan abiertas
-    etiquetas[0], etiquetas[-1] = (
-        f"< {es(100 * cortes[1])}",
-        f"> {es(100 * cortes[-2])}",
-    )
+    n = g["valor"].value_counts().reindex([0, 1, 2], fill_value=0)
+    etiquetas = [
+        f"baja más que su error (n = {n[0]})",
+        f"sin cambio claro (n = {n[1]})",
+        f"sube más que su error (n = {n[2]})",
+    ]
     titulo = (
-        f"Cambio del esfuerzo {desde}-{hasta} (p. p.)\n"
-        "cortes simétricos en torno a 0:\nterciles de |cambio|"
+        f"Cambio del esfuerzo {desde}-{hasta}\n"
+        "claro si supera el error de la zona\n"
+        "(IC 95 % del alquiler mediano; estimado)"
     )
-    pie = f"Extremos: mínimo {con_signo(g['valor'].min())} y máximo {con_signo(g['valor'].max())} p. p.\n"
-    _mapa(g, cortes, "RdBu_r", (titulo, etiquetas, pie + FUENTE_MAPAS), ruta)
+    pie = f"Extremos: mínimo {con_signo(cambio.min())} y máximo {con_signo(cambio.max())} p. p.\n"
+    paleta = ListedColormap(["#2166ac", "#efe8d8", "#b2182b"])
+    _mapa(
+        g, [-0.5, 0.5, 1.5, 2.5], paleta, (titulo, etiquetas, pie + FUENTE_MAPAS), ruta
+    )
     return int(g["valor"].isna().sum()), int(g["pocos"].sum())
 
 
