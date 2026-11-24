@@ -38,7 +38,7 @@ flowchart LR
   C --> E["Asistente (MCP)<br>las mismas cifras<br>para una IA"]
 ```
 
-Cada fuente se descarga tal cual y se guarda con su huella digital. Un paquete de Python las cruza y publica los resultados como ficheros abiertos, que la web y el asistente leen sin servidor. El detalle está en [Cómo funciona Kuanto](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-pasos).
+Cada fuente se descarga tal cual y se guarda con su huella digital. Un paquete de Python las cruza y publica los resultados como ficheros abiertos, que la web y el asistente leen sin servidor. Un ejemplo con cifras y lo que Kuanto no sabe están en [Cómo funciona Kuanto](docs/como-funciona.md); qué aporta cada fuente, en [Datos y fuentes](docs/datos-y-fuentes.md).
 
 ## Por qué puedes fiarte
 
@@ -73,7 +73,9 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 
 | Si quieres… | Empieza por |
 |---|---|
-| Entender qué hace Kuanto y cómo leer el mapa | [Cómo funciona](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html) |
+| Entender qué hace Kuanto, con un ejemplo | [Cómo funciona Kuanto](docs/como-funciona.md) y [preguntas frecuentes](docs/preguntas-frecuentes.md) |
+| Saber qué significa un término | [Glosario](docs/glosario.md) |
+| Saber de qué fuente sale cada pieza | [Datos y fuentes](docs/datos-y-fuentes.md) |
 | Revisar el método, los supuestos y los límites | [Nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) e [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html) |
 | Reutilizar los datos | [Datos abiertos de Kuanto](app/datos/LEEME.md) |
 | Saber de dónde sale cada descarga | [Fuentes descargadas](data/README.md) |
