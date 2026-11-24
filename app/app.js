@@ -710,13 +710,14 @@ const menuDe = (n) => document.querySelector(`.menu[data-tarjeta="${n}"]`);
 // Tarjeta 0: la bienvenida, sin campos ni contador.
 const BIENVENIDA = {
   titulo: "Selecciona tus condiciones",
-  entradilla: "Seis tarjetas: tu hogar, tu sueldo, tu trabajo, la zona de referencia, qué pinta el mapa y otros escenarios. Al final verás el mapa con lo que elijas.",
+  entradilla: "Responde seis tarjetas y al final verás el mapa de la Comunidad con lo que elijas. Tu sueldo no sale de este navegador.",
 };
 
 function verTarjeta(n) {
   tarjeta = n;
   const menu = menuDe(n); // `null` en la bienvenida
   for (const m of document.querySelectorAll(".menu")) m.classList.toggle("tarjeta-actual", m === menu);
+  herramienta.classList.toggle("bienvenida", n === 0); // lámina oscura con la lista de tarjetas y entrada del mapa (CSS)
   $("guia-paso").textContent = n === 0 ? "" : `Tarjeta ${n} de ${TARJETAS}: `;
   $("guia-nombre").textContent = menu?.dataset.titulo ?? BIENVENIDA.titulo;
   $("guia-entradilla").textContent = menu?.dataset.entradilla ?? BIENVENIDA.entradilla;
@@ -728,7 +729,7 @@ function verTarjeta(n) {
 }
 
 function empezarGuia() {
-  herramienta.classList.remove("entrando", "saliendo");
+  herramienta.classList.remove("entrando", "saliendo", "abriendo");
   herramienta.classList.add("guiado");
   alCambiarModo(true);
   verTarjeta(0);
@@ -753,10 +754,24 @@ function guardarRecorrido() {
 }
 
 function cerrarGuia() {
-  herramienta.classList.remove("guiado", "saliendo");
+  herramienta.classList.remove("guiado", "saliendo", "bienvenida");
   for (const m of document.querySelectorAll(".tarjeta-actual")) m.classList.remove("tarjeta-actual");
   tarjeta = 0;
   alCambiarModo(false);
+}
+
+// Entrada escalonada de la barra, el panel y la leyenda (CSS de `.entrando`; con `abriendo`, también el mapa). Las clases
+// se van al acabar sus animaciones.
+function animarEntrada(...clases) {
+  herramienta.classList.add("entrando", ...clases);
+  const animaciones = herramienta.getAnimations({ subtree: true }).map((a) => a.finished);
+  Promise.allSettled(animaciones).then(() => herramienta.classList.remove("entrando", ...clases));
+}
+
+// Al entrar en la herramienta: la primera vez, las tarjetas; después, el mapa final. En los dos casos el mapa se revela (CSS).
+function abrirHerramienta() {
+  if (recorridoHecho() === null) empezarGuia();
+  animarEntrada("abriendo");
 }
 
 // Transición al mapa final: sale la tarjeta, cambia la disposición y entran la barra, el panel y la leyenda mientras las zonas se colorean.
@@ -764,9 +779,7 @@ function terminarGuia() {
   const llegar = () => {
     cerrarGuia();
     guardarRecorrido();
-    herramienta.classList.add("entrando");
-    const animaciones = herramienta.getAnimations({ subtree: true }).map((a) => a.finished);
-    Promise.allSettled(animaciones).then(() => herramienta.classList.remove("entrando"));
+    animarEntrada();
     $("mejores-titulo").focus();
   };
   if (reducido()) return llegar();
@@ -789,8 +802,8 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
     if (history.state?.portada) history.back();
     else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
-    if (recorridoHecho() === null) empezarGuia(); // la primera vez, por las tarjetas; después, el mapa final
-    else herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
+    abrirHerramienta();
+    if (!guiado()) herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
@@ -804,7 +817,7 @@ window.addEventListener("popstate", () => {
   const antes = document.body.classList.contains("en-herramienta");
   if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; al volver, mapa final o bienvenida
   verHerramienta(vistaDeUrl());
-  if (vistaDeUrl() && !antes && !guiado() && recorridoHecho() === null) empezarGuia(); // solo al entrar: «Deshacer» también usa el historial
+  if (vistaDeUrl() && !antes && !guiado()) abrirHerramienta(); // solo al entrar: «Deshacer» también usa el historial
   // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
   if (vistaDeUrl() !== antes) (vistaDeUrl() ? (guiado() ? $("guia-titulo") : herramienta.querySelector(".menu-boton")) : $("titulo-portada")).focus();
 });
@@ -822,7 +835,7 @@ const recorrido = recorridoHecho();
 if (recorrido !== null && recorrido !== "#" && !location.hash) history.replaceState(history.state, "", location.search + recorrido);
 addEventListener("pagehide", () => recorridoHecho() !== null && guardarRecorrido());
 verHerramienta(vistaDeUrl());
-if (vistaDeUrl() && recorrido === null) empezarGuia();
+if (vistaDeUrl()) abrirHerramienta();
 
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;

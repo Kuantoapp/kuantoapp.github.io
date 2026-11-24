@@ -633,3 +633,52 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .informe .indice ul { gap: 4px 8px; }
   .informe .indice a { min-width: 44px; justify-content: center; font-size: 14px; letter-spacing: -0.02em; }
 }
+
+/* --- Entradas (#434): cada página recibe como la portada. Al abrir, el titular, el texto, el índice y el primer bloque
+   suben escalonados; en el mapa, la bienvenida es una lámina con las seis tarjetas y el mapa se revela desde el centro,
+   como las coronas del plano. Solo al cargar o al cambiar de vista: nada ligado al desplazamiento. ----------------- */
+.guia-lista { display: none; }
+#herramienta.bienvenida #guia-tarjeta { background: var(--tinta) radial-gradient(circle at 1px 1px, var(--tinta-punto) 1px, transparent 1.4px) 0 0 / 24px 24px; border-color: transparent; color: var(--tinta-texto); }
+#herramienta.bienvenida #guia-titulo { color: var(--tinta-texto); font-size: clamp(34px, 3.4vw, 46px); line-height: 1.05; }
+#herramienta.bienvenida #guia-entradilla { margin-top: 16px; color: var(--tinta-texto-2); font-size: 17px; }
+#herramienta.bienvenida .guia-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin: 28px 0 0; padding: 0; list-style: none; counter-reset: guia; }
+.guia-lista li { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border-top: 1px solid var(--tinta-linea); color: var(--tinta-texto); font-size: 16px; }
+.guia-lista li::before { counter-increment: guia; content: counter(guia, decimal-leading-zero); color: var(--tinta-acento); font-family: var(--fuente-titular); font-size: 20px; font-variant-numeric: lining-nums tabular-nums; }
+#herramienta.bienvenida .guia-pie { border-top-color: var(--tinta-linea); background: var(--tinta); }
+#herramienta.bienvenida #guia-siguiente { background: var(--superficie); color: var(--tinta); }
+#herramienta.bienvenida #guia-siguiente:hover { background: var(--tinta-acento); }
+#herramienta.bienvenida #guia-siguiente::after { display: block; } /* «Comenzar» lleva la flecha de los botones de la web */
+#herramienta.bienvenida #guia-tarjeta :focus-visible { outline-color: var(--tinta-acento); }
+@media (min-width: 40.01rem) {
+  #herramienta.bienvenida #barra-filtros { display: flex; flex-direction: column; }
+  #herramienta.bienvenida #guia-tarjeta { margin-block: auto; } /* centrada en la columna; si no cabe, empieza arriba */
+}
+@media (max-width: 40rem) { /* a 320×640 la lista entera queda sobre el pie fijo */
+  #herramienta.bienvenida #guia-titulo { font-size: 28px; }
+  .guia-lista li { padding: 8px 0; }
+}
+@media (max-width: 40rem) and (max-height: 45rem) { /* móvil bajo: la lista es un resumen; «Comenzar» no se tapa */
+  #herramienta.bienvenida .guia-lista { display: none; }
+}
+@property --revela { syntax: "<percentage>"; inherits: false; initial-value: 120%; }
+@keyframes revela-mapa { from { --revela: 0%; transform: scale(1.03); } }
+@media (prefers-reduced-motion: no-preference) {
+  .pagina .heroe:not(:has(.heroe-texto)) > *, .pagina > .indice { animation: entra-abajo 700ms var(--curva) backwards; }
+  .pagina .heroe:not(:has(.heroe-texto)) > :nth-child(2) { animation-delay: 80ms; }
+  .pagina .heroe:not(:has(.heroe-texto)) > :nth-child(n + 3) { animation-delay: 160ms; }
+  .pagina > .indice { animation-delay: 240ms; }
+  .pagina > .indice + .bloque { animation: entra-abajo 800ms var(--curva) 320ms backwards; }
+  body.en-herramienta #herramienta.bienvenida :is(#guia-titulo, #guia-entradilla, .guia-lista li, #guia-siguiente) { animation: entra-abajo 700ms var(--curva) backwards; }
+  body.en-herramienta #herramienta.bienvenida #guia-entradilla { animation-delay: 80ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(1) { animation-delay: 160ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(2) { animation-delay: 210ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(3) { animation-delay: 260ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(4) { animation-delay: 310ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(5) { animation-delay: 360ms; }
+  body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(6) { animation-delay: 410ms; }
+  body.en-herramienta #herramienta.bienvenida #guia-siguiente { animation-delay: 480ms; }
+  body.en-herramienta #herramienta.abriendo #mapa { /* solo al entrar en la herramienta, no al volver a la bienvenida */
+    mask-image: radial-gradient(ellipse at 50% 50%, #000 calc(var(--revela) - 20%), transparent var(--revela));
+    animation: revela-mapa 1400ms var(--curva) 120ms backwards;
+  }
+}
