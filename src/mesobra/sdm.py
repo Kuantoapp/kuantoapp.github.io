@@ -175,6 +175,31 @@ def _procedencia(nombre: str, meta: dict) -> str:
     )
 
 
+FUENTES_USADAS = {
+    "alquiler_eur_m2_p50": "solo del SERPAVI (Ministerio de Vivienda y Agenda Urbana)",
+    "esfuerzo": "del SERPAVI (Ministerio de Vivienda y Agenda Urbana) y del ADRH (INE)",
+    # fuentes del docstring de `sobrecarga.py`
+    **dict.fromkeys(
+        ("sobrecarga_30", "sobrecarga_40", "sobrecarga_50"),
+        "de un modelo (estimado) con el ADRH, el Censo 2021, la ECV y el IPC del INE, el SERPAVI "
+        "(Ministerio de Vivienda y Agenda Urbana), la EPF y el catálogo de la Comunidad de Madrid",
+    ),
+}
+# con zonas imputadas (`pipeline_euros`, nota de alquiler.json) el p50 deja de salir solo del SERPAVI
+FUENTES_SI_ESTIMADO = {
+    "alquiler_eur_m2_p50": "del SERPAVI (Ministerio de Vivienda y Agenda Urbana) y, en las zonas "
+    "estimadas, de un modelo espacial (estimado) con el ADRH (INE), la población y los tiempos de "
+    "tiempos.json (OpenStreetMap)",
+}
+
+
+def _fuentes_usadas(nombre: str, lista: list[dict]) -> str:
+    estimado = any(e["description"].endswith(", estimado") for e in lista)
+    if estimado and nombre in FUENTES_SI_ESTIMADO:
+        return FUENTES_SI_ESTIMADO[nombre]
+    return FUENTES_USADAS[nombre]
+
+
 def leeme(
     esquema: dict, analisis: dict, alquiler: dict, por_indicador: dict[str, list]
 ) -> str:
@@ -185,6 +210,11 @@ def leeme(
         if por_indicador[n]
     ]
     metas = (("analisis.json", analisis["meta"]), ("alquiler.json", alquiler["meta"]))
+    usadas = "\n".join(
+        f"- `{n}`: sus valores salen {_fuentes_usadas(n, por_indicador[n])}."
+        for n in INDICADORES
+        if por_indicador[n]
+    )
     procedencia = "\n".join(_procedencia(n, m) for n, m in metas)
     return f"""# Indicadores en Smart Data Models
 
@@ -212,7 +242,13 @@ Cada fichero de esta carpeta es una lista de entidades NGSI-LD del modelo **{TIP
 
 ## Procedencia y licencia
 
-Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean. Son derivados, no cifras de los publicadores, y ninguno de ellos participa, patrocina ni apoya este proyecto. La cita, la fecha de actualización y las condiciones que pide cada fuente van en la nota de su fichero (`sdm.py` no escribe nada si falta alguna). Procedencia, fecha y licencia de cada fichero:
+Los valores son los de los ficheros de `app/datos/` que indica «Sale de», reordenados como entidades: no se recalculan ni se redondean. Son derivados, no cifras de los publicadores, y ninguno de ellos participa, patrocina ni apoya este proyecto. La cita, la fecha de actualización y las condiciones que pide cada fuente van en la nota de su fichero (`sdm.py` no escribe nada si falta alguna).
+
+Cada fichero de origen lista todas sus fuentes, pero cada indicador solo usa algunas; las demás (OpenStreetMap, la Agencia Tributaria o el IPC, entre otras) sirven a campos que aquí no se publican, y se listan porque las citas van por fichero:
+
+{usadas}
+
+Procedencia, fecha y licencia de cada fichero:
 
 {procedencia}"""
 

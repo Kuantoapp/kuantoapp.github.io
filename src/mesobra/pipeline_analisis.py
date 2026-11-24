@@ -32,6 +32,7 @@ from mesobra.pipeline_euros import (
     IPC_INE,
     MADRID,
     ORIGEN_SERPAVI,
+    OSM_PORTALES,
     SERPAVI,
 )
 
@@ -112,6 +113,11 @@ FUENTES = [
         "url": "https://www.boe.es/eli/es/rdl/2025/12/23/17",
         "licencia": "Reutilización con cita de la fuente (aviso legal del BOE): «Basado en datos de la Agencia Estatal Boletín Oficial del Estado»",
     },
+    {
+        "nombre": "OpenStreetMap, extracto de Geofabrik de la Comunidad de Madrid del 2026-11-13 (red viaria y edificios de los tiempos y las coronas de la simulación, por tiempos.json y tarifas.json). © OpenStreetMap contributors",
+        "url": OSM_PORTALES["url"],
+        "licencia": OSM_PORTALES["licencia"],
+    },
 ]  # fmt: skip
 NOTA = (
     "Esfuerzo: cuantía mediana mensual del alquiler de vivienda colectiva del SERPAVI entre la renta neta "
@@ -133,7 +139,8 @@ NOTA = (
     "consultado el 2026-11-21 y BOCM-20250110-20 consultado el 2026-11-19; RDL 17/2025 (BOE-A-2025-26459) "
     "consultado el 2026-11-20. Sin las filas de habitación; `_bruto` = ingresos medidos con el bruto (banda de la "
     "pareja y el joven); `_sin_imputar` = horas_viaje sin los pares con 120 min imputados; marcas de "
-    "simulacion_calidad por municipio."
+    "simulacion_calidad por municipio. Tiempos y coronas de la simulación: © OpenStreetMap contributors "
+    "(extracto de Geofabrik actualizado el 2026-11-13, ODbL 1.0), a través de tiempos.json y tarifas.json."
 )
 
 

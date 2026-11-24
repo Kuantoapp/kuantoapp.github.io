@@ -217,3 +217,23 @@ def test_leeme_cumple_cifras_con_fuente(leeme_real):
     cifras = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cifras)
     assert cifras.revisar(leeme_real) == []
+
+
+def test_leeme_nombra_el_modelo_si_hay_zonas_de_alquiler_estimadas(leeme_real):
+    # el fixture tiene 28092 con origen estimado
+    assert (
+        "`alquiler_eur_m2_p50`: sus valores salen del SERPAVI (Ministerio de Vivienda y Agenda "
+        "Urbana) y, en las zonas estimadas, de un modelo espacial"
+        in leeme_real.read_text("utf-8")
+    )
+
+
+def test_sin_zonas_estimadas_el_alquiler_sale_solo_del_serpavi(salida):
+    observadas = [
+        e
+        for e in salida["alquiler_eur_m2_p50"]
+        if not e["description"].endswith(", estimado")
+    ]
+    assert sdm._fuentes_usadas("alquiler_eur_m2_p50", observadas).startswith(
+        "solo del SERPAVI"
+    )
