@@ -48,7 +48,6 @@ Los ficheros mezclan datos observados con estimaciones y supuestos. La `nota` de
 
 ## Limitaciones abiertas
 
-- [#438](https://github.com/yeraybc/DataMad-hackaton-2026/issues/438): con transbordo, la ruta en interurbano hasta la terminal T4 del aeropuerto no cobra el suplemento de Metro en `tarifas.json`, y ni `nota_ruta` ni la metodología lo explican. <!-- sin-fuente: número de issue -->
 - [#439](https://github.com/yeraybc/DataMad-hackaton-2026/issues/439): faltan en las fuentes de `netos.json` y `tarifas.json` las fechas de última actualización de los textos consolidados del BOE. <!-- sin-fuente: número de issue -->
 
 ## Estructura común
@@ -141,7 +140,7 @@ Grano: título de transporte por escenario, edad, corona y días de trabajo. Añ
 | `no_laborables` | lista de enteros | viajes de ocio al mes que admite el cálculo |
 | `tarifas_ruta` | objeto | `[escenario][colectivo][edad][clave][ocio]` es la lista de cinco costes mensuales por días de trabajo |
 
-Los escenarios son `vigente_2026`, con el descuento que solo vale en 2026, y `sin_descuento`, con los precios oficiales. `coste_mes` es una media mensual del año, estimada con los supuestos de días de trabajo que detalla la `nota`. El rango de coronas de cada ruta se estima con la recta entre los centros de las zonas y subestima el coste entre periferias. Limitación abierta: #438 <!-- sin-fuente: número de issue -->. Fuentes: BOCM, CRTM y BOE.
+Los escenarios son `vigente_2026`, con el descuento que solo vale en 2026, y `sin_descuento`, con los precios oficiales. `coste_mes` es una media mensual del año, estimada con los supuestos de días de trabajo que detalla la `nota`. El rango de coronas de cada ruta se estima con la recta entre los centros de las zonas y subestima el coste entre periferias. Fuentes: BOCM, CRTM y BOE.
 
 ### `hogares.json`
 

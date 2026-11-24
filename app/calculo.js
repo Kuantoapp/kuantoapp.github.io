@@ -97,7 +97,7 @@ export function tarifa(api, origen, destino, sueldo, escenario) {
   const j = t.destinos.indexOf(destino);
   if (i < 0 || j < 0) throw new Error(`tarifas.json no tiene la ruta ${origen} → ${destino}`);
   let k = t.clave_tarifa[i][j];
-  if (k !== null && sueldo.viajes_dia === 4) k = t.transbordo[k];
+  if (k !== null && sueldo.viajes_dia === 4) k = (destino === t.aeropuerto ? t.transbordo_aeropuerto : t.transbordo)[k];
   if (k === null) throw new Error(`${origen} → ${destino}: sin clave de tarifa`);
   const edad = sueldo.edad <= t.edad_max_joven ? "joven" : "general";
   const porClave = t.tarifas_ruta[escenario][sueldo.colectivo][edad][t.claves[k]];

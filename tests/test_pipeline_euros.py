@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 from shapely import Point
 
-from mesobra import alquiler, imputacion, neto, pipeline_euros, transporte
+from mesobra import alquiler, calculo, imputacion, neto, pipeline_euros, transporte
 from mesobra.api_estatica import COLECTIVOS, validar
 from mesobra.pipeline_euros import (
     alquiler_json,
@@ -114,7 +114,8 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     netos = pd.read_csv(PROCESSED / "netos.csv").query("bruto_anual <= 30000")
     validar("netos.json", netos_json(netos))
     validar("netos.json", netos_json(neto.rejilla()))
-    validar("tarifas.json", _tarifas())
+    # el ejemplo no trae polos
+    validar("tarifas.json", _tarifas() | {"aeropuerto": "28092"})
     tabla = pd.read_csv(PROCESSED / "hogares.csv")
     tabla.attrs["ipc_hasta"] = "2026-10"
     tabla.attrs["nota"] = "Estimado"
@@ -238,7 +239,39 @@ def test_tarifas_transbordo_apunta_a_la_clave_con_cambio_de_operador():
     ]  # el transbordo no se encadena
 
 
+def test_transbordo_aeropuerto_apunta_a_la_clave_con_suplemento():
+    clave = "B1-B2|interurbano"
+    lista = pipeline_euros._con_transbordo([clave], [clave])
+    assert lista == [
+        clave,
+        "B1-B2|interurbano+metro_a",
+        "B1-B2|interurbano+metro_aeropuerto",
+    ]
+    assert (
+        pipeline_euros._con_transbordo([clave]) == lista[:2]
+    )  # sin ruta al T4, sin gemela
+
+
 TARIFAS_APP = Path(__file__).parent.parent / "app" / "datos" / "tarifas.json"
+
+
+def test_tarifas_publicadas_cobran_el_suplemento_en_el_transbordo_al_aeropuerto():
+    # #438: A-B1 → T4, ordinario, 4 viajes, 1 día: 33,75 € (11,05 € sin suplemento)
+    api = {"tarifas": json.loads(TARIFAS_APP.read_text("utf-8"))}
+    t = api["tarifas"]
+    origen = next(
+        o
+        for o, fila in zip(t["origenes"], t["clave_tarifa"])
+        if (k := fila[t["destinos"].index(t["aeropuerto"])]) is not None
+        and t["claves"][k] == "A-B1|interurbano"
+    )
+    sueldo = {"dias": 1, "viajes_dia": 4, "edad": 40, "colectivo": "ordinario"}
+    cuatro = calculo.tarifa(
+        api, origen, t["aeropuerto"], sueldo | {"no_laborables": 0}, "vigente_2026"
+    )
+    assert cuatro == {"titulo": "10 viajes", "coste_mes": 33.75}
+
+
 REGENERA = "regenera app/datos/tarifas.json con pipeline_euros.tarifas_json (#234)"
 
 
