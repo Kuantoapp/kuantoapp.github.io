@@ -7,6 +7,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Kuanto · Cómo funciona</title>
   <link rel="icon" href="data:,">
+  <link rel="preload" href="fuentes/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fuentes/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -108,7 +110,7 @@
       </div>
     </section>
 
-    <section class="bloque" id="datos" aria-labelledby="titulo-datos">
+    <section class="bloque lamina" id="datos" aria-labelledby="titulo-datos">
       <h2 id="titulo-datos">Lo que ya dicen los datos.</h2>
       <p class="entradilla">El peso del alquiler mediano sobre la renta media de los hogares de Madrid ciudad:</p>
       <ul class="serie"><li><span class="cifra">19,1 %</span> en 2015</li><li><span class="cifra">21,0 %</span> en 2020</li><li><span class="cifra">19,6 %</span> en 2024</li></ul><p class="fuente fuente-serie">Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia, <code>datos/analisis.json</code>.</p>
@@ -185,7 +187,7 @@
         </ul></details>
         <details><summary>Mapa</summary><ul>
           <li>Provincias y países vecinos de Natural Earth, dominio público. Glifos Noto Sans, licencia SIL Open Font.</li>
-          <li>Tipografía de los titulares: Instrument Serif, de The Instrument Serif Project Authors, licencia SIL Open Font 1.1 (<a href="fuentes/LICENSE">texto de la licencia</a>), servida desde esta web.</li>
+          <li>Tipografías Instrument Serif e Instrument Sans, de The Instrument Serif Project Authors y The Instrument Sans Project Authors, licencia SIL Open Font (textos de la licencia: <a href="fuentes/LICENSE-instrument-serif">Serif</a> y <a href="fuentes/LICENSE-instrument-sans">Sans</a>), servidas desde esta web.</li>
         </ul></details>
       </div>
       <p class="fuentes-portada">El detalle de cada fichero, con su fecha de descarga y su huella, está en la <a href="informe.html">metodología</a> y en el repositorio.</p>

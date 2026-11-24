@@ -19,23 +19,36 @@ function proyeccion(features, ancho) {
   return { alto: (y1 - y0) * escala, punto: ([x, y]) => [((x - x0) * k * escala).toFixed(1), ((y1 - y) * escala).toFixed(1)] };
 }
 
-function dibujar(figura, zonas) {
+/** Las zonas como caminos SVG dentro de `contenedor`. */
+function caminos(contenedor, zonas) {
   const { alto, punto } = proyeccion(zonas.features, 1000);
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", `0 0 1000 ${Math.ceil(alto)}`);
   svg.setAttribute("aria-hidden", "true");
-  const grupo = document.createElementNS(NS, "g");
   for (const f of zonas.features) {
-    const d = anillos(f.geometry).map((a) => `M${a.map(punto).join("L")}Z`).join("");
     const camino = document.createElementNS(NS, "path");
-    camino.setAttribute("d", d);
+    camino.setAttribute("d", anillos(f.geometry).map((a) => `M${a.map(punto).join("L")}Z`).join(""));
     camino.classList.add("zona");
-    camino.dataset.nombre = f.properties.nombre;
-    camino.dataset.corona = f.properties.corona;
-    // CSSOM (permitido por la CSP): el retraso de entrada crece con la corona
-    camino.style.setProperty("--retraso", `${Math.max(0, CORONAS.indexOf(f.properties.corona)) * 140}ms`);
-    grupo.append(camino);
+    svg.append(camino);
   }
+  contenedor.append(svg);
+}
+
+/** El plano de la portada: cada zona con su nombre y su corona, y una mira que sigue al ratón. */
+function dibujar(figura, zonas) {
+  const lienzo = figura.querySelector(".plano-lienzo");
+  caminos(lienzo, zonas);
+  const svg = lienzo.lastElementChild;
+  const grupo = document.createElementNS(NS, "g"); // las zonas en un grupo, para que la mira quede siempre encima
+  const zonasSvg = [...svg.querySelectorAll(".zona")]; // en el orden de zonas.features
+  grupo.append(...zonasSvg);
+  svg.append(grupo);
+  zonasSvg.forEach((camino, i) => {
+    const { nombre, corona } = zonas.features[i].properties;
+    Object.assign(camino.dataset, { nombre, corona });
+    // CSSOM (permitido por la CSP): el retraso de entrada crece con la corona
+    camino.style.setProperty("--retraso", `${Math.max(0, CORONAS.indexOf(corona)) * 140}ms`);
+  });
   const mira = document.createElementNS(NS, "g");
   mira.classList.add("mira");
   for (const [x1, y1, x2, y2] of [[-2000, 0, 2000, 0], [0, -2000, 0, 2000]]) {
@@ -43,8 +56,7 @@ function dibujar(figura, zonas) {
     Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => linea.setAttribute(k, v));
     mira.append(linea);
   }
-  svg.append(grupo, mira);
-  figura.querySelector(".plano-lienzo").append(svg);
+  svg.append(mira);
   return { svg, mira };
 }
 
@@ -52,7 +64,7 @@ function interactuar(figura, { svg, mira }) {
   const rotulo = figura.querySelector(".plano-rotulo");
   const reposo = rotulo.textContent;
   let activa = null;
-  svg.addEventListener("pointermove", (e) => {
+  const marcar = (e) => {
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
     mira.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
     const zona = e.target.closest?.(".zona");
@@ -63,7 +75,9 @@ function interactuar(figura, { svg, mira }) {
     zona.classList.add("activa");
     zona.parentNode.append(zona); // encima de sus vecinas, para que su borde se vea entero
     rotulo.textContent = `${zona.dataset.nombre}, corona ${zona.dataset.corona}`;
-  });
+  };
+  svg.addEventListener("pointermove", marcar);
+  svg.addEventListener("pointerdown", marcar); // en una pantalla táctil, tocar una zona la marca
   svg.addEventListener("pointerleave", () => {
     activa?.classList.remove("activa");
     activa = null;
@@ -97,6 +111,8 @@ if (figura) {
     .then((zonas) => {
       interactuar(figura, dibujar(figura, zonas));
       figura.classList.add("listo");
+      const fondo = document.querySelector(".cierre-plano");
+      if (fondo) caminos(fondo, zonas); // el mismo plano, de fondo en el cierre
     })
     .catch((error) => {
       figura.hidden = true; // sin plano la portada se lee igual; el error queda en la consola

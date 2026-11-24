@@ -9,6 +9,7 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
   <link rel="preload" href="fuentes/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fuentes/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -38,7 +39,7 @@
       </div>
       <figure id="plano" class="plano">
         <div class="plano-lienzo"></div>
-        <figcaption><span class="plano-rotulo" aria-live="polite">Las 199 zonas, por coronas del abono</span> <span class="fuente">fuente: datos/zonas.geojson</span></figcaption>
+        <figcaption class="plano-rotulo" aria-live="polite">Señala una zona para ver su corona del abono</figcaption>
       </figure>
       <ul class="cifras-heroe">
         <li><span class="cifra">199</span> zonas: los otros 178 municipios y los 21 distritos de la capital <span class="fuente">fuente: datos/zonas.geojson</span></li>
@@ -69,7 +70,7 @@
       <p class="remate">Con todo eso, Kuanto te dice también cuánto vale cada hora de viaje: lo que ganas o pierdes al mes por vivir más lejos o más cerca que en tu zona de referencia.</p>
     </section>
 
-    <section class="bloque dato" aria-labelledby="titulo-dato">
+    <section class="bloque dato lamina" aria-labelledby="titulo-dato">
       <div class="dato-texto">
         <h2 id="titulo-dato">El alquiler no pesa lo mismo en todas partes.</h2>
         <p class="destacado"><span class="cifra-grande">24,0 %</span> de la renta media del hogar: eso supone el alquiler mediano en Puente de Vallecas y en Centro; en la zona mediana, el 15,3 % (fuente: SERPAVI y ADRH, 2024, <code>datos/analisis.json</code>).</p>
@@ -108,7 +109,8 @@
       <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en <a href="saber-mas.html#fuentes">cómo funciona</a>.</p>
     </section>
 
-    <section class="bloque cierre" aria-labelledby="titulo-cierre">
+    <section class="bloque cierre lamina" aria-labelledby="titulo-cierre">
+      <div class="cierre-plano" aria-hidden="true"></div>
       <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
       <p class="entradilla">Elige tu sueldo, tu hogar y dónde trabajas, y mira el mapa entero de la Comunidad.</p>
       <button type="button" class="boton-principal" data-ir-herramienta>Calcular lo que te sobra</button>
