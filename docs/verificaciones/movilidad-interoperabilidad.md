@@ -1,5 +1,7 @@
 # Verificaciones: movilidad, Smart Data Models y citas
 
+> Las afirmaciones sobre transporte, movilidad, interoperabilidad y valor del tiempo de la ficha de la idea, comprobadas con el CRTM, el Ministerio de Transportes, Smart Data Models y las guías de evaluación antes de construir nada. Es una de las verificaciones de Kuanto; qué significa cada estado y el resto están en el [índice](README.md).
+
 Resuelve las marcas «(verificar)» de la [ficha](../../ideas/plan1/idea-definitiva/propuesta-A-unificada.md) que pide la issue F0-05 ([#68](https://github.com/yeraybc/DataMad-hackaton-2026/issues/68)), en el orden de la issue. No cambia la ficha: lo aplica F1-16 ([#84](https://github.com/yeraybc/DataMad-hackaton-2026/issues/84)).
 
 - **Fecha:** 2026-11-15. Las consultas fueron del 14 y del 15 de noviembre de 2026.
