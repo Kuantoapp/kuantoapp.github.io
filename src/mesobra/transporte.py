@@ -507,6 +507,8 @@ def clave_transbordo_aeropuerto(clave: str) -> str:
     """`clave_transbordo` de una ruta cuyo destino es el aeropuerto (#438): el Metro que añade el transbordo
     es el tramo hasta la terminal y paga el suplemento. Si la ruta ya lo paga, no se cobra dos veces."""
     gemela = clave_transbordo(clave)
+    # shortcut: con rutas reales solo en EMT (`A-A|metro_a`) también suma el suplemento, que la EMT no paga;
+    # hoy no ocurre (`clave_estimada`), mejorar con #161
     if any(p in SIN_SUPLEMENTO for p in _partes(clave)[2]):
         return gemela
     return con_aeropuerto(gemela)
