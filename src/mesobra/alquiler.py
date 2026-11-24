@@ -13,12 +13,47 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from scipy.stats import binom, norm
 
 from mesobra import contratos, paso_secciones, zonas
 
 LOG = logging.getLogger(__name__)
 
 MIN_TESTIGOS = 70  # con menos alquileres declarados la mediana de la zona es imprecisa (#246; €/m² en #368)
+
+Z_CUARTIL = float(norm.ppf(0.75))
+
+
+def rangos_mediana(n: int | pd.Series) -> tuple[float | pd.Series, float | pd.Series]:
+    """Rangos (l, n+1−l) del IC 95 % de la mediana por estadísticos de orden (binomial exacta, p = 0,5).
+
+    l es el mayor rango con P(X ≤ l−1) ≤ 0,025: con 50 testigos 18 y 33, con 70 27 y 44 (#246, #368).
+    Acepta un `n` por zona. Con menos de 9 testigos el rango alto llega a n (percentil 1) y no hay IC
+    del 95 % con extremos propios: `semiancho_lognormal` lo anula.
+    """
+    lo = binom.ppf(
+        0.025, n, 0.5
+    )  # menor k con P(X ≤ k) ≥ 0,025, o sea P(X ≤ k−1) < 0,025
+    return lo, n + 1 - lo
+
+
+def semiancho_lognormal(
+    p25: pd.Series, p75: pd.Series, n: int | pd.Series
+) -> pd.Series:
+    """Semiancho relativo (fracción de la mediana) del IC 95 % de la mediana con `n` testigos por zona.
+
+    Supone una lognormal por zona ajustada a sus p25 y p75 (cuantía o €/m²), con los percentiles r/n
+    (como #246, no r/(n+1)) de los rangos de `rangos_mediana`. Frente a la interpolación lineal de #246
+    recoge la asimetría a la derecha. Una zona con p25 ≥ p75, sin ellos o con menos de 9 testigos da
+    nulo (no se inventa). `n`, si es una Serie, lleva el mismo índice que `p25`.
+    """
+    lo, hi = rangos_mediana(n)
+    sigma = (np.log(p75) - np.log(p25)) / (2 * Z_CUARTIL)
+    sigma = sigma.where(sigma > 0)
+    z_hi, z_lo = norm.ppf(hi / n), norm.ppf(lo / n)
+    ancho = (np.exp(sigma * z_hi) - np.exp(sigma * z_lo)) / 2
+    return ancho.where(pd.Series(hi < n, index=ancho.index))
+
 
 RAIZ = Path(__file__).resolve().parents[2]
 RAW = RAIZ / "data/raw/serpavi_bd_2011_2024_2026-11-15.xlsx"

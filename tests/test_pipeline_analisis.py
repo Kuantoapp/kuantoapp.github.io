@@ -7,6 +7,7 @@ import pytest
 from shapely.geometry import box
 
 from mesobra import api_estatica, figuras, pipeline_analisis, sdm, simulacion
+from mesobra.alquiler import semiancho_lognormal
 
 
 def _esfuerzo() -> pd.DataFrame:
@@ -56,13 +57,62 @@ def test_titulares_cifras():
     assert "21,4 %" in bono["texto"]  # 3 aceptadas de 14 solicitudes
 
 
-def test_cortes_simetricos():
-    cortes = figuras.cortes_simetricos(
-        pd.Series([-0.04, -0.01, np.nan, 0.01, 0.02, 0.03])
+def test_errores_cambio_es_la_hipotenusa_de_los_errores_de_cada_anio():
+    zona = pd.DataFrame(
+        {
+            "zona_id": ["28000"] * 2,
+            "anio": [2015, 2024],
+            "testigos": [70, 200],
+            "cuantia_p25": 700.0,
+            "cuantia_p75": 900.0,
+        }
     )
-    assert len(cortes) == 7 and 0 in cortes
-    assert cortes == sorted(cortes)
-    assert cortes == [-c for c in reversed(cortes)]
+    tabla = pd.DataFrame(
+        {"zona_id": ["28000"] * 2, "anio": [2015, 2024], "esfuerzo": [0.20, 0.10]}
+    )
+    s70, s200 = (
+        float(semiancho_lognormal(pd.Series([700.0]), pd.Series([900.0]), n).iloc[0])
+        for n in (70, 200)
+    )
+    esperado = np.hypot(0.20 * s70, 0.10 * s200)
+    assert figuras.errores_cambio(tabla, zona)["28000"] == pytest.approx(esperado)
+
+
+def test_clases_usan_el_error_de_cada_zona_y_fallan_sin_error():
+    cambio = pd.Series({"a": -0.03, "b": 0.01, "c": 0.03, "d": 0.03, "e": np.nan})
+    error = pd.Series({"a": 0.01, "b": 0.005, "c": 0.01, "d": 0.05, "e": 0.01})
+    # a baja; b y c suben; d no se distingue de cero porque su error es grande
+    assert figuras._clases(cambio, error).to_dict() == {"a": 0, "b": 2, "c": 2, "d": 1}
+    with pytest.raises(ValueError, match="sin error"):
+        figuras._clases(cambio, error.drop("a"))
+
+
+def test_mapa_cambio_escribe_png_y_cuenta_las_clases(tmp_path, monkeypatch):
+    zonas = gpd.GeoDataFrame(
+        {
+            "zona_id": ["2807901", "28001", "28002"],
+            "tipo": ["distrito", "municipio", "municipio"],
+            "municipio_id": ["28079", "28001", "28002"],
+        },
+        geometry=[box(0, 0, 1, 1), box(2, 0, 3, 1), box(4, 0, 5, 1)],
+        crs=figuras.CRS,
+    )
+    tabla = pd.DataFrame(
+        {
+            "zona_id": ["2807901", "28001", "28002"] * 2,
+            "anio": [2015] * 3 + [2024] * 3,
+            "esfuerzo": [0.20, 0.20, 0.20, 0.30, 0.205, 0.10],  # +10, +0,5 y −10 p. p.
+            "testigos": 100,
+        }
+    )
+    error = pd.Series({"2807901": 0.02, "28001": 0.02, "28002": 0.02})
+    figuras.mapa_cambio(tabla, zonas, tmp_path / "c.png", error)
+    assert (tmp_path / "c.png").stat().st_size > 0
+    # la leyenda cuenta una zona en cada clase: baja, sin cambio claro y sube
+    capturado = {}
+    monkeypatch.setattr(figuras, "_mapa", lambda *a: capturado.update(t=a[3]))
+    figuras.mapa_cambio(tabla, zonas, tmp_path / "d.png", error)
+    assert [e[-6:] for e in capturado["t"][1]] == ["n = 1)"] * 3
 
 
 def test_mapa_escribe_png(tmp_path):
