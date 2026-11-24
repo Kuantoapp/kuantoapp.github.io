@@ -333,8 +333,7 @@ W = pd.DataFrame(
 
 
 def _pares() -> pd.DataFrame:
-    imp, imputados = simulacion.imputar_tiempos(_api2(), W)
-    return simulacion.tabla_pares(imp, W, imputados)
+    return simulacion.pares_con_imputacion(_api2(), W)
 
 
 def test_imputa_a_120_solo_con_peso_y_sin_tiempo():
