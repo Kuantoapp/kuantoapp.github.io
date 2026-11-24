@@ -35,8 +35,8 @@ Supuestos y sentido de su sesgo (cada perfil lleva la `fuente` de su sueldo):
    más alto (con la media nacional de las empleadas de oficina saldría un 0,5 % menos). La enfermera es la
    tabla oficial de 2026 del SERMAS, sin trienios, noches, guardias ni productividad variable: por debajo de lo que
    cobra una enfermera con turnos (neto/hora más bajo y más zonas negativas). Incluye la subida del 1,5 %
-   de 2026 (BOCM-20260209-6, art. 25.1), no el 0,5 % condicionado al IPC de 2026 (RDL 14/2025, art. 2.1),
-   que se pagaría en 2027 si se aplica: unos 150 € al año menos. Para el Bono (ejercicio 2024) se usa la
+   de 2026 (BOCM-20260209-6, art. 25.1), no el 0,5 % condicionado al IPC de 2026 (RDL 14/2025, art. 2.2,
+   BOE-A-2025-24445), que se pagaría en 2027 si se aplica: unos 150 € al año menos. Para el Bono (ejercicio 2024) se usa la
    misma fila de la tabla oficial de 2024 (`ENFERMERA_2024`), no la de 2026 deflactada. Con todos los brutos en 2026 ya se pueden
    comparar perfiles entre sí, salvo por las diferencias de jornada y de fuente de cada uno.
 4. Alquiler de contratos en vigor declarados, actualizado con el IPC de alquiler (`factor_ipc`) y sin

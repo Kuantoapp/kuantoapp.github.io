@@ -20,7 +20,8 @@ Decisiones y sentido de su sesgo:
 1. Criterio vigente: RD 42/2022 en la ronda «2024» de Madrid (BOCM-20250110-20, FAQ 2024). Sigue en tramitación
    (BOCM-20260922-16); sin convocatoria del RD 326/2026 en Madrid. Texto completo del Acuerdo en BDNS 805618, doc. 1505247.
 2. IPREM «referido a 14 pagas» (Acuerdo, art. 4.4): 8.400 € (DA 90.ª.d Ley 31/2022, BOE-A-2022-22128, fijado «durante
-   2023»; sin cambios en el consolidado del 18-11-2026 y prorrogado: RDL 9/2024, RDL 1/2025 y RDL 3/2026, preámbulos).
+   2023»; sin cambios en el consolidado del 18-11-2026 y vigente por la prórroga automática de los Presupuestos (CE,
+   art. 134.4, BOE-A-1978-31229); ninguna norma posterior fija otro IPREM).
    El art. 4.4 pide el IPREM del ejercicio de los ingresos (2024 o 2025): el mismo valor. Umbral 3 × IPREM = 25.200 €,
    «iguales o inferiores».
 3. Edad de 18 a 35 años incluidos (RD 42/2022, art. 6.1.a, BOE-A-2022-802). Los 5 perfiles (23 a 34) cumplen: sin efecto.
@@ -230,7 +231,7 @@ from mesobra import (
 LOG = logging.getLogger(__name__)
 PROCESSED = calculo.RAIZ / "data/processed"
 
-# DA 90.ª.d Ley 31/2022 (BOE-A-2022-22128), prorrogada (RDL 3/2026); 14 pagas por el Acuerdo, art. 4.4.
+# DA 90.ª.d Ley 31/2022 (BOE-A-2022-22128), prorrogada (CE, art. 134.4); 14 pagas por el Acuerdo, art. 4.4.
 IPREM = D(8400)
 # RD 42/2022, art. 6.1.d (BOE-A-2022-802); Acuerdo, art. 4.1.d: ingresos iguales o inferiores a 3 × IPREM.
 UMBRAL_INGRESOS = 3 * IPREM
