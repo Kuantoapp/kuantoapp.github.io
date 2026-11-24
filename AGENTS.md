@@ -93,7 +93,7 @@ Antes de terminar, un hook `Stop` recuerda las revisiones que faltan sobre el tr
 
 ## Revisión y merge
 
-- Autores de confianza (`yeraybc`, `izan-diaz`): con la CI en verde, el PR se mergea solo (auto-merge). No esperan a nadie.
+- Autores de confianza (`yeraybc`, `izan-diaz`, `alexjimenez-git`): con la CI en verde, el PR se mergea solo (auto-merge). No esperan a nadie.
 - Resto de autores: el check `revision` exige la aprobación de un autor de confianza sobre el último commit.
 - Cambios en `.github/`, `.claude/`, `AGENTS.md` o `CLAUDE.md`: siempre los aprueba `@yeraybc`.
 - Activa el auto-merge al abrir el PR: `gh pr merge --auto --squash`.
