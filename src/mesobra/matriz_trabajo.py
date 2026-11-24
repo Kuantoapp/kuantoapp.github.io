@@ -252,7 +252,12 @@ def leer_edm_trabajo(
         raise ValueError(
             "zonas de trabajo de Madrid del EDM2018 sin distrito en el código"
         )
-    df = ind.merge(hog[["ID_HOGAR", "CODMUNI", "ZT1259"]], on="ID_HOGAR", how="left")
+    df = ind.merge(
+        hog[["ID_HOGAR", "CODMUNI", "ZT1259"]],
+        on="ID_HOGAR",
+        how="left",
+        validate="many_to_one",  # conserva el orden de `ind`, que usa `dd.to_numpy()`
+    )
     if df["ZT1259"].isna().any():
         raise ValueError("personas del EDM2018 sin hogar en la tabla HOGARES")
     out = pd.DataFrame(
@@ -301,14 +306,15 @@ def no_consta_provincia(hoja: pd.DataFrame) -> int:
 
 def entradas_w(m: pd.DataFrame, w: pd.DataFrame) -> pd.Series:
     """Ocupados que entran en cada municipio según los pesos: Σ_o ocupados_o · w(o, d), con los distritos de Madrid
-    sumados en el municipio. Es lo que usa el modelo: el «No consta» queda repartido dentro de cada origen."""
+    sumados en el municipio. Es lo que usa el modelo: solo orígenes de la Comunidad, con el «No consta» y los que
+    trabajan fuera de la Comunidad repartidos dentro de cada origen."""
     ocupados = m.groupby("origen")["ocupados"].sum()
     return (w["w"] * w["origen"].map(ocupados)).groupby(w["destino"].str[:5]).sum()
 
 
 def comparar(a: pd.Series, b: pd.Series) -> dict:
     """D, Δ de Madrid capital (puntos) y municipios con |Δ| ≥ 0,5 puntos entre las cuotas de `a` y `b`."""
-    ca, cb = _cuotas(a), _cuotas(b.reindex(a.index, fill_value=0))
+    ca, cb = _cuotas(a), _cuotas(b)
     delta = 100 * (ca - cb)
     return {
         "D": round(disimilitud(ca, cb), 4),
@@ -317,26 +323,46 @@ def comparar(a: pd.Series, b: pd.Series) -> dict:
     }
 
 
+def _en(s: pd.Series, municipios: pd.Index) -> pd.Series:
+    """`s` sobre `municipios`, con 0 donde no hay flujo publicado; falla si trae algún código de fuera."""
+    if extra := sorted(set(s.index) - set(municipios)):
+        raise ValueError(f"códigos de municipio desconocidos: {extra}")
+    return s.reindex(municipios, fill_value=0)
+
+
 def control_municipios() -> None:
     """Bloque A del registro previo de #357: hoja C23 frente a la afiliación a 31-12-2022."""
     hoja = _hoja()
     centro, cuenta = leer_afiliacion_centro(), leer_afiliacion_cuenta()
-    ine = entradas(hoja).reindex(centro.index, fill_value=0)
+    ine = _en(entradas(hoja), centro.index)
     LOG.info("municipios sin entradas en la C23: %s", list(ine[ine == 0].index))
     m = leer_matriz()
-    w_mun = entradas_w(m, pesos(m, leer_cuotas_distritos())[0])
+    w_mun = _en(entradas_w(m, pesos(m, leer_cuotas_distritos())[0]), centro.index)
     nc = ine.copy()
     nc[MUNICIPIO_MADRID] += no_consta_provincia(hoja)
-    c22 = entradas(_hoja(hoja="C22")).reindex(centro.index, fill_value=0)
+    c22 = _en(entradas(_hoja(hoja="C22")), centro.index)
+    # descomposición pedida por `dm-revisor-espacial`: entradas desde la Comunidad y desde fuera
+    ine_cm = _en(
+        entradas(hoja[hoja["Provincia de residencia"] == MADRID]), centro.index
+    )
+    fuera = ine - ine_cm
+    LOG.info(
+        "entradas desde fuera de la Comunidad %d (%.1f %%); cuota de Madrid capital: desde fuera %.1f %%, "
+        "desde la Comunidad %.1f %%, afiliación por centro %.1f %%",
+        fuera.sum(),
+        100 * fuera.sum() / ine.sum(),
+        100 * _cuotas(fuera)[MUNICIPIO_MADRID],
+        100 * _cuotas(ine_cm)[MUNICIPIO_MADRID],
+        100 * _cuotas(centro)[MUNICIPIO_MADRID],
+    )
     filas = {
         "INE frente a centro": comparar(ine, centro),
         "INE frente a cuenta": comparar(ine, cuenta),
         "cuenta frente a centro": comparar(cuenta, centro),
         "INE (No consta a Madrid) frente a centro": comparar(nc, centro),
         "INE (No consta a Madrid) frente a cuenta": comparar(nc, cuenta),
-        "w frente a centro": comparar(
-            w_mun.reindex(centro.index, fill_value=0), centro
-        ),
+        "INE solo orígenes de la Comunidad frente a centro": comparar(ine_cm, centro),
+        "w frente a centro": comparar(w_mun, centro),
         "ruido: C22 frente a C23": comparar(c22, ine),
         "ruido: centro 2021 frente a 2022": comparar(
             leer_afiliacion_centro(año=2021), centro
@@ -422,9 +448,15 @@ def control_distritos(edm: pd.DataFrame) -> None:
         disimilitud(t["colectivo_2023"], t["colectivo_2018"]),
         t["discrepa"].sum(),
     )
+    madrid = edm["municipio"] == MUNICIPIO_MADRID
+    # como hace el Colectivo: los autónomos de Madrid, en el distrito de su casa; los de fuera, sin distrito
+    autonomos_en_casa = edm[~edm["cuenta_propia"] | madrid].assign(
+        distrito=lambda e: e["distrito"].where(~e["cuenta_propia"], _estrato(e))
+    )
     for nombre, sub in {
         "sin cuenta propia": edm[~edm["cuenta_propia"]],
         "sin centro de trabajo en la zona del hogar": edm[~edm["en_casa"]],
+        "autónomos de Madrid en el distrito de su casa": autonomos_en_casa,
     }.items():
         LOG.info(
             "sensibilidad %s: D(Colectivo 2023, EDM) %.4f",
@@ -474,7 +506,7 @@ def control_origenes(
             "peso": peso,
             "D": obs,
             "D_nulo": nulos.mean(axis=0),
-            "p": (nulos >= obs).mean(axis=0),
+            "p": (1 + (nulos >= obs).sum(axis=0)) / (1 + reps),
         },
         index=etiquetas,
     )
@@ -569,5 +601,7 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["efecto"]:
         logging.basicConfig(level=logging.INFO)
         efecto(leer_edm_trabajo())
+    elif sys.argv[1:] == ["control"]:
+        control()
     else:
-        control() if sys.argv[1:] == ["control"] else main()
+        main()

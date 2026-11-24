@@ -162,6 +162,9 @@ def test_leer_edm_trabajo_falla_si_falta_un_distrito_o_un_hogar(monkeypatch):
 
 def test_leer_afiliacion_cuenta_une_por_nombre_y_quita_no_distribuidos(tmp_path):
     nombres = [f"Municipio {i}" for i in range(1, matriz_trabajo.MUNICIPIOS + 1)]
+    nombres[0] = (
+        "Redueña"  # el fichero de cuentas escribe «Readueña» (`ERRATAS_CUENTA`)
+    )
     filas_centro = [
         (*f[:3], nombres[int(f[2][:3]) - 1], *f[4:]) if f[2] not in ("9999", "") else f
         for f in _filas_afiliacion()
@@ -169,7 +172,8 @@ def test_leer_afiliacion_cuenta_une_por_nombre_y_quita_no_distribuidos(tmp_path)
     centro = _afiliacion(tmp_path, filas_centro)
     cuenta = tmp_path / "cuenta.csv"
     lineas = ["Año;Periodo;Territorio;Indicador;Valor;Unidad;Estado dato"]
-    lineas += [f"2022;M12;{n.upper()};Serie;5.0;Personas;" for n in nombres]
+    lineas += [f"2022;M12;{n.upper()};Serie;5.0;Personas;" for n in nombres[1:]]
+    lineas += ["2022;M12;Readueña;Serie;5.0;Personas;"]
     lineas += [
         "2022;M12;No distribuidos;Serie;7.0;Personas;",
         "2022;M11;Municipio 1;Serie;9.0;Personas;",
@@ -191,11 +195,20 @@ def test_disimilitud_cero_entre_iguales_y_uno_entre_disjuntos():
     assert matriz_trabajo.disimilitud(a, pd.Series({"x": 0.0, "y": 1.0})) == 1
 
 
-def test_comparar_da_delta_de_madrid_en_puntos_y_rellena_ceros():
+def test_comparar_da_delta_de_madrid_en_puntos_y_falla_si_no_casan():
     a = pd.Series({"28079": 60.0, "28092": 40.0})
-    r = matriz_trabajo.comparar(a, pd.Series({"28079": 50.0}))
+    r = matriz_trabajo.comparar(a, pd.Series({"28079": 50.0, "28092": 0.0}))
     assert r["D"] == pytest.approx(0.4)
     assert r["delta_madrid"] == pytest.approx(-40)
+    with pytest.raises(ValueError, match="mismas unidades"):
+        matriz_trabajo.comparar(a, pd.Series({"28079": 50.0}))
+
+
+def test_en_rellena_ceros_y_falla_con_codigos_de_fuera():
+    municipios = pd.Index(["28079", "28092"])
+    assert matriz_trabajo._en(pd.Series({"28079": 5}), municipios).tolist() == [5, 0]
+    with pytest.raises(ValueError, match="desconocidos"):
+        matriz_trabajo._en(pd.Series({"99999": 5}), municipios)
 
 
 def test_entradas_w_suma_los_distritos_en_madrid():
