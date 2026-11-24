@@ -768,6 +768,12 @@ function animarEntrada(...clases) {
   Promise.allSettled(animaciones).then(() => herramienta.classList.remove("entrando", ...clases));
 }
 
+// Al entrar en la herramienta: la primera vez, las tarjetas; después, el mapa final. En los dos casos el mapa se revela (CSS).
+function abrirHerramienta() {
+  if (recorridoHecho() === null) empezarGuia();
+  animarEntrada("abriendo");
+}
+
 // Transición al mapa final: sale la tarjeta, cambia la disposición y entran la barra, el panel y la leyenda mientras las zonas se colorean.
 function terminarGuia() {
   const llegar = () => {
@@ -796,9 +802,8 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
     if (history.state?.portada) history.back();
     else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
-    if (recorridoHecho() === null) return empezarGuia(); // la primera vez, por las tarjetas; después, el mapa final
-    animarEntrada("abriendo");
-    herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
+    abrirHerramienta();
+    if (!guiado()) herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
@@ -812,8 +817,7 @@ window.addEventListener("popstate", () => {
   const antes = document.body.classList.contains("en-herramienta");
   if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; al volver, mapa final o bienvenida
   verHerramienta(vistaDeUrl());
-  if (vistaDeUrl() && !antes && !guiado() && recorridoHecho() === null) empezarGuia(); // solo al entrar: «Deshacer» también usa el historial
-  else if (vistaDeUrl() && !antes && !guiado()) animarEntrada("abriendo"); // al mapa final, con su entrada
+  if (vistaDeUrl() && !antes && !guiado()) abrirHerramienta(); // solo al entrar: «Deshacer» también usa el historial
   // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
   if (vistaDeUrl() !== antes) (vistaDeUrl() ? (guiado() ? $("guia-titulo") : herramienta.querySelector(".menu-boton")) : $("titulo-portada")).focus();
 });
@@ -831,8 +835,7 @@ const recorrido = recorridoHecho();
 if (recorrido !== null && recorrido !== "#" && !location.hash) history.replaceState(history.state, "", location.search + recorrido);
 addEventListener("pagehide", () => recorridoHecho() !== null && guardarRecorrido());
 verHerramienta(vistaDeUrl());
-if (vistaDeUrl() && recorrido === null) empezarGuia();
-else if (vistaDeUrl()) animarEntrada("abriendo");
+if (vistaDeUrl()) abrirHerramienta();
 
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;

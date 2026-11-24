@@ -653,6 +653,13 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #herramienta.bienvenida #barra-filtros { display: flex; flex-direction: column; }
   #herramienta.bienvenida #guia-tarjeta { margin-block: auto; } /* centrada en la columna; si no cabe, empieza arriba */
 }
+@media (max-width: 40rem) { /* a 320×640 la lista entera queda sobre el pie fijo */
+  #herramienta.bienvenida #guia-titulo { font-size: 28px; }
+  .guia-lista li { padding: 8px 0; }
+}
+@media (max-width: 40rem) and (max-height: 45rem) { /* móvil bajo: la lista es un resumen; «Comenzar» no se tapa */
+  #herramienta.bienvenida .guia-lista { display: none; }
+}
 @property --revela { syntax: "<percentage>"; inherits: false; initial-value: 120%; }
 @keyframes revela-mapa { from { --revela: 0%; transform: scale(1.03); } }
 @media (prefers-reduced-motion: no-preference) {
@@ -670,7 +677,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
   body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(5) { animation-delay: 360ms; }
   body.en-herramienta #herramienta.bienvenida .guia-lista li:nth-child(6) { animation-delay: 410ms; }
   body.en-herramienta #herramienta.bienvenida #guia-siguiente { animation-delay: 480ms; }
-  body.en-herramienta #herramienta:is(.bienvenida, .abriendo) #mapa {
+  body.en-herramienta #herramienta.abriendo #mapa { /* solo al entrar en la herramienta, no al volver a la bienvenida */
     mask-image: radial-gradient(ellipse at 50% 50%, #000 calc(var(--revela) - 20%), transparent var(--revela));
     animation: revela-mapa 1400ms var(--curva) 120ms backwards;
   }
