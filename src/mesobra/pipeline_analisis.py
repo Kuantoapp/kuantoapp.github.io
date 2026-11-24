@@ -303,7 +303,7 @@ def _simular(api: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     los pares."""
     matriz = matriz_trabajo.leer_matriz()
     w, excluida = matriz_trabajo.pesos(matriz, matriz_trabajo.leer_cuotas_distritos())
-    pares = simulacion._pares(api, w)
+    pares = simulacion.pares_con_imputacion(api, w)
     base = simulacion.simulacion(pares)
     bruto = simulacion.simulacion(pares, ingresos="bruto")
     sin_imputar = simulacion.simulacion(pares[~pares["imputado"]])

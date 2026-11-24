@@ -4,9 +4,9 @@ Para cada perfil de `titulares.PERFILES` y cada municipio con alquiler, dice qu�
 elegible con el criterio que aplica Madrid (`bono_vigente`) y con dos alternativas declaradas
 (`alquiler_transporte` y `horas_viaje`), y si lo es el municipio (`elegible` = al menos el 50 % de sus ocupados).
 Todo sale de `mesobra.calculo.calcular` (modo `tp`) hacia cada destino de zona de `tiempos.json`, con
-`app/datos/tarifas.json` (generada el 2026-11-16, escenario `vigente_2026`: descuento del RDL 17/2025, que solo
-vale en 2026; 227 días de trabajo al año). Salida: tabla `simulacion` (`contratos.py`). Es una simulación:
-todas las filas van `estimado` y ser elegible no es cobrar (decisión 26).
+`app/datos/tarifas.json` (congelada el 2026-11-23 en #437, escenario `vigente_2026`: descuento del RDL 17/2025, que solo
+vale en 2026; 227 días de trabajo al año). Salida: tabla `simulacion` (`contratos.py`). Es una simulación: todas las
+filas van `estimado` y ser elegible no es cobrar (decisión 26).
 
 Método de #301 (registro previo en `docs/decisiones.md`, 2026-11-19, fijado antes de ejecutar con los pesos). Se
 evalúa cada par (zona de residencia z, destino d) y no la media del municipio: z es elegible para d si cumple edad,
@@ -114,11 +114,14 @@ Decisiones y sentido de su sesgo:
     (`matriz_trabajo.leer_cuotas_distritos`, sin «no consta distrito»), igual para todos los orígenes: ignora que
     cada origen trabaja más cerca, e infla las horas de quien vive junto a pocos distritos (más elegibles). Madrid
     como origen usa la fila del municipio en sus 21 distritos: no distingue entre distritos de residencia.
-18. Pares sin tiempo (null: más de 120 min o sin ruta) con w > 0: 120 min (`TP_IMPUTADO`), imputación provisional,
-    no cota inferior: #311 (cerrada por #350) halló nulos falsos por horarios rotos, y `tiempos.json` no se ha
-    regenerado (#105). Sensibilidades: 60 y 90 min (nulos falsos, hacia abajo), 180 min (hacia arriba) y sin pares
-    imputados. Como `calcular` da con ello transporte y horas, no hace falta código de tarifas aparte. Los pares con
-    w = 0 se quedan sin tiempo.
+18. Pares sin tiempo (null: más de 120 min o sin ruta) con w > 0: 120 min (`TP_IMPUTADO`), imputación provisional, no
+    cota inferior: #311 (cerrada por #350) halló nulos falsos por horarios rotos, y en el `tiempos.json` congelado el
+    21-11 (#105) un nulo sigue mezclando más de 120 min, horario que falta en el GTFS y ruido de r5py; el recálculo a
+    180 min queda para #161. Con ese `tiempos.json`, los pares (zona con alquiler, destino) imputados pasan de 3.746 a
+    4.239 de 11.840 con peso, y las marcas de calidad no cambian: 46 por masa imputada, 1 por masa excluida y 23 por
+    pocos ocupados, de 179 municipios (#103). Sensibilidades: 60 y 90 min (nulos falsos, hacia abajo), 180 min (hacia
+    arriba) y sin pares imputados. Como `calcular` da con ello transporte y horas, no hace falta código de tarifas
+    aparte. Los pares con w = 0 se quedan sin tiempo.
 19. ref(d) = la zona con menos minutos observados hacia d, sin los imputados (el mínimo observado, no 0: la diagonal
     d → d es una mediana intrazona y puede no ser la mínima), con desempate por `zona_id`; el log declara los
     destinos cuya ref no es el propio d. H mide el viaje de más frente a la mejor ubicada, que puede no ser asequible:
@@ -255,7 +258,7 @@ CORTE = 0.45  # índice H+T del CNT (30 % de vivienda + 15 % de transporte), H+T
 PCT_MINIMO = (
     50.0  # % de ocupados elegibles para que lo sea el municipio (registro previo)
 )
-TP_IMPUTADO = 120  # min, imputación provisional de los pares sin tiempo con flujo, hasta regenerar tiempos (#105)
+TP_IMPUTADO = 120  # min, imputación provisional de los pares sin tiempo con flujo (supuesto 18; 180 min en #161)
 MASA_EXCLUIDA_MAX = 0.25  # se marca a los municipios con más masa excluida o imputada
 POCOS_OCUPADOS = 100  # se marca a los municipios con menos ocupados observados
 # Art. 301 LGSS, RDLeg 8/2015, redacción original (BOE-A-2015-11724, en vigor del 02-01-2016 al 01-03-2023):
@@ -1033,7 +1036,10 @@ def _log_tabla(titulo: str, t: pd.DataFrame) -> None:
     LOG.info("%s:\n%s", titulo, t.round(3).to_string())
 
 
-def _pares(api: dict, w: pd.DataFrame, minutos: int = TP_IMPUTADO) -> pd.DataFrame:
+def pares_con_imputacion(
+    api: dict, w: pd.DataFrame, minutos: int = TP_IMPUTADO
+) -> pd.DataFrame:
+    """Tabla de pares de `tabla_pares` con `minutos` imputados a los pares sin tiempo con w > 0 (`imputar_tiempos`)."""
     api_imp, imputados = imputar_tiempos(api, w, minutos)
     return tabla_pares(api_imp, w, imputados)
 
@@ -1051,7 +1057,7 @@ def main() -> None:
         matriz_trabajo.leer_cuotas_distritos(),
     )
     w, excluida = matriz_trabajo.pesos(matriz, cuotas)
-    pares = _pares(api, w)
+    pares = pares_con_imputacion(api, w)
     df = simulacion(pares)
     PROCESSED.mkdir(parents=True, exist_ok=True)
     df.to_csv(PROCESSED / "simulacion.csv", index=False)
@@ -1126,12 +1132,12 @@ def main() -> None:
         "ingresos = bruto": simulacion(pares, ingresos="bruto"),
         "regla del RD (suma del hogar)": simulacion(pares, ingresos="hogar"),
         "alquiler P75": simulacion(pares, alquiler="alquiler_p75"),
-        "tiempo imputado 60 min": simulacion(_pares(api, w, 60)),
-        "tiempo imputado 90 min": simulacion(_pares(api, w, 90)),
-        "tiempo imputado 180 min": simulacion(_pares(api, w, 180)),
+        "tiempo imputado 60 min": simulacion(pares_con_imputacion(api, w, 60)),
+        "tiempo imputado 90 min": simulacion(pares_con_imputacion(api, w, 90)),
+        "tiempo imputado 180 min": simulacion(pares_con_imputacion(api, w, 180)),
         "sin pares imputados (w renormalizado)": simulacion(pares[~pares["imputado"]]),
         "cuotas de distrito uniformes": simulacion(
-            _pares(api, matriz_trabajo.pesos(matriz, uniformes)[0])
+            pares_con_imputacion(api, matriz_trabajo.pesos(matriz, uniformes)[0])
         ),
     }
     for nombre, s in sensibilidades.items():
