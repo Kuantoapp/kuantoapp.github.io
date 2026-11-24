@@ -436,6 +436,15 @@ def tabla_distritos(edm: pd.DataFrame, reps: int = 1000) -> pd.DataFrame:
     return t
 
 
+def _autonomos_en_casa(edm: pd.DataFrame) -> pd.DataFrame:
+    """`edm` como lo sitúa el Colectivo: los autónomos que viven en Madrid, en el distrito de su casa; los que viven
+    fuera, sin distrito de Madrid (se quitan); los asalariados, en su centro de trabajo."""
+    madrid = edm["municipio"] == MUNICIPIO_MADRID
+    return edm[~edm["cuenta_propia"] | madrid].assign(
+        distrito=lambda e: e["distrito"].where(~e["cuenta_propia"], _estrato(e))
+    )
+
+
 def control_distritos(edm: pd.DataFrame) -> None:
     """Bloque B del registro previo de #357: cuotas del Colectivo frente al EDM2018."""
     t = tabla_distritos(edm)
@@ -448,15 +457,10 @@ def control_distritos(edm: pd.DataFrame) -> None:
         disimilitud(t["colectivo_2023"], t["colectivo_2018"]),
         t["discrepa"].sum(),
     )
-    madrid = edm["municipio"] == MUNICIPIO_MADRID
-    # como hace el Colectivo: los autónomos de Madrid, en el distrito de su casa; los de fuera, sin distrito
-    autonomos_en_casa = edm[~edm["cuenta_propia"] | madrid].assign(
-        distrito=lambda e: e["distrito"].where(~e["cuenta_propia"], _estrato(e))
-    )
     for nombre, sub in {
         "sin cuenta propia": edm[~edm["cuenta_propia"]],
         "sin centro de trabajo en la zona del hogar": edm[~edm["en_casa"]],
-        "autónomos de Madrid en el distrito de su casa": autonomos_en_casa,
+        "autónomos de Madrid en el distrito de su casa": _autonomos_en_casa(edm),
     }.items():
         LOG.info(
             "sensibilidad %s: D(Colectivo 2023, EDM) %.4f",

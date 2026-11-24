@@ -284,3 +284,10 @@ def test_cambio_cuenta_entradas_y_salidas():
     assert matriz_trabajo._cambio(base, alt) == {
         ("p", "c"): {"entra": 1, "sale": 1, "dpct": 20.0}
     }
+
+
+def test_autonomos_en_casa_como_el_colectivo():
+    # a: autónomo de Móstoles (fuera); c: autónomo que vive en Centro y trabaja en 02; b y d, asalariados
+    e = _edm_sintetico().assign(cuenta_propia=[True, False, True, False])
+    r = matriz_trabajo._autonomos_en_casa(e).set_index("hogar")["distrito"]
+    assert r.to_dict() == {"b": "2807901", "c": "2807901", "d": "2807902"}
