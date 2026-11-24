@@ -16,7 +16,7 @@ Porque no son un dato publicado tal cual, sino el resultado de un modelo o de un
 
 ## ¿Por qué mi zona sale en gris?
 
-Porque no hay alquiler publicado para ella o no hay ruta en transporte público en el tiempo máximo que se calcula. En vez de inventar una cifra, Kuanto la deja sin dato. «Sin ruta» no siempre quiere decir que no haya transporte: a veces falta el horario de una línea en los datos del Consorcio. En el mapa del precio de la hora, el que se ve al abrir, una zona también sale en gris claro si tardas casi lo mismo que desde la zona de referencia (menos de 5 horas al mes de diferencia), y la referencia va en blanco ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)).
+Porque no hay alquiler publicado para ella o no hay ruta en transporte público en el tiempo máximo que se calcula. En vez de inventar una cifra, Kuanto la deja sin dato. «Sin ruta» no siempre quiere decir que no haya transporte: a veces falta el horario de una línea en los datos del Consorcio. En el mapa del precio de la hora, el que se ve al abrir, una zona también sale en gris claro si tardas casi lo mismo que desde la zona de referencia (menos de 5 horas al mes de diferencia), y la referencia va en blanco ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites), [cómo leer los colores](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-colores)).
 
 ## El alquiler de mi zona me parece bajo. ¿Está mal?
 
