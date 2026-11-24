@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from mesobra import pipeline_analisis, pipeline_euros, sdm
+from mesobra import coche, pipeline_analisis, pipeline_euros, sdm
 
 RAIZ = Path(__file__).parent.parent
 APP_DATOS = RAIZ / "app" / "datos"
@@ -128,6 +128,7 @@ def test_meta_congelado_es_el_del_codigo():
     assert _meta("analisis.json")["nota"] == pipeline_analisis.NOTA
     assert _meta("tarifas.json")["fuentes"] == pipeline_euros.FUENTES_TARIFAS
     assert _meta("netos.json")["fuentes"] == pipeline_euros.FUENTES_NETOS
+    assert coche.NORMA_EUR_KM in _meta("tiempos.json")["fuentes"]
 
 
 @pytest.mark.parametrize("fichero", CON_META)
