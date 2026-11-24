@@ -114,7 +114,9 @@ def test_netos_tarifas_y_hogares_cumplen_el_contrato():
     netos = pd.read_csv(PROCESSED / "netos.csv").query("bruto_anual <= 30000")
     validar("netos.json", netos_json(netos))
     validar("netos.json", netos_json(neto.rejilla()))
-    validar("tarifas.json", _tarifas())
+    validar(
+        "tarifas.json", _tarifas() | {"aeropuerto": "28092"}
+    )  # el ejemplo no trae polos
     tabla = pd.read_csv(PROCESSED / "hogares.csv")
     tabla.attrs["ipc_hasta"] = "2026-10"
     tabla.attrs["nota"] = "Estimado"

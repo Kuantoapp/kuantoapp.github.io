@@ -458,7 +458,7 @@ def tarifas_json(
         "transbordo_aeropuerto: lo mismo para las rutas a `aeropuerto` (polo:aeropuerto-t4), donde ese Metro de más "
         "es el tramo hasta la terminal y paga el Suplemento Aeropuerto. "
         "Suplemento Aeropuerto (BOCM-20251231-2): 3,00 € por viaje en el ordinario (menos en otros colectivos) en Metro o combinado con destino la terminal; "
-        "se supone pagado en los dos viajes del día y no lo cubre el abono. "
+        "se supone pagado en los dos viajes del día; los abonos que incluyen la zona A no lo pagan. "
         "Los polos copian la ruta de su zona (estimado). "
         "no_laborables: viajes de ocio al mes, cobrados en el "
         "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "

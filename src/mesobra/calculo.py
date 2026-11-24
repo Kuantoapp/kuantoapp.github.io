@@ -195,9 +195,8 @@ def tarifa(api: Api, origen: str, destino: str, sueldo: dict, escenario: str) ->
         raise ValueError(f"tarifas.json no tiene la ruta {origen} → {destino}")
     k = t["clave_tarifa"][t["origenes"].index(origen)][t["destinos"].index(destino)]
     if k is not None and sueldo["viajes_dia"] == 4:
-        k = t["transbordo_aeropuerto" if destino == t["aeropuerto"] else "transbordo"][
-            k
-        ]
+        cambio = "transbordo_aeropuerto" if destino == t["aeropuerto"] else "transbordo"
+        k = t[cambio][k]
     if k is None:
         raise ValueError(f"{origen} → {destino}: sin clave de tarifa")
     edad = "joven" if sueldo["edad"] <= t["edad_max_joven"] else "general"

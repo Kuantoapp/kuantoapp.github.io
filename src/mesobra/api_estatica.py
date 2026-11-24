@@ -400,8 +400,8 @@ def _tarifas_ruta(o):
                 for i, v in enumerate(tb)
                 for m in _campo(f"{nombre}[{i}]", v, posicion)
             ]
-    if not isinstance(o.get("aeropuerto"), str):
-        p.append("aeropuerto: se esperaba el id del destino del aeropuerto")
+    if o.get("aeropuerto") not in o["destinos"]:
+        p.append("aeropuerto: no está entre los destinos")
 
     def por_clave(ruta, t):
         return _mapa(ruta, t, claves, lambda r, c: _mapa(r, c, nl, _dias))
