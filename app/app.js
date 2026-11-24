@@ -125,7 +125,7 @@ function pintarLeyenda(api, resultadoPintado, metrica) {
   const pct = new Intl.NumberFormat("es-ES", { style: "percent", signDisplay: "exceptZero" });
   const metodo = m.cortes ? `Cortes fijos en el ${m.cortes.map((c) => pct.format(c)).join(", ")} ${m.base}` : "Cuantiles";
   // A la vista, lo justo para leer el mapa; lo largo (unidad, fuentes, notas, licencias) va al <details>.
-  cont.replaceChildren(elemento("p", `${m.titulo} · ${m.corta} (estimado)${usaAlquiler ? ` · alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
+  cont.replaceChildren(elemento("p", `${m.titulo}, en ${m.corta} (estimado)${usaAlquiler ? `, con el alquiler de ${alquiler.meta.anio_dato}` : ""}`, "titulo"));
   for (const { color, texto } of leyenda(resultadoPintado.clases, resultadoPintado.categorias, metrica)) {
     const fila = elemento("div", "", "fila");
     const muestra = elemento("span", "", "muestra");
@@ -599,9 +599,9 @@ function prepararVista(mapa) {
       if (e.relatedTarget && !menu.contains(e.relatedTarget)) menu.querySelector(".menu-boton").setAttribute("aria-expanded", "false");
     });
   }
-  // MapLibre ajusta el lienzo con su ResizeObserver; estas llamadas lo hacen también sin transición o al acabarla.
+  // MapLibre ajusta el lienzo con su ResizeObserver; `ajustar` lo fuerza al pulsar, porque ni el panel ni la barra
+  // animan su tamaño (#434).
   const ajustar = () => requestAnimationFrame(() => mapa.resize());
-  for (const id of ["panel", "barra-filtros"]) $(id).addEventListener("transitionend", (e) => e.target === e.currentTarget && mapa.resize());
   const pestana = $("plegar-panel");
   pestana.addEventListener("click", () => {
     const abierto = pestana.getAttribute("aria-expanded") === "true";
@@ -650,7 +650,7 @@ const verHerramienta = (visible) => {
 const vistaDeUrl = () => new URLSearchParams(location.search).has("herramienta");
 
 // --- Recorrido guiado (#389) ---------------------------------------------------------------------
-// «Calcular» abre seis tarjetas, una por menú de la barra (`data-tarjeta`), con el mapa a la derecha solo para mirar. Al acabar
+// «Calcular» abre una bienvenida y seis tarjetas, una por menú de la barra (`data-tarjeta`), con el mapa a la derecha solo para mirar. Al acabar
 // llega el mapa final con lo elegido, porque las tarjetas son los mismos paneles del formulario. No usan el historial: así no
 // se cruzan con «Deshacer» (`guardarPaso`, `pasoMax`).
 const TARJETAS = 6;
@@ -660,16 +660,22 @@ let tarjetaValida = () => true;
 const guiado = () => herramienta.classList.contains("guiado");
 const menuDe = (n) => document.querySelector(`.menu[data-tarjeta="${n}"]`);
 
+// Tarjeta 0: la bienvenida, sin campos ni contador.
+const BIENVENIDA = {
+  titulo: "Selecciona tus condiciones",
+  entradilla: "Seis tarjetas: tu hogar, tu sueldo, tu trabajo, la zona de referencia, qué pinta el mapa y otros escenarios. Al final verás el mapa con lo que elijas.",
+};
+
 function verTarjeta(n) {
   tarjeta = n;
-  const menu = menuDe(n);
+  const menu = menuDe(n); // `null` en la bienvenida
   for (const m of document.querySelectorAll(".menu")) m.classList.toggle("tarjeta-actual", m === menu);
-  $("guia-paso").textContent = `Tarjeta ${n} de ${TARJETAS}: `;
-  $("guia-nombre").textContent = menu.dataset.titulo;
-  $("guia-entradilla").textContent = menu.dataset.entradilla;
-  $("guia-contador").textContent = `${n}/${TARJETAS}`;
-  $("guia-atras").hidden = n === 1;
-  $("guia-siguiente").textContent = n === TARJETAS ? "Ver el mapa" : "Siguiente";
+  $("guia-paso").textContent = n === 0 ? "" : `Tarjeta ${n} de ${TARJETAS}: `;
+  $("guia-nombre").textContent = menu?.dataset.titulo ?? BIENVENIDA.titulo;
+  $("guia-entradilla").textContent = menu?.dataset.entradilla ?? BIENVENIDA.entradilla;
+  $("guia-contador").textContent = n === 0 ? "" : `${n}/${TARJETAS}`;
+  $("guia-atras").hidden = n === 0;
+  $("guia-siguiente").textContent = n === 0 ? "Comenzar" : n === TARJETAS ? "Ver el mapa" : "Siguiente";
   $("barra-filtros").scrollTop = 0;
   $("guia-titulo").focus();
 }
@@ -678,7 +684,25 @@ function empezarGuia() {
   herramienta.classList.remove("entrando", "saliendo");
   herramienta.classList.add("guiado");
   alCambiarModo(true);
-  verTarjeta(1);
+  verTarjeta(0);
+}
+
+// Recorrido hecho en esta pestaña: guarda el fragmento (lo elegido) en `sessionStorage`, así «Calcular» desde otra página
+// abre el mapa final con lo que ya metiste. Una recarga empieza de cero, con la bienvenida.
+const CLAVE_RECORRIDO = "kuanto.recorrido";
+function recorridoHecho() {
+  try {
+    return sessionStorage.getItem(CLAVE_RECORRIDO);
+  } catch {
+    return null; // sin almacenamiento (bloqueado): cada visita pasa por las tarjetas
+  }
+}
+function guardarRecorrido() {
+  try {
+    sessionStorage.setItem(CLAVE_RECORRIDO, location.hash || "#");
+  } catch {
+    // sin almacenamiento: se olvida al salir de la página
+  }
 }
 
 function cerrarGuia() {
@@ -692,6 +716,7 @@ function cerrarGuia() {
 function terminarGuia() {
   const llegar = () => {
     cerrarGuia();
+    guardarRecorrido();
     herramienta.classList.add("entrando");
     const animaciones = herramienta.getAnimations({ subtree: true }).map((a) => a.finished);
     Promise.allSettled(animaciones).then(() => herramienta.classList.remove("entrando"));
@@ -708,7 +733,7 @@ function terminarGuia() {
 
 $("guia-atras").addEventListener("click", () => verTarjeta(tarjeta - 1));
 $("guia-siguiente").addEventListener("click", () => {
-  if (!guiado() || !tarjetaValida(menuDe(tarjeta))) return; // fuera del recorrido (doble pulsación al llegar al mapa)
+  if (!guiado() || (tarjeta > 0 && !tarjetaValida(menuDe(tarjeta)))) return; // fuera del recorrido (doble pulsación al llegar al mapa)
   if (tarjeta < TARJETAS) verTarjeta(tarjeta + 1);
   else terminarGuia();
 });
@@ -717,24 +742,40 @@ for (const boton of document.querySelectorAll("[data-ir-herramienta]")) {
     if (history.state?.portada) history.back();
     else if (!vistaDeUrl()) history.pushState(history.state, "", `?herramienta${location.hash}`);
     verHerramienta(true);
-    empezarGuia(); // «Calcular» pasa por las tarjetas; el mapa directo es `index.html?herramienta`
+    if (recorridoHecho() === null) empezarGuia(); // la primera vez, por las tarjetas; después, el mapa final
+    else herramienta.querySelector(".menu-boton").focus(); // el foco no puede quedarse en la portada oculta
   });
 }
 $("ir-portada").addEventListener("click", (e) => {
   e.preventDefault(); // sin recargar: se conservan el mapa y lo que hayas elegido
-  if (guiado()) cerrarGuia(); // como «atrás»: volver a la herramienta por el historial abre el mapa final
+  if (guiado()) cerrarGuia(); // como «atrás»: volver por el historial abre el mapa final si el recorrido está hecho; si no, la bienvenida
   if (vistaDeUrl()) history.pushState({ ...history.state, portada: true }, "", location.pathname + location.hash);
   verHerramienta(false);
   $("titulo-portada").focus(); // Safari no da el foco al enlace pulsado
 });
 window.addEventListener("popstate", () => {
   const antes = document.body.classList.contains("en-herramienta");
-  if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; volver por URL abre el mapa
+  if (!vistaDeUrl() && guiado()) cerrarGuia(); // «atrás» en mitad del recorrido lleva a la portada; al volver, mapa final o bienvenida
   verHerramienta(vistaDeUrl());
+  if (vistaDeUrl() && !antes && !guiado() && recorridoHecho() === null) empezarGuia(); // solo al entrar: «Deshacer» también usa el historial
   // Solo al cambiar de vista: el foco no puede quedarse en la que se oculta (y «Deshacer» no debe moverlo).
-  if (vistaDeUrl() !== antes) (vistaDeUrl() ? herramienta.querySelector(".menu-boton") : $("titulo-portada")).focus();
+  if (vistaDeUrl() !== antes) (vistaDeUrl() ? (guiado() ? $("guia-titulo") : herramienta.querySelector(".menu-boton")) : $("titulo-portada")).focus();
 });
+// Llegar desde otra página (`index.html?herramienta` o la portada) recupera lo elegido; una recarga lo olvida, también el
+// fragmento de la URL. Un enlace compartido se abre con una navegación normal y conserva su estado.
+if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+  history.replaceState(null, "", location.pathname + location.search);
+  try {
+    sessionStorage.removeItem(CLAVE_RECORRIDO);
+  } catch {
+    // sin almacenamiento: no había nada guardado
+  }
+}
+const recorrido = recorridoHecho();
+if (recorrido !== null && recorrido !== "#" && !location.hash) history.replaceState(history.state, "", location.search + recorrido);
+addEventListener("pagehide", () => recorridoHecho() !== null && guardarRecorrido());
 verHerramienta(vistaDeUrl());
+if (vistaDeUrl() && recorrido === null) empezarGuia();
 
 main().catch((error) => {
   $("estado").textContent = `Error: ${error.message}`;

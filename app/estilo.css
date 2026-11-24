@@ -39,9 +39,9 @@ body:not(.en-herramienta) #herramienta { visibility: hidden; }
 body.mapa-completo .navegacion { display: none; }
 body.mapa-completo #herramienta { top: 0; }
 main { position: relative; display: flex; flex: 1; min-height: 0; }
-aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s; }
+aside { flex: 0 0 26rem; max-width: 45%; overflow-y: auto; padding: 0 24px 24px; font-size: 15px; line-height: 1.45; background: var(--fondo); border-right: 1px solid var(--linea); transition: opacity 0.2s var(--curva), transform 0.3s var(--curva); }
 /* Panel plegado con su pestaña: deja de recibir el foco (`visibility`) y el mapa ocupa el hueco. */
-body.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; transition: flex-basis 0.3s var(--curva), max-width 0.3s var(--curva), padding 0.3s var(--curva), visibility 0s linear 0.3s; }
+body.panel-plegado aside { flex-basis: 0; max-width: 0; padding-inline: 0; border: 0; overflow: hidden; visibility: hidden; opacity: 0; transform: translateX(-16px); transition: none; }
 /* «Mapa completo»: fuera la barra de filtros, el panel y su pestaña. */
 body.mapa-completo #barra-filtros, body.mapa-completo aside, body.mapa-completo #plegar-panel { display: none; }
 h2 { margin: 32px 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
@@ -292,7 +292,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* Cuatro cuentas: ficha técnica en dos columnas, el titular fijo a la izquierda mientras se leen. */
 .cuentas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; align-items: start; }
-.cuentas h2 { position: sticky; top: 32px; }
+.cuentas h2 { position: sticky; top: calc(var(--alto-nav) + 32px); } /* bajo la barra fija, que lo tapaba */
 .ficha-tecnica { margin: 0; }
 .ficha-tecnica div { padding: 24px 0; border-top: 1px solid var(--linea); }
 .ficha-tecnica div:first-child { padding-top: 0; border-top: 0; }
@@ -457,3 +457,15 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 296px); } /* además, el titular de dos líneas que va encima */
 .lista-fuentes { margin: 32px 0 0; padding-left: 20px; color: var(--texto-2); font-size: 16px; }
 .lista-fuentes li { margin: 12px 0; overflow-wrap: anywhere; }
+/* Metodología resumida (#434): figuras a un tamaño que se lee y un índice de cinco entradas que cabe en una línea. */
+.informe .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 96px); }
+.fuentes-informe { margin-top: 32px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
+.fuentes-informe .lista-fuentes { margin-top: 8px; }
+@media (max-width: 40rem) {
+  .informe .indice ul { justify-content: space-between; gap: 8px; }
+  .informe .indice a { padding: 0 6px; font-size: 14px; }
+}
+@media (max-width: 22.5rem) { /* a 320 px no caben cinco píldoras: enlaces subrayados, y la activa en el acento */
+  .informe .indice a { min-width: 44px; justify-content: center; padding: 0; border-width: 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--linea-control); }
+  .pagina.informe .indice a[aria-current="location"] { background: none; text-decoration-color: var(--acento); text-decoration-thickness: 2px; }
+}
