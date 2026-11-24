@@ -65,6 +65,34 @@ function rellenarPerfil(api) {
   f.personas.value = String(p.personas_comparten);
 }
 
+/**
+ * Checks lógicos del formulario (#434): lo que no encaja con el perfil o con otra respuesta no se puede elegir. Se
+ * deshabilitan opciones, nunca controles: un control deshabilitado no sale de FormData y se perdería del enlace; una
+ * opción deshabilitada elegida tampoco, así que antes se pasa a la primera que vale.
+ */
+function coherencia(api) {
+  const f = formulario().elements;
+  const perfil = f.perfil.value;
+  const permitir = (select, vale) => {
+    for (const o of select.options) o.disabled = !vale(o.value);
+    if (!vale(select.value)) select.value = [...select.options].find((o) => !o.disabled).value;
+  };
+  permitir(f.adultos, (v) => v === (perfil === "pareja" ? "2" : "1")); // la pareja son dos; el resto de perfiles, uno
+  permitir(f.hijos, (v) => (perfil === "solo" ? v === "0" : perfil !== "monoparental" || v !== "0"));
+  permitir(f.familia, (v) => v === "ordinario" || Number(f.hijos.value) >= 2); // como en validarHogar
+  f.personas.readOnly = perfil === "solo"; // vivir solo en un piso entero es un solo hogar
+  if (perfil === "solo") f.personas.value = "1";
+  f.personas.min = perfil === "comparte" ? "2" : "1";
+  // El sueldo que no se da (bruto o neto) es de solo lectura; el neto se rellena solo desde el bruto en `recalcular`.
+  for (const n of ["", "2"]) {
+    f[`bruto${n}`].readOnly = f[`fuente${n}`].value !== "bruto";
+    f[`neto${n}`].readOnly = f[`fuente${n}`].value !== "neto";
+  }
+  // Perder el Abono Joven al cumplir 26 solo cabe si alguien que trabaja lo tiene hoy.
+  const edades = [f.edad, ...(perfil === "pareja" ? [f.edad2] : [])].map((e) => Number(e.value));
+  permitir($("escenario").elements.cumple26, (v) => v === "no" || edades.some((e) => e <= api.tarifas.edad_max_joven));
+}
+
 function prepararFormulario(api) {
   const destinos = $("destinos");
   for (const d of api.tiempos.destinos.filter((x) => ["zona", "polo"].includes(x.tipo))) {
@@ -321,6 +349,7 @@ async function main() {
   aplicarValores(enlace.valores);
   mostrarSegunda();
   mostrarHijos();
+  coherencia(api);
   const { mapa, actualizar, encuadrar } = crearMapa(api.zonas, fondo);
   prepararVista(mapa);
   // Va con los avisos del dato y no en la leyenda: con otros ficheros el formulario por defecto puede no validar y la leyenda no se pinta.
@@ -414,6 +443,20 @@ async function main() {
       mostrarHijos();
     }
     if (["bruto", "neto", "bruto2", "neto2"].includes(name)) formulario().elements[`fuente${name.endsWith("2") ? "2" : ""}`].value = name.replace("2", "");
+    coherencia(api);
+    recalcular();
+  });
+  // Pulsar el sueldo de solo lectura lo pasa a ser el que se da (como elegir «Doy el bruto» o «Doy el neto»).
+  formulario().addEventListener("click", ({ target }) => {
+    if (!target.readOnly || !/^(bruto|neto)2?$/.test(target.name)) return;
+    formulario().elements[`fuente${target.name.endsWith("2") ? "2" : ""}`].value = target.name.replace("2", "");
+    coherencia(api);
+    recalcular();
+    guardarPaso();
+  });
+  // Al confirmar (no a cada tecla, que cortaría «12» en el «1»): compartir piso son al menos dos hogares.
+  formulario().elements.personas.addEventListener("change", ({ target }) => {
+    if (formulario().elements.perfil.value === "comparte" && Number(target.value) < 2) target.value = "2";
     recalcular();
   });
   formulario().addEventListener("submit", (e) => e.preventDefault());
@@ -452,6 +495,7 @@ async function main() {
     aplicarValores(valores);
     mostrarSegunda();
     mostrarHijos(); // las casillas de edad de los hijos siguen al número de hijos del estado al que se vuelve
+    coherencia(api);
     recalcular();
   };
   formulario().addEventListener("change", guardarPaso);
@@ -578,6 +622,8 @@ function prepararVista(mapa) {
       const abrir = b.getAttribute("aria-expanded") !== "true";
       cerrarMenus(b);
       b.setAttribute("aria-expanded", String(abrir));
+      // Cerrar al pulsar lo cierra ya, aunque el ratón siga encima (si no, el :hover lo mantendría abierto).
+      b.closest(".menu").classList.toggle("sin-hover", !abrir);
     });
   }
   document.addEventListener("click", (e) => {

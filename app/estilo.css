@@ -59,6 +59,8 @@ fieldset label input:not([type="radio"], [type="range"]), fieldset label select 
   transition: border-color 0.15s var(--curva), box-shadow 0.15s var(--curva);
 }
 fieldset label input:hover, fieldset label select:hover { border-color: var(--texto-2); }
+/* El sueldo que no se usa (bruto o neto, según «Doy el…») queda de solo lectura: pulsarlo lo activa. */
+fieldset label input:read-only { border-style: dashed; background: var(--fondo); color: var(--texto-2); cursor: pointer; }
 input[type="range"] { display: block; width: 100%; min-height: 44px; margin: 0; }
 .opciones { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .opciones label, #metricas label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: var(--texto); font-size: 15px; }
@@ -74,16 +76,20 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .menus { display: contents; }
 .menu { position: relative; }
 .menu-boton { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
-.menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--curva); }
+/* La flecha dice si el panel está abierto: hacia arriba, abierto (al pulsar o al pasar el ratón). */
+.menu-boton[aria-expanded="true"]::after { transform: translateY(2px) rotate(225deg); }
 .menu-boton[aria-expanded="true"] { background: var(--acento-suave); color: var(--acento); }
 .menu:has([aria-invalid="true"]) > .menu-boton { color: var(--error); text-decoration: underline; } /* un error dentro se ve sin abrirlo */
 .menu-panel { position: absolute; top: 100%; left: 0; display: none; width: 22rem; max-height: 75vh; overflow-y: auto; padding: 4px 12px 12px; background: var(--fondo); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); }
 .menu-panel:focus-within, .menu-boton[aria-expanded="true"] + .menu-panel { display: block; }
 /* Abrir al pasar el ratón solo donde hay ratón (en táctil :hover se queda pegado). Escape lo anula con
-   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). */
+   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). Con un menú abierto al pulsar, el ratón no abre
+   los demás: se superpondrían. */
 @media (hover: hover) {
-  .menu:not(.sin-hover):hover > .menu-panel { display: block; }
-  .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-panel { display: block; }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-boton::after { transform: translateY(2px) rotate(225deg); }
 }
 .menu-panel fieldset { margin: 8px 0 0; }
 #m-escenario { right: 0; left: auto; } /* los últimos menús se abren hacia dentro */
@@ -163,7 +169,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 
 @media (prefers-reduced-motion: reduce) {
-  aside, body.panel-plegado aside, #plegar-panel .icono { transition: none; }
+  aside, body.panel-plegado aside, #plegar-panel .icono, .menu-boton::after { transition: none; }
 }
 
 /* Pantalla media (por debajo de 68rem los menús centrados chocan con las acciones): la barra se desplaza en
