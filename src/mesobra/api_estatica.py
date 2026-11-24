@@ -389,15 +389,19 @@ def _tarifas_ruta(o):
     claves, nl = o["claves"], [str(n) for n in NO_LABORABLES]
     posicion = ("entero?", 0, len(claves) - 1)  # posición en `claves`
     p += _matriz("clave_tarifa", o.get("clave_tarifa"), filas, cols, posicion)
-    tb = o.get(
-        "transbordo"
-    )  # clave con cambio de operador de cada clave (#164), o null
-    if not isinstance(tb, list) or len(tb) != len(claves):
-        p.append(f"transbordo: se esperaban {len(claves)} posiciones, una por clave")
-    else:
-        p += [
-            m for i, v in enumerate(tb) for m in _campo(f"transbordo[{i}]", v, posicion)
-        ]
+    # clave con cambio de operador de cada clave (#164), o null; la segunda es la de las rutas al aeropuerto (#438)
+    for nombre in ("transbordo", "transbordo_aeropuerto"):
+        tb = o.get(nombre)
+        if not isinstance(tb, list) or len(tb) != len(claves):
+            p.append(f"{nombre}: se esperaban {len(claves)} posiciones, una por clave")
+        else:
+            p += [
+                m
+                for i, v in enumerate(tb)
+                for m in _campo(f"{nombre}[{i}]", v, posicion)
+            ]
+    if o.get("aeropuerto") not in o["destinos"]:
+        p.append("aeropuerto: no está entre los destinos")
 
     def por_clave(ruta, t):
         return _mapa(ruta, t, claves, lambda r, c: _mapa(r, c, nl, _dias))
@@ -429,6 +433,8 @@ def _tarifas(o):
             "no_laborables",
             "clave_tarifa",
             "transbordo",
+            "aeropuerto",
+            "transbordo_aeropuerto",
             "tarifas_ruta",
         ]
     )
