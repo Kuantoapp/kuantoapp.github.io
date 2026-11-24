@@ -101,6 +101,25 @@ def test_control_de_transbordo():
     assert coste(clave, 1) == ("10 viajes", D("22.47"))
 
 
+def test_transbordo_al_aeropuerto_paga_el_suplemento_una_vez():
+    # #438: el Metro que añade el transbordo es el tramo hasta la terminal; si la ruta ya lo paga, no se duplica
+    assert (
+        t.clave_transbordo_aeropuerto("A-B1|interurbano")
+        == "A-B1|interurbano+metro_aeropuerto"
+    )
+    assert (
+        t.clave_transbordo_aeropuerto("A-A|metro_aeropuerto")
+        == "A-A|metro_aeropuerto+metro_a"
+    )
+    # A-B1 → T4 con 4 viajes: 1 día, 10 viajes (11,05 sin suplemento); 2 y 3 días, ya gana el abono
+    clave = t.clave_transbordo_aeropuerto("A-B1|interurbano")
+    assert [coste(clave, d) for d in (1, 2, 3)] == [
+        ("10 viajes", D("33.75")),
+        ("Abono 30 días", D("35.55")),
+        ("Abono 30 días", D("35.55")),
+    ]
+
+
 def test_umbral_del_abono_en_zona_a_con_8_viajes_de_ocio():
     # 4 días: (30,27 + 8) × 0,73 = 27,93; 5 días: (37,83 + 8) × 0,73 = 33,46 > 30,43 del abono
     titulos = [coste("A-A|metro_a", d, 8)[0] for d in t.DIAS]
