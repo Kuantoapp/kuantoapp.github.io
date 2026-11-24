@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from mesobra import pipeline_analisis, pipeline_euros
+
 RAIZ = Path(__file__).parent.parent
 APP_DATOS = RAIZ / "app" / "datos"
 BASE = "https://yeraybc.github.io/DataMad-hackaton-2026/datos/"
@@ -18,8 +20,6 @@ FICHEROS = sorted(
     if p.suffix in {".json", ".geojson"}
 )
 CON_META = [f for f in FICHEROS if not f.startswith("sdm/")]
-# usan OpenStreetMap sin citarlo en meta.fuentes (docs/decisiones.md, 2026-11-24, #110)
-DERIVA_DE_OSM = {"analisis.json", "tarifas.json"}
 SDM = [f for f in FICHEROS if f.startswith("sdm/")]
 # cita obligatoria de cada publicador, según un trozo de la URL de su fuente
 CITAS = {
@@ -123,9 +123,15 @@ def test_ninguna_distribucion_apunta_a_un_fichero_inexistente(distribuciones):
         assert (APP_DATOS / url.removeprefix(BASE)).is_file(), url
 
 
+def test_meta_congelado_es_el_del_codigo():
+    assert _meta("analisis.json")["fuentes"] == pipeline_analisis.FUENTES
+    assert _meta("analisis.json")["nota"] == pipeline_analisis.NOTA
+    assert _meta("tarifas.json")["fuentes"] == pipeline_euros.FUENTES_TARIFAS
+
+
 @pytest.mark.parametrize("fichero", CON_META)
-def test_licencia_odbl_si_usa_openstreetmap(distribuciones, fichero):
-    osm = fichero in DERIVA_DE_OSM or any(
+def test_licencia_odbl_si_cita_openstreetmap(distribuciones, fichero):
+    osm = any(
         "openstreetmap" in (s["nombre"] + s["licencia"] + s["url"]).lower()
         for s in _fuentes(fichero)
     )
@@ -206,8 +212,6 @@ def test_cita_obligatoria_de_cada_publicador(distribuciones, fichero):
         for trozo, cita in CITAS.items():
             if trozo in s["url"]:
                 assert cita in derechos, f"{fichero}: falta «{cita}»"
-    if fichero in DERIVA_DE_OSM:
-        assert CITAS["geofabrik.de"] in derechos
 
 
 @pytest.mark.parametrize("fichero", SDM)

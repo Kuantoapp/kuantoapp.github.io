@@ -217,3 +217,10 @@ def test_leeme_cumple_cifras_con_fuente(leeme_real):
     cifras = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cifras)
     assert cifras.revisar(leeme_real) == []
+
+
+def test_leeme_dice_que_el_alquiler_solo_sale_del_serpavi(leeme_real):
+    assert (
+        "`alquiler_eur_m2_p50`: sus valores salen solo del SERPAVI"
+        in leeme_real.read_text("utf-8")
+    )

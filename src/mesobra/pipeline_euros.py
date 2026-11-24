@@ -58,6 +58,12 @@ OSM_PORTALES = {
     "url": "https://download.geofabrik.de/europe/spain/madrid-261113.osm.pbf",
     "licencia": "ODbL 1.0 (https://www.openstreetmap.org/copyright)",
 }
+OSM_CENTROS = {
+    "nombre": "OpenStreetMap, extracto de Geofabrik de la Comunidad de Madrid del 2026-11-13 (edificios que dan el "
+    "centro de población de cada zona, de donde sale el rango de coronas). © OpenStreetMap contributors",
+    "url": OSM_PORTALES["url"],
+    "licencia": OSM_PORTALES["licencia"],
+}
 LICENCIA_BOE = (
     "Reutilización con cita de la fuente (aviso legal del BOE): basado en datos de la Agencia "
     "Estatal Boletín Oficial del Estado"
@@ -163,6 +169,7 @@ FUENTES_TARIFAS = (
             "licencia": LICENCIA_RDL,
         },
     ]
+    + [OSM_CENTROS]
 )
 FUENTES_RUTA = [
     {
@@ -428,7 +435,9 @@ def tarifas_json(
         "Esta tabla lleva el precio ordinario (sin descuentos de familia numerosa ni discapacidad) y solo viajes al trabajo, sin ocio, "
         "ida y vuelta pasando por la zona A. El cálculo de la app ya no la usa, sino la tabla por ruta que se describe aparte; "
         "solo la lee la simulación del fin del descuento. "
-        f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años."
+        f"Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años. "
+        "Rango de coronas de cada ruta: recta entre los centros de las zonas, calculados con edificios de OpenStreetMap "
+        "(© OpenStreetMap contributors, extracto de Geofabrik actualizado el 2026-11-13, ODbL 1.0)."
     )
     nota_ruta = (
         "tarifas_ruta: clave_tarifa da, para cada par origen × destino, la posición en claves de su clave, que junta el rango de coronas que "
