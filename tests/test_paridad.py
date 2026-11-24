@@ -98,8 +98,24 @@ def _igual(js: Any, py: Any, ruta: str) -> None:
             _igual(js[clave], py[clave], f"{ruta}.{clave}")
 
 
+AEROPUERTO_T4 = {
+    "hogar": {"perfil": "solo", "edad": 30},
+    "sueldos": [
+        {
+            "bruto": 24000,
+            "destino": "polo:aeropuerto-t4",
+            "dias": 1,
+            "modo": "tp",
+            "viajes_dia": 4,
+        }
+    ],
+}
+
+
 @pytest.mark.parametrize(
-    "entrada", [GETAFE, CUATRO_VIAJES], ids=["getafe", "cuatro_viajes"]
+    "entrada",
+    [GETAFE, CUATRO_VIAJES, AEROPUERTO_T4],
+    ids=["getafe", "cuatro_viajes", "aeropuerto_t4"],
 )
 def test_js_da_las_mismas_cifras_que_python_en_las_199_zonas(entrada: dict) -> None:
     js, py = _en_js(entrada), _en_python(entrada)
