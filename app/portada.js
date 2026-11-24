@@ -78,7 +78,8 @@ function interactuar(figura, { svg, mira }) {
   };
   svg.addEventListener("pointermove", marcar);
   svg.addEventListener("pointerdown", marcar); // en una pantalla táctil, tocar una zona la marca
-  svg.addEventListener("pointerleave", () => {
+  svg.addEventListener("pointerleave", (e) => {
+    if (e.pointerType !== "mouse") return; // en táctil llega justo tras soltar: la zona tocada sigue marcada
     activa?.classList.remove("activa");
     activa = null;
     rotulo.textContent = reposo;
