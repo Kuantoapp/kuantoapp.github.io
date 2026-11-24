@@ -189,3 +189,85 @@ def test_disimilitud_cero_entre_iguales_y_uno_entre_disjuntos():
     a = pd.Series({"x": 1.0, "y": 0.0})
     assert matriz_trabajo.disimilitud(a, a) == 0
     assert matriz_trabajo.disimilitud(a, pd.Series({"x": 0.0, "y": 1.0})) == 1
+
+
+def test_comparar_da_delta_de_madrid_en_puntos_y_rellena_ceros():
+    a = pd.Series({"28079": 60.0, "28092": 40.0})
+    r = matriz_trabajo.comparar(a, pd.Series({"28079": 50.0}))
+    assert r["D"] == pytest.approx(0.4)
+    assert r["delta_madrid"] == pytest.approx(-40)
+
+
+def test_entradas_w_suma_los_distritos_en_madrid():
+    m = pd.DataFrame({"origen": ["28092", "28092"], "ocupados": [80, 20]})
+    w = pd.DataFrame(
+        {
+            "origen": ["28092"] * 3,
+            "destino": ["2807901", "2807902", "28092"],
+            "w": [0.3, 0.2, 0.5],
+        }
+    )
+    assert matriz_trabajo.entradas_w(m, w).to_dict() == {"28079": 50.0, "28092": 50.0}
+
+
+def _edm_sintetico() -> pd.DataFrame:
+    """Dos hogares de Móstoles que trabajan en 01 y dos de Centro que trabajan en 02."""
+    return pd.DataFrame(
+        {
+            "hogar": ["a", "b", "c", "d"],
+            "residencia": ["092-001", "092-001", "079-01-001", "079-01-002"],
+            "municipio": ["28092", "28092", "28079", "28079"],
+            "distrito": ["2807901", "2807901", "2807902", "2807902"],
+            "peso": [1.0, 3.0, 2.0, 2.0],
+        }
+    )
+
+
+def test_bootstrap_cuotas_suman_uno_y_respetan_los_estratos():
+    b = matriz_trabajo.bootstrap_cuotas(_edm_sintetico(), reps=50)
+    assert b.shape == (50, 2)
+    assert b.sum(axis=1).to_numpy() == pytest.approx(1)
+    # el estrato de Centro siempre aporta 4 de peso a 02; Móstoles, entre 2 y 6 a 01
+    assert b["2807902"].between(4 / 10, 4 / 6).all()
+
+
+def test_grupos_origen_y_d_de_grupos():
+    e = _edm_sintetico()
+    assert matriz_trabajo.grupos_origen(e).tolist() == [
+        "resto",
+        "resto",
+        "2807901",
+        "2807901",
+    ]
+    t = matriz_trabajo.control_origenes(e, reps=10)
+    # cada grupo trabaja en un solo distrito: D = 1 − su cuota global
+    assert t.loc["resto", "D"] == pytest.approx(0.5)
+    assert t.loc["2807901", "D"] == pytest.approx(0.5)
+
+
+def test_tabla_distritos_marca_discrepancia_fuera_del_ic_y_grande(monkeypatch):
+    e = _edm_sintetico()
+    cuotas = pd.Series({"2807901": 0.9, "2807902": 0.1})
+    monkeypatch.setattr(matriz_trabajo, "leer_cuotas_distritos", lambda **_k: cuotas)
+    t = matriz_trabajo.tabla_distritos(e, reps=50)
+    assert t["discrepa"].all()
+    assert t.loc["2807901", "delta"] == pytest.approx(40)
+    assert (t["definicion"] + t["deriva"]).to_numpy() == pytest.approx(
+        t["delta"].to_numpy()
+    )
+
+
+def test_cambio_cuenta_entradas_y_salidas():
+    base = pd.DataFrame(
+        {
+            "perfil": ["p", "p"],
+            "criterio": ["c", "c"],
+            "municipio_id": ["1", "2"],
+            "elegible": [True, False],
+            "pct_ocupados_elegibles": [60.0, 40.0],
+        }
+    )
+    alt = base.assign(elegible=[False, True], pct_ocupados_elegibles=[40.0, 60.0])
+    assert matriz_trabajo._cambio(base, alt) == {
+        ("p", "c"): {"entra": 1, "sale": 1, "dpct": 20.0}
+    }

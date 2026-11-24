@@ -18,9 +18,11 @@ abril de 2026): el lugar de trabajo puede ser la sede de la empresa y no el cent
 
 import json
 import logging
+import sys
 import unicodedata
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from mesobra import calculo
@@ -87,8 +89,8 @@ def ordenar(hoja: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
 
-def _hoja(ruta: Path = RAW) -> pd.DataFrame:
-    return pd.read_excel(ruta, HOJA, header=1, engine="calamine", dtype=str)
+def _hoja(ruta: Path = RAW, hoja: str = HOJA) -> pd.DataFrame:
+    return pd.read_excel(ruta, hoja, header=1, engine="calamine", dtype=str)
 
 
 def leer_matriz(ruta: Path = RAW) -> pd.DataFrame:
@@ -284,6 +286,270 @@ def disimilitud(a: pd.Series, b: pd.Series) -> float:
     return float((a - b).abs().sum() / 2)
 
 
+def _cuotas(s: pd.Series) -> pd.Series:
+    return s / s.sum()
+
+
+def no_consta_provincia(hoja: pd.DataFrame) -> int:
+    """Ocupados que trabajan en la provincia de Madrid con municipio «No consta», desde todos los orígenes."""
+    m = hoja[
+        (hoja["Provincia de trabajo"] == MADRID)
+        & ~hoja["Municipio de trabajo"].str.fullmatch(r"\d{3}", na=False)
+    ]
+    return int(pd.to_numeric(m["Ocupados de 16 y más años"], errors="raise").sum())
+
+
+def entradas_w(m: pd.DataFrame, w: pd.DataFrame) -> pd.Series:
+    """Ocupados que entran en cada municipio según los pesos: Σ_o ocupados_o · w(o, d), con los distritos de Madrid
+    sumados en el municipio. Es lo que usa el modelo: el «No consta» queda repartido dentro de cada origen."""
+    ocupados = m.groupby("origen")["ocupados"].sum()
+    return (w["w"] * w["origen"].map(ocupados)).groupby(w["destino"].str[:5]).sum()
+
+
+def comparar(a: pd.Series, b: pd.Series) -> dict:
+    """D, Δ de Madrid capital (puntos) y municipios con |Δ| ≥ 0,5 puntos entre las cuotas de `a` y `b`."""
+    ca, cb = _cuotas(a), _cuotas(b.reindex(a.index, fill_value=0))
+    delta = 100 * (ca - cb)
+    return {
+        "D": round(disimilitud(ca, cb), 4),
+        "delta_madrid": round(float(delta[MUNICIPIO_MADRID]), 2),
+        "grandes": delta[delta.abs() >= 0.5].round(2).sort_values().to_dict(),
+    }
+
+
+def control_municipios() -> None:
+    """Bloque A del registro previo de #357: hoja C23 frente a la afiliación a 31-12-2022."""
+    hoja = _hoja()
+    centro, cuenta = leer_afiliacion_centro(), leer_afiliacion_cuenta()
+    ine = entradas(hoja).reindex(centro.index, fill_value=0)
+    LOG.info("municipios sin entradas en la C23: %s", list(ine[ine == 0].index))
+    m = leer_matriz()
+    w_mun = entradas_w(m, pesos(m, leer_cuotas_distritos())[0])
+    nc = ine.copy()
+    nc[MUNICIPIO_MADRID] += no_consta_provincia(hoja)
+    c22 = entradas(_hoja(hoja="C22")).reindex(centro.index, fill_value=0)
+    filas = {
+        "INE frente a centro": comparar(ine, centro),
+        "INE frente a cuenta": comparar(ine, cuenta),
+        "cuenta frente a centro": comparar(cuenta, centro),
+        "INE (No consta a Madrid) frente a centro": comparar(nc, centro),
+        "INE (No consta a Madrid) frente a cuenta": comparar(nc, cuenta),
+        "w frente a centro": comparar(
+            w_mun.reindex(centro.index, fill_value=0), centro
+        ),
+        "ruido: C22 frente a C23": comparar(c22, ine),
+        "ruido: centro 2021 frente a 2022": comparar(
+            leer_afiliacion_centro(año=2021), centro
+        ),
+    }
+    for nombre, r in filas.items():
+        LOG.info("%s: %s", nombre, r)
+    cociente = _cuotas(ine) / _cuotas(centro)
+    con = ine > 0
+    LOG.info(
+        "cociente total INE ÷ centro %.4f, ÷ cuenta %.4f; Spearman de niveles %.4f; "
+        "Spearman log(cociente de cuotas) con log(afiliados) %.4f (n = %d)",
+        ine.sum() / centro.sum(),
+        ine.sum() / cuenta.sum(),
+        ine.corr(centro, method="spearman"),
+        np.log(cociente[con]).corr(np.log(centro[con]), method="spearman"),
+        con.sum(),
+    )
+
+
+def _estrato(edm: pd.DataFrame) -> pd.Series:
+    """Municipio de residencia; en Madrid, distrito de residencia (de la zona `079-DD-…`)."""
+    madrid = edm["municipio"] == MUNICIPIO_MADRID
+    return edm["municipio"].where(
+        ~madrid, MUNICIPIO_MADRID + edm["residencia"].str[4:6]
+    )
+
+
+def _por_hogar(edm: pd.DataFrame) -> pd.DataFrame:
+    """Peso de cada hogar en cada distrito de trabajo (filas: hogar; columnas: distrito)."""
+    return edm.pivot_table(
+        index="hogar", columns="distrito", values="peso", aggfunc="sum", fill_value=0
+    )
+
+
+def bootstrap_cuotas(edm: pd.DataFrame, reps: int, semilla: int = 357) -> pd.DataFrame:
+    """Cuotas por distrito en `reps` réplicas, remuestreando hogares con reemplazo dentro de cada estrato
+    (`_estrato`). El elevador es el de la encuesta, sin su diseño completo: el IC es aproximado."""
+    h = _por_hogar(edm)
+    estrato = _estrato(edm).groupby(edm["hogar"]).first().reindex(h.index)
+    grupos = [np.flatnonzero(estrato.to_numpy() == e) for e in estrato.unique()]
+    rng = np.random.default_rng(semilla)
+    filas = []
+    for _ in range(reps):
+        idx = np.concatenate([rng.choice(g, len(g)) for g in grupos])
+        peso = np.bincount(idx, minlength=len(h)) @ h.to_numpy()
+        filas.append(peso / peso.sum())
+    return pd.DataFrame(filas, columns=h.columns)
+
+
+def tabla_distritos(edm: pd.DataFrame, reps: int = 1000) -> pd.DataFrame:
+    """Bloque B: por distrito, cuotas del Colectivo 2023 y 2018 y del EDM2018, IC 95 % bootstrap, Δ en puntos con
+    su descomposición (definición = Colectivo 2018 − EDM; deriva = Colectivo 2023 − 2018) y la marca de
+    discrepancia del registro previo."""
+    boot = bootstrap_cuotas(edm, reps)
+    t = pd.DataFrame(
+        {
+            "colectivo_2023": leer_cuotas_distritos(),
+            "colectivo_2018": leer_cuotas_distritos(año=2018),
+            "edm": cuotas_edm(edm),
+            "ic_inf": boot.quantile(0.025),
+            "ic_sup": boot.quantile(0.975),
+        }
+    )
+    t["delta"] = 100 * (t["colectivo_2023"] - t["edm"])
+    t["definicion"] = 100 * (t["colectivo_2018"] - t["edm"])
+    t["deriva"] = 100 * (t["colectivo_2023"] - t["colectivo_2018"])
+    fuera = (t["colectivo_2023"] < t["ic_inf"]) | (t["colectivo_2023"] > t["ic_sup"])
+    grande = (t["delta"].abs() > 1) | (t["delta"].abs() / (100 * t["edm"]) > 0.2)
+    t["discrepa"] = fuera & grande
+    return t
+
+
+def control_distritos(edm: pd.DataFrame) -> None:
+    """Bloque B del registro previo de #357: cuotas del Colectivo frente al EDM2018."""
+    t = tabla_distritos(edm)
+    LOG.info("distritos (cuotas y Δ en puntos):\n%s", t.round(4).to_string())
+    LOG.info(
+        "D(Colectivo 2023, EDM) %.4f; D(Colectivo 2018, EDM) %.4f; D(Colectivo 2023, 2018) %.4f; "
+        "discrepan %d de 21",
+        disimilitud(t["colectivo_2023"], t["edm"]),
+        disimilitud(t["colectivo_2018"], t["edm"]),
+        disimilitud(t["colectivo_2023"], t["colectivo_2018"]),
+        t["discrepa"].sum(),
+    )
+    for nombre, sub in {
+        "sin cuenta propia": edm[~edm["cuenta_propia"]],
+        "sin centro de trabajo en la zona del hogar": edm[~edm["en_casa"]],
+    }.items():
+        LOG.info(
+            "sensibilidad %s: D(Colectivo 2023, EDM) %.4f",
+            nombre,
+            disimilitud(t["colectivo_2023"], cuotas_edm(sub)),
+        )
+
+
+def grupos_origen(edm: pd.DataFrame) -> pd.Series:
+    """Grupo de origen del registro previo: distrito de residencia en Madrid; fuera, el municipio si tiene al menos
+    300 trabajadores en Madrid en la muestra y «resto» si no."""
+    n = edm.groupby("municipio")["hogar"].transform("size")
+    fuera = edm["municipio"].where(n >= 300, "resto")
+    return _estrato(edm).where(edm["municipio"] == MUNICIPIO_MADRID, fuera)
+
+
+def _d_grupos(h: np.ndarray, grupo: np.ndarray, etiquetas: np.ndarray) -> np.ndarray:
+    """D de cada grupo frente al reparto global, con `h` el peso de cada hogar en cada distrito."""
+    total = h.sum(axis=0) / h.sum()
+    d = []
+    for g in etiquetas:
+        s = h[grupo == g].sum(axis=0)
+        d.append(np.abs(s / s.sum() - total).sum() / 2)
+    return np.array(d)
+
+
+def control_origenes(
+    edm: pd.DataFrame, reps: int = 1000, semilla: int = 357
+) -> pd.DataFrame:
+    """Bloque C del registro previo de #357 (supuesto 17): D de cada grupo de origen frente a la cuota global del
+    EDM, con su referencia nula permutando el grupo entre hogares (pesos fijos): D nulo medio y p."""
+    h = _por_hogar(edm)
+    por_hogar = grupos_origen(edm).groupby(edm["hogar"]).first().reindex(h.index)
+    grupo, etiquetas = por_hogar.to_numpy(), np.unique(por_hogar)
+    obs = _d_grupos(h.to_numpy(), grupo, etiquetas)
+    rng = np.random.default_rng(semilla)
+    nulos = np.array(
+        [
+            _d_grupos(h.to_numpy(), rng.permutation(grupo), etiquetas)
+            for _ in range(reps)
+        ]
+    )
+    peso = h.sum(axis=1).groupby(grupo).sum().reindex(etiquetas).to_numpy()
+    t = pd.DataFrame(
+        {
+            "personas": grupos_origen(edm).value_counts().reindex(etiquetas).to_numpy(),
+            "peso": peso,
+            "D": obs,
+            "D_nulo": nulos.mean(axis=0),
+            "p": (nulos >= obs).mean(axis=0),
+        },
+        index=etiquetas,
+    )
+    LOG.info("grupos de origen (supuesto 17):\n%s", t.round(4).to_string())
+    LOG.info(
+        "D medio ponderado %.4f; D nulo medio ponderado %.4f",
+        np.average(obs, weights=peso),
+        np.average(nulos.mean(axis=0), weights=peso),
+    )
+    return t
+
+
+def _cambio(base: pd.DataFrame, alt: pd.DataFrame) -> dict:
+    """Municipios que entran y salen de `elegible` y cambio medio absoluto de `pct_ocupados_elegibles` (puntos),
+    por perfil y criterio, frente a `base`."""
+    claves = ["perfil", "criterio", "municipio_id"]
+    j = base.merge(alt, on=claves, suffixes=("", "_alt"), validate="one_to_one")
+    j["entra"] = ~j["elegible"].astype(bool) & j["elegible_alt"].astype(bool)
+    j["sale"] = j["elegible"].astype(bool) & ~j["elegible_alt"].astype(bool)
+    # `pct_ocupados_elegibles` ya viene en porcentaje (simulacion._pct_municipios)
+    j["dpct"] = (j["pct_ocupados_elegibles_alt"] - j["pct_ocupados_elegibles"]).abs()
+    return (
+        j.groupby(["perfil", "criterio"])[["entra", "sale", "dpct"]]
+        .agg({"entra": "sum", "sale": "sum", "dpct": "mean"})
+        .round(2)
+        .to_dict("index")
+    )
+
+
+def efecto(edm: pd.DataFrame, reps: int = 20) -> None:
+    """Efecto del registro previo de #357 (escala, no alternativa): municipios que cambian de `elegible` con (1) la
+    cuota global del EDM2018 en vez del Colectivo, y su ruido con `reps` réplicas bootstrap; (2) la cuota de cada
+    grupo de origen (`grupos_origen`) para los orígenes de fuera de Madrid, frente a (1)."""
+    # import local: `simulacion` importa este módulo
+    from mesobra import simulacion
+
+    api = calculo.leer_api(calculo.RAIZ / "app/datos")
+    m = leer_matriz()
+
+    def correr(w: pd.DataFrame) -> pd.DataFrame:
+        return simulacion.simulacion(simulacion.pares_con_imputacion(api, w))
+
+    base = correr(pesos(m, leer_cuotas_distritos())[0])
+    global_edm = correr(pesos(m, cuotas_edm(edm))[0])
+    LOG.info("efecto (1) EDM global frente a Colectivo: %s", _cambio(base, global_edm))
+    for i, fila in bootstrap_cuotas(edm, reps).iterrows():
+        alt = correr(pesos(m, fila.rename_axis(None))[0])
+        LOG.info("efecto (1) réplica %d frente a Colectivo: %s", i, _cambio(base, alt))
+    grupo = grupos_origen(edm)
+    propios = set(grupo[edm["municipio"] != MUNICIPIO_MADRID]) - {"resto"}
+    clave = m["origen"].where(m["origen"].isin(propios), "resto")
+    clave = clave.where(m["origen"] != MUNICIPIO_MADRID, MUNICIPIO_MADRID)
+    partes = [pesos(m[clave == MUNICIPIO_MADRID], cuotas_edm(edm))[0]]
+    for g in sorted(propios | {"resto"}):
+        de_fuera = edm[(grupo == g) & (edm["municipio"] != MUNICIPIO_MADRID)]
+        partes.append(pesos(m[clave == g], cuotas_edm(de_fuera))[0])
+    por_grupo = correr(pd.concat(partes, ignore_index=True))
+    LOG.info(
+        "efecto (2) EDM por grupo frente a EDM global: %s",
+        _cambio(global_edm, por_grupo),
+    )
+    LOG.info(
+        "efecto (2) EDM por grupo frente a Colectivo: %s", _cambio(base, por_grupo)
+    )
+
+
+def control() -> None:
+    """Control externo de los pesos de destino (#357), con el método del registro previo de `docs/decisiones.md`."""
+    logging.basicConfig(level=logging.INFO)
+    control_municipios()
+    edm = leer_edm_trabajo()
+    control_distritos(edm)
+    control_origenes(edm)
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
     df = leer_matriz()
@@ -300,4 +566,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ["efecto"]:
+        logging.basicConfig(level=logging.INFO)
+        efecto(leer_edm_trabajo())
+    else:
+        control() if sys.argv[1:] == ["control"] else main()
