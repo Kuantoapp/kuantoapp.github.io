@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from mesobra import pipeline_analisis, pipeline_euros
+from mesobra import pipeline_analisis, pipeline_euros, sdm
 
 RAIZ = Path(__file__).parent.parent
 APP_DATOS = RAIZ / "app" / "datos"
@@ -141,9 +141,11 @@ def test_licencia_odbl_si_cita_openstreetmap(distribuciones, fichero):
 
 @pytest.mark.parametrize("fichero", SDM)
 def test_licencia_de_sdm_cc_by(distribuciones, fichero):
-    # decisión del equipo: ni esfuerzo ni p50 usan OSM, aunque alquiler.json, de donde sale p50, lo cite
+    # decisión del equipo: ni esfuerzo ni p50 usan OSM, aunque alquiler.json, de donde sale p50, lo cite;
+    # un p50 imputado usa los tiempos (OSM) y pediría ODbL (docs/decisiones.md, 2026-11-24)
     (d,) = _distribucion(distribuciones, fichero)
     assert d["dct:license"]["@id"] == CC_BY
+    assert not any(e["description"].endswith(", estimado") for e in _leer(fichero))
 
 
 @pytest.mark.parametrize("fichero", CON_META)
@@ -219,4 +221,5 @@ def test_cita_obligatoria_en_sdm(distribuciones, fichero):
     (d,) = _distribucion(distribuciones, fichero)
     derechos = " ".join(r["rdfs:label"] for r in _lista(d["dct:rights"]))
     assert CITAS["mivau.gob.es"] in derechos
-    assert (CITAS["ine.es"] in derechos) == fichero.endswith("esfuerzo.json")
+    usadas = sdm.FUENTES_USADAS[Path(fichero).stem]
+    assert (CITAS["ine.es"] in derechos) == ("INE" in usadas)

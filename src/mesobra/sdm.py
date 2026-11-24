@@ -181,10 +181,23 @@ FUENTES_USADAS = {
     # fuentes del docstring de `sobrecarga.py`
     **dict.fromkeys(
         ("sobrecarga_30", "sobrecarga_40", "sobrecarga_50"),
-        "de un modelo (estimado) con el ADRH, el Censo 2021 y la ECV del INE, el SERPAVI (Ministerio de "
-        "Vivienda y Agenda Urbana), la EPF y el catálogo de la Comunidad de Madrid",
+        "de un modelo (estimado) con el ADRH, el Censo 2021, la ECV y el IPC del INE, el SERPAVI "
+        "(Ministerio de Vivienda y Agenda Urbana), la EPF y el catálogo de la Comunidad de Madrid",
     ),
 }
+# con zonas imputadas (`pipeline_euros`, nota de alquiler.json) el p50 deja de salir solo del SERPAVI
+FUENTES_SI_ESTIMADO = {
+    "alquiler_eur_m2_p50": "del SERPAVI (Ministerio de Vivienda y Agenda Urbana) y, en las zonas "
+    "estimadas, de un modelo espacial (estimado) con el ADRH (INE), la población y los tiempos de "
+    "tiempos.json (OpenStreetMap)",
+}
+
+
+def _fuentes_usadas(nombre: str, lista: list[dict]) -> str:
+    estimado = any(e["description"].endswith(", estimado") for e in lista)
+    if estimado and nombre in FUENTES_SI_ESTIMADO:
+        return FUENTES_SI_ESTIMADO[nombre]
+    return FUENTES_USADAS[nombre]
 
 
 def leeme(
@@ -198,7 +211,7 @@ def leeme(
     ]
     metas = (("analisis.json", analisis["meta"]), ("alquiler.json", alquiler["meta"]))
     usadas = "\n".join(
-        f"- `{n}`: sus valores salen {FUENTES_USADAS[n]}."
+        f"- `{n}`: sus valores salen {_fuentes_usadas(n, por_indicador[n])}."
         for n in INDICADORES
         if por_indicador[n]
     )
