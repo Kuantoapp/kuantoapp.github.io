@@ -8,6 +8,7 @@
   <title>Kuanto · Cuánto te sobra al mes en cada zona de Madrid</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
+  <link rel="preload" href="fuentes/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -26,6 +27,7 @@
   <!-- Portada (#388): qué hace Kuanto, con qué datos y cuánto fiarse. La herramienta es otra vista, que abren sus botones. -->
   <article id="portada" class="pagina" aria-label="Qué es Kuanto">
     <section class="bloque heroe" aria-labelledby="titulo-portada">
+      <div class="heroe-texto">
       <h1 id="titulo-portada" tabindex="-1">Cuánto te sobra al mes, zona a zona.</h1>
       <p class="entradilla">Pon tu sueldo y dónde trabajas. Kuanto resta el alquiler, el transporte y la cesta básica en cada zona de la Comunidad de Madrid y te lo pinta en un mapa.</p>
       <div class="acciones-heroe">
@@ -33,6 +35,11 @@
         <button type="button" class="boton-principal" data-ir-herramienta>Calcular lo que te sobra</button>
       </div>
       <p class="aparte">Sin registro. Lo que escribes se queda en tu navegador.</p>
+      </div>
+      <figure id="plano" class="plano">
+        <div class="plano-lienzo"></div>
+        <figcaption><span class="plano-rotulo" aria-live="polite">Las 199 zonas, por coronas del abono</span> <span class="fuente">fuente: datos/zonas.geojson</span></figcaption>
+      </figure>
       <ul class="cifras-heroe">
         <li><span class="cifra">199</span> zonas: los otros 178 municipios y los 21 distritos de la capital <span class="fuente">fuente: datos/zonas.geojson</span></li>
         <li><span class="cifra">6</span> redes de transporte público con sus horarios: Metro, Metro Ligero, Cercanías, interurbanos, EMT y urbanos <span class="fuente">fuente: GTFS del CRTM</span></li>
@@ -370,5 +377,6 @@
   </div>
   <script src="vendor/maplibre-gl.js"></script>
   <script type="module" src="app.js"></script>
+  <script type="module" src="portada.js"></script>
 </body>
 </html>

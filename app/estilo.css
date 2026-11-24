@@ -469,3 +469,130 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .informe .indice a { min-width: 44px; justify-content: center; padding: 0; border-width: 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--linea-control); }
   .pagina.informe .indice a[aria-current="location"] { background: none; text-decoration-color: var(--acento); text-decoration-thickness: 2px; }
 }
+
+/* === Acabado de plano (prueba sobre #434) ===================================================================
+   Dirección: cartográfica, precisa y editorial. Titulares en Instrument Serif (OFL, servida desde app/fuentes/),
+   rejilla de puntos de papel milimetrado, marcas de esquina de hoja de plano y una lámina oscura para la cifra.
+   Ningún movimiento ligado al desplazamiento: entradas al cargar y respuestas al ratón y al teclado. */
+@font-face { font-family: "Instrument Serif"; src: url("fuentes/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+:root {
+  --fuente-titular: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --fuente-dato: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+  --punto: rgb(29 29 31 / 11%);
+  --esquina: rgb(29 29 31 / 45%);
+  --tinta: #0d1b2e;
+  --tinta-texto: #eef2f7;
+  --tinta-texto-2: #b4bfcd;
+  --tinta-acento: #9cc2f5;
+  --tinta-linea: rgb(238 242 247 / 14%);
+  --tinta-punto: rgb(238 242 247 / 9%);
+  --r-4: 28px;
+  --corona-a: rgb(11 79 156 / 30%); /* rampa del acento por corona del abono, de dentro afuera */
+  --corona-b1: rgb(11 79 156 / 19%);
+  --corona-b2: rgb(11 79 156 / 12%);
+  --corona-b3: rgb(11 79 156 / 7%);
+  --corona-c1: rgb(11 79 156 / 3%);
+}
+
+/* Papel: rejilla de puntos fina en las páginas (no en la herramienta, donde manda el mapa). */
+.pagina { background-color: var(--fondo); background-image: radial-gradient(circle at 1px 1px, var(--punto) 1px, transparent 1.4px); background-size: 24px 24px; }
+
+/* Tipografía: serif fina para titulares y cifras de lectura; la del sistema para todo lo demás. */
+.pagina h1, .pagina h2, .navegacion .marca, #guia-titulo { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.015em; }
+.pagina h1 { max-width: 13ch; font-size: clamp(48px, 8.4vw, 112px); line-height: 0.95; }
+.pagina h2 { font-size: clamp(38px, 5.6vw, 68px); line-height: 1; }
+.navegacion .marca { font-size: 28px; letter-spacing: -0.01em; }
+#guia-titulo { font-size: 34px; line-height: 1.05; }
+.cifras-heroe .cifra, .cifra-grande, .serie .cifra, .panel-perfil .cifra { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.cifra-grande { font-size: clamp(88px, 13vw, 168px); line-height: 0.9; }
+.cifras-heroe .cifra { font-size: clamp(56px, 6.5vw, 80px); }
+
+/* Hoja de plano: cuatro marcas de esquina, siempre iguales, alrededor de lo que es una vista de datos. */
+.plano, .dato-imagen {
+  --m: 14px;
+  background-image:
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina));
+  background-size: var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m);
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Portada: el texto a la izquierda y el plano de las zonas a la derecha; las cifras, debajo a todo lo ancho. */
+.heroe { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 56px; align-items: center; }
+.heroe .cifras-heroe { grid-column: 1 / -1; }
+.plano { margin: 0; padding: 20px; }
+.plano-lienzo { aspect-ratio: 1000 / 1010; }
+.plano svg { display: block; width: 100%; height: 100%; }
+.plano .zona { fill: var(--superficie); stroke: var(--texto-3); stroke-width: 0.9; stroke-linejoin: round; vector-effect: non-scaling-stroke; transition: fill 0.15s var(--curva), stroke 0.15s var(--curva); }
+/* Rampa del acento por corona tarifaria: de Madrid (A) hacia fuera, cada anillo más claro (dato de zonas.geojson). */
+.plano .zona[data-corona="A"] { fill: var(--corona-a); }
+.plano .zona[data-corona="B1"] { fill: var(--corona-b1); }
+.plano .zona[data-corona="B2"] { fill: var(--corona-b2); }
+.plano .zona[data-corona="B3"] { fill: var(--corona-b3); }
+.plano .zona[data-corona="C1"] { fill: var(--corona-c1); }
+.plano .zona.activa { fill: var(--acento); stroke: var(--acento-fuerte); }
+.plano .mira line { stroke: var(--acento); stroke-width: 1; stroke-dasharray: 3 5; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity 0.2s var(--curva); }
+.plano svg:hover .mira line { opacity: 0.55; }
+.plano figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; margin-top: 12px; color: var(--texto-2); font-size: 14px; }
+.plano-rotulo { font-family: var(--fuente-dato); font-variant-numeric: tabular-nums; }
+.plano .fuente { margin: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .plano.listo .zona { animation: entra-zona 600ms var(--curva) var(--retraso, 0ms) both; }
+  .heroe-texto > * { animation: entra-abajo 700ms var(--curva) both; }
+  .heroe-texto > :nth-child(2) { animation-delay: 80ms; }
+  .heroe-texto > :nth-child(n + 3) { animation-delay: 160ms; }
+}
+@keyframes entra-zona { from { opacity: 0; } }
+
+/* Cuatro cuentas: filas numeradas (la resta va en orden) que se marcan como una hoja al pasar. */
+.ficha-tecnica { counter-reset: cuenta; }
+.ficha-tecnica div { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 16px; padding: 24px 16px 24px 0; transition: background-color 0.2s var(--curva); }
+.ficha-tecnica div:first-child { padding-top: 24px; border-top: 1px solid var(--linea); }
+.ficha-tecnica dt::before { counter-increment: cuenta; content: counter(cuenta, decimal-leading-zero); position: absolute; left: 12px; top: 28px; color: var(--texto-3); font-family: var(--fuente-dato); font-size: 14px; font-weight: 400; }
+.ficha-tecnica dt, .ficha-tecnica dd { grid-column: 2; }
+.ficha-tecnica div:hover { background-color: var(--superficie); }
+.ficha-tecnica div:hover dt::before { color: var(--acento); }
+
+/* La cifra: lámina oscura con la cifra grande y el mapa del informe sobre papel. */
+.pagina .bloque.dato { width: min(80rem, 100% - 24px); padding: clamp(40px, 7vw, 96px) max(24px, calc((min(80rem, 100% - 24px) - 72rem) / 2 + 24px)); border: 0; border-radius: var(--r-4); background: var(--tinta) radial-gradient(circle at 1px 1px, var(--tinta-punto) 1px, transparent 1.4px) 0 0 / 24px 24px; color: var(--tinta-texto); }
+.bloque.dato h2 { color: var(--tinta-texto); }
+.bloque.dato .destacado, .bloque.dato .dato-texto p:not(.destacado) { color: var(--tinta-texto-2); }
+.bloque.dato .cifra-grande { color: var(--tinta-acento); }
+.pagina .bloque.dato a { color: var(--tinta-acento); }
+.pagina .bloque.dato a:hover { color: var(--tinta-texto); }
+.pagina .bloque.dato :focus-visible { outline-color: var(--tinta-acento); }
+.bloque.dato .dato-imagen { --esquina: rgb(238 242 247 / 55%); background-color: transparent; border-color: var(--tinta-linea); }
+.bloque.dato .dato-imagen img { padding: 8px; background: var(--superficie); border-radius: var(--r-1); }
+.bloque.dato .dato-imagen figcaption { color: var(--tinta-texto-2); }
+
+/* La fórmula: cada término es una pieza; el resultado, en el acento. */
+.formula { align-items: center; gap: 12px; box-shadow: none; }
+.formula > span:not(.operador) { padding: 6px 16px; border: 1px solid var(--linea-control); border-radius: 999px; font-family: var(--fuente-titular); font-weight: 400; transition: border-color 0.15s var(--curva), color 0.15s var(--curva); }
+.formula > span:not(.operador):hover { border-color: var(--acento); color: var(--acento); }
+.formula strong { padding: 6px 18px; border-radius: 999px; background: var(--acento); color: var(--superficie); font-family: var(--fuente-titular); font-weight: 400; }
+
+/* Botones: la acción principal lleva una flecha que se adelanta al pasar. */
+.boton-principal { display: inline-flex; align-items: center; gap: 12px; }
+.boton-principal::after { content: ""; width: 8px; height: 8px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.2s var(--curva); }
+.boton-principal:hover::after { transform: translateX(3px) rotate(45deg); }
+#herramienta .boton-principal::after { display: none; } /* en las tarjetas, «Siguiente» ya dice adónde va */
+
+/* Cierre: el último titular, centrado sobre el papel. */
+.pagina .cierre { text-align: center; }
+.pagina .cierre h2, .pagina .cierre .entradilla { margin-inline: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha-tecnica div, .formula > span, .boton-principal::after, .plano .zona, .plano .mira line { transition: none; }
+}
+@media (max-width: 56rem) {
+  .heroe { grid-template-columns: minmax(0, 1fr); }
+  .plano { max-width: 32rem; }
+}
+@media (max-width: 40rem) {
+  .pagina .bloque.dato { width: calc(100% - 16px); padding-inline: 16px; border-radius: var(--r-3); }
+  .ficha-tecnica div { grid-template-columns: 40px minmax(0, 1fr); column-gap: 8px; }
+  .ficha-tecnica dt::before { left: 4px; }
+}
