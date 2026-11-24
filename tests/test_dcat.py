@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from mesobra import pipeline_analisis, pipeline_euros, sdm
+from mesobra import coche, pipeline_analisis, pipeline_euros, sdm
 
 RAIZ = Path(__file__).parent.parent
 APP_DATOS = RAIZ / "app" / "datos"
@@ -127,6 +127,20 @@ def test_meta_congelado_es_el_del_codigo():
     assert _meta("analisis.json")["fuentes"] == pipeline_analisis.FUENTES
     assert _meta("analisis.json")["nota"] == pipeline_analisis.NOTA
     assert _meta("tarifas.json")["fuentes"] == pipeline_euros.FUENTES_TARIFAS
+    assert _meta("netos.json")["fuentes"] == pipeline_euros.FUENTES_NETOS
+    assert coche.NORMA_EUR_KM in _meta("tiempos.json")["fuentes"]
+
+
+@pytest.mark.parametrize("fichero", CON_META)
+def test_act_php_del_boe_con_su_fecha_de_actualizacion(fichero):
+    # aviso legal del BOE: la fecha de última actualización, si la página la publica (#439);
+    # las que el BOE sirve como «TEXTO ORIGINAL» no la tienen y lo dicen
+    for s in _fuentes(fichero):
+        if "boe.es/buscar/act.php" in s["url"]:
+            assert re.search(
+                r"última actualización publicada el \d{4}-\d{2}-\d{2}|texto original, sin versión consolidada",
+                s["licencia"],
+            ), s
 
 
 @pytest.mark.parametrize("fichero", CON_META)

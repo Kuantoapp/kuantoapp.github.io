@@ -72,6 +72,13 @@ def test_solo_los_consolidados_del_boe_dicen_meramente_informativo():
         assert ("meramente informativo" in f["licencia"]) == ("/act.php" in f["url"]), f
 
 
+def test_consolidado_del_boe_sin_fecha_falla():
+    with pytest.raises(ValueError, match="última actualización"):
+        pipeline_euros._boe(
+            "LIRPF", "https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764"
+        )
+
+
 def test_m2_por_defecto_es_la_mediana_ponderada():
     zona = _zona(
         [

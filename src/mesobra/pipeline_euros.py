@@ -89,9 +89,18 @@ EPF = (
 )
 
 
-def _boe(nombre: str, url: str) -> dict[str, str]:
+def _boe(nombre: str, url: str, actualizado: str | None = None) -> dict[str, str]:
     # act.php es el texto consolidado; doc.php, el original publicado (#186)
-    licencia = LICENCIA_BOE_CONSOLIDADO if "/act.php" in url else LICENCIA_BOE
+    if "/act.php" not in url:
+        return {"nombre": nombre, "url": url, "licencia": LICENCIA_BOE}
+    if actualizado is None:
+        # el aviso legal del BOE pide citar la fecha de la última actualización (#439)
+        raise ValueError(
+            f"{url}: falta la fecha de última actualización del consolidado"
+        )
+    licencia = (
+        f"{LICENCIA_BOE_CONSOLIDADO}; última actualización publicada el {actualizado}"
+    )
     return {"nombre": nombre, "url": url, "licencia": licencia}
 
 
@@ -99,6 +108,7 @@ FUENTES_NETOS = [
     _boe(
         "LIRPF (BOE-A-2006-20764)",
         "https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764",
+        "2026-11-18",
     ),
     _boe(
         "Orden PJC/297/2026 (BOE-A-2026-7296)",
@@ -111,6 +121,7 @@ FUENTES_NETOS = [
     _boe(
         "Decreto Legislativo 1/2010 de la Comunidad de Madrid, tributos cedidos (BOCM-m-2010-90068)",
         "https://www.boe.es/buscar/act.php?id=BOCM-m-2010-90068",
+        "2026-07-10",
     ),
 ]
 FUENTES_TARIFAS = (
@@ -135,6 +146,7 @@ FUENTES_TARIFAS = (
         _boe(
             "Estatuto de los Trabajadores (BOE-A-2015-11430), arts. 37.2 (fiestas) y 38.1 (vacaciones)",
             "https://www.boe.es/buscar/act.php?id=BOE-A-2015-11430",
+            "2026-11-18",
         ),
     ]
     + [

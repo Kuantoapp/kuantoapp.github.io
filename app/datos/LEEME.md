@@ -46,10 +46,6 @@ Además, cada fuente pide su cita. Quien reutilice un fichero debe incluir las d
 
 Los ficheros mezclan datos observados con estimaciones y supuestos. La `nota` de cada `meta` dice cuáles, y las palabras «estimado» y «supuesto» marcan cada uno. Entre ellos están el factor del IPC y el factor de contratos nuevos del alquiler, los kilómetros y el coste en coche, parte de los tiempos en transporte público, la cesta por tramo de ingresos y las simulaciones del Bono y del fin del descuento. Los totales de las simulaciones no son datos de los publicadores.
 
-## Limitaciones abiertas
-
-- [#439](https://github.com/yeraybc/DataMad-hackaton-2026/issues/439): faltan en las fuentes de `netos.json` y `tarifas.json` las fechas de última actualización de los textos consolidados del BOE. <!-- sin-fuente: número de issue -->
-
 ## Estructura común
 
 Salvo `sdm/`, cada fichero lleva un bloque `meta` con `generado` (fecha de generación), `anio_dato` (año del dato), `fuentes` (nombre, URL y licencia de cada una) y `nota`. Algunos añaden `ipc_hasta` (mes del último IPC aplicado), `min_testigos`, `nota_ruta` o `fuentes_ruta`. Todo va en UTF-8 y `null` marca lo que falta. Las claves de zona son `zona_id`: el código INE de 5 dígitos del municipio, o `28079` seguido del distrito de 2 dígitos en los distritos de Madrid. Los recuentos que siguen salen de un script que cuenta los propios ficheros.[^recuento]
