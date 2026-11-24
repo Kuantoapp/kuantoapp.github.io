@@ -121,7 +121,7 @@ def test_transbordo_al_aeropuerto_paga_el_suplemento_una_vez():
 
 
 def test_transbordo_al_aeropuerto_en_otros_colectivos_y_sin_descuento():
-    # A-B1 → T4, 1 día (BOCM-20251231-2 págs. 66-68; -3 págs. 70-72): 0,75667 viajes/mes por trayecto
+    # A-B1 → T4, 1 día (BOCM-20251231-2 págs. 66-68; -3 págs. 70-72): 0,7567 bonos de 10 viajes al mes por producto
     clave = t.clave_transbordo_aeropuerto("A-B1|interurbano")
     fn = ("vigente_2026", "fn_especial")
     assert coste(clave, 1, esc=fn) == (
