@@ -9,7 +9,7 @@ Qué documento leer según lo que busques. Si no sabes nada de Kuanto, empieza p
 | Alguien que quiere saber qué es y cómo se usa | [Cómo funciona Kuanto](como-funciona.md), [preguntas frecuentes](preguntas-frecuentes.md) y [glosario](glosario.md) |
 | Economista o analista | [Datos y fuentes](datos-y-fuentes.md), [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) (cálculo, supuestos, límites y validación), [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html), [verificaciones](verificaciones/) y [registro de decisiones](decisiones.md) |
 | Quien reutiliza los datos | [Datos y fuentes](datos-y-fuentes.md), [datos abiertos de Kuanto](../app/datos/LEEME.md) (licencias, cita y diccionario de cada fichero), [fuentes descargadas](../data/README.md) y [diccionarios de los ficheros grandes](datos/) |
-| Desarrollador | [Reproducir Kuanto](reproducir.md), [CONTRIBUTING.md](../CONTRIBUTING.md) y [AGENTS.md](../AGENTS.md) |
+| Desarrollador | [Arquitectura](arquitectura.md), [trazabilidad](trazabilidad.md), [reproducir Kuanto](reproducir.md), [CONTRIBUTING.md](../CONTRIBUTING.md) y [AGENTS.md](../AGENTS.md) |
 | Diseñador | La dirección visual está en el [registro de decisiones](decisiones.md) (entradas del 2026-11-21 y 2026-11-24) y las pautas en la skill [`dm-diseno-web`](../.claude/skills/dm-diseno-web/SKILL.md) |
 
 ## Qué hay en `docs/`
@@ -20,6 +20,8 @@ Qué documento leer según lo que busques. Si no sabes nada de Kuanto, empieza p
 | [`datos-y-fuentes.md`](datos-y-fuentes.md) | Qué fuente aporta cada pieza, de qué año, a qué escala y con qué licencia |
 | [`glosario.md`](glosario.md) | Los términos de economía, datos y territorio, en una o dos frases |
 | [`preguntas-frecuentes.md`](preguntas-frecuentes.md) | Las dudas más habituales, con su respuesta y dónde ampliarla |
+| [`arquitectura.md`](arquitectura.md) | Cómo está construido Kuanto: capas, módulos, web, reglas que no se rompen y tests |
+| [`trazabilidad.md`](trazabilidad.md) | Cómo se sigue una cifra hasta su descarga original y cómo comprobarla |
 | [`reproducir.md`](reproducir.md) | Guía para regenerar los datos, ejecutar los tests y usar el asistente MCP |
 | [`decisiones.md`](decisiones.md) | Registro de todo lo que ha decidido el equipo, con fecha, motivo y PR. Es un registro de trabajo, extenso y técnico |
 | [`verificaciones/`](verificaciones/) | Contraste de fuentes, normas y licencias con el publicador original: qué se comprobó, con qué evidencia y qué se corrigió |
