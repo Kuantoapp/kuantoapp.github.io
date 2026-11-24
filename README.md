@@ -46,7 +46,7 @@ Cada fuente se descarga tal cual y se guarda con su huella digital. Un paquete d
 - Lo que sale de un modelo o de un supuesto lleva la marca «estimado», y lo que falta sale en gris en vez de inventado.
 - El IRPF, las cotizaciones y las tarifas son los de 2026, con cada parámetro citado a su BOE o BOCM.
 - Las afirmaciones sobre fuentes y normas se contrastaron con el publicador original ([verificaciones](docs/verificaciones/)) y cada decisión del equipo está registrada con su motivo ([registro de decisiones](docs/decisiones.md)).
-- Todo se regenera desde las descargas originales con un solo comando.
+- Cualquier cifra se puede seguir hasta su descarga original ([trazabilidad](docs/trazabilidad.md)), y los datos de la web se regeneran desde esas descargas con un comando.
 - Los supuestos y los límites están escritos en la [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos).
 
 ## Inicio rápido
@@ -79,6 +79,8 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 | Revisar el método, los supuestos y los límites | [Nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) e [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html) |
 | Reutilizar los datos | [Datos abiertos de Kuanto](app/datos/LEEME.md) |
 | Saber de dónde sale cada descarga | [Fuentes descargadas](data/README.md) |
+| Entender cómo está construido | [Arquitectura](docs/arquitectura.md) |
+| Comprobar una cifra hasta su origen | [Trazabilidad](docs/trazabilidad.md) |
 | Ejecutar el código o los tests | [Reproducir Kuanto](docs/reproducir.md) |
 | Colaborar en el repositorio | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Ver todo lo que hay | [Mapa de la documentación](docs/README.md) |
