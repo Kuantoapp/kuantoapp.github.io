@@ -101,6 +101,39 @@ def test_control_de_transbordo():
     assert coste(clave, 1) == ("10 viajes", D("22.47"))
 
 
+def test_transbordo_al_aeropuerto_paga_el_suplemento_una_vez():
+    # #438: el Metro que añade el transbordo es el tramo hasta la terminal; si la ruta ya lo paga, no se duplica
+    assert (
+        t.clave_transbordo_aeropuerto("A-B1|interurbano")
+        == "A-B1|interurbano+metro_aeropuerto"
+    )
+    assert (
+        t.clave_transbordo_aeropuerto("A-A|metro_aeropuerto")
+        == "A-A|metro_aeropuerto+metro_a"
+    )
+    # A-B1 → T4 con 4 viajes: 1 día, 10 viajes (11,05 sin suplemento); 2 y 3 días, ya gana el abono
+    clave = t.clave_transbordo_aeropuerto("A-B1|interurbano")
+    assert [coste(clave, d) for d in (1, 2, 3)] == [
+        ("10 viajes", D("33.75")),
+        ("Abono 30 días", D("35.55")),
+        ("Abono 30 días", D("35.55")),
+    ]
+
+
+def test_transbordo_al_aeropuerto_en_otros_colectivos_y_sin_descuento():
+    # A-B1 → T4, 1 día (BOCM-20251231-2 págs. 66-68; -3 págs. 70-72): 0,7567 bonos de 10 viajes al mes por producto
+    clave = t.clave_transbordo_aeropuerto("A-B1|interurbano")
+    fn = ("vigente_2026", "fn_especial")
+    assert coste(clave, 1, esc=fn) == (
+        "10 viajes",
+        D("16.80"),
+    )  # (3,60 + 3,60 + 10 × 1,50) × 0,7567
+    assert coste(clave, 1, esc=S) == (
+        "10 viajes",
+        D("41.62"),
+    )  # (12,50 + 12,50 + 30) × 0,7567
+
+
 def test_umbral_del_abono_en_zona_a_con_8_viajes_de_ocio():
     # 4 días: (30,27 + 8) × 0,73 = 27,93; 5 días: (37,83 + 8) × 0,73 = 33,46 > 30,43 del abono
     titulos = [coste("A-A|metro_a", d, 8)[0] for d in t.DIAS]

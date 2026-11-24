@@ -393,9 +393,15 @@ def _matriz_claves(
     return [[None if pd.isna(c) else pos[c] for c in fila] for fila in m.to_numpy()]
 
 
-def _con_transbordo(claves: Iterable[str]) -> list[str]:
-    """Las claves de ruta y la de cada una con cambio de operador (4 viajes al día), sin repetir."""
-    return sorted({k for c in claves for k in (c, transporte.clave_transbordo(c))})
+def _con_transbordo(
+    claves: Iterable[str], al_aeropuerto: Iterable[str] = ()
+) -> list[str]:
+    """Las claves de ruta y la de cada una con cambio de operador (4 viajes al día), sin repetir.
+    `al_aeropuerto`: las claves de las rutas al aeropuerto, que además llevan su gemela con suplemento (#438)."""
+    return sorted(
+        {k for c in claves for k in (c, transporte.clave_transbordo(c))}
+        | {transporte.clave_transbordo_aeropuerto(c) for c in al_aeropuerto}
+    )
 
 
 def tarifas_json(
@@ -449,6 +455,11 @@ def tarifas_json(
         f"a todo el Abono Joven de {transporte.EDAD_MIN_JOVEN} a {transporte.EDAD_MAX_JOVEN} años. "
         "transbordo: para cada clave, la posición de la misma ruta con cambio de operador en cada sentido "
         "(4 viajes al día: una validación más, con Metro de la zona A). "
+        "transbordo_aeropuerto: lo mismo para las rutas a `aeropuerto` (polo:aeropuerto-t4), donde ese Metro de más "
+        "es el tramo hasta la terminal y paga el Suplemento Aeropuerto. "
+        "Suplemento Aeropuerto (BOCM-20251231-2): 3,00 € por viaje en el ordinario (menos en otros colectivos) en Metro o combinado con destino la terminal; "
+        "se supone pagado en los dos viajes del día; los abonos que incluyen la zona A no lo pagan. "
+        "Los polos copian la ruta de su zona (estimado). "
         "no_laborables: viajes de ocio al mes, cobrados en el "
         "producto principal de la ruta. Colectivos: precio de su columna en el BOCM (discapacidad igual o "
         "superior al 65 %, familia numerosa general o especial, y las dos con discapacidad); los abonos de "
@@ -479,6 +490,13 @@ def tarifas_json(
         "no_laborables": list(api_estatica.NO_LABORABLES),
         "transbordo": [
             lista.index(g) if (g := transporte.clave_transbordo(c)) in lista else None
+            for c in lista
+        ],
+        "aeropuerto": AEROPUERTO,
+        "transbordo_aeropuerto": [
+            lista.index(g)
+            if (g := transporte.clave_transbordo_aeropuerto(c)) in lista
+            else None
             for c in lista
         ],
         "clave_tarifa": _matriz_claves(claves, ids, destinos, lista),
@@ -583,7 +601,14 @@ def main() -> None:
         "netos.json": netos_json(neto.rejilla()),
         "tarifas.json": tarifas_json(
             transporte.tabla_v1(),
-            transporte.tabla(_con_transbordo(claves["clave_tarifa"].dropna().unique())),
+            transporte.tabla(
+                _con_transbordo(
+                    claves["clave_tarifa"].dropna().unique(),
+                    claves.loc[claves["destino_id"].eq(AEROPUERTO), "clave_tarifa"]
+                    .dropna()
+                    .unique(),
+                )
+            ),
             claves,
             ids,
         ),

@@ -147,6 +147,8 @@ FALLOS = [
     ("clave sin tarifa", "tarifas.json", "clave_tarifa.0.0", 99, "fuera del rango"),
     ("transbordo de otra longitud", "tarifas.json", "transbordo", [None], r"transbordo: se esperaban \d+ posiciones"),
     ("transbordo fuera del rango", "tarifas.json", "transbordo.0", 99, "fuera del rango"),
+    ("transbordo al aeropuerto de otra longitud", "tarifas.json", "transbordo_aeropuerto", [None], r"transbordo_aeropuerto: se esperaban \d+ posiciones"),
+    ("aeropuerto fuera de los destinos", "tarifas.json", "aeropuerto", "polo:nada", "aeropuerto: no está entre los destinos"),
     ("clave que falta en la tabla", "tarifas.json", "tarifas_ruta.vigente_2026.ordinario.joven.A-A|metro_a", ..., r"faltan claves \['A-A\|metro_a'\]"),
     ("viajes de ocio que faltan", "tarifas.json", "tarifas_ruta.sin_descuento.fn_especial.mayor_65.A-B1|interurbano.16", ..., r"faltan claves \['16'\]"),
     ("edades incompletas", "tarifas.json", "edades", ["joven", "general"], "edades: .* no está en"),
