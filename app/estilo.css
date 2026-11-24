@@ -59,6 +59,8 @@ fieldset label input:not([type="radio"], [type="range"]), fieldset label select 
   transition: border-color 0.15s var(--curva), box-shadow 0.15s var(--curva);
 }
 fieldset label input:hover, fieldset label select:hover { border-color: var(--texto-2); }
+/* El sueldo que no se usa (bruto o neto, según «Doy el…») queda de solo lectura: pulsarlo lo activa. */
+fieldset label input[readonly] { border-style: dashed; background: var(--fondo); color: var(--texto-2); cursor: pointer; }
 input[type="range"] { display: block; width: 100%; min-height: 44px; margin: 0; }
 .opciones { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .opciones label, #metricas label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: var(--texto); font-size: 15px; }
@@ -74,16 +76,20 @@ input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 .menus { display: contents; }
 .menu { position: relative; }
 .menu-boton { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; background: none; color: var(--texto); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
-.menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.menu-boton::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--curva); }
+/* La flecha dice si el panel está abierto: hacia arriba, abierto (al pulsar o al pasar el ratón). */
+.menu-boton[aria-expanded="true"]::after { transform: translateY(2px) rotate(225deg); }
 .menu-boton[aria-expanded="true"] { background: var(--acento-suave); color: var(--acento); }
 .menu:has([aria-invalid="true"]) > .menu-boton { color: var(--error); text-decoration: underline; } /* un error dentro se ve sin abrirlo */
 .menu-panel { position: absolute; top: 100%; left: 0; display: none; width: 22rem; max-height: 75vh; overflow-y: auto; padding: 4px 12px 12px; background: var(--fondo); border: 1px solid var(--linea); border-radius: var(--r-3); box-shadow: var(--sombra); }
 .menu-panel:focus-within, .menu-boton[aria-expanded="true"] + .menu-panel { display: block; }
 /* Abrir al pasar el ratón solo donde hay ratón (en táctil :hover se queda pegado). Escape lo anula con
-   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). */
+   `.sin-hover` hasta que el ratón sale del menú (WCAG 1.4.13). Con un menú abierto al pulsar, el ratón no abre
+   los demás: se superpondrían. */
 @media (hover: hover) {
-  .menu:not(.sin-hover):hover > .menu-panel { display: block; }
-  .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-panel { display: block; }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-boton { background: var(--acento-suave); color: var(--acento); }
+  #barra-filtros:not(:has(.menu-boton[aria-expanded="true"])) .menu:not(.sin-hover):hover > .menu-boton::after { transform: translateY(2px) rotate(225deg); }
 }
 .menu-panel fieldset { margin: 8px 0 0; }
 #m-escenario { right: 0; left: auto; } /* los últimos menús se abren hacia dentro */
@@ -163,7 +169,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 
 @media (prefers-reduced-motion: reduce) {
-  aside, body.panel-plegado aside, #plegar-panel .icono { transition: none; }
+  aside, body.panel-plegado aside, #plegar-panel .icono, .menu-boton::after { transition: none; }
 }
 
 /* Pantalla media (por debajo de 68rem los menús centrados chocan con las acciones): la barra se desplaza en
@@ -461,11 +467,169 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .informe .figura-ancha img { max-height: calc(100dvh - var(--alto-nav) - var(--alto-indice) - 96px); }
 .fuentes-informe { margin-top: 32px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
 .fuentes-informe .lista-fuentes { margin-top: 8px; }
-@media (max-width: 40rem) {
-  .informe .indice ul { justify-content: space-between; gap: 8px; }
-  .informe .indice a { padding: 0 6px; font-size: 14px; }
+
+
+/* === Acabado de plano (prueba sobre #434) ===================================================================
+   Dirección: cartográfica, precisa y editorial. Una familia en dos voces, servida desde app/fuentes/ (OFL):
+   Instrument Serif para titulares y cifras, Instrument Sans para el texto y la interfaz. Papel con rejilla de
+   puntos, marcas de esquina de hoja de plano y láminas oscuras para las cifras que importan, una por página.
+   Ningún movimiento ligado al desplazamiento: entradas al cargar y respuestas al ratón y al teclado. */
+@font-face { font-family: "Instrument Serif"; src: url("fuentes/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url("fuentes/instrument-sans.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+:root {
+  --fuente: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --fuente-titular: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --punto: rgb(29 29 31 / 11%);
+  --esquina: rgb(29 29 31 / 45%);
+  --tinta: #0d1b2e;
+  --tinta-texto: #eef2f7;
+  --tinta-texto-2: #b4bfcd;
+  --tinta-acento: #9cc2f5;
+  --tinta-linea: rgb(238 242 247 / 14%);
+  --tinta-punto: rgb(238 242 247 / 9%);
+  --tinta-zona: rgb(238 242 247 / 16%);
+  --r-4: 28px;
+  --corona-a: rgb(11 79 156 / 30%); /* rampa del acento por corona del abono, de dentro afuera */
+  --corona-b1: rgb(11 79 156 / 19%);
+  --corona-b2: rgb(11 79 156 / 12%);
+  --corona-b3: rgb(11 79 156 / 7%);
+  --corona-c1: rgb(11 79 156 / 3%);
 }
-@media (max-width: 22.5rem) { /* a 320 px no caben cinco píldoras: enlaces subrayados, y la activa en el acento */
-  .informe .indice a { min-width: 44px; justify-content: center; padding: 0; border-width: 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--linea-control); }
-  .pagina.informe .indice a[aria-current="location"] { background: none; text-decoration-color: var(--acento); text-decoration-thickness: 2px; }
+
+/* Papel: rejilla de puntos fina en las páginas (no en la herramienta, donde manda el mapa). */
+.pagina { background-color: var(--fondo); background-image: radial-gradient(circle at 1px 1px, var(--punto) 1px, transparent 1.4px); background-size: 24px 24px; }
+
+/* --- Tipografía: dos voces de una misma familia ------------------------------------------------------------ */
+.pagina h1, .pagina h2, .navegacion .marca, #guia-titulo { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.015em; }
+.pagina h1 { max-width: 13ch; font-size: clamp(48px, 8.4vw, 112px); line-height: 0.95; }
+.pagina h2 { font-size: clamp(38px, 5.6vw, 68px); line-height: 1; }
+.pagina h3, .ficha-tecnica dt, .pieza h3 { font-weight: 500; letter-spacing: -0.01em; }
+.navegacion .marca { font-size: 28px; letter-spacing: -0.01em; }
+#guia-titulo { font-size: 34px; line-height: 1.05; }
+.cifras-heroe .cifra, .cifra-grande, .serie .cifra, .panel-perfil .cifra { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.cifra-grande { font-size: clamp(88px, 13vw, 168px); line-height: 0.9; }
+.cifras-heroe .cifra { font-size: clamp(56px, 6.5vw, 80px); }
+.entradilla { letter-spacing: -0.005em; }
+.pagina summary, .navegacion a, .menu-boton { font-weight: 500; }
+
+/* --- Acciones: misma voz que el texto, peso medio, sin bulto ------------------------------------------------ */
+.boton-principal, .boton-secundario, .boton-nav { font-weight: 500; letter-spacing: 0; }
+.boton-principal { display: inline-flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 26px; font-size: 16px; }
+.boton-principal::after { content: ""; width: 7px; height: 7px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); transition: transform 0.2s var(--curva); }
+.boton-principal:hover::after { transform: translateX(3px) rotate(45deg); }
+#herramienta .boton-principal::after { display: none; } /* en las tarjetas, «Siguiente» ya dice adónde va */
+.boton-secundario { min-height: 50px; padding: 0 24px; border-color: var(--texto); color: var(--texto); font-size: 16px; transition: background-color 0.15s var(--curva), color 0.15s var(--curva); }
+.pagina a.boton-secundario:hover { background: var(--texto); color: var(--superficie); }
+.boton-nav { font-size: 15px; }
+
+/* --- Índice de página: pestañas numeradas, sin píldoras; la activa, subrayada en el acento ------------------- */
+.pagina .indice ul { gap: 4px 20px; counter-reset: entrada; }
+.pagina .indice a { position: relative; gap: 6px; padding: 0; border: 0; border-radius: 0; color: var(--texto-2); font-size: 15px; font-weight: 500; text-decoration: none; }
+.pagina .indice a::before { counter-increment: entrada; content: counter(entrada, decimal-leading-zero); color: var(--texto-3); font-family: var(--fuente-titular); font-size: 16px; font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+.pagina .indice a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 6px; height: 2px; background: var(--acento); transform: scaleX(0); transform-origin: left; transition: transform 0.25s var(--curva); }
+.pagina .indice a:hover { border: 0; color: var(--texto); }
+.pagina .indice a[aria-current="location"] { border: 0; background: none; color: var(--texto); font-weight: 500; }
+.pagina .indice a[aria-current="location"]::before { color: var(--acento); }
+.pagina .indice a[aria-current="location"]::after, .pagina .indice a:hover::after { transform: scaleX(1); }
+
+/* --- Hoja de plano: cuatro marcas de esquina, siempre iguales, alrededor de lo que es una vista de datos ------ */
+.plano, .dato-imagen, .pasos li {
+  --m: 14px;
+  background-image:
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina)),
+    linear-gradient(var(--esquina), var(--esquina)), linear-gradient(var(--esquina), var(--esquina));
+  background-size: var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m), var(--m) 1px, 1px var(--m);
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* --- Portada: texto a la izquierda y plano de las zonas a la derecha ---------------------------------------- */
+.heroe { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 56px; align-items: center; }
+.heroe .cifras-heroe { grid-column: 1 / -1; }
+.plano { margin: 0; padding: 20px; }
+.plano-lienzo { aspect-ratio: 1000 / 1010; }
+.plano svg { display: block; width: 100%; height: 100%; }
+.plano .zona { fill: var(--superficie); stroke: var(--texto-3); stroke-width: 0.9; stroke-linejoin: round; vector-effect: non-scaling-stroke; transition: fill 0.15s var(--curva), stroke 0.15s var(--curva); }
+.plano .zona[data-corona="A"] { fill: var(--corona-a); }
+.plano .zona[data-corona="B1"] { fill: var(--corona-b1); }
+.plano .zona[data-corona="B2"] { fill: var(--corona-b2); }
+.plano .zona[data-corona="B3"] { fill: var(--corona-b3); }
+.plano .zona[data-corona="C1"] { fill: var(--corona-c1); }
+.plano .zona.activa { fill: var(--acento); stroke: var(--acento-fuerte); }
+.plano .mira line { stroke: var(--acento); stroke-width: 1; stroke-dasharray: 3 5; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity 0.2s var(--curva); }
+.plano svg:hover .mira line { opacity: 0.55; }
+/* Dos líneas de alto fijo: al cambiar el nombre no se mueve nada, ni el plano bajo el ratón, y en el móvil no se corta. */
+.plano figcaption { height: 48px; margin-top: 12px; overflow: hidden; color: var(--texto-2); font-size: 15px; line-height: 24px; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) {
+  .plano.listo .zona { animation: entra-zona 600ms var(--curva) var(--retraso, 0ms) both; }
+  .heroe-texto > * { animation: entra-abajo 700ms var(--curva) both; }
+  .heroe-texto > :nth-child(2) { animation-delay: 80ms; }
+  .heroe-texto > :nth-child(n + 3) { animation-delay: 160ms; }
+}
+@keyframes entra-zona { from { opacity: 0; } }
+
+/* --- Filas numeradas (cuatro cuentas, comprobaciones, avisos): se marcan como una hoja al pasar ------------- */
+.ficha-tecnica, .avisos-portada { counter-reset: fila; }
+.ficha-tecnica div, .avisos-portada li { position: relative; padding: 24px 16px 24px 64px; transition: background-color 0.2s var(--curva); }
+.ficha-tecnica div:first-child, .dos-columnas div:nth-child(2) { padding-top: 24px; border-top: 1px solid var(--linea); }
+.ficha-tecnica div::before, .avisos-portada li::before { counter-increment: fila; content: counter(fila, decimal-leading-zero); position: absolute; left: 16px; top: 20px; color: var(--texto-3); font-family: var(--fuente-titular); font-size: 24px; line-height: 1; font-variant-numeric: lining-nums tabular-nums; transition: color 0.2s var(--curva); }
+.ficha-tecnica div:hover, .avisos-portada li:hover { background-color: var(--superficie); }
+.ficha-tecnica div:hover::before, .avisos-portada li:hover::before { color: var(--acento); }
+
+/* --- Cuatro pasos (Cómo funciona): un diagrama de nodos; el paso que miras se enciende ---------------------- */
+.pasos { gap: 16px; }
+.pasos li { padding: 72px 20px 24px; transition: background-color 0.2s var(--curva); }
+.pasos li::before { top: 20px; left: 20px; font-family: var(--fuente-titular); font-size: 20px; font-weight: 400; transition: background-color 0.2s var(--curva), color 0.2s var(--curva), border-color 0.2s var(--curva); }
+.pasos li:not(:last-child)::after { top: 40px; left: 72px; right: -16px; border-top-style: dashed; }
+.pasos li:hover { background-color: var(--superficie); }
+.pasos li:hover::before { border-color: var(--acento); background: var(--acento); color: var(--superficie); }
+
+/* --- Selector de perfiles: segmentos en la voz del texto ---------------------------------------------------- */
+.selector-perfil label { padding: 0 16px; font-weight: 400; }
+.selector-perfil label input { position: absolute; opacity: 0; pointer-events: none; } /* el segmento entero es el control; el foco lo dibuja la etiqueta */
+.selector-perfil label:has(input:checked) { border-color: var(--texto); background: var(--texto); color: var(--superficie); font-weight: 500; }
+
+/* --- Láminas oscuras: la cifra que importa en cada página, y el cierre de la portada ------------------------- */
+.pagina .bloque.lamina { width: min(80rem, 100% - 24px); margin-block: 24px; padding: clamp(48px, 7vw, 104px) max(24px, calc((min(80rem, 100% - 24px) - 72rem) / 2 + 24px)); border: 0; border-radius: var(--r-4); background: var(--tinta) radial-gradient(circle at 1px 1px, var(--tinta-punto) 1px, transparent 1.4px) 0 0 / 24px 24px; color: var(--tinta-texto); }
+.lamina h2, .lamina h3, .lamina strong { color: var(--tinta-texto); }
+.lamina p, .lamina li, .lamina .destacado, .lamina .entradilla, .lamina .dato-texto p:not(.destacado), .lamina .capas > p { color: var(--tinta-texto-2); }
+.lamina .cifra-grande, .lamina .serie .cifra { color: var(--tinta-acento); }
+.lamina .fuente, .lamina figcaption { color: var(--tinta-texto-2); }
+.pagina .lamina a { color: var(--tinta-acento); }
+.pagina .lamina a:hover { color: var(--tinta-texto); }
+.pagina .lamina :focus-visible { outline-color: var(--tinta-acento); }
+.lamina .dato-imagen { --esquina: rgb(238 242 247 / 55%); background-color: transparent; border-color: var(--tinta-linea); }
+.lamina .dato-imagen img { padding: 8px; background: var(--superficie); border-radius: var(--r-1); }
+.lamina summary { color: var(--tinta-acento); }
+.pagina .lamina summary:hover { color: var(--tinta-texto); }
+.lamina .capas details { border-color: var(--tinta-linea); }
+.lamina .boton-principal { background: var(--superficie); color: var(--tinta); }
+.lamina .boton-principal:hover { background: var(--tinta-acento); }
+
+/* Cierre de la portada: la lámina con el plano de las zonas de fondo, en línea fina y sin interacción. */
+.pagina .cierre { position: relative; overflow: hidden; text-align: center; isolation: isolate; }
+.pagina .cierre h2, .pagina .cierre .entradilla { margin-inline: auto; }
+.cierre-plano { position: absolute; inset: -10% 0 auto 50%; z-index: -1; width: min(52rem, 140%); transform: translateX(-50%); pointer-events: none; }
+.cierre-plano svg { display: block; width: 100%; height: auto; }
+.cierre-plano .zona { fill: none; stroke: var(--tinta-zona); stroke-width: 0.8; vector-effect: non-scaling-stroke; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha-tecnica div, .avisos-portada li, .pasos li, .pasos li::before, .boton-principal::after, .plano .zona, .plano .mira line, .pagina .indice a::after { transition: none; }
+}
+@media (max-width: 56rem) {
+  .heroe { grid-template-columns: minmax(0, 1fr); }
+  .plano { max-width: 32rem; }
+}
+@media (max-width: 40rem) {
+  .pagina .bloque.lamina { width: calc(100% - 16px); padding-inline: 16px; border-radius: var(--r-3); }
+  .ficha-tecnica div, .avisos-portada li { padding-left: 52px; }
+  .ficha-tecnica div::before, .avisos-portada li::before { left: 8px; font-size: 21px; }
+  .pagina .indice ul { justify-content: space-between; gap: 4px 12px; }
+  .pagina .indice a::before { display: none; } /* en el móvil no caben los números: queda el texto */
+}
+@media (max-width: 22.5rem) { /* la metodología, con cinco entradas, cabe en una línea también a 320 */
+  .informe .indice ul { gap: 4px 8px; }
+  .informe .indice a { min-width: 44px; justify-content: center; font-size: 14px; letter-spacing: -0.02em; }
 }
