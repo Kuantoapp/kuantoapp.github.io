@@ -84,6 +84,7 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 | Entender cómo está construido | [Arquitectura](docs/arquitectura.md) |
 | Comprobar una cifra hasta su origen | [Trazabilidad](docs/trazabilidad.md) |
 | Ejecutar el código o los tests | [Reproducir Kuanto](docs/reproducir.md) |
+| Ver a dónde va Kuanto | [Hoja de ruta](docs/hoja-de-ruta.md) |
 | Colaborar en el repositorio | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Ver todo lo que hay | [Mapa de la documentación](docs/README.md) |
 
