@@ -53,9 +53,9 @@
         <label><input type="radio" name="perfil-portada" value="pareja"> Pareja de 29 años</label> <!-- sin-fuente: edad que define el perfil -->
       </fieldset>
       <div class="paneles-perfil" aria-live="polite">
-        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes</span><span><strong class="cifra">8,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">14,1 %</strong> de las veces, vivir más lejos le paga la hora extra de viaje como una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
-        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">7 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes</span><span><strong class="cifra">11,41 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">9,8 %</strong> de las veces, vivir más lejos le paga la hora extra de viaje como una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
-        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que los sueldos no llegan a fin de mes</span><span><strong class="cifra">12,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">3,5 %</strong> de las veces, vivir más lejos les paga la hora extra de viaje como una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">8,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">14,1 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">7 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">11,41 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">9,8 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que los sueldos no llegan a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">12,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">3,5 %</strong> de los casos en que viven más lejos, la hora extra de viaje les rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
       </div>
       <ul class="cifras-heroe">
         <li><span class="cifra">199</span> zonas comparadas: los otros 178 municipios y los 21 distritos de la capital</li> <!-- fuente: datos/zonas.geojson -->
@@ -68,19 +68,19 @@
       <dl class="ficha-tecnica">
         <div>
           <dt>Tu sueldo neto</dt>
-          <dd>Del bruto al neto con el IRPF estatal y el de Madrid y las cotizaciones del trabajador.</dd>
+          <dd>Del bruto al neto con el IRPF estatal y el de Madrid y las cotizaciones del trabajador.</dd> <!-- fuente: LIRPF, normas del BOE de 2026 y Decreto Legislativo 1/2010 de la Comunidad de Madrid -->
         </div>
         <div>
           <dt>Tu alquiler</dt>
-          <dd>Lo que se paga en los contratos declarados a Hacienda en cada zona, con la mediana y la horquilla entre el cuartil bajo y el alto.</dd>
+          <dd>Lo que se paga en los contratos declarados a Hacienda en cada zona, con la mediana y la horquilla entre el cuartil bajo y el alto.</dd> <!-- fuente: SERPAVI, Ministerio de Vivienda y Agenda Urbana -->
         </div>
         <div>
           <dt>Tu viaje</dt>
-          <dd>Minutos puerta a puerta en transporte público desde cada zona hasta la de tu trabajo, en hora punta.</dd>
+          <dd>Minutos puerta a puerta en transporte público desde cada zona hasta la de tu trabajo, en hora punta.</dd> <!-- fuente: GTFS del CRTM y OpenStreetMap -->
         </div>
         <div>
           <dt>Tu abono</dt>
-          <dd>El título más barato para cada persona del hogar según su edad y las coronas que cruza.</dd>
+          <dd>El título más barato para cada persona del hogar según su edad y las coronas que cruza.</dd> <!-- fuente: precios de 2026, BOCM-20251231-2 -->
         </div>
       </dl>
       <p class="remate">Con todo eso, Kuanto te dice también cuánto vale cada hora de viaje: lo que ganas o pierdes al mes por vivir más lejos o más cerca que en tu zona de referencia.</p>
@@ -94,7 +94,7 @@
         <li><span class="cifra">3 de 4</span> respuestas aconsejaban un abono 14,50 € al mes más caro del necesario: el B2 en vez del interzonal B1-B2.</li> <!-- fuente: BOCM-20251231-2 y docs/kuanto-frente-a-ia.md -->
         <li><span class="cifra">4 a 6</span> zonas miraron los asistentes; Kuanto da cifra en 99 de las 199 para esos perfiles.</li> <!-- fuente: docs/kuanto-frente-a-ia.md; estimado -->
       </ul>
-      <p>Los asistentes aciertan los precios de los abonos y proponen zonas parecidas a las de Kuanto, y son solo cuatro respuestas, que ilustran y no miden. Lo que añade Kuanto: cada cifra con su fuente, el mismo resultado para la misma entrada y tu sueldo sin salir de tu navegador.</p>
+      <p>Los asistentes aciertan los precios de los abonos y proponen zonas parecidas a las de Kuanto, y son solo cuatro respuestas, que ilustran y no miden. Lo que añade Kuanto: cada cifra con su fuente en la metodología, el mismo resultado para la misma entrada y tu sueldo sin salir de tu navegador.</p>
     </section>
 
     <section class="bloque calculo" aria-labelledby="titulo-calculo">
@@ -118,7 +118,7 @@
         <li><strong>¿Y si el piso es de los caros de la zona?</strong> Te da una horquilla: te sobran entre una cifra y otra, no un número a ciegas.</li>
         <li><strong>¿Y si vivimos varios o voy en coche?</strong> Cuenta a cada persona del hogar, con su abono según la edad y la cesta según el tamaño de la familia, en transporte público o en coche y los días que vayáis al trabajo.</li>
         <li><strong>¿Es el precio de los anuncios?</strong> Sale de los contratos declarados, actualizados y llevados a contrato nuevo, que suelen quedar por debajo de los anuncios: el alquiler real puede ser más alto y lo que te sobra, menos. La fianza, la guardería y el ocio van aparte.</li>
-        <li><strong>¿Me puedo fiar del dato de mi zona?</strong> Lo estimado va marcado, una zona con menos de 70 viviendas con alquiler declarado lleva borde punteado y, si falta un dato, sale en gris y nunca como cero.</li> <!-- fuente: SERPAVI, datos/alquiler.json -->
+        <li><strong>¿Me puedo fiar del dato de mi zona?</strong> En la ficha de cada zona, lo estimado va marcado, una zona con menos de 70 viviendas con alquiler declarado lleva borde punteado y, si falta un dato, sale en gris y nunca como cero.</li> <!-- fuente: SERPAVI, datos/alquiler.json -->
       </ul>
       <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, la Agencia Tributaria, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en <a href="saber-mas.html#fuentes">cómo funciona</a>.</p>
     </section>
@@ -200,7 +200,7 @@
           <label>Discapacidad del 65 % o más (fuente: BOCM-20251231-2)
             <select name="disc2"><option value="no">No</option><option value="si">Sí</option></select>
           </label>
-          <p class="ayuda">Solo cambia el precio del transporte: el neto no recoge el mínimo por discapacidad ni el aumento de los gastos deducibles por discapacidad.</p> <!-- fuente: LIRPF, arts. 19.2.f y 60 -->
+          <p class="ayuda">Solo cambia el precio del transporte: el neto no recoge el mínimo por discapacidad ni el aumento de los gastos deducibles por discapacidad (fuente: LIRPF, arts. 19.2.f y 60).</p>
           <label>Lugar de trabajo <input name="destino2" list="destinos" value="Getafe"></label>
           <label>Días presenciales a la semana
             <select name="dias2">
@@ -241,7 +241,7 @@
             <select name="hijos"><option value="0">Ninguno</option><option value="1">Uno</option><option value="2">Dos</option><option value="3">Tres</option><option value="4">Cuatro</option><option value="5">Cinco</option></select>
           </label>
           <div id="edades-hijos" hidden>
-            <p class="ayuda">Edad de cada hijo (opcional: pon la de todos o déjalas vacías). Los de 15 a 25 años suman un Abono Joven; los menores de 15 no pagan (fuente: ficha del Abono Joven del CRTM y BOCM-20251231-2, pág. 66). Sin las edades, solo cuenta el transporte de quien trabaja. El neto supone hijos de 3 a 24 años.</p> <!-- fuente: LIRPF, art. 58 -->
+            <p class="ayuda">Edad de cada hijo (opcional: pon la de todos o déjalas vacías). Los de 15 a 25 años suman un Abono Joven; los menores de 15 no pagan (fuente: ficha del Abono Joven del CRTM y BOCM-20251231-2, pág. 66). Sin las edades, solo cuenta el transporte de quien trabaja. El neto supone hijos de 3 a 24 años (fuente: LIRPF, art. 58).</p>
           </div>
           <label>Familia numerosa
             <select name="familia">
@@ -338,7 +338,7 @@
             </select>
           </label>
           <p class="ayuda">La referencia es lo que gasta en comida de media un hogar de Madrid. Con tu tramo, la comida se ajusta a lo que gastan los hogares que ingresan como el tuyo (estimado, fuente: INE, Encuesta de Presupuestos Familiares de España). Quien gana poco puede gastar menos en comida porque no le llega: por eso la media es la referencia.</p>
-          <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian, y con dos sueldos los días valen para las dos personas. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos.</p> <!-- fuente: ficha del Abono Joven, CRTM -->
+          <p class="ayuda">Es una simulación: el mapa y la ficha pasan a mostrar el escenario, y la ficha dice cuánto cambia lo que te sobra frente a hoy. Los viajes al día no cambian, y con dos sueldos los días valen para las dos personas. Cumplir 26 años solo cambia algo si hoy tienes 25 o menos (fuente: ficha del Abono Joven, CRTM).</p>
           <p class="ayuda">La dirección de la página guarda el formulario y los escenarios, sueldo incluido. No sale de tu navegador, pero queda en su historial. No la compartas si no quieres que se vea tu sueldo.</p>
         </fieldset>
         </div>
