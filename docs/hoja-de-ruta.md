@@ -2,6 +2,8 @@
 
 Qué hace Kuanto hoy y a dónde queremos llevarlo. Son intenciones, sin fechas ni compromisos: el orden puede cambiar según los datos que aparezcan y lo que pida quien lo usa. Lo ya decidido está en el [registro de decisiones](decisiones.md).
 
+Las mismas ideas, en tarjetas, en el [tablero de la hoja de ruta](https://github.com/users/izan-diaz/projects/1). Si algo no coincide, manda este documento.
+
 ## De un vistazo
 
 ```mermaid
