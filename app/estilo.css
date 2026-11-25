@@ -682,3 +682,127 @@ a { color: var(--acento); text-underline-offset: 2px; }
     animation: revela-mapa 1400ms var(--curva) 120ms backwards;
   }
 }
+
+/* Informe técnico en tres capas (#468): estructura de consultora con la identidad de Kuanto. Capítulos, gráficos y
+   recomendaciones se numeran con contadores CSS (el número no es una cifra del texto); el PDF sale de @media print. */
+:root { --evidencia-solida: #01665e; } /* píldora «sólida» del informe: un token propio, no el --ganas del mapa */
+.tecnico { counter-reset: grafico; }
+.pagina .lamina a.boton-principal { color: var(--tinta); } /* le gana a .pagina .lamina a: 17:1 sobre blanco */
+.lamina .boton-secundario { border-color: var(--tinta-acento); }
+.tecnico h1 { max-width: 20ch; }
+.tecnico .lamina h1 { color: var(--tinta-texto); }
+.tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2, .tecnico .anexos h2 { max-width: 34ch; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.12; }
+.ficha { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 16px 32px; margin: 40px 0 0; padding-top: 24px; border-top: 1px solid var(--tinta-linea); }
+.ficha dt { color: var(--tinta-acento); font-size: 14px; font-weight: 600; }
+.ficha dd { margin: 4px 0 0; color: var(--tinta-texto-2); font-size: 15px; }
+.acciones-portada { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+.capitulo-n { margin: 0 0 12px; color: var(--acento); font-size: 15px; font-weight: 600; }
+.claves { margin: 32px 0 0; padding: 0; list-style: none; counter-reset: clave; }
+.claves li { position: relative; max-width: 62rem; padding: 20px 0 20px 56px; border-top: 1px solid var(--linea); color: var(--texto-2); counter-increment: clave; }
+.claves li::before { content: counter(clave); position: absolute; left: 0; top: 14px; color: var(--acento); font-family: var(--fuente-titular); font-size: 36px; line-height: 1; }
+.claves strong { color: var(--texto); }
+.cifras-clave { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 24px; margin: 32px 0 40px; }
+.cifras-clave p { margin: 0; padding-top: 16px; border-top: 2px solid var(--acento); color: var(--texto-2); font-size: 15px; }
+.cifras-clave .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-family: var(--fuente-titular); font-size: clamp(36px, 4vw, 48px); line-height: 1; font-variant-numeric: tabular-nums; }
+.scqa { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 24px 32px; margin-bottom: 40px; }
+.scqa h3 { color: var(--acento); }
+.scqa p { margin: 0; color: var(--texto-2); font-size: 16px; }
+.recomendaciones-breve { columns: 2 22rem; column-gap: 32px; margin: 16px 0 0; padding-left: 24px; }
+.recomendaciones-breve li { margin: 0 0 8px; break-inside: avoid; }
+.esencial { max-width: 62rem; margin: 32px 0; padding: 24px 28px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.esencial h3, .implica h3 { margin: 0 0 8px; font-size: 16px; }
+.esencial h3 { color: var(--acento); }
+.esencial ul { margin: 0; padding-left: 20px; color: var(--texto-2); }
+.esencial li { margin: 8px 0; }
+.implica { max-width: 62rem; margin: 32px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--acento); }
+.implica p { margin: 0; color: var(--texto-2); }
+.grafico { counter-increment: grafico; max-width: 56rem; margin: 48px 0; padding: 24px 24px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.grafico header { margin-bottom: 16px; }
+.grafico-n { margin: 0 0 4px; color: var(--acento); font-size: 14px; font-weight: 600; }
+.grafico-n::after { content: " " counter(grafico); } /* el HTML dice «Gráfico»; el número lo pone el contador */
+.grafico h3 { margin: 0; font-size: 20px; line-height: 1.25; }
+.grafico-sub { margin: 6px 0 0; color: var(--texto-3); font-size: 14px; }
+.grafico img, .grafico svg { display: block; width: 100%; height: auto; }
+.grafico .marca { cursor: pointer; }
+.grafico .marca:focus { outline: none; }
+.grafico .marca:focus-visible > * { stroke: var(--texto); stroke-width: 2px; }
+.grafico figcaption { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--linea); color: var(--texto-3); font-size: 13px; }
+.grafico figcaption p { max-width: none; margin: 0 0 4px; }
+.grafico .valores ul { max-height: 18rem; margin: 0 0 8px; padding-left: 20px; overflow-y: auto; color: var(--texto-2); font-size: 14px; }
+.globo { position: absolute; z-index: 30; max-width: min(22rem, 100vw - 16px); padding: 8px 12px; background: var(--tinta); color: var(--tinta-texto); border-radius: var(--r-1); font-size: 14px; line-height: 1.35; pointer-events: none; }
+.detalle { max-width: 62rem; margin-top: 24px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
+.detalle > :not(summary) { color: var(--texto-2); }
+.motor { max-width: 62rem; margin: 32px 0; padding: 0; list-style: none; }
+.motor li { display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid var(--linea); }
+.motor .motor-total { border-top: 2px solid var(--acento); }
+.motor-paso { color: var(--texto); font-family: var(--fuente-titular); font-size: 26px; line-height: 1.1; }
+.motor-total .motor-paso { color: var(--acento); }
+.motor-de { color: var(--texto-2); font-size: 15px; }
+.fichas-rec { display: grid; gap: 24px; margin: 32px 0 0; padding: 0; list-style: none; counter-reset: rec; }
+.ficha-rec { max-width: 62rem; padding: 24px 28px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); counter-increment: rec; scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) + 16px); }
+.ficha-rec h3 { margin: 0 0 8px; font-size: 22px; }
+.ficha-rec h3::before { content: counter(rec) ". "; color: var(--acento); }
+.evidencia { display: inline-block; margin: 0 0 16px; padding: 2px 10px; border: 1px solid currentcolor; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.evidencia.solida { color: var(--evidencia-solida); }
+.evidencia.indicio { color: var(--diferencia); }
+.evidencia.supuesto { color: var(--texto-3); }
+.ficha-rec dl { display: grid; gap: 12px; margin: 0; }
+.ficha-rec dl div { display: grid; grid-template-columns: 10rem 1fr; gap: 16px; }
+.ficha-rec dt { color: var(--texto-3); font-size: 14px; font-weight: 600; }
+.ficha-rec dd { margin: 0; color: var(--texto-2); font-size: 15px; }
+.anexo { max-width: 62rem; margin-top: 40px; }
+.glosario dt { margin-top: 16px; color: var(--texto); font-weight: 600; }
+.glosario dd { margin: 4px 0 0; color: var(--texto-2); }
+@media (max-width: 40rem) {
+  .motor li, .ficha-rec dl div { grid-template-columns: 1fr; gap: 4px; }
+  .grafico { padding: 16px 12px 12px; overflow-x: auto; }
+  .grafico img, .grafico svg { min-width: 36rem; } /* más estrecho, el texto del gráfico baja de 6 px: se desplaza en horizontal */
+  .claves li { padding-left: 40px; }
+}
+@page { size: A4; margin: 16mm 14mm 18mm; }
+@page {
+  @bottom-left { content: "Kuanto · Informe técnico"; font: 8pt sans-serif; color: #5c6069; }
+  @bottom-right { content: counter(page); font: 8pt sans-serif; color: #5c6069; }
+}
+@page :first { @bottom-left { content: none; } @bottom-right { content: none; } }
+@media print {
+  html, body, .pagina { background: #fff; }
+  .navegacion, .indice, .cierre, .acciones-portada, .globo, .grafico .valores { display: none; }
+  .recomendaciones-breve { columns: auto; }
+  .pagina { font-size: 10.5pt; }
+  /* En papel el informe fluye seguido: sin salto por capítulo, solo una línea que lo separa, y gráficos con un alto
+     máximo para que el que no cabe no deje media página en blanco al saltar a la siguiente. */
+  .pagina .bloque, .pagina .bloque.lamina { width: auto; margin: 0; padding: 0; border: 0; }
+  .pagina .bloque.lamina.portada { min-height: 255mm; padding: 24mm 14mm; border-radius: 0; break-after: page; }
+  .puntos-clave, .resumen, .capitulo, .anexos { margin-top: 9mm; padding-top: 5mm; border-top: 1.5pt solid var(--acento); }
+  .puntos-clave { margin-top: 0; padding-top: 0; border-top: 0; }
+  .tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2 { font-size: 19pt; }
+  .pagina h2, .capitulo-n, .grafico header, .esencial h3, .implica h3, .ficha-rec h3, #calidad > h3 { break-after: avoid; }
+  .esencial li { break-inside: avoid; }
+  .pagina h2, .pagina h3, .grafico, .implica, .motor li, .claves li, .cifras-clave p, .scqa section, .ficha-rec dl div, .avisos-portada li { break-inside: avoid; }
+  /* las fichas de recomendación sí se parten, pero entre filas: una entera que no cabe dejaba media página vacía */
+  .fichas-rec { gap: 4mm; margin-top: 4mm; }
+  .ficha-rec { padding: 4mm 5mm; }
+  .ficha-rec h3 { font-size: 13pt; break-after: avoid; }
+  .evidencia { margin-bottom: 2mm; break-after: avoid; }
+  .ficha-rec dl { gap: 2mm; }
+  .avisos-portada { display: block; margin-top: 2mm; } /* en rejilla saltaba entera de página */
+  .avisos-portada li { padding: 2.5mm 2mm 2.5mm 12mm; font-size: 9.5pt; }
+  .avisos-portada li::before { top: 2mm; left: 1mm; font-size: 14pt; }
+  .grafico { margin: 3mm 0; padding: 2.5mm 4mm; }
+  .grafico header { margin-bottom: 1.5mm; }
+  .grafico h3 { font-size: 11.5pt; }
+  .grafico-sub, .grafico figcaption { font-size: 8pt; }
+  .grafico figcaption { margin-top: 1.5mm; padding-top: 1.5mm; }
+  .grafico img, .grafico svg { max-height: 68mm; } /* dos gráficos por página: el que no cabe no deja media página en blanco */
+  .esencial, .implica { margin: 4mm 0; }
+  .entradilla { margin: 3mm 0 5mm; }
+  .detalle { margin-top: 3mm; border: 0; }
+  .detalle > summary { min-height: 0; padding: 2mm 0; }
+  .capas details > :not(summary), .detalle p { margin-bottom: 2mm; }
+  .destacado { margin: 4mm 0 2mm; }
+  .cifra-grande { font-size: 26pt; }
+  p, li { orphans: 3; widows: 3; }
+  .pagina a { color: inherit; text-decoration: none; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

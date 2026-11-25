@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg stroke-linejoin="round" xmlns:xlink="http://www.w3.org/1999/xlink" width="630.471438pt" height="327.028664pt" viewBox="0 0 630.471438 327.028664" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <defs>
+  
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M -0 327.028664 
+L 630.471438 327.028664 
+L 630.471438 0 
+L -0 0 
+L -0 327.028664 
+z
+" fill="none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 215.150188 185.706502 
+L 616.910188 185.706502 
+L 616.910188 7.2 
+L 215.150188 7.2 
+L 215.150188 185.706502 
+z
+" fill="none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 225.451726 185.706502 
+L 225.451726 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_1">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="225.451726" y="195.284627" transform="rotate(-0 225.451726 195.284627)">−1,0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 276.959418 185.706502 
+L 276.959418 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_2">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="276.959418" y="195.284627" transform="rotate(-0 276.959418 195.284627)">−0,5</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 328.467111 185.706502 
+L 328.467111 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_3">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="328.467111" y="195.284627" transform="rotate(-0 328.467111 195.284627)">0,0</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 379.974803 185.706502 
+L 379.974803 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_4">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="379.974803" y="195.284627" transform="rotate(-0 379.974803 195.284627)">0,5</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 431.482495 185.706502 
+L 431.482495 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_5">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="431.482495" y="195.284627" transform="rotate(-0 431.482495 195.284627)">1,0</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_11">
+      <path d="M 482.990188 185.706502 
+L 482.990188 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_12"/>
+     <g id="text_6">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="482.990188" y="195.284627" transform="rotate(-0 482.990188 195.284627)">1,5</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_13">
+      <path d="M 534.49788 185.706502 
+L 534.49788 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_14"/>
+     <g id="text_7">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="534.49788" y="195.284627" transform="rotate(-0 534.49788 195.284627)">2,0</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_15">
+      <path d="M 586.005572 185.706502 
+L 586.005572 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_16"/>
+     <g id="text_8">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="586.005572" y="195.284627" transform="rotate(-0 586.005572 195.284627)">2,5</text>
+     </g>
+    </g>
+    <g id="text_9">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="416.030188" y="208.005173" transform="rotate(-0 416.030188 208.005173)">Rechazadas por 1.000 jóvenes por cada punto de esfuerzo de más (IC 95 %; estimado)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_17"/>
+     <g id="text_10">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="18.433323" transform="rotate(-0 211.650188 18.433323)">Error espacial heterocedástico, 5 vecinos (principal)</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_18"/>
+     <g id="text_11">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="38.718152" transform="rotate(-0 211.650188 38.718152)">Error espacial heterocedástico, 8 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_19"/>
+     <g id="text_12">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="59.002982" transform="rotate(-0 211.650188 59.002982)">Error espacial heterocedástico, dos pasos, 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_20"/>
+     <g id="text_13">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="79.287812" transform="rotate(-0 211.650188 79.287812)">Error espacial, máxima verosimilitud, 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_21"/>
+     <g id="text_14">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="99.572641" transform="rotate(-0 211.650188 99.572641)">Mínimos cuadrados</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_22"/>
+     <g id="text_15">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="119.857471" transform="rotate(-0 211.650188 119.857471)">Mínimos cuadrados, errores robustos HAC</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_23"/>
+     <g id="text_16">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="139.986301" transform="rotate(-0 211.650188 139.986301)">Principal en los 112 municipios con % de alquiler</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_24"/>
+     <g id="text_17">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="160.427131" transform="rotate(-0 211.650188 160.427131)">Con % de jóvenes en alquiler, 5 vecinos (112)</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_25"/>
+     <g id="text_18">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="180.71196" transform="rotate(-0 211.650188 180.71196)">Con % de jóvenes en alquiler, 8 vecinos (112)</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 215.150188 126.880495 
+L 616.910188 126.880495 
+L 616.910188 86.310836 
+L 215.150188 86.310836 
+z
+" clip-path="url(#pcb1a9cefd7)" fill="#d9dbe0" opacity="0.35"/>
+   </g>
+   <g id="line2d_26">
+    <path d="M 328.467111 185.706502 
+L 328.467111 7.2 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-width="0.8" stroke-linecap="round"/>
+   </g>
+   <g id="line2d_27">
+    <path d="M 331.488308 15.313932 
+L 505.692535 15.313932 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#0b4f9c" stroke-opacity="0.9" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f8" class="marca" role="img" aria-label="Error espacial heterocedástico, 5 vecinos (principal): 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,03 a 1,72; p = 0,043; estimado)"><title>Error espacial heterocedástico, 5 vecinos (principal): 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,03 a 1,72; p = 0,043; estimado)</title>
+    <defs>
+     <path id="ma38c0dd0f2" d="M -0 4.242641 
+L 4.242641 0 
+L 0 -4.242641 
+L -4.242641 -0 
+z
+" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="miter"/>
+    </defs>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#ma38c0dd0f2" x="418.590422" y="15.313932" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="miter"/>
+    </g>
+   </g>
+   <g id="line2d_28">
+    <path d="M 329.278546 35.598762 
+L 507.015038 35.598762 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f7" class="marca" role="img" aria-label="Error espacial heterocedástico, 8 vecinos: 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,01 a 1,73; p = 0,048; estimado)"><title>Error espacial heterocedástico, 8 vecinos: 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,01 a 1,73; p = 0,048; estimado)</title>
+    <defs>
+     <path id="m1b30bf09e7" d="M 0 3 
+C 0.795609 3 1.55874 2.683901 2.12132 2.12132 
+C 2.683901 1.55874 3 0.795609 3 0 
+C 3 -0.795609 2.683901 -1.55874 2.12132 -2.12132 
+C 1.55874 -2.683901 0.795609 -3 0 -3 
+C -0.795609 -3 -1.55874 -2.683901 -2.12132 -2.12132 
+C -2.683901 -1.55874 -3 -0.795609 -3 0 
+C -3 0.795609 -2.683901 1.55874 -2.12132 2.12132 
+C -1.55874 2.683901 -0.795609 3 0 3 
+z
+" stroke="#ffffff" stroke-width="0.8"/>
+    </defs>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="418.146792" y="35.598762" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_29">
+    <path d="M 327.910801 55.883591 
+L 501.990159 55.883591 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f6" class="marca" role="img" aria-label="Error espacial heterocedástico, dos pasos, 5 vecinos: 0,84 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,01 a 1,68; p = 0,051; estimado)"><title>Error espacial heterocedástico, dos pasos, 5 vecinos: 0,84 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,01 a 1,68; p = 0,051; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="414.95048" y="55.883591" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_30">
+    <path d="M 336.832581 76.168421 
+L 496.105896 76.168421 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f5" class="marca" role="img" aria-label="Error espacial, máxima verosimilitud, 5 vecinos: 0,85 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,08 a 1,63; p = 0,030; estimado)"><title>Error espacial, máxima verosimilitud, 5 vecinos: 0,85 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,08 a 1,63; p = 0,030; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="416.469238" y="76.168421" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_31">
+    <path d="M 313.072979 96.453251 
+L 469.113369 96.453251 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f4" class="marca" role="img" aria-label="Mínimos cuadrados: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,15 a 1,37; p = 0,118; estimado)"><title>Mínimos cuadrados: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,15 a 1,37; p = 0,118; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="391.093174" y="96.453251" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_32">
+    <path d="M 302.707717 116.73808 
+L 479.478631 116.73808 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f3" class="marca" role="img" aria-label="Mínimos cuadrados, errores robustos HAC: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,25 a 1,47; p = 0,167; estimado)"><title>Mínimos cuadrados, errores robustos HAC: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,25 a 1,47; p = 0,167; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="391.093174" y="116.73808" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_33">
+    <path d="M 342.218894 137.02291 
+L 508.396731 137.02291 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f2" class="marca" role="img" aria-label="Principal en los 112 municipios con % de alquiler: 0,94 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,13 a 1,75; p = 0,022; estimado)"><title>Principal en los 112 municipios con % de alquiler: 0,94 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,13 a 1,75; p = 0,022; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="425.307812" y="137.02291" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_34">
+    <path d="M 300.090361 157.30774 
+L 450.994032 157.30774 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f1" class="marca" role="img" aria-label="Con % de jóvenes en alquiler, 5 vecinos (112): 0,46 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,28 a 1,19; p = 0,221; estimado)"><title>Con % de jóvenes en alquiler, 5 vecinos (112): 0,46 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,28 a 1,19; p = 0,221; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="375.542197" y="157.30774" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_35">
+    <path d="M 288.061774 177.59257 
+L 438.228716 177.59257 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="f0" class="marca" role="img" aria-label="Con % de jóvenes en alquiler, 8 vecinos (112): 0,34 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,39 a 1,07; p = 0,365; estimado)"><title>Con % de jóvenes en alquiler, 8 vecinos (112): 0,34 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,39 a 1,07; p = 0,365; estimado)</title>
+    <g clip-path="url(#pcb1a9cefd7)">
+     <use xlink:href="#m1b30bf09e7" x="363.145245" y="177.59257" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
+    </g>
+   </g>
+   <g id="line2d_36">
+    <path d="M 215.150188 126.880495 
+L 616.910188 126.880495 
+" clip-path="url(#pcb1a9cefd7)" fill="none" stroke-dasharray="1.2,1.2" stroke-dashoffset="0" stroke="#a9adb6" stroke-width="0.6"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 215.150187 185.706502 
+L 616.910188 185.706502 
+" fill="none" stroke="#d9dbe0" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="text_19">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#0b4f9c" x="611.759418" y="17.236198" transform="rotate(-0 611.759418 17.236198)">p = 0,043</text>
+   </g>
+   <g id="text_20">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#0b4f9c" x="611.759418" y="37.521027" transform="rotate(-0 611.759418 37.521027)">p = 0,048</text>
+   </g>
+   <g id="text_21">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="611.759418" y="57.805857" transform="rotate(-0 611.759418 57.805857)">p = 0,051</text>
+   </g>
+   <g id="text_22">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#0b4f9c" x="611.759418" y="78.090687" transform="rotate(-0 611.759418 78.090687)">p = 0,030</text>
+   </g>
+   <g id="text_23">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="611.759418" y="98.375516" transform="rotate(-0 611.759418 98.375516)">p = 0,118</text>
+   </g>
+   <g id="text_24">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="611.759418" y="118.660346" transform="rotate(-0 611.759418 118.660346)">p = 0,167</text>
+   </g>
+   <g id="text_25">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#0b4f9c" x="611.759418" y="138.945176" transform="rotate(-0 611.759418 138.945176)">p = 0,022</text>
+   </g>
+   <g id="text_26">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="611.759418" y="159.230006" transform="rotate(-0 611.759418 159.230006)">p = 0,221</text>
+   </g>
+   <g id="text_27">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="611.759418" y="179.514835" transform="rotate(-0 611.759418 179.514835)">p = 0,365</text>
+   </g>
+   <g id="text_28">
+    <text font-size="6.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="230.602495" y="108.362338" transform="rotate(-0 230.602495 108.362338)">sin W</text>
+   </g>
+   <g id="text_29">
+    <text font-size="6.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="230.602495" y="159.074146" transform="rotate(-0 230.602495 159.074146)">n = 112</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_5">
+    <path d="M 215.150188 295.488 
+L 616.910188 295.488 
+L 616.910188 247.886266 
+L 215.150188 247.886266 
+L 215.150188 295.488 
+z
+" fill="none"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_9">
+     <g id="line2d_37">
+      <path d="M 215.150188 295.488 
+L 215.150188 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_38"/>
+     <g id="text_30">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="215.150188" y="305.066125" transform="rotate(-0 215.150188 305.066125)">−0,2</text>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_39">
+      <path d="M 272.544473 295.488 
+L 272.544473 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_40"/>
+     <g id="text_31">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="272.544473" y="305.066125" transform="rotate(-0 272.544473 305.066125)">−0,1</text>
+     </g>
+    </g>
+    <g id="xtick_11">
+     <g id="line2d_41">
+      <path d="M 329.938759 295.488 
+L 329.938759 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_42"/>
+     <g id="text_32">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="329.938759" y="305.066125" transform="rotate(-0 329.938759 305.066125)">0,0</text>
+     </g>
+    </g>
+    <g id="xtick_12">
+     <g id="line2d_43">
+      <path d="M 387.333045 295.488 
+L 387.333045 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_44"/>
+     <g id="text_33">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="387.333045" y="305.066125" transform="rotate(-0 387.333045 305.066125)">0,1</text>
+     </g>
+    </g>
+    <g id="xtick_13">
+     <g id="line2d_45">
+      <path d="M 444.72733 295.488 
+L 444.72733 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_46"/>
+     <g id="text_34">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="444.72733" y="305.066125" transform="rotate(-0 444.72733 305.066125)">0,2</text>
+     </g>
+    </g>
+    <g id="xtick_14">
+     <g id="line2d_47">
+      <path d="M 502.121616 295.488 
+L 502.121616 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_48"/>
+     <g id="text_35">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="502.121616" y="305.066125" transform="rotate(-0 502.121616 305.066125)">0,3</text>
+     </g>
+    </g>
+    <g id="xtick_15">
+     <g id="line2d_49">
+      <path d="M 559.515902 295.488 
+L 559.515902 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_50"/>
+     <g id="text_36">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="559.515902" y="305.066125" transform="rotate(-0 559.515902 305.066125)">0,4</text>
+     </g>
+    </g>
+    <g id="xtick_16">
+     <g id="line2d_51">
+      <path d="M 616.910188 295.488 
+L 616.910188 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_52"/>
+     <g id="text_37">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="616.910188" y="305.066125" transform="rotate(-0 616.910188 305.066125)">0,5</text>
+     </g>
+    </g>
+    <g id="text_38">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="416.030188" y="317.786672" transform="rotate(-0 416.030188 317.786672)">Correlación parcial del esfuerzo con las rechazadas por 1.000 jóvenes (otra escala)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_10">
+     <g id="line2d_53"/>
+     <g id="text_39">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="263.987948" transform="rotate(-0 211.650188 263.987948)">Correlación parcial, fijada antes de ver los datos</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_54"/>
+     <g id="text_40">
+      <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="211.650188" y="286.12235" transform="rotate(-0 211.650188 286.12235)">Ídem, tasas suavizadas (Bayes empírico)</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_55">
+    <path d="M 329.938759 295.488 
+L 329.938759 247.886266 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#474a52" stroke-width="0.8" stroke-linecap="round"/>
+   </g>
+   <g id="line2d_56">
+    <path d="M 309.849012 260.868557 
+L 502.434829 260.868557 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="r1" class="marca" role="img" aria-label="Correlación parcial, fijada antes de ver los datos: r = 0,137 (IC 95 % −0,04 a 0,30; p = 0,118; estimado)"><title>Correlación parcial, fijada antes de ver los datos: r = 0,137 (IC 95 % −0,04 a 0,30; p = 0,118; estimado)</title>
+    <defs>
+     <path id="mf87cb67f3f" d="M -3 3 
+L 3 3 
+L 3 -3 
+L -3 -3 
+z
+" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="miter"/>
+    </defs>
+    <g clip-path="url(#ped3f3832b8)">
+     <use xlink:href="#mf87cb67f3f" x="408.391032" y="260.868557" fill="#474a52" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="miter"/>
+    </g>
+   </g>
+   <g id="line2d_57">
+    <path d="M 320.905083 282.505709 
+L 512.439818 282.505709 
+" clip-path="url(#ped3f3832b8)" fill="none" stroke="#474a52" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>
+   </g>
+   <g id="r0" class="marca" role="img" aria-label="Ídem, tasas suavizadas (Bayes empírico): r = 0,156 (IC 95 % −0,02 a 0,32; p = 0,075; estimado)"><title>Ídem, tasas suavizadas (Bayes empírico): r = 0,156 (IC 95 % −0,02 a 0,32; p = 0,075; estimado)</title>
+    <g clip-path="url(#ped3f3832b8)">
+     <use xlink:href="#mf87cb67f3f" x="419.217986" y="282.505709" fill="#474a52" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="miter"/>
+    </g>
+   </g>
+   <g id="patch_6">
+    <path d="M 215.150188 295.488 
+L 616.910188 295.488 
+" fill="none" stroke="#d9dbe0" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="text_41">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="605.43133" y="262.790823" transform="rotate(-0 605.43133 262.790823)">p = 0,118</text>
+   </g>
+   <g id="text_42">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="605.43133" y="284.427975" transform="rotate(-0 605.43133 284.427975)">p = 0,075</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pcb1a9cefd7">
+   <rect x="215.150188" y="7.2" width="401.76" height="178.506502"/>
+  </clipPath>
+  <clipPath id="ped3f3832b8">
+   <rect x="215.150188" y="247.886266" width="401.76" height="47.601734"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,1022 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg stroke-linejoin="round" xmlns:xlink="http://www.w3.org/1999/xlink" width="462.658504pt" height="293.424664pt" viewBox="0 0 462.658504 293.424664" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <defs>
+  
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 293.424664 
+L 462.658504 293.424664 
+L 462.658504 0 
+L 0 0 
+L 0 293.424664 
+z
+" fill="none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 46.103164 262.224 
+L 447.863164 262.224 
+L 447.863164 7.2 
+L 46.103164 7.2 
+L 46.103164 262.224 
+z
+" fill="none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="91.126356" y="271.802125" transform="rotate(-0 91.126356 271.802125)">3.000</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="149.939839" y="271.802125" transform="rotate(-0 149.939839 271.802125)">4.000</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="208.753322" y="271.802125" transform="rotate(-0 208.753322 271.802125)">5.000</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="267.566805" y="271.802125" transform="rotate(-0 267.566805 271.802125)">6.000</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="326.380288" y="271.802125" transform="rotate(-0 326.380288 271.802125)">7.000</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6"/>
+     <g id="text_6">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="385.193771" y="271.802125" transform="rotate(-0 385.193771 271.802125)">8.000</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7"/>
+     <g id="text_7">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="444.007254" y="271.802125" transform="rotate(-0 444.007254 271.802125)">9.000</text>
+     </g>
+    </g>
+    <g id="text_8">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="246.983164" y="284.182672" transform="rotate(-0 246.983164 284.182672)">Renta neta media del hogar (€ al mes, 2024)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_8">
+      <path d="M 46.103164 262.224 
+L 447.863164 262.224 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_9"/>
+     <g id="text_9">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="265.263063" transform="rotate(-0 42.603164 265.263063)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_10">
+      <path d="M 46.103164 225.04243 
+L 447.863164 225.04243 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_11"/>
+     <g id="text_10">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="228.081493" transform="rotate(-0 42.603164 228.081493)">200</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_12">
+      <path d="M 46.103164 187.86086 
+L 447.863164 187.86086 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_11">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="190.899923" transform="rotate(-0 42.603164 190.899923)">400</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_14">
+      <path d="M 46.103164 150.679291 
+L 447.863164 150.679291 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_15"/>
+     <g id="text_12">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="153.718353" transform="rotate(-0 42.603164 153.718353)">600</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_16">
+      <path d="M 46.103164 113.497721 
+L 447.863164 113.497721 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_17"/>
+     <g id="text_13">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="116.536783" transform="rotate(-0 42.603164 116.536783)">800</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_18">
+      <path d="M 46.103164 76.316151 
+L 447.863164 76.316151 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_19"/>
+     <g id="text_14">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="79.355213" transform="rotate(-0 42.603164 79.355213)">1.000</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_20">
+      <path d="M 46.103164 39.134581 
+L 447.863164 39.134581 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_21"/>
+     <g id="text_15">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="42.603164" y="42.173644" transform="rotate(-0 42.603164 42.173644)">1.200</text>
+     </g>
+    </g>
+    <g id="text_16">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="13.658672" y="134.712" transform="rotate(-90 13.658672 134.712)">Alquiler mediano (€ al mes, 2024)</text>
+    </g>
+   </g>
+   <g id="line2d_22">
+    <path d="M -1 222.24681 
+L 447.863164 9.420139 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.9" stroke-linecap="round"/>
+   </g>
+   <g id="line2d_23">
+    <path d="M -1 208.92108 
+L 331.051335 -1 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.9" stroke-linecap="round"/>
+   </g>
+   <g id="line2d_24">
+    <path d="M -1 195.595351 
+L 247.77825 -1 
+" clip-path="url(#p33ebd9febe)" fill="none" stroke="#d9dbe0" stroke-width="0.9" stroke-linecap="round"/>
+   </g>
+   <g id="r28002" class="marca" role="img" aria-label="Ajalvir: alquiler 647 €, renta 3.899 € al mes; esfuerzo 16,6 %"><title>Ajalvir: alquiler 647 €, renta 3.899 € al mes; esfuerzo 16,6 %</title>
+    <defs>
+     <path id="m3953ea1263" d="M 0 1.5 
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066 
+C 1.341951 0.77937 1.5 0.397805 1.5 0 
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066 
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5 
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066 
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0 
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066 
+C -0.77937 1.341951 -0.397805 1.5 0 1.5 
+z
+" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </defs>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="143.984974" y="141.877123" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28004" class="marca" role="img" aria-label="El Álamo: alquiler 520 €, renta 3.266 € al mes; esfuerzo 15,9 %"><title>El Álamo: alquiler 520 €, renta 3.266 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="106.76094" y="165.551918" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28005" class="marca" role="img" aria-label="Alcalá de Henares: alquiler 698 €, renta 3.693 € al mes; esfuerzo 18,9 %"><title>Alcalá de Henares: alquiler 698 €, renta 3.693 € al mes; esfuerzo 18,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="131.898803" y="132.504126" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28006" class="marca" role="img" aria-label="Alcobendas: alquiler 834 €, renta 5.875 € al mes; esfuerzo 14,2 %"><title>Alcobendas: alquiler 834 €, renta 5.875 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="260.229823" y="107.176854" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28007" class="marca" role="img" aria-label="Alcorcón: alquiler 740 €, renta 3.672 € al mes; esfuerzo 20,2 %"><title>Alcorcón: alquiler 740 €, renta 3.672 € al mes; esfuerzo 20,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="130.61961" y="124.652192" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28008" class="marca" role="img" aria-label="Aldea del Fresno: alquiler 492 €, renta 2.933 € al mes; esfuerzo 16,8 %"><title>Aldea del Fresno: alquiler 492 €, renta 2.933 € al mes; esfuerzo 16,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="87.185852" y="170.709002" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28009" class="marca" role="img" aria-label="Algete: alquiler 660 €, renta 5.141 € al mes; esfuerzo 12,8 %"><title>Algete: alquiler 660 €, renta 5.141 € al mes; esfuerzo 12,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="217.070529" y="139.56355" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28010" class="marca" role="img" aria-label="Alpedrete: alquiler 700 €, renta 4.493 € al mes; esfuerzo 15,6 %"><title>Alpedrete: alquiler 700 €, renta 4.493 € al mes; esfuerzo 15,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="178.920183" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28012" class="marca" role="img" aria-label="Anchuelo: alquiler 500 €, renta 3.071 € al mes; esfuerzo 16,3 %"><title>Anchuelo: alquiler 500 €, renta 3.071 € al mes; esfuerzo 16,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="95.297212" y="169.270075" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28013" class="marca" role="img" aria-label="Aranjuez: alquiler 550 €, renta 3.590 € al mes; esfuerzo 15,3 %"><title>Aranjuez: alquiler 550 €, renta 3.590 € al mes; esfuerzo 15,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="125.811607" y="159.974683" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28014" class="marca" role="img" aria-label="Arganda del Rey: alquiler 640 €, renta 3.582 € al mes; esfuerzo 17,9 %"><title>Arganda del Rey: alquiler 640 €, renta 3.582 € al mes; esfuerzo 17,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="125.38521" y="143.242977" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28015" class="marca" role="img" aria-label="Arroyomolinos: alquiler 820 €, renta 4.820 € al mes; esfuerzo 17,0 %"><title>Arroyomolinos: alquiler 820 €, renta 4.820 € al mes; esfuerzo 17,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="198.176697" y="109.779564" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28018" class="marca" role="img" aria-label="Becerril de la Sierra: alquiler 570 €, renta 4.006 € al mes; esfuerzo 14,2 %"><title>Becerril de la Sierra: alquiler 570 €, renta 4.006 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="150.312324" y="156.275824" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28019" class="marca" role="img" aria-label="Belmonte de Tajo: alquiler 425 €, renta 2.939 € al mes; esfuerzo 14,5 %"><title>Belmonte de Tajo: alquiler 425 €, renta 2.939 € al mes; esfuerzo 14,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="87.528931" y="183.213164" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28021" class="marca" role="img" aria-label="El Berrueco: alquiler 382 €, renta 3.090 € al mes; esfuerzo 12,4 %"><title>El Berrueco: alquiler 382 €, renta 3.090 € al mes; esfuerzo 12,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="96.42447" y="191.207202" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28022" class="marca" role="img" aria-label="Boadilla del Monte: alquiler 1.270 €, renta 7.897 € al mes; esfuerzo 16,1 %"><title>Boadilla del Monte: alquiler 1.270 €, renta 7.897 € al mes; esfuerzo 16,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="379.12618" y="26.090667" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28023" class="marca" role="img" aria-label="El Boalo: alquiler 625 €, renta 4.397 € al mes; esfuerzo 14,2 %"><title>El Boalo: alquiler 625 €, renta 4.397 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="173.269187" y="146.031594" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28026" class="marca" role="img" aria-label="Brunete: alquiler 748 €, renta 4.091 € al mes; esfuerzo 18,3 %"><title>Brunete: alquiler 748 €, renta 4.091 € al mes; esfuerzo 18,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="155.286965" y="123.257883" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28027" class="marca" role="img" aria-label="Buitrago del Lozoya: alquiler 456 €, renta 3.193 € al mes; esfuerzo 14,3 %"><title>Buitrago del Lozoya: alquiler 456 €, renta 3.193 € al mes; esfuerzo 14,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="102.496962" y="177.403544" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28028" class="marca" role="img" aria-label="Bustarviejo: alquiler 483 €, renta 3.296 € al mes; esfuerzo 14,7 %"><title>Bustarviejo: alquiler 483 €, renta 3.296 € al mes; esfuerzo 14,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="108.50574" y="172.462113" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28030" class="marca" role="img" aria-label="La Cabrera: alquiler 500 €, renta 3.569 € al mes; esfuerzo 14,0 %"><title>La Cabrera: alquiler 500 €, renta 3.569 € al mes; esfuerzo 14,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="124.566722" y="169.270075" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28031" class="marca" role="img" aria-label="Cadalso de los Vidrios: alquiler 292 €, renta 2.739 € al mes; esfuerzo 10,7 %"><title>Cadalso de los Vidrios: alquiler 292 €, renta 2.739 € al mes; esfuerzo 10,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="75.761333" y="207.987406" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28032" class="marca" role="img" aria-label="Camarma de Esteruelas: alquiler 600 €, renta 3.782 € al mes; esfuerzo 15,9 %"><title>Camarma de Esteruelas: alquiler 600 €, renta 3.782 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="137.113598" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28033" class="marca" role="img" aria-label="Campo Real: alquiler 520 €, renta 3.398 € al mes; esfuerzo 15,3 %"><title>Campo Real: alquiler 520 €, renta 3.398 € al mes; esfuerzo 15,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="114.504715" y="165.551918" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28035" class="marca" role="img" aria-label="Carabaña: alquiler 450 €, renta 2.792 € al mes; esfuerzo 16,1 %"><title>Carabaña: alquiler 450 €, renta 2.792 € al mes; esfuerzo 16,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="78.902953" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28036" class="marca" role="img" aria-label="Casarrubuelos: alquiler 553 €, renta 3.691 € al mes; esfuerzo 15,0 %"><title>Casarrubuelos: alquiler 553 €, renta 3.691 € al mes; esfuerzo 15,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="131.741967" y="159.463436" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28037" class="marca" role="img" aria-label="Cenicientos: alquiler 319 €, renta 2.483 € al mes; esfuerzo 12,8 %"><title>Cenicientos: alquiler 319 €, renta 2.483 € al mes; esfuerzo 12,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="60.705082" y="202.976307" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28038" class="marca" role="img" aria-label="Cercedilla: alquiler 550 €, renta 3.514 € al mes; esfuerzo 15,7 %"><title>Cercedilla: alquiler 550 €, renta 3.514 € al mes; esfuerzo 15,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="121.37609" y="159.974683" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28040" class="marca" role="img" aria-label="Ciempozuelos: alquiler 550 €, renta 3.224 € al mes; esfuerzo 17,1 %"><title>Ciempozuelos: alquiler 550 €, renta 3.224 € al mes; esfuerzo 17,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="104.295675" y="159.974683" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28041" class="marca" role="img" aria-label="Cobeña: alquiler 700 €, renta 5.413 € al mes; esfuerzo 12,9 %"><title>Cobeña: alquiler 700 €, renta 5.413 € al mes; esfuerzo 12,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="233.048191" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28042" class="marca" role="img" aria-label="Colmenar del Arroyo: alquiler 446 €, renta 3.596 € al mes; esfuerzo 12,4 %"><title>Colmenar del Arroyo: alquiler 446 €, renta 3.596 € al mes; esfuerzo 12,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="126.208598" y="179.262622" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28043" class="marca" role="img" aria-label="Colmenar de Oreja: alquiler 400 €, renta 2.987 € al mes; esfuerzo 13,4 %"><title>Colmenar de Oreja: alquiler 400 €, renta 2.987 € al mes; esfuerzo 13,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="90.381385" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28044" class="marca" role="img" aria-label="Colmenarejo: alquiler 650 €, renta 4.358 € al mes; esfuerzo 14,9 %"><title>Colmenarejo: alquiler 650 €, renta 4.358 € al mes; esfuerzo 14,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="170.965659" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28045" class="marca" role="img" aria-label="Colmenar Viejo: alquiler 700 €, renta 4.634 € al mes; esfuerzo 15,1 %"><title>Colmenar Viejo: alquiler 700 €, renta 4.634 € al mes; esfuerzo 15,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="187.207983" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28046" class="marca" role="img" aria-label="Collado Mediano: alquiler 617 €, renta 4.429 € al mes; esfuerzo 13,9 %"><title>Collado Mediano: alquiler 617 €, renta 4.429 € al mes; esfuerzo 13,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="175.165922" y="147.585474" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28047" class="marca" role="img" aria-label="Collado Villalba: alquiler 683 €, renta 3.640 € al mes; esfuerzo 18,8 %"><title>Collado Villalba: alquiler 683 €, renta 3.640 € al mes; esfuerzo 18,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="128.766985" y="135.245686" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28048" class="marca" role="img" aria-label="Corpa: alquiler 450 €, renta 3.075 € al mes; esfuerzo 14,6 %"><title>Corpa: alquiler 450 €, renta 3.075 € al mes; esfuerzo 14,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="95.522664" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28049" class="marca" role="img" aria-label="Coslada: alquiler 730 €, renta 3.647 € al mes; esfuerzo 20,0 %"><title>Coslada: alquiler 730 €, renta 3.647 € al mes; esfuerzo 20,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="129.168877" y="126.51127" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28050" class="marca" role="img" aria-label="Cubas de la Sagra: alquiler 598 €, renta 4.360 € al mes; esfuerzo 13,7 %"><title>Cubas de la Sagra: alquiler 598 €, renta 4.360 € al mes; esfuerzo 13,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="171.088187" y="150.982401" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28051" class="marca" role="img" aria-label="Chapinería: alquiler 522 €, renta 3.587 € al mes; esfuerzo 14,6 %"><title>Chapinería: alquiler 522 €, renta 3.587 € al mes; esfuerzo 14,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="125.635167" y="165.172357" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28052" class="marca" role="img" aria-label="Chinchón: alquiler 452 €, renta 3.071 € al mes; esfuerzo 14,7 %"><title>Chinchón: alquiler 452 €, renta 3.071 € al mes; esfuerzo 14,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="95.321717" y="178.147175" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28053" class="marca" role="img" aria-label="Daganzo de Arriba: alquiler 675 €, renta 4.735 € al mes; esfuerzo 14,3 %"><title>Daganzo de Arriba: alquiler 675 €, renta 4.735 € al mes; esfuerzo 14,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="193.187353" y="136.736202" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28054" class="marca" role="img" aria-label="El Escorial: alquiler 678 €, renta 4.050 € al mes; esfuerzo 16,7 %"><title>El Escorial: alquiler 678 €, renta 4.050 € al mes; esfuerzo 16,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="152.905019" y="136.122869" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28055" class="marca" role="img" aria-label="Estremera: alquiler 316 €, renta 2.675 € al mes; esfuerzo 11,8 %"><title>Estremera: alquiler 316 €, renta 2.675 € al mes; esfuerzo 11,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="72.007073" y="203.566868" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28056" class="marca" role="img" aria-label="Fresnedillas de la Oliva: alquiler 400 €, renta 3.159 € al mes; esfuerzo 12,7 %"><title>Fresnedillas de la Oliva: alquiler 400 €, renta 3.159 € al mes; esfuerzo 12,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="100.453194" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28057" class="marca" role="img" aria-label="Fresno de Torote: alquiler 601 €, renta 3.761 € al mes; esfuerzo 16,0 %"><title>Fresno de Torote: alquiler 601 €, renta 3.761 € al mes; esfuerzo 16,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="135.89812" y="150.47789" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28058" class="marca" role="img" aria-label="Fuenlabrada: alquiler 683 €, renta 3.362 € al mes; esfuerzo 20,3 %"><title>Fuenlabrada: alquiler 683 €, renta 3.362 € al mes; esfuerzo 20,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="112.446243" y="135.295416" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28059" class="marca" role="img" aria-label="Fuente el Saz de Jarama: alquiler 600 €, renta 3.776 € al mes; esfuerzo 15,9 %"><title>Fuente el Saz de Jarama: alquiler 600 €, renta 3.776 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="136.77052" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28060" class="marca" role="img" aria-label="Fuentidueña de Tajo: alquiler 408 €, renta 2.761 € al mes; esfuerzo 14,8 %"><title>Fuentidueña de Tajo: alquiler 408 €, renta 2.761 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="77.045428" y="186.311628" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28061" class="marca" role="img" aria-label="Galapagar: alquiler 637 €, renta 4.393 € al mes; esfuerzo 14,5 %"><title>Galapagar: alquiler 637 €, renta 4.393 € al mes; esfuerzo 14,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="173.078043" y="143.862669" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28062" class="marca" role="img" aria-label="Garganta de los Montes: alquiler 539 €, renta 3.187 € al mes; esfuerzo 16,9 %"><title>Garganta de los Montes: alquiler 539 €, renta 3.187 € al mes; esfuerzo 16,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="102.124477" y="162.078578" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28065" class="marca" role="img" aria-label="Getafe: alquiler 700 €, renta 3.694 € al mes; esfuerzo 19,0 %"><title>Getafe: alquiler 700 €, renta 3.694 € al mes; esfuerzo 19,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="131.933111" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28066" class="marca" role="img" aria-label="Griñón: alquiler 650 €, renta 4.594 € al mes; esfuerzo 14,1 %"><title>Griñón: alquiler 650 €, renta 4.594 € al mes; esfuerzo 14,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="184.855443" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28067" class="marca" role="img" aria-label="Guadalix de la Sierra: alquiler 526 €, renta 3.663 € al mes; esfuerzo 14,4 %"><title>Guadalix de la Sierra: alquiler 526 €, renta 3.663 € al mes; esfuerzo 14,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="130.134398" y="164.385091" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28068" class="marca" role="img" aria-label="Guadarrama: alquiler 650 €, renta 4.027 € al mes; esfuerzo 16,1 %"><title>Guadarrama: alquiler 650 €, renta 4.027 € al mes; esfuerzo 16,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="151.518001" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28072" class="marca" role="img" aria-label="Hoyo de Manzanares: alquiler 757 €, renta 4.988 € al mes; esfuerzo 15,2 %"><title>Hoyo de Manzanares: alquiler 757 €, renta 4.988 € al mes; esfuerzo 15,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="208.067165" y="121.553573" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28073" class="marca" role="img" aria-label="Humanes de Madrid: alquiler 622 €, renta 3.307 € al mes; esfuerzo 18,8 %"><title>Humanes de Madrid: alquiler 622 €, renta 3.307 € al mes; esfuerzo 18,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="109.177194" y="146.659033" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28074" class="marca" role="img" aria-label="Leganés: alquiler 690 €, renta 3.416 € al mes; esfuerzo 20,2 %"><title>Leganés: alquiler 690 €, renta 3.416 € al mes; esfuerzo 20,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="115.607468" y="133.947584" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28075" class="marca" role="img" aria-label="Loeches: alquiler 600 €, renta 3.767 € al mes; esfuerzo 15,9 %"><title>Loeches: alquiler 600 €, renta 3.767 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="136.231396" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28076" class="marca" role="img" aria-label="Lozoya: alquiler 400 €, renta 2.886 € al mes; esfuerzo 13,8 %"><title>Lozoya: alquiler 400 €, renta 2.886 € al mes; esfuerzo 13,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="84.451025" y="187.905323" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807901" class="marca" role="img" aria-label="Centro: alquiler 950 €, renta 3.965 € al mes; esfuerzo 24,0 %"><title>Centro: alquiler 950 €, renta 3.965 € al mes; esfuerzo 24,0 %</title>
+    <defs>
+     <path id="mcad8d679d2" d="M 0 2.1 
+C 0.556927 2.1 1.091118 1.878731 1.484924 1.484924 
+C 1.878731 1.091118 2.1 0.556927 2.1 0 
+C 2.1 -0.556927 1.878731 -1.091118 1.484924 -1.484924 
+C 1.091118 -1.878731 0.556927 -2.1 0 -2.1 
+C -0.556927 -2.1 -1.091118 -1.878731 -1.484924 -1.484924 
+C -1.878731 -1.091118 -2.1 -0.556927 -2.1 0 
+C -2.1 0.556927 -1.878731 1.091118 -1.484924 1.484924 
+C -1.091118 1.878731 -0.556927 2.1 0 2.1 
+z
+" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </defs>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="147.881367" y="85.611543" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807902" class="marca" role="img" aria-label="Arganzuela: alquiler 950 €, renta 4.672 € al mes; esfuerzo 20,3 %"><title>Arganzuela: alquiler 950 €, renta 4.672 € al mes; esfuerzo 20,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="189.437994" y="85.611543" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807903" class="marca" role="img" aria-label="Retiro: alquiler 1.100 €, renta 5.726 € al mes; esfuerzo 19,2 %"><title>Retiro: alquiler 1.100 €, renta 5.726 € al mes; esfuerzo 19,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="251.481317" y="57.725366" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807904" class="marca" role="img" aria-label="Salamanca: alquiler 1.159 €, renta 6.105 € al mes; esfuerzo 19,0 %"><title>Salamanca: alquiler 1.159 €, renta 6.105 € al mes; esfuerzo 19,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="273.727517" y="46.810041" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807905" class="marca" role="img" aria-label="Chamartín: alquiler 1.126 €, renta 7.051 € al mes; esfuerzo 16,0 %"><title>Chamartín: alquiler 1.126 €, renta 7.051 € al mes; esfuerzo 16,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="329.360171" y="52.942887" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807906" class="marca" role="img" aria-label="Tetuán: alquiler 875 €, renta 4.090 € al mes; esfuerzo 21,4 %"><title>Tetuán: alquiler 875 €, renta 4.090 € al mes; esfuerzo 21,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="155.237953" y="99.554632" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807907" class="marca" role="img" aria-label="Chamberí: alquiler 1.175 €, renta 5.796 € al mes; esfuerzo 20,3 %"><title>Chamberí: alquiler 1.175 €, renta 5.796 € al mes; esfuerzo 20,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="255.578657" y="43.782277" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807908" class="marca" role="img" aria-label="Fuencarral-El Pardo: alquiler 995 €, renta 5.533 € al mes; esfuerzo 18,0 %"><title>Fuencarral-El Pardo: alquiler 995 €, renta 5.533 € al mes; esfuerzo 18,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="240.115612" y="77.190537" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807909" class="marca" role="img" aria-label="Moncloa-Aravaca: alquiler 1.050 €, renta 6.502 € al mes; esfuerzo 16,1 %"><title>Moncloa-Aravaca: alquiler 1.050 €, renta 6.502 € al mes; esfuerzo 16,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="297.086272" y="67.020758" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807910" class="marca" role="img" aria-label="Latina: alquiler 750 €, renta 3.365 € al mes; esfuerzo 22,3 %"><title>Latina: alquiler 750 €, renta 3.365 € al mes; esfuerzo 22,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="112.612882" y="122.793113" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807911" class="marca" role="img" aria-label="Carabanchel: alquiler 731 €, renta 3.241 € al mes; esfuerzo 22,6 %"><title>Carabanchel: alquiler 731 €, renta 3.241 € al mes; esfuerzo 22,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="105.275899" y="126.273604" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807912" class="marca" role="img" aria-label="Usera: alquiler 728 €, renta 3.111 € al mes; esfuerzo 23,4 %"><title>Usera: alquiler 728 €, renta 3.111 € al mes; esfuerzo 23,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="97.635048" y="126.939076" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807913" class="marca" role="img" aria-label="Puente de Vallecas: alquiler 700 €, renta 2.919 € al mes; esfuerzo 24,0 %"><title>Puente de Vallecas: alquiler 700 €, renta 2.919 € al mes; esfuerzo 24,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="86.337958" y="132.088506" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807914" class="marca" role="img" aria-label="Moratalaz: alquiler 800 €, renta 3.788 € al mes; esfuerzo 21,1 %"><title>Moratalaz: alquiler 800 €, renta 3.788 € al mes; esfuerzo 21,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="137.441974" y="113.497721" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807915" class="marca" role="img" aria-label="Ciudad Lineal: alquiler 824 €, renta 4.169 € al mes; esfuerzo 19,8 %"><title>Ciudad Lineal: alquiler 824 €, renta 4.169 € al mes; esfuerzo 19,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="159.898922" y="109.02044" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807916" class="marca" role="img" aria-label="Hortaleza: alquiler 1.000 €, renta 5.504 € al mes; esfuerzo 18,2 %"><title>Hortaleza: alquiler 1.000 €, renta 5.504 € al mes; esfuerzo 18,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="238.395317" y="76.316151" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807917" class="marca" role="img" aria-label="Villaverde: alquiler 688 €, renta 3.111 € al mes; esfuerzo 22,1 %"><title>Villaverde: alquiler 688 €, renta 3.111 € al mes; esfuerzo 22,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="97.635048" y="134.412354" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807918" class="marca" role="img" aria-label="Villa de Vallecas: alquiler 770 €, renta 3.518 € al mes; esfuerzo 21,9 %"><title>Villa de Vallecas: alquiler 770 €, renta 3.518 € al mes; esfuerzo 21,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="121.601542" y="119.074956" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807919" class="marca" role="img" aria-label="Vicálvaro: alquiler 800 €, renta 3.848 € al mes; esfuerzo 20,8 %"><title>Vicálvaro: alquiler 800 €, renta 3.848 € al mes; esfuerzo 20,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="140.995288" y="113.497721" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807920" class="marca" role="img" aria-label="San Blas-Canillejas: alquiler 807 €, renta 3.947 € al mes; esfuerzo 20,5 %"><title>San Blas-Canillejas: alquiler 807 €, renta 3.947 € al mes; esfuerzo 20,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="146.798219" y="112.165381" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r2807921" class="marca" role="img" aria-label="Barajas: alquiler 929 €, renta 5.118 € al mes; esfuerzo 18,2 %"><title>Barajas: alquiler 929 €, renta 5.118 € al mes; esfuerzo 18,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#mcad8d679d2" x="215.698214" y="89.483751" fill="#0b4f9c" fill-opacity="0.95" stroke="#ffffff" stroke-opacity="0.95" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28080" class="marca" role="img" aria-label="Majadahonda: alquiler 1.128 €, renta 6.694 € al mes; esfuerzo 16,8 %"><title>Majadahonda: alquiler 1.128 €, renta 6.694 € al mes; esfuerzo 16,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="308.402967" y="52.6129" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28082" class="marca" role="img" aria-label="Manzanares el Real: alquiler 600 €, renta 3.936 € al mes; esfuerzo 15,2 %"><title>Manzanares el Real: alquiler 600 €, renta 3.936 € al mes; esfuerzo 15,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="146.175776" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28083" class="marca" role="img" aria-label="Meco: alquiler 608 €, renta 4.288 € al mes; esfuerzo 14,2 %"><title>Meco: alquiler 608 €, renta 4.288 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="166.892825" y="149.113946" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28084" class="marca" role="img" aria-label="Mejorada del Campo: alquiler 634 €, renta 3.343 € al mes; esfuerzo 19,0 %"><title>Mejorada del Campo: alquiler 634 €, renta 3.343 € al mes; esfuerzo 19,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="111.309183" y="144.327439" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28085" class="marca" role="img" aria-label="Miraflores de la Sierra: alquiler 529 €, renta 3.583 € al mes; esfuerzo 14,8 %"><title>Miraflores de la Sierra: alquiler 529 €, renta 3.583 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="125.409715" y="163.831759" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28086" class="marca" role="img" aria-label="El Molar: alquiler 570 €, renta 3.303 € al mes; esfuerzo 17,3 %"><title>El Molar: alquiler 570 €, renta 3.303 € al mes; esfuerzo 17,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="108.946841" y="156.256526" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28087" class="marca" role="img" aria-label="Los Molinos: alquiler 600 €, renta 3.981 € al mes; esfuerzo 15,1 %"><title>Los Molinos: alquiler 600 €, renta 3.981 € al mes; esfuerzo 15,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="148.822383" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28088" class="marca" role="img" aria-label="Montejo de la Sierra: alquiler 360 €, renta 2.974 € al mes; esfuerzo 12,1 %"><title>Montejo de la Sierra: alquiler 360 €, renta 2.974 € al mes; esfuerzo 12,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="89.592304" y="195.297174" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28089" class="marca" role="img" aria-label="Moraleja de Enmedio: alquiler 560 €, renta 4.048 € al mes; esfuerzo 13,8 %"><title>Moraleja de Enmedio: alquiler 560 €, renta 4.048 € al mes; esfuerzo 13,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="152.748183" y="158.115604" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28090" class="marca" role="img" aria-label="Moralzarzal: alquiler 650 €, renta 4.756 € al mes; esfuerzo 13,7 %"><title>Moralzarzal: alquiler 650 €, renta 4.756 € al mes; esfuerzo 13,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="194.373425" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28091" class="marca" role="img" aria-label="Morata de Tajuña: alquiler 500 €, renta 3.060 € al mes; esfuerzo 16,3 %"><title>Morata de Tajuña: alquiler 500 €, renta 3.060 € al mes; esfuerzo 16,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="94.674769" y="169.270075" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28092" class="marca" role="img" aria-label="Móstoles: alquiler 700 €, renta 3.406 € al mes; esfuerzo 20,6 %"><title>Móstoles: alquiler 700 €, renta 3.406 € al mes; esfuerzo 20,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="115.00463" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28093" class="marca" role="img" aria-label="Navacerrada: alquiler 600 €, renta 4.061 € al mes; esfuerzo 14,8 %"><title>Navacerrada: alquiler 600 €, renta 4.061 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="153.507857" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28094" class="marca" role="img" aria-label="Navalafuente: alquiler 450 €, renta 3.241 € al mes; esfuerzo 13,9 %"><title>Navalafuente: alquiler 450 €, renta 3.241 € al mes; esfuerzo 13,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="105.295504" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28095" class="marca" role="img" aria-label="Navalagamella: alquiler 451 €, renta 3.188 € al mes; esfuerzo 14,1 %"><title>Navalagamella: alquiler 451 €, renta 3.188 € al mes; esfuerzo 14,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="102.193093" y="178.356322" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28096" class="marca" role="img" aria-label="Navalcarnero: alquiler 650 €, renta 3.818 € al mes; esfuerzo 17,0 %"><title>Navalcarnero: alquiler 650 €, renta 3.818 € al mes; esfuerzo 17,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="139.211279" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28099" class="marca" role="img" aria-label="Navas del Rey: alquiler 359 €, renta 3.098 € al mes; esfuerzo 11,6 %"><title>Navas del Rey: alquiler 359 €, renta 3.098 € al mes; esfuerzo 11,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="96.86067" y="195.529559" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28102" class="marca" role="img" aria-label="Orusco de Tajuña: alquiler 375 €, renta 2.643 € al mes; esfuerzo 14,2 %"><title>Orusco de Tajuña: alquiler 375 €, renta 2.643 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="70.149547" y="192.508557" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28104" class="marca" role="img" aria-label="Paracuellos de Jarama: alquiler 848 €, renta 5.685 € al mes; esfuerzo 14,9 %"><title>Paracuellos de Jarama: alquiler 848 €, renta 5.685 € al mes; esfuerzo 14,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="249.040558" y="104.636113" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28106" class="marca" role="img" aria-label="Parla: alquiler 650 €, renta 3.131 € al mes; esfuerzo 20,8 %"><title>Parla: alquiler 650 €, renta 3.131 € al mes; esfuerzo 20,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="98.830922" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28108" class="marca" role="img" aria-label="Pedrezuela: alquiler 507 €, renta 3.739 € al mes; esfuerzo 13,5 %"><title>Pedrezuela: alquiler 507 €, renta 3.739 € al mes; esfuerzo 13,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="134.594421" y="168.060734" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28109" class="marca" role="img" aria-label="Pelayos de la Presa: alquiler 400 €, renta 2.812 € al mes; esfuerzo 14,2 %"><title>Pelayos de la Presa: alquiler 400 €, renta 2.812 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="80.084124" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28110" class="marca" role="img" aria-label="Perales de Tajuña: alquiler 421 €, renta 2.949 € al mes; esfuerzo 14,3 %"><title>Perales de Tajuña: alquiler 421 €, renta 2.949 € al mes; esfuerzo 14,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="88.146473" y="183.93743" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28113" class="marca" role="img" aria-label="Pinto: alquiler 700 €, renta 3.764 € al mes; esfuerzo 18,6 %"><title>Pinto: alquiler 700 €, renta 3.764 € al mes; esfuerzo 18,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="136.040252" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28115" class="marca" role="img" aria-label="Pozuelo de Alarcón: alquiler 1.246 €, renta 8.552 € al mes; esfuerzo 14,6 %"><title>Pozuelo de Alarcón: alquiler 1.246 €, renta 8.552 € al mes; esfuerzo 14,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="417.683319" y="30.535568" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28116" class="marca" role="img" aria-label="Pozuelo del Rey: alquiler 550 €, renta 3.203 € al mes; esfuerzo 17,2 %"><title>Pozuelo del Rey: alquiler 550 €, renta 3.203 € al mes; esfuerzo 17,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="103.055691" y="159.974683" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28119" class="marca" role="img" aria-label="Quijorna: alquiler 621 €, renta 3.493 € al mes; esfuerzo 17,8 %"><title>Quijorna: alquiler 621 €, renta 3.493 € al mes; esfuerzo 17,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="120.121403" y="146.775226" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28120" class="marca" role="img" aria-label="Rascafría: alquiler 400 €, renta 3.149 € al mes; esfuerzo 12,7 %"><title>Rascafría: alquiler 400 €, renta 3.149 € al mes; esfuerzo 12,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="99.91407" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28122" class="marca" role="img" aria-label="Ribatejada: alquiler 426 €, renta 3.304 € al mes; esfuerzo 12,9 %"><title>Ribatejada: alquiler 426 €, renta 3.304 € al mes; esfuerzo 12,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="109.03016" y="183.098563" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28123" class="marca" role="img" aria-label="Rivas-Vaciamadrid: alquiler 867 €, renta 4.825 € al mes; esfuerzo 18,0 %"><title>Rivas-Vaciamadrid: alquiler 867 €, renta 4.825 € al mes; esfuerzo 18,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="198.480567" y="101.041895" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28125" class="marca" role="img" aria-label="Robledo de Chavela: alquiler 450 €, renta 3.273 € al mes; esfuerzo 13,7 %"><title>Robledo de Chavela: alquiler 450 €, renta 3.273 € al mes; esfuerzo 13,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="107.182437" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28127" class="marca" role="img" aria-label="Las Rozas de Madrid: alquiler 996 €, renta 6.636 € al mes; esfuerzo 15,0 %"><title>Las Rozas de Madrid: alquiler 996 €, renta 6.636 € al mes; esfuerzo 15,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="304.991785" y="77.074958" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28129" class="marca" role="img" aria-label="San Agustín del Guadalix: alquiler 701 €, renta 5.384 € al mes; esfuerzo 13,0 %"><title>San Agustín del Guadalix: alquiler 701 €, renta 5.384 € al mes; esfuerzo 13,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="231.337699" y="131.894274" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28130" class="marca" role="img" aria-label="San Fernando de Henares: alquiler 700 €, renta 3.558 € al mes; esfuerzo 19,7 %"><title>San Fernando de Henares: alquiler 700 €, renta 3.558 € al mes; esfuerzo 19,7 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="123.944279" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28131" class="marca" role="img" aria-label="San Lorenzo de El Escorial: alquiler 660 €, renta 3.910 € al mes; esfuerzo 16,9 %"><title>San Lorenzo de El Escorial: alquiler 660 €, renta 3.910 € al mes; esfuerzo 16,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="144.617219" y="139.52482" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28132" class="marca" role="img" aria-label="San Martín de la Vega: alquiler 600 €, renta 3.422 € al mes; esfuerzo 17,5 %"><title>San Martín de la Vega: alquiler 600 €, renta 3.422 € al mes; esfuerzo 17,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="115.92114" y="150.679291" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28133" class="marca" role="img" aria-label="San Martín de Valdeiglesias: alquiler 402 €, renta 2.976 € al mes; esfuerzo 13,5 %"><title>San Martín de Valdeiglesias: alquiler 402 €, renta 2.976 € al mes; esfuerzo 13,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="89.70503" y="187.396091" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28134" class="marca" role="img" aria-label="San Sebastián de los Reyes: alquiler 825 €, renta 4.681 € al mes; esfuerzo 17,6 %"><title>San Sebastián de los Reyes: alquiler 825 €, renta 4.681 € al mes; esfuerzo 17,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="189.982018" y="108.850024" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28135" class="marca" role="img" aria-label="Santa María de la Alameda: alquiler 300 €, renta 2.596 € al mes; esfuerzo 11,6 %"><title>Santa María de la Alameda: alquiler 300 €, renta 2.596 € al mes; esfuerzo 11,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="67.385313" y="206.451645" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28136" class="marca" role="img" aria-label="Santorcaz: alquiler 508 €, renta 3.187 € al mes; esfuerzo 15,9 %"><title>Santorcaz: alquiler 508 €, renta 3.187 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="102.148983" y="167.850568" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28137" class="marca" role="img" aria-label="Los Santos de la Humosa: alquiler 529 €, renta 3.543 € al mes; esfuerzo 14,9 %"><title>Los Santos de la Humosa: alquiler 529 €, renta 3.543 € al mes; esfuerzo 14,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="123.057176" y="163.925225" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28140" class="marca" role="img" aria-label="Serranillos del Valle: alquiler 650 €, renta 4.314 € al mes; esfuerzo 15,1 %"><title>Serranillos del Valle: alquiler 650 €, renta 4.314 € al mes; esfuerzo 15,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="168.402371" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28141" class="marca" role="img" aria-label="Sevilla la Nueva: alquiler 652 €, renta 3.934 € al mes; esfuerzo 16,6 %"><title>Sevilla la Nueva: alquiler 652 €, renta 3.934 € al mes; esfuerzo 16,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="146.053248" y="141.001471" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28144" class="marca" role="img" aria-label="Soto del Real: alquiler 639 €, renta 4.892 € al mes; esfuerzo 13,1 %"><title>Soto del Real: alquiler 639 €, renta 4.892 € al mes; esfuerzo 13,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="202.391663" y="143.382407" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28145" class="marca" role="img" aria-label="Talamanca de Jarama: alquiler 568 €, renta 3.565 € al mes; esfuerzo 15,9 %"><title>Talamanca de Jarama: alquiler 568 €, renta 3.565 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="124.351072" y="156.659326" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28146" class="marca" role="img" aria-label="Tielmes: alquiler 464 €, renta 2.885 € al mes; esfuerzo 16,1 %"><title>Tielmes: alquiler 464 €, renta 2.885 € al mes; esfuerzo 16,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="84.367706" y="176.055712" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28148" class="marca" role="img" aria-label="Torrejón de Ardoz: alquiler 710 €, renta 3.668 € al mes; esfuerzo 19,4 %"><title>Torrejón de Ardoz: alquiler 710 €, renta 3.668 € al mes; esfuerzo 19,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="130.408861" y="130.229427" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28149" class="marca" role="img" aria-label="Torrejón de la Calzada: alquiler 640 €, renta 4.156 € al mes; esfuerzo 15,4 %"><title>Torrejón de la Calzada: alquiler 640 €, renta 4.156 € al mes; esfuerzo 15,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="159.144149" y="143.242977" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28150" class="marca" role="img" aria-label="Torrejón de Velasco: alquiler 582 €, renta 3.679 € al mes; esfuerzo 15,8 %"><title>Torrejón de Velasco: alquiler 582 €, renta 3.679 € al mes; esfuerzo 15,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="131.060711" y="154.033378" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28151" class="marca" role="img" aria-label="Torrelaguna: alquiler 450 €, renta 3.378 € al mes; esfuerzo 13,3 %"><title>Torrelaguna: alquiler 450 €, renta 3.378 € al mes; esfuerzo 13,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="113.382358" y="178.557101" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28152" class="marca" role="img" aria-label="Torrelodones: alquiler 945 €, renta 7.049 € al mes; esfuerzo 13,4 %"><title>Torrelodones: alquiler 945 €, renta 7.049 € al mes; esfuerzo 13,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="329.281753" y="86.541083" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28154" class="marca" role="img" aria-label="Torres de la Alameda: alquiler 540 €, renta 3.598 € al mes; esfuerzo 15,0 %"><title>Torres de la Alameda: alquiler 540 €, renta 3.598 € al mes; esfuerzo 15,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="126.311522" y="161.833761" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28156" class="marca" role="img" aria-label="Valdeavero: alquiler 525 €, renta 3.453 € al mes; esfuerzo 15,2 %"><title>Valdeavero: alquiler 525 €, renta 3.453 € al mes; esfuerzo 15,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="117.75416" y="164.622379" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28157" class="marca" role="img" aria-label="Valdelaguna: alquiler 410 €, renta 2.847 € al mes; esfuerzo 14,4 %"><title>Valdelaguna: alquiler 410 €, renta 2.847 € al mes; esfuerzo 14,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="82.132794" y="186.001782" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28159" class="marca" role="img" aria-label="Valdemaqueda: alquiler 300 €, renta 2.512 € al mes; esfuerzo 11,9 %"><title>Valdemaqueda: alquiler 300 €, renta 2.512 € al mes; esfuerzo 11,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="62.440079" y="206.451645" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28160" class="marca" role="img" aria-label="Valdemorillo: alquiler 575 €, renta 4.255 € al mes; esfuerzo 13,5 %"><title>Valdemorillo: alquiler 575 €, renta 4.255 € al mes; esfuerzo 13,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="164.912771" y="155.326987" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28161" class="marca" role="img" aria-label="Valdemoro: alquiler 680 €, renta 3.974 € al mes; esfuerzo 17,1 %"><title>Valdemoro: alquiler 680 €, renta 3.974 € al mes; esfuerzo 17,1 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="148.435194" y="135.806663" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28162" class="marca" role="img" aria-label="Valdeolmos-Alalpardo: alquiler 609 €, renta 4.689 € al mes; esfuerzo 13,0 %"><title>Valdeolmos-Alalpardo: alquiler 609 €, renta 4.689 € al mes; esfuerzo 13,0 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="190.437823" y="149.057071" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28164" class="marca" role="img" aria-label="Valdetorres de Jarama: alquiler 550 €, renta 3.798 € al mes; esfuerzo 14,5 %"><title>Valdetorres de Jarama: alquiler 550 €, renta 3.798 € al mes; esfuerzo 14,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="138.059515" y="159.933767" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28165" class="marca" role="img" aria-label="Valdilecha: alquiler 450 €, renta 2.892 € al mes; esfuerzo 15,6 %"><title>Valdilecha: alquiler 450 €, renta 2.892 € al mes; esfuerzo 15,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="84.789203" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28167" class="marca" role="img" aria-label="Velilla de San Antonio: alquiler 650 €, renta 3.949 € al mes; esfuerzo 16,5 %"><title>Velilla de San Antonio: alquiler 650 €, renta 3.949 € al mes; esfuerzo 16,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="146.945252" y="141.383898" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28168" class="marca" role="img" aria-label="El Vellón: alquiler 478 €, renta 3.018 € al mes; esfuerzo 15,8 %"><title>El Vellón: alquiler 478 €, renta 3.018 € al mes; esfuerzo 15,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="92.204603" y="173.32356" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28170" class="marca" role="img" aria-label="Villaconejos: alquiler 450 €, renta 2.833 € al mes; esfuerzo 15,9 %"><title>Villaconejos: alquiler 450 €, renta 2.833 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="81.304504" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28171" class="marca" role="img" aria-label="Villa del Prado: alquiler 462 €, renta 3.125 € al mes; esfuerzo 14,8 %"><title>Villa del Prado: alquiler 462 €, renta 3.125 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="98.47314" y="176.357812" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28172" class="marca" role="img" aria-label="Villalbilla: alquiler 700 €, renta 4.783 € al mes; esfuerzo 14,6 %"><title>Villalbilla: alquiler 700 €, renta 4.783 € al mes; esfuerzo 14,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="195.976093" y="132.088506" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28173" class="marca" role="img" aria-label="Villamanrique de Tajo: alquiler 445 €, renta 2.646 € al mes; esfuerzo 16,8 %"><title>Villamanrique de Tajo: alquiler 445 €, renta 2.646 € al mes; esfuerzo 16,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="70.301482" y="179.5248" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28174" class="marca" role="img" aria-label="Villamanta: alquiler 465 €, renta 3.269 € al mes; esfuerzo 14,2 %"><title>Villamanta: alquiler 465 €, renta 3.269 € al mes; esfuerzo 14,2 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="106.927578" y="175.77685" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28175" class="marca" role="img" aria-label="Villamantilla: alquiler 500 €, renta 3.717 € al mes; esfuerzo 13,5 %"><title>Villamantilla: alquiler 500 €, renta 3.717 € al mes; esfuerzo 13,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="133.28092" y="169.270075" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28176" class="marca" role="img" aria-label="Villanueva de la Cañada: alquiler 805 €, renta 6.381 € al mes; esfuerzo 12,6 %"><title>Villanueva de la Cañada: alquiler 805 €, renta 6.381 € al mes; esfuerzo 12,6 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="289.960039" y="112.624362" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28177" class="marca" role="img" aria-label="Villanueva del Pardillo: alquiler 879 €, renta 5.210 € al mes; esfuerzo 16,9 %"><title>Villanueva del Pardillo: alquiler 879 €, renta 5.210 € al mes; esfuerzo 16,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="221.13356" y="98.780016" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28178" class="marca" role="img" aria-label="Villanueva de Perales: alquiler 526 €, renta 3.550 € al mes; esfuerzo 14,8 %"><title>Villanueva de Perales: alquiler 526 €, renta 3.550 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="123.46887" y="164.345731" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28180" class="marca" role="img" aria-label="Villarejo de Salvanés: alquiler 450 €, renta 3.099 € al mes; esfuerzo 14,5 %"><title>Villarejo de Salvanés: alquiler 450 €, renta 3.099 € al mes; esfuerzo 14,5 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="96.963594" y="178.565468" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28181" class="marca" role="img" aria-label="Villaviciosa de Odón: alquiler 901 €, renta 6.106 € al mes; esfuerzo 14,8 %"><title>Villaviciosa de Odón: alquiler 901 €, renta 6.106 € al mes; esfuerzo 14,8 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="273.791232" y="94.657209" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28183" class="marca" role="img" aria-label="Zarzalejo: alquiler 400 €, renta 2.977 € al mes; esfuerzo 13,4 %"><title>Zarzalejo: alquiler 400 €, renta 2.977 € al mes; esfuerzo 13,4 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="89.768744" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28901" class="marca" role="img" aria-label="Lozoyuela-Navas-Sieteiglesias: alquiler 400 €, renta 2.997 € al mes; esfuerzo 13,3 %"><title>Lozoyuela-Navas-Sieteiglesias: alquiler 400 €, renta 2.997 € al mes; esfuerzo 13,3 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="90.930311" y="187.86086" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="r28903" class="marca" role="img" aria-label="Tres Cantos: alquiler 950 €, renta 5.962 € al mes; esfuerzo 15,9 %"><title>Tres Cantos: alquiler 950 €, renta 5.962 € al mes; esfuerzo 15,9 %</title>
+    <g clip-path="url(#p33ebd9febe)">
+     <use xlink:href="#m3953ea1263" x="265.351497" y="85.611543" fill="#a9adb6" fill-opacity="0.6" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.4"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 46.103164 262.224 
+L 447.863164 262.224 
+" fill="none" stroke="#d9dbe0" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="text_17">
+    <text font-size="7.2px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="444.334355" y="16.750093" transform="rotate(-0 444.334355 16.750093)">15 % de la renta</text>
+   </g>
+   <g id="text_18">
+    <text font-size="7.2px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="314.551838" y="14.529953" transform="rotate(-0 314.551838 14.529953)">20 % de la renta</text>
+   </g>
+   <g id="text_19">
+    <text font-size="7.2px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="233.87289" y="14.529953" transform="rotate(-0 233.87289 14.529953)">25 % de la renta</text>
+   </g>
+   <g id="text_20">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#1d1d1f" x="140.881367" y="81.611543" transform="rotate(-0 140.881367 81.611543)">Centro</text>
+   </g>
+   <g id="text_21">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#1d1d1f" x="79.337958" y="141.088506" transform="rotate(-0 79.337958 141.088506)">Puente de Vallecas</text>
+   </g>
+   <g id="text_22">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#1d1d1f" x="322.360171" y="46.942887" transform="rotate(-0 322.360171 46.942887)">Chamartín</text>
+   </g>
+   <g id="text_23">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#1d1d1f" x="266.727517" y="41.810041" transform="rotate(-0 266.727517 41.810041)">Salamanca</text>
+   </g>
+   <g id="text_24">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#1d1d1f" x="104.635048" y="121.939076" transform="rotate(-0 104.635048 121.939076)">Usera</text>
+   </g>
+   <g id="text_25">
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#1d1d1f" x="304.086272" y="75.020758" transform="rotate(-0 304.086272 75.020758)">Moncloa-Aravaca</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p33ebd9febe">
+   <rect x="46.103164" y="7.2" width="401.76" height="255.024"/>
+  </clipPath>
+ </defs>
+</svg>

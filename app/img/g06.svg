@@ -1,0 +1,1962 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg stroke-linejoin="round" xmlns:xlink="http://www.w3.org/1999/xlink" width="452.484414pt" height="254.616664pt" viewBox="0 0 452.484414 254.616664" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <defs>
+  
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 254.616664 
+L 452.484414 254.616664 
+L 452.484414 0 
+L 0 0 
+L 0 254.616664 
+z
+" fill="none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 43.524414 223.416 
+L 445.284414 223.416 
+L 445.284414 7.2 
+L 43.524414 7.2 
+L 43.524414 223.416 
+z
+" fill="none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="106.097146" y="232.994125" transform="rotate(-0 106.097146 232.994125)">12 %</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="177.169519" y="232.994125" transform="rotate(-0 177.169519 232.994125)">14 %</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="248.241892" y="232.994125" transform="rotate(-0 248.241892 232.994125)">16 %</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="319.314266" y="232.994125" transform="rotate(-0 319.314266 232.994125)">18 %</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="390.386639" y="232.994125" transform="rotate(-0 390.386639 232.994125)">20 %</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="244.404414" y="245.374672" transform="rotate(-0 244.404414 245.374672)">Esfuerzo del alquiler en 2023 (% de la renta neta media del hogar)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_6">
+      <path d="M 43.524414 212.468354 
+L 445.284414 212.468354 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_7"/>
+     <g id="text_7">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="215.507417" transform="rotate(-0 40.024414 215.507417)">0 %</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <path d="M 43.524414 185.099241 
+L 445.284414 185.099241 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_9"/>
+     <g id="text_8">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="188.138303" transform="rotate(-0 40.024414 188.138303)">10 %</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_10">
+      <path d="M 43.524414 157.730127 
+L 445.284414 157.730127 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_11"/>
+     <g id="text_9">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="160.769189" transform="rotate(-0 40.024414 160.769189)">20 %</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_12">
+      <path d="M 43.524414 130.361013 
+L 445.284414 130.361013 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_10">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="133.400075" transform="rotate(-0 40.024414 133.400075)">30 %</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_14">
+      <path d="M 43.524414 102.991899 
+L 445.284414 102.991899 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_15"/>
+     <g id="text_11">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="106.030961" transform="rotate(-0 40.024414 106.030961)">40 %</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_16">
+      <path d="M 43.524414 75.622785 
+L 445.284414 75.622785 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_17"/>
+     <g id="text_12">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="78.661847" transform="rotate(-0 40.024414 78.661847)">50 %</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_18">
+      <path d="M 43.524414 48.253671 
+L 445.284414 48.253671 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_19"/>
+     <g id="text_13">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="51.292733" transform="rotate(-0 40.024414 51.292733)">60 %</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_20">
+      <path d="M 43.524414 20.884557 
+L 445.284414 20.884557 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
+     </g>
+     <g id="line2d_21"/>
+     <g id="text_14">
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="40.024414" y="23.923619" transform="rotate(-0 40.024414 23.923619)">70 %</text>
+     </g>
+    </g>
+    <g id="text_15">
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="13.658672" y="115.308" transform="rotate(-90 13.658672 115.308)">Aceptadas sobre solicitudes</text>
+    </g>
+   </g>
+   <g id="line2d_22">
+    <path d="M 43.524414 147.545691 
+L 445.284414 147.545691 
+" clip-path="url(#p0903daba9b)" fill="none" stroke="#0b4f9c" stroke-width="1.2" stroke-linecap="round"/>
+   </g>
+   <g id="b28079" class="marca" role="img" aria-label="Madrid: esfuerzo 19,8 %; 7324 aceptadas de 30961 solicitudes (23,7 %)"><title>Madrid: esfuerzo 19,8 %; 7324 aceptadas de 30961 solicitudes (23,7 %)</title>
+    <defs>
+     <path id="m097fd69258" d="M 0 8.395691 
+C 2.226563 8.395691 4.362232 7.511068 5.93665 5.93665 
+C 7.511068 4.362232 8.395691 2.226563 8.395691 0 
+C 8.395691 -2.226563 7.511068 -4.362232 5.93665 -5.93665 
+C 4.362232 -7.511068 2.226563 -8.395691 0 -8.395691 
+C -2.226563 -8.395691 -4.362232 -7.511068 -5.93665 -5.93665 
+C -7.511068 -4.362232 -8.395691 -2.226563 -8.395691 0 
+C -8.395691 2.226563 -7.511068 4.362232 -5.93665 5.93665 
+C -4.362232 7.511068 -2.226563 8.395691 0 8.395691 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m097fd69258" x="384.463466" y="147.725164" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28005" class="marca" role="img" aria-label="Alcalá de Henares: esfuerzo 18,7 %; 305 aceptadas de 1386 solicitudes (22,0 %)"><title>Alcalá de Henares: esfuerzo 18,7 %; 305 aceptadas de 1386 solicitudes (22,0 %)</title>
+    <defs>
+     <path id="mffa2a3c935" d="M 0 4.455857 
+C 1.181707 4.455857 2.315174 3.98636 3.150767 3.150767 
+C 3.98636 2.315174 4.455857 1.181707 4.455857 0 
+C 4.455857 -1.181707 3.98636 -2.315174 3.150767 -3.150767 
+C 2.315174 -3.98636 1.181707 -4.455857 0 -4.455857 
+C -1.181707 -4.455857 -2.315174 -3.98636 -3.150767 -3.150767 
+C -3.98636 -2.315174 -4.455857 -1.181707 -4.455857 0 
+C -4.455857 1.181707 -3.98636 2.315174 -3.150767 3.150767 
+C -2.315174 3.98636 -1.181707 4.455857 0 4.455857 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mffa2a3c935" x="342.836427" y="152.240506" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28092" class="marca" role="img" aria-label="Móstoles: esfuerzo 21,0 %; 367 aceptadas de 1269 solicitudes (28,9 %)"><title>Móstoles: esfuerzo 21,0 %; 367 aceptadas de 1269 solicitudes (28,9 %)</title>
+    <defs>
+     <path id="m7b2d8297e0" d="M 0 4.382677 
+C 1.162299 4.382677 2.277151 3.92089 3.09902 3.09902 
+C 3.92089 2.277151 4.382677 1.162299 4.382677 0 
+C 4.382677 -1.162299 3.92089 -2.277151 3.09902 -3.09902 
+C 2.277151 -3.92089 1.162299 -4.382677 0 -4.382677 
+C -1.162299 -4.382677 -2.277151 -3.92089 -3.09902 -3.09902 
+C -3.92089 -2.277151 -4.382677 -1.162299 -4.382677 0 
+C -4.382677 1.162299 -3.92089 2.277151 -3.09902 3.09902 
+C -2.277151 3.92089 -1.162299 4.382677 0 4.382677 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7b2d8297e0" x="427.022596" y="133.315755" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28065" class="marca" role="img" aria-label="Getafe: esfuerzo 19,3 %; 282 aceptadas de 1209 solicitudes (23,3 %)"><title>Getafe: esfuerzo 19,3 %; 282 aceptadas de 1209 solicitudes (23,3 %)</title>
+    <defs>
+     <path id="mc26ff874fe" d="M 0 4.343167 
+C 1.151821 4.343167 2.256622 3.885543 3.071083 3.071083 
+C 3.885543 2.256622 4.343167 1.151821 4.343167 0 
+C 4.343167 -1.151821 3.885543 -2.256622 3.071083 -3.071083 
+C 2.256622 -3.885543 1.151821 -4.343167 0 -4.343167 
+C -1.151821 -4.343167 -2.256622 -3.885543 -3.071083 -3.071083 
+C -3.885543 -2.256622 -4.343167 -1.151821 -4.343167 0 
+C -4.343167 1.151821 -3.885543 2.256622 -3.071083 3.071083 
+C -2.256622 3.885543 -1.151821 4.343167 0 4.343167 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc26ff874fe" x="364.163055" y="148.629726" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28074" class="marca" role="img" aria-label="Leganés: esfuerzo 20,2 %; 234 aceptadas de 1143 solicitudes (20,5 %)"><title>Leganés: esfuerzo 20,2 %; 234 aceptadas de 1143 solicitudes (20,5 %)</title>
+    <defs>
+     <path id="mfc3c12f067" d="M 0 4.297969 
+C 1.139835 4.297969 2.233138 3.845108 3.039123 3.039123 
+C 3.845108 2.233138 4.297969 1.139835 4.297969 0 
+C 4.297969 -1.139835 3.845108 -2.233138 3.039123 -3.039123 
+C 2.233138 -3.845108 1.139835 -4.297969 0 -4.297969 
+C -1.139835 -4.297969 -2.233138 -3.845108 -3.039123 -3.039123 
+C -3.845108 -2.233138 -4.297969 -1.139835 -4.297969 0 
+C -4.297969 1.139835 -3.845108 2.233138 -3.039123 3.039123 
+C -2.233138 3.845108 -1.139835 4.297969 0 4.297969 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mfc3c12f067" x="396.637184" y="156.437098" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28007" class="marca" role="img" aria-label="Alcorcón: esfuerzo 20,2 %; 265 aceptadas de 1006 solicitudes (26,3 %)"><title>Alcorcón: esfuerzo 20,2 %; 265 aceptadas de 1006 solicitudes (26,3 %)</title>
+    <defs>
+     <path id="mfe37da186b" d="M 0 4.197506 
+C 1.113192 4.197506 2.18094 3.75523 2.968085 2.968085 
+C 3.75523 2.18094 4.197506 1.113192 4.197506 0 
+C 4.197506 -1.113192 3.75523 -2.18094 2.968085 -2.968085 
+C 2.18094 -3.75523 1.113192 -4.197506 0 -4.197506 
+C -1.113192 -4.197506 -2.18094 -3.75523 -2.968085 -2.968085 
+C -3.75523 -2.18094 -4.197506 -1.113192 -4.197506 0 
+C -4.197506 1.113192 -3.75523 2.18094 -2.968085 2.968085 
+C -2.18094 3.75523 -1.113192 4.197506 0 4.197506 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mfe37da186b" x="396.634534" y="140.372776" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28058" class="marca" role="img" aria-label="Fuenlabrada: esfuerzo 20,4 %; 239 aceptadas de 898 solicitudes (26,6 %)"><title>Fuenlabrada: esfuerzo 20,4 %; 239 aceptadas de 898 solicitudes (26,6 %)</title>
+    <defs>
+     <path id="mc8091a4ba5" d="M 0 4.110799 
+C 1.090197 4.110799 2.135888 3.677659 2.906774 2.906774 
+C 3.677659 2.135888 4.110799 1.090197 4.110799 0 
+C 4.110799 -1.090197 3.677659 -2.135888 2.906774 -2.906774 
+C 2.135888 -3.677659 1.090197 -4.110799 0 -4.110799 
+C -1.090197 -4.110799 -2.135888 -3.677659 -2.906774 -2.906774 
+C -3.677659 -2.135888 -4.110799 -1.090197 -4.110799 0 
+C -4.110799 1.090197 -3.677659 2.135888 -2.906774 2.906774 
+C -2.135888 3.677659 -1.090197 4.110799 0 4.110799 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc8091a4ba5" x="403.395264" y="139.626281" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28148" class="marca" role="img" aria-label="Torrejón de Ardoz: esfuerzo 19,9 %; 257 aceptadas de 895 solicitudes (28,7 %)"><title>Torrejón de Ardoz: esfuerzo 19,9 %; 257 aceptadas de 895 solicitudes (28,7 %)</title>
+    <defs>
+     <path id="md701a5fa49" d="M 0 4.108281 
+C 1.089529 4.108281 2.13458 3.675407 2.904994 2.904994 
+C 3.675407 2.13458 4.108281 1.089529 4.108281 0 
+C 4.108281 -1.089529 3.675407 -2.13458 2.904994 -2.904994 
+C 2.13458 -3.675407 1.089529 -4.108281 0 -4.108281 
+C -1.089529 -4.108281 -2.13458 -3.675407 -2.904994 -2.904994 
+C -3.675407 -2.13458 -4.108281 -1.089529 -4.108281 0 
+C -4.108281 1.089529 -3.675407 2.13458 -2.904994 2.904994 
+C -2.13458 3.675407 -1.089529 4.108281 0 4.108281 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md701a5fa49" x="385.634652" y="133.877714" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28006" class="marca" role="img" aria-label="Alcobendas: esfuerzo 14,7 %; 158 aceptadas de 605 solicitudes (26,1 %)"><title>Alcobendas: esfuerzo 14,7 %; 158 aceptadas de 605 solicitudes (26,1 %)</title>
+    <defs>
+     <path id="mb5184936e0" d="M 0 3.827731 
+C 1.015126 3.827731 1.988812 3.424417 2.706615 2.706615 
+C 3.424417 1.988812 3.827731 1.015126 3.827731 0 
+C 3.827731 -1.015126 3.424417 -1.988812 2.706615 -2.706615 
+C 1.988812 -3.424417 1.015126 -3.827731 0 -3.827731 
+C -1.015126 -3.827731 -1.988812 -3.424417 -2.706615 -2.706615 
+C -3.424417 -1.988812 -3.827731 -1.015126 -3.827731 0 
+C -3.827731 1.015126 -3.424417 1.988812 -2.706615 2.706615 
+C -1.988812 3.424417 -1.015126 3.827731 0 3.827731 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mb5184936e0" x="203.385088" y="140.991991" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28106" class="marca" role="img" aria-label="Parla: esfuerzo 20,7 %; 128 aceptadas de 604 solicitudes (21,2 %)"><title>Parla: esfuerzo 20,7 %; 128 aceptadas de 604 solicitudes (21,2 %)</title>
+    <defs>
+     <path id="m9660211d16" d="M 0 3.826603 
+C 1.014827 3.826603 1.988226 3.423408 2.705817 2.705817 
+C 3.423408 1.988226 3.826603 1.014827 3.826603 0 
+C 3.826603 -1.014827 3.423408 -1.988226 2.705817 -2.705817 
+C 1.988226 -3.423408 1.014827 -3.826603 0 -3.826603 
+C -1.014827 -3.826603 -1.988226 -3.423408 -2.705817 -2.705817 
+C -3.423408 -1.988226 -3.826603 -1.014827 -3.826603 0 
+C -3.826603 1.014827 -3.423408 1.988226 -2.705817 2.705817 
+C -1.988226 3.423408 -1.014827 3.826603 0 3.826603 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9660211d16" x="415.033176" y="154.467583" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28134" class="marca" role="img" aria-label="San Sebastián de los Reyes: esfuerzo 18,3 %; 131 aceptadas de 599 solicitudes (21,9 %)"><title>San Sebastián de los Reyes: esfuerzo 18,3 %; 131 aceptadas de 599 solicitudes (21,9 %)</title>
+    <defs>
+     <path id="m750dbaa1f3" d="M 0 3.820943 
+C 1.013326 3.820943 1.985285 3.418344 2.701814 2.701814 
+C 3.418344 1.985285 3.820943 1.013326 3.820943 0 
+C 3.820943 -1.013326 3.418344 -1.985285 2.701814 -2.701814 
+C 1.985285 -3.418344 1.013326 -3.820943 0 -3.820943 
+C -1.013326 -3.820943 -1.985285 -3.418344 -2.701814 -2.701814 
+C -3.418344 -1.985285 -3.820943 -1.013326 -3.820943 0 
+C -3.820943 1.013326 -3.418344 1.985285 -2.701814 2.701814 
+C -1.985285 3.418344 -1.013326 3.820943 0 3.820943 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m750dbaa1f3" x="329.908745" y="152.612696" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28047" class="marca" role="img" aria-label="Collado Villalba: esfuerzo 18,8 %; 126 aceptadas de 545 solicitudes (23,1 %)"><title>Collado Villalba: esfuerzo 18,8 %; 126 aceptadas de 545 solicitudes (23,1 %)</title>
+    <defs>
+     <path id="mafe46f9567" d="M 0 3.75743 
+C 0.996482 3.75743 1.952285 3.361523 2.656904 2.656904 
+C 3.361523 1.952285 3.75743 0.996482 3.75743 0 
+C 3.75743 -0.996482 3.361523 -1.952285 2.656904 -2.656904 
+C 1.952285 -3.361523 0.996482 -3.75743 0 -3.75743 
+C -0.996482 -3.75743 -1.952285 -3.361523 -2.656904 -2.656904 
+C -3.361523 -1.952285 -3.75743 -0.996482 -3.75743 0 
+C -3.75743 0.996482 -3.361523 1.952285 -2.656904 2.656904 
+C -1.952285 3.361523 -0.996482 3.75743 0 3.75743 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mafe46f9567" x="348.975092" y="149.192972" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28113" class="marca" role="img" aria-label="Pinto: esfuerzo 18,5 %; 136 aceptadas de 476 solicitudes (28,6 %)"><title>Pinto: esfuerzo 18,5 %; 136 aceptadas de 476 solicitudes (28,6 %)</title>
+    <defs>
+     <path id="mc5fe2908a9" d="M 0 3.669002 
+C 0.973031 3.669002 1.90634 3.282413 2.594376 2.594376 
+C 3.282413 1.90634 3.669002 0.973031 3.669002 0 
+C 3.669002 -0.973031 3.282413 -1.90634 2.594376 -2.594376 
+C 1.90634 -3.282413 0.973031 -3.669002 0 -3.669002 
+C -0.973031 -3.669002 -1.90634 -3.282413 -2.594376 -2.594376 
+C -3.282413 -1.90634 -3.669002 -0.973031 -3.669002 0 
+C -3.669002 0.973031 -3.282413 1.90634 -2.594376 2.594376 
+C -1.90634 3.282413 -0.973031 3.669002 0 3.669002 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc5fe2908a9" x="338.788429" y="134.270886" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28161" class="marca" role="img" aria-label="Valdemoro: esfuerzo 17,3 %; 107 aceptadas de 470 solicitudes (22,8 %)"><title>Valdemoro: esfuerzo 17,3 %; 107 aceptadas de 470 solicitudes (22,8 %)</title>
+    <defs>
+     <path id="macb483d005" d="M 0 3.660868 
+C 0.970873 3.660868 1.902113 3.275136 2.588624 2.588624 
+C 3.275136 1.902113 3.660868 0.970873 3.660868 0 
+C 3.660868 -0.970873 3.275136 -1.902113 2.588624 -2.588624 
+C 1.902113 -3.275136 0.970873 -3.660868 0 -3.660868 
+C -0.970873 -3.660868 -1.902113 -3.275136 -2.588624 -2.588624 
+C -3.275136 -1.902113 -3.660868 -0.970873 -3.660868 0 
+C -3.660868 0.970873 -3.275136 1.902113 -2.588624 2.588624 
+C -1.902113 3.275136 -0.970873 3.660868 0 3.660868 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#macb483d005" x="295.049114" y="150.159946" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28123" class="marca" role="img" aria-label="Rivas-Vaciamadrid: esfuerzo 18,6 %; 116 aceptadas de 443 solicitudes (26,2 %)"><title>Rivas-Vaciamadrid: esfuerzo 18,6 %; 116 aceptadas de 443 solicitudes (26,2 %)</title>
+    <defs>
+     <path id="m11d9e60dc7" d="M 0 3.623269 
+C 0.960902 3.623269 1.882578 3.241499 2.562038 2.562038 
+C 3.241499 1.882578 3.623269 0.960902 3.623269 0 
+C 3.623269 -0.960902 3.241499 -1.882578 2.562038 -2.562038 
+C 1.882578 -3.241499 0.960902 -3.623269 0 -3.623269 
+C -0.960902 -3.623269 -1.882578 -3.241499 -2.562038 -2.562038 
+C -3.241499 -1.882578 -3.623269 -0.960902 -3.623269 0 
+C -3.623269 0.960902 -3.241499 1.882578 -2.562038 2.562038 
+C -1.882578 3.241499 -0.960902 3.623269 0 3.623269 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m11d9e60dc7" x="339.282391" y="140.802052" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28049" class="marca" role="img" aria-label="Coslada: esfuerzo 20,1 %; 88 aceptadas de 376 solicitudes (23,4 %)"><title>Coslada: esfuerzo 20,1 %; 88 aceptadas de 376 solicitudes (23,4 %)</title>
+    <defs>
+     <path id="mb47065253f" d="M 0 3.521919 
+C 0.934024 3.521919 1.829918 3.150828 2.490373 2.490373 
+C 3.150828 1.829918 3.521919 0.934024 3.521919 0 
+C 3.521919 -0.934024 3.150828 -1.829918 2.490373 -2.490373 
+C 1.829918 -3.150828 0.934024 -3.521919 0 -3.521919 
+C -0.934024 -3.521919 -1.829918 -3.150828 -2.490373 -2.490373 
+C -3.150828 -1.829918 -3.521919 -0.934024 -3.521919 0 
+C -3.521919 0.934024 -3.150828 1.829918 -2.490373 2.490373 
+C -1.829918 3.150828 -0.934024 3.521919 0 3.521919 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mb47065253f" x="393.172725" y="148.412981" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28013" class="marca" role="img" aria-label="Aranjuez: esfuerzo 15,6 %; 94 aceptadas de 363 solicitudes (25,9 %)"><title>Aranjuez: esfuerzo 15,6 %; 94 aceptadas de 363 solicitudes (25,9 %)</title>
+    <defs>
+     <path id="ma3f8fb0dc8" d="M 0 3.500708 
+C 0.928399 3.500708 1.818897 3.131851 2.475374 2.475374 
+C 3.131851 1.818897 3.500708 0.928399 3.500708 0 
+C 3.500708 -0.928399 3.131851 -1.818897 2.475374 -2.475374 
+C 1.818897 -3.131851 0.928399 -3.500708 0 -3.500708 
+C -0.928399 -3.500708 -1.818897 -3.131851 -2.475374 -2.475374 
+C -3.131851 -1.818897 -3.500708 -0.928399 -3.500708 0 
+C -3.500708 0.928399 -3.131851 1.818897 -2.475374 2.475374 
+C -1.818897 3.131851 -0.928399 3.500708 0 3.500708 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma3f8fb0dc8" x="233.090281" y="141.595167" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28127" class="marca" role="img" aria-label="Las Rozas de Madrid: esfuerzo 15,3 %; 76 aceptadas de 324 solicitudes (23,5 %)"><title>Las Rozas de Madrid: esfuerzo 15,3 %; 76 aceptadas de 324 solicitudes (23,5 %)</title>
+    <defs>
+     <path id="m7a8dc49c4d" d="M 0 3.433452 
+C 0.910562 3.433452 1.783953 3.071682 2.427817 2.427817 
+C 3.071682 1.783953 3.433452 0.910562 3.433452 0 
+C 3.433452 -0.910562 3.071682 -1.783953 2.427817 -2.427817 
+C 1.783953 -3.071682 0.910562 -3.433452 0 -3.433452 
+C -0.910562 -3.433452 -1.783953 -3.071682 -2.427817 -2.427817 
+C -3.071682 -1.783953 -3.433452 -0.910562 -3.433452 0 
+C -3.433452 0.910562 -3.071682 1.783953 -2.427817 2.427817 
+C -1.783953 3.071682 -0.910562 3.433452 0 3.433452 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7a8dc49c4d" x="224.381315" y="148.269198" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28014" class="marca" role="img" aria-label="Arganda del Rey: esfuerzo 17,8 %; 67 aceptadas de 309 solicitudes (21,7 %)"><title>Arganda del Rey: esfuerzo 17,8 %; 67 aceptadas de 309 solicitudes (21,7 %)</title>
+    <defs>
+     <path id="me280ed011d" d="M 0 3.405963 
+C 0.903272 3.405963 1.76967 3.047089 2.408379 2.408379 
+C 3.047089 1.76967 3.405963 0.903272 3.405963 0 
+C 3.405963 -0.903272 3.047089 -1.76967 2.408379 -2.408379 
+C 1.76967 -3.047089 0.903272 -3.405963 0 -3.405963 
+C -0.903272 -3.405963 -1.76967 -3.047089 -2.408379 -2.408379 
+C -3.047089 -1.76967 -3.405963 -0.903272 -3.405963 0 
+C -3.405963 0.903272 -3.047089 1.76967 -2.408379 2.408379 
+C -1.76967 3.047089 -0.903272 3.405963 0 3.405963 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me280ed011d" x="313.718723" y="153.124321" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28903" class="marca" role="img" aria-label="Tres Cantos: esfuerzo 16,0 %; 103 aceptadas de 269 solicitudes (38,3 %)"><title>Tres Cantos: esfuerzo 16,0 %; 103 aceptadas de 269 solicitudes (38,3 %)</title>
+    <defs>
+     <path id="mbcd90ec826" d="M 0 3.327413 
+C 0.88244 3.327413 1.728857 2.976816 2.352836 2.352836 
+C 2.976816 1.728857 3.327413 0.88244 3.327413 0 
+C 3.327413 -0.88244 2.976816 -1.728857 2.352836 -2.352836 
+C 1.728857 -2.976816 0.88244 -3.327413 0 -3.327413 
+C -0.88244 -3.327413 -1.728857 -2.976816 -2.352836 -2.352836 
+C -2.976816 -1.728857 -3.327413 -0.88244 -3.327413 0 
+C -3.327413 0.88244 -2.976816 1.728857 -2.352836 2.352836 
+C -1.728857 2.976816 -0.88244 3.327413 0 3.327413 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbcd90ec826" x="249.182436" y="107.672119" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28045" class="marca" role="img" aria-label="Colmenar Viejo: esfuerzo 15,5 %; 47 aceptadas de 233 solicitudes (20,2 %)"><title>Colmenar Viejo: esfuerzo 15,5 %; 47 aceptadas de 233 solicitudes (20,2 %)</title>
+    <defs>
+     <path id="m6a01ee5645" d="M 0 3.248828 
+C 0.861599 3.248828 1.688026 2.906511 2.297268 2.297268 
+C 2.906511 1.688026 3.248828 0.861599 3.248828 0 
+C 3.248828 -0.861599 2.906511 -1.688026 2.297268 -2.297268 
+C 1.688026 -2.906511 0.861599 -3.248828 0 -3.248828 
+C -0.861599 -3.248828 -1.688026 -2.906511 -2.297268 -2.297268 
+C -2.906511 -1.688026 -3.248828 -0.861599 -3.248828 0 
+C -3.248828 0.861599 -2.906511 1.688026 -2.297268 2.297268 
+C -1.688026 2.906511 -0.861599 3.248828 0 3.248828 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m6a01ee5645" x="231.467046" y="157.260271" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28130" class="marca" role="img" aria-label="San Fernando de Henares: esfuerzo 19,7 %; 33 aceptadas de 193 solicitudes (17,1 %)"><title>San Fernando de Henares: esfuerzo 19,7 %; 33 aceptadas de 193 solicitudes (17,1 %)</title>
+    <defs>
+     <path id="m313451e175" d="M 0 3.149991 
+C 0.835387 3.149991 1.636672 2.818088 2.22738 2.22738 
+C 2.818088 1.636672 3.149991 0.835387 3.149991 0 
+C 3.149991 -0.835387 2.818088 -1.636672 2.22738 -2.22738 
+C 1.636672 -2.818088 0.835387 -3.149991 0 -3.149991 
+C -0.835387 -3.149991 -1.636672 -2.818088 -2.22738 -2.22738 
+C -2.818088 -1.636672 -3.149991 -0.835387 -3.149991 0 
+C -3.149991 0.835387 -2.818088 1.636672 -2.22738 2.22738 
+C -1.636672 2.818088 -0.835387 3.149991 0 3.149991 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m313451e175" x="380.757569" y="165.671424" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28080" class="marca" role="img" aria-label="Majadahonda: esfuerzo 17,3 %; 40 aceptadas de 189 solicitudes (21,2 %)"><title>Majadahonda: esfuerzo 17,3 %; 40 aceptadas de 189 solicitudes (21,2 %)</title>
+    <defs>
+     <path id="m75637d2fdd" d="M 0 3.139286 
+C 0.832548 3.139286 1.63111 2.808511 2.21981 2.21981 
+C 2.808511 1.63111 3.139286 0.832548 3.139286 0 
+C 3.139286 -0.832548 2.808511 -1.63111 2.21981 -2.21981 
+C 1.63111 -2.808511 0.832548 -3.139286 0 -3.139286 
+C -0.832548 -3.139286 -1.63111 -2.808511 -2.21981 -2.21981 
+C -2.808511 -1.63111 -3.139286 -0.832548 -3.139286 0 
+C -3.139286 0.832548 -2.808511 1.63111 -2.21981 2.21981 
+C -1.63111 2.808511 -0.832548 3.139286 0 3.139286 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m75637d2fdd" x="292.925257" y="154.544304" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28115" class="marca" role="img" aria-label="Pozuelo de Alarcón: esfuerzo 15,0 %; 25 aceptadas de 166 solicitudes (15,1 %)"><title>Pozuelo de Alarcón: esfuerzo 15,0 %; 25 aceptadas de 166 solicitudes (15,1 %)</title>
+    <defs>
+     <path id="m25a0b52f2a" d="M 0 3.074193 
+C 0.815286 3.074193 1.597289 2.750277 2.173783 2.173783 
+C 2.750277 1.597289 3.074193 0.815286 3.074193 0 
+C 3.074193 -0.815286 2.750277 -1.597289 2.173783 -2.173783 
+C 1.597289 -2.750277 0.815286 -3.074193 0 -3.074193 
+C -0.815286 -3.074193 -1.597289 -2.750277 -2.173783 -2.173783 
+C -2.750277 -1.597289 -3.074193 -0.815286 -3.074193 0 
+C -3.074193 0.815286 -2.750277 1.597289 -2.173783 2.173783 
+C -1.597289 2.750277 -0.815286 3.074193 0 3.074193 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m25a0b52f2a" x="211.100322" y="171.249809" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28061" class="marca" role="img" aria-label="Galapagar: esfuerzo 14,5 %; 37 aceptadas de 157 solicitudes (23,6 %)"><title>Galapagar: esfuerzo 14,5 %; 37 aceptadas de 157 solicitudes (23,6 %)</title>
+    <defs>
+     <path id="m30d46b2222" d="M 0 3.046873 
+C 0.80804 3.046873 1.583094 2.725835 2.154464 2.154464 
+C 2.725835 1.583094 3.046873 0.80804 3.046873 0 
+C 3.046873 -0.80804 2.725835 -1.583094 2.154464 -2.154464 
+C 1.583094 -2.725835 0.80804 -3.046873 0 -3.046873 
+C -0.80804 -3.046873 -1.583094 -2.725835 -2.154464 -2.154464 
+C -2.725835 -1.583094 -3.046873 -0.80804 -3.046873 0 
+C -3.046873 0.80804 -2.725835 1.583094 -2.154464 2.154464 
+C -1.583094 2.725835 -0.80804 3.046873 0 3.046873 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m30d46b2222" x="196.511128" y="147.967895" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28040" class="marca" role="img" aria-label="Ciempozuelos: esfuerzo 17,1 %; 25 aceptadas de 138 solicitudes (18,1 %)"><title>Ciempozuelos: esfuerzo 17,1 %; 25 aceptadas de 138 solicitudes (18,1 %)</title>
+    <defs>
+     <path id="me477d89b5f" d="M 0 2.985092 
+C 0.791656 2.985092 1.550994 2.670564 2.110779 2.110779 
+C 2.670564 1.550994 2.985092 0.791656 2.985092 0 
+C 2.985092 -0.791656 2.670564 -1.550994 2.110779 -2.110779 
+C 1.550994 -2.670564 0.791656 -2.985092 0 -2.985092 
+C -0.791656 -2.985092 -1.550994 -2.670564 -2.110779 -2.110779 
+C -2.670564 -1.550994 -2.985092 -0.791656 -2.985092 0 
+C -2.985092 0.791656 -2.670564 1.550994 -2.110779 2.110779 
+C -1.550994 2.670564 -0.791656 2.985092 0 2.985092 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me477d89b5f" x="286.78962" y="162.886626" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28096" class="marca" role="img" aria-label="Navalcarnero: esfuerzo 17,0 %; 33 aceptadas de 134 solicitudes (24,6 %)"><title>Navalcarnero: esfuerzo 17,0 %; 33 aceptadas de 134 solicitudes (24,6 %)</title>
+    <defs>
+     <path id="m02b91bc6cd" d="M 0 2.97128 
+C 0.787993 2.97128 1.543818 2.658208 2.101013 2.101013 
+C 2.658208 1.543818 2.97128 0.787993 2.97128 0 
+C 2.97128 -0.787993 2.658208 -1.543818 2.101013 -2.101013 
+C 1.543818 -2.658208 0.787993 -2.97128 0 -2.97128 
+C -0.787993 -2.97128 -1.543818 -2.658208 -2.101013 -2.101013 
+C -2.658208 -1.543818 -2.97128 -0.787993 -2.97128 0 
+C -2.97128 0.787993 -2.658208 1.543818 -2.101013 2.101013 
+C -1.543818 2.658208 -0.787993 2.97128 0 2.97128 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m02b91bc6cd" x="285.376066" y="145.066805" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28015" class="marca" role="img" aria-label="Arroyomolinos: esfuerzo 17,5 %; 21 aceptadas de 119 solicitudes (17,6 %)"><title>Arroyomolinos: esfuerzo 17,5 %; 21 aceptadas de 119 solicitudes (17,6 %)</title>
+    <defs>
+     <path id="m17e63bb185" d="M 0 2.916559 
+C 0.77348 2.916559 1.515385 2.609252 2.062318 2.062318 
+C 2.609252 1.515385 2.916559 0.77348 2.916559 0 
+C 2.916559 -0.77348 2.609252 -1.515385 2.062318 -2.062318 
+C 1.515385 -2.609252 0.77348 -2.916559 0 -2.916559 
+C -0.77348 -2.916559 -1.515385 -2.609252 -2.062318 -2.062318 
+C -2.609252 -1.515385 -2.916559 -0.77348 -2.916559 0 
+C -2.916559 0.77348 -2.609252 1.515385 -2.062318 2.062318 
+C -1.515385 2.609252 -0.77348 2.916559 0 2.916559 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m17e63bb185" x="299.865276" y="164.169918" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28176" class="marca" role="img" aria-label="Villanueva de la Cañada: esfuerzo 12,7 %; 17 aceptadas de 97 solicitudes (17,5 %)"><title>Villanueva de la Cañada: esfuerzo 12,7 %; 17 aceptadas de 97 solicitudes (17,5 %)</title>
+    <defs>
+     <path id="m18221de83d" d="M 0 2.826059 
+C 0.74948 2.826059 1.468363 2.528288 1.998325 1.998325 
+C 2.528288 1.468363 2.826059 0.74948 2.826059 0 
+C 2.826059 -0.74948 2.528288 -1.468363 1.998325 -1.998325 
+C 1.468363 -2.528288 0.74948 -2.826059 0 -2.826059 
+C -0.74948 -2.826059 -1.468363 -2.528288 -1.998325 -1.998325 
+C -2.528288 -1.468363 -2.826059 -0.74948 -2.826059 0 
+C -2.826059 0.74948 -2.528288 1.468363 -1.998325 1.998325 
+C -1.468363 2.528288 -0.74948 2.826059 0 2.826059 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m18221de83d" x="131.61113" y="164.501866" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28152" class="marca" role="img" aria-label="Torrelodones: esfuerzo 13,4 %; 27 aceptadas de 96 solicitudes (28,1 %)"><title>Torrelodones: esfuerzo 13,4 %; 27 aceptadas de 96 solicitudes (28,1 %)</title>
+    <defs>
+     <path id="ma916bb99c3" d="M 0 2.821593 
+C 0.748295 2.821593 1.466043 2.524292 1.995168 1.995168 
+C 2.524292 1.466043 2.821593 0.748295 2.821593 0 
+C 2.821593 -0.748295 2.524292 -1.466043 1.995168 -1.995168 
+C 1.466043 -2.524292 0.748295 -2.821593 0 -2.821593 
+C -0.748295 -2.821593 -1.466043 -2.524292 -1.995168 -1.995168 
+C -2.524292 -1.466043 -2.821593 -0.748295 -2.821593 0 
+C -2.821593 0.748295 -2.524292 1.466043 -1.995168 1.995168 
+C -1.466043 2.524292 -0.748295 2.821593 0 2.821593 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma916bb99c3" x="155.045731" y="135.492722" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28073" class="marca" role="img" aria-label="Humanes de Madrid: esfuerzo 19,5 %; 21 aceptadas de 93 solicitudes (22,6 %)"><title>Humanes de Madrid: esfuerzo 19,5 %; 21 aceptadas de 93 solicitudes (22,6 %)</title>
+    <defs>
+     <path id="m161c7ae848" d="M 0 2.807983 
+C 0.744686 2.807983 1.458971 2.512116 1.985543 1.985543 
+C 2.512116 1.458971 2.807983 0.744686 2.807983 0 
+C 2.807983 -0.744686 2.512116 -1.458971 1.985543 -1.985543 
+C 1.458971 -2.512116 0.744686 -2.807983 0 -2.807983 
+C -0.744686 -2.807983 -1.458971 -2.512116 -1.985543 -1.985543 
+C -2.512116 -1.458971 -2.807983 -0.744686 -2.807983 0 
+C -2.807983 0.744686 -2.512116 1.458971 -1.985543 1.985543 
+C -1.458971 2.512116 -0.744686 2.807983 0 2.807983 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m161c7ae848" x="373.277479" y="150.667129" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28131" class="marca" role="img" aria-label="San Lorenzo de El Escorial: esfuerzo 16,9 %; 32 aceptadas de 92 solicitudes (34,8 %)"><title>San Lorenzo de El Escorial: esfuerzo 16,9 %; 32 aceptadas de 92 solicitudes (34,8 %)</title>
+    <defs>
+     <path id="m23b6cc6dc6" d="M 0 2.803373 
+C 0.743463 2.803373 1.456576 2.507992 1.982284 1.982284 
+C 2.507992 1.456576 2.803373 0.743463 2.803373 0 
+C 2.803373 -0.743463 2.507992 -1.456576 1.982284 -1.982284 
+C 1.456576 -2.507992 0.743463 -2.803373 0 -2.803373 
+C -0.743463 -2.803373 -1.456576 -2.507992 -1.982284 -1.982284 
+C -2.507992 -1.456576 -2.803373 -0.743463 -2.803373 0 
+C -2.803373 0.743463 -2.507992 1.456576 -1.982284 1.982284 
+C -1.456576 2.507992 -0.743463 2.803373 0 2.803373 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m23b6cc6dc6" x="281.081566" y="117.271436" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28172" class="marca" role="img" aria-label="Villalbilla: esfuerzo 14,5 %; 19 aceptadas de 91 solicitudes (20,9 %)"><title>Villalbilla: esfuerzo 14,5 %; 19 aceptadas de 91 solicitudes (20,9 %)</title>
+    <defs>
+     <path id="m85426f8af2" d="M 0 2.798725 
+C 0.742231 2.798725 1.454161 2.503834 1.978997 1.978997 
+C 2.503834 1.454161 2.798725 0.742231 2.798725 0 
+C 2.798725 -0.742231 2.503834 -1.454161 1.978997 -1.978997 
+C 1.454161 -2.503834 0.742231 -2.798725 0 -2.798725 
+C -0.742231 -2.798725 -1.454161 -2.503834 -1.978997 -1.978997 
+C -2.503834 -1.454161 -2.798725 -0.742231 -2.798725 0 
+C -2.798725 0.742231 -2.503834 1.454161 -1.978997 1.978997 
+C -1.454161 2.503834 -0.742231 2.798725 0 2.798725 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m85426f8af2" x="194.938603" y="155.324051" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28132" class="marca" role="img" aria-label="San Martín de la Vega: esfuerzo 17,9 %; 17 aceptadas de 90 solicitudes (18,9 %)"><title>San Martín de la Vega: esfuerzo 17,9 %; 17 aceptadas de 90 solicitudes (18,9 %)</title>
+    <defs>
+     <path id="m7e6ce43985" d="M 0 2.794039 
+C 0.740988 2.794039 1.451726 2.499641 1.975684 1.975684 
+C 2.499641 1.451726 2.794039 0.740988 2.794039 0 
+C 2.794039 -0.740988 2.499641 -1.451726 1.975684 -1.975684 
+C 1.451726 -2.499641 0.740988 -2.794039 0 -2.794039 
+C -0.740988 -2.794039 -1.451726 -2.499641 -1.975684 -1.975684 
+C -2.499641 -1.451726 -2.794039 -0.740988 -2.794039 0 
+C -2.794039 0.740988 -2.499641 1.451726 -1.975684 1.975684 
+C -1.451726 2.499641 -0.740988 2.794039 0 2.794039 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7e6ce43985" x="314.604428" y="160.771139" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28084" class="marca" role="img" aria-label="Mejorada del Campo: esfuerzo 18,8 %; 15 aceptadas de 87 solicitudes (17,2 %)"><title>Mejorada del Campo: esfuerzo 18,8 %; 15 aceptadas de 87 solicitudes (17,2 %)</title>
+    <defs>
+     <path id="m17289eee2f" d="M 0 2.779742 
+C 0.737196 2.779742 1.444298 2.486851 1.965574 1.965574 
+C 2.486851 1.444298 2.779742 0.737196 2.779742 0 
+C 2.779742 -0.737196 2.486851 -1.444298 1.965574 -1.965574 
+C 1.444298 -2.486851 0.737196 -2.779742 0 -2.779742 
+C -0.737196 -2.779742 -1.444298 -2.486851 -1.965574 -1.965574 
+C -2.486851 -1.444298 -2.779742 -0.737196 -2.779742 0 
+C -2.779742 0.737196 -2.486851 1.444298 -1.965574 1.965574 
+C -1.444298 2.486851 -0.737196 2.779742 0 2.779742 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m17289eee2f" x="349.121928" y="165.280227" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28083" class="marca" role="img" aria-label="Meco: esfuerzo 14,7 %; 23 aceptadas de 79 solicitudes (29,1 %)"><title>Meco: esfuerzo 14,7 %; 23 aceptadas de 79 solicitudes (29,1 %)</title>
+    <defs>
+     <path id="m57d2df321f" d="M 0 2.739719 
+C 0.726582 2.739719 1.423503 2.451045 1.937274 1.937274 
+C 2.451045 1.423503 2.739719 0.726582 2.739719 0 
+C 2.739719 -0.726582 2.451045 -1.423503 1.937274 -1.937274 
+C 1.423503 -2.451045 0.726582 -2.739719 0 -2.739719 
+C -0.726582 -2.739719 -1.423503 -2.451045 -1.937274 -1.937274 
+C -2.451045 -1.423503 -2.739719 -0.726582 -2.739719 0 
+C -2.739719 0.726582 -2.451045 1.423503 -1.937274 1.937274 
+C -1.423503 2.451045 -0.726582 2.739719 0 2.739719 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m57d2df321f" x="203.52021" y="132.786124" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28181" class="marca" role="img" aria-label="Villaviciosa de Odón: esfuerzo 15,2 %; 12 aceptadas de 73 solicitudes (16,4 %)"><title>Villaviciosa de Odón: esfuerzo 15,2 %; 12 aceptadas de 73 solicitudes (16,4 %)</title>
+    <defs>
+     <path id="m6b4cce394c" d="M 0 2.707657 
+C 0.718079 2.707657 1.406844 2.422361 1.914603 1.914603 
+C 2.422361 1.406844 2.707657 0.718079 2.707657 0 
+C 2.707657 -0.718079 2.422361 -1.406844 1.914603 -1.914603 
+C 1.406844 -2.422361 0.718079 -2.707657 0 -2.707657 
+C -0.718079 -2.707657 -1.406844 -2.422361 -1.914603 -1.914603 
+C -2.422361 -1.406844 -2.707657 -0.718079 -2.707657 0 
+C -2.707657 0.718079 -2.422361 1.406844 -1.914603 1.914603 
+C -1.406844 2.422361 -0.718079 2.707657 0 2.707657 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m6b4cce394c" x="220.329289" y="167.47803" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28177" class="marca" role="img" aria-label="Villanueva del Pardillo: esfuerzo 16,6 %; 13 aceptadas de 70 solicitudes (18,6 %)"><title>Villanueva del Pardillo: esfuerzo 16,6 %; 13 aceptadas de 70 solicitudes (18,6 %)</title>
+    <defs>
+     <path id="m9ba9b7838a" d="M 0 2.690879 
+C 0.71363 2.690879 1.398127 2.407351 1.902739 1.902739 
+C 2.407351 1.398127 2.690879 0.71363 2.690879 0 
+C 2.690879 -0.71363 2.407351 -1.398127 1.902739 -1.902739 
+C 1.398127 -2.407351 0.71363 -2.690879 0 -2.690879 
+C -0.71363 -2.690879 -1.398127 -2.407351 -1.902739 -1.902739 
+C -2.407351 -1.398127 -2.690879 -0.71363 -2.690879 0 
+C -2.690879 0.71363 -2.407351 1.398127 -1.902739 1.902739 
+C -1.398127 2.407351 -0.71363 2.690879 0 2.690879 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9ba9b7838a" x="268.098934" y="161.64" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28108" class="marca" role="img" aria-label="Pedrezuela: esfuerzo 14,0 %; 22 aceptadas de 62 solicitudes (35,5 %)"><title>Pedrezuela: esfuerzo 14,0 %; 22 aceptadas de 62 solicitudes (35,5 %)</title>
+    <defs>
+     <path id="mc9c28904d2" d="M 0 2.643336 
+C 0.701021 2.643336 1.373424 2.364818 1.869121 1.869121 
+C 2.364818 1.373424 2.643336 0.701021 2.643336 0 
+C 2.643336 -0.701021 2.364818 -1.373424 1.869121 -1.869121 
+C 1.373424 -2.364818 0.701021 -2.643336 0 -2.643336 
+C -0.701021 -2.643336 -1.373424 -2.364818 -1.869121 -1.869121 
+C -2.364818 -1.373424 -2.643336 -0.701021 -2.643336 0 
+C -2.643336 0.701021 -2.364818 1.373424 -1.869121 1.869121 
+C -1.373424 2.364818 -0.701021 2.643336 0 2.643336 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc9c28904d2" x="177.422138" y="115.352144" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28009" class="marca" role="img" aria-label="Algete: esfuerzo 13,3 %; 17 aceptadas de 61 solicitudes (27,9 %)"><title>Algete: esfuerzo 13,3 %; 17 aceptadas de 61 solicitudes (27,9 %)</title>
+    <defs>
+     <path id="m378ee37097" d="M 0 2.637075 
+C 0.699361 2.637075 1.370171 2.359216 1.864694 1.864694 
+C 2.359216 1.370171 2.637075 0.699361 2.637075 0 
+C 2.637075 -0.699361 2.359216 -1.370171 1.864694 -1.864694 
+C 1.370171 -2.359216 0.699361 -2.637075 0 -2.637075 
+C -0.699361 -2.637075 -1.370171 -2.359216 -1.864694 -1.864694 
+C -2.359216 -1.370171 -2.637075 -0.699361 -2.637075 0 
+C -2.637075 0.699361 -2.359216 1.370171 -1.864694 1.864694 
+C -1.370171 2.359216 -0.699361 2.637075 0 2.637075 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m378ee37097" x="150.670094" y="136.193775" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28054" class="marca" role="img" aria-label="El Escorial: esfuerzo 17,0 %; 15 aceptadas de 58 solicitudes (25,9 %)"><title>El Escorial: esfuerzo 17,0 %; 15 aceptadas de 58 solicitudes (25,9 %)</title>
+    <defs>
+     <path id="mc8d76e416f" d="M 0 2.617818 
+C 0.694253 2.617818 1.360166 2.341988 1.851077 1.851077 
+C 2.341988 1.360166 2.617818 0.694253 2.617818 0 
+C 2.617818 -0.694253 2.341988 -1.360166 1.851077 -1.851077 
+C 1.360166 -2.341988 0.694253 -2.617818 0 -2.617818 
+C -0.694253 -2.617818 -1.360166 -2.341988 -1.851077 -1.851077 
+C -2.341988 -1.360166 -2.617818 -0.694253 -2.617818 0 
+C -2.617818 0.694253 -2.341988 1.360166 -1.851077 1.851077 
+C -1.360166 2.341988 -0.694253 2.617818 0 2.617818 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc8d76e416f" x="283.159404" y="141.686163" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28004" class="marca" role="img" aria-label="El Álamo: esfuerzo 16,3 %; 11 aceptadas de 55 solicitudes (20,0 %)"><title>El Álamo: esfuerzo 16,3 %; 11 aceptadas de 55 solicitudes (20,0 %)</title>
+    <defs>
+     <path id="m152053be2a" d="M 0 2.597798 
+C 0.688944 2.597798 1.349764 2.324078 1.836921 1.836921 
+C 2.324078 1.349764 2.597798 0.688944 2.597798 0 
+C 2.597798 -0.688944 2.324078 -1.349764 1.836921 -1.836921 
+C 1.349764 -2.324078 0.688944 -2.597798 0 -2.597798 
+C -0.688944 -2.597798 -1.349764 -2.324078 -1.836921 -1.836921 
+C -2.324078 -1.349764 -2.597798 -0.688944 -2.597798 0 
+C -2.597798 0.688944 -2.324078 1.349764 -1.836921 1.836921 
+C -1.349764 2.324078 -0.688944 2.597798 0 2.597798 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m152053be2a" x="258.789722" y="157.730127" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28010" class="marca" role="img" aria-label="Alpedrete: esfuerzo 15,3 %; 14 aceptadas de 54 solicitudes (25,9 %)"><title>Alpedrete: esfuerzo 15,3 %; 14 aceptadas de 54 solicitudes (25,9 %)</title>
+    <defs>
+     <path id="m988256ff59" d="M 0 2.590943 
+C 0.687126 2.590943 1.346202 2.317945 1.832074 1.832074 
+C 2.317945 1.346202 2.590943 0.687126 2.590943 0 
+C 2.590943 -0.687126 2.317945 -1.346202 1.832074 -1.832074 
+C 1.346202 -2.317945 0.687126 -2.590943 0 -2.590943 
+C -0.687126 -2.590943 -1.346202 -2.317945 -1.832074 -1.832074 
+C -2.317945 -1.346202 -2.590943 -0.687126 -2.590943 0 
+C -2.590943 0.687126 -2.317945 1.346202 -1.832074 1.832074 
+C -1.346202 2.317945 -0.687126 2.590943 0 2.590943 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m988256ff59" x="222.87121" y="141.511392" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28104" class="marca" role="img" aria-label="Paracuellos de Jarama: esfuerzo 15,0 %; 10 aceptadas de 53 solicitudes (18,9 %)"><title>Paracuellos de Jarama: esfuerzo 15,0 %; 10 aceptadas de 53 solicitudes (18,9 %)</title>
+    <defs>
+     <path id="m7e806b086b" d="M 0 2.583992 
+C 0.685283 2.583992 1.34259 2.311727 1.827159 1.827159 
+C 2.311727 1.34259 2.583992 0.685283 2.583992 0 
+C 2.583992 -0.685283 2.311727 -1.34259 1.827159 -1.827159 
+C 1.34259 -2.311727 0.685283 -2.583992 0 -2.583992 
+C -0.685283 -2.583992 -1.34259 -2.311727 -1.827159 -1.827159 
+C -2.311727 -1.34259 -2.583992 -0.685283 -2.583992 0 
+C -2.583992 0.685283 -2.311727 1.34259 -1.827159 1.827159 
+C -1.34259 2.311727 -0.685283 2.583992 0 2.583992 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7e806b086b" x="213.431297" y="160.828517" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28086" class="marca" role="img" aria-label="El Molar: esfuerzo 17,6 %; 6 aceptadas de 52 solicitudes (11,5 %)"><title>El Molar: esfuerzo 17,6 %; 6 aceptadas de 52 solicitudes (11,5 %)</title>
+    <defs>
+     <path id="mfb979473d6" d="M 0 2.576942 
+C 0.683413 2.576942 1.338927 2.305419 1.822173 1.822173 
+C 2.305419 1.338927 2.576942 0.683413 2.576942 0 
+C 2.576942 -0.683413 2.305419 -1.338927 1.822173 -1.822173 
+C 1.338927 -2.305419 0.683413 -2.576942 0 -2.576942 
+C -0.683413 -2.576942 -1.338927 -2.305419 -1.822173 -1.822173 
+C -2.305419 -1.338927 -2.576942 -0.683413 -2.576942 0 
+C -2.576942 0.683413 -2.305419 1.338927 -1.822173 1.822173 
+C -1.338927 2.305419 -0.683413 2.576942 0 2.576942 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mfb979473d6" x="304.916383" y="180.888608" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28022" class="marca" role="img" aria-label="Boadilla del Monte: esfuerzo 16,1 %; 9 aceptadas de 52 solicitudes (17,3 %)"><title>Boadilla del Monte: esfuerzo 16,1 %; 9 aceptadas de 52 solicitudes (17,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mfb979473d6" x="251.705931" y="165.098734" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28044" class="marca" role="img" aria-label="Colmenarejo: esfuerzo 14,4 %; 11 aceptadas de 49 solicitudes (22,4 %)"><title>Colmenarejo: esfuerzo 14,4 %; 11 aceptadas de 49 solicitudes (22,4 %)</title>
+    <defs>
+     <path id="m5ca9be4207" d="M 0 2.555163 
+C 0.677637 2.555163 1.327611 2.285935 1.806773 1.806773 
+C 2.285935 1.327611 2.555163 0.677637 2.555163 0 
+C 2.555163 -0.677637 2.285935 -1.327611 1.806773 -1.806773 
+C 1.327611 -2.285935 0.677637 -2.555163 0 -2.555163 
+C -0.677637 -2.555163 -1.327611 -2.285935 -1.806773 -1.806773 
+C -2.285935 -1.327611 -2.555163 -0.677637 -2.555163 0 
+C -2.555163 0.677637 -2.285935 1.327611 -1.806773 1.806773 
+C -1.327611 2.285935 -0.677637 2.555163 0 2.555163 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m5ca9be4207" x="192.707649" y="151.027486" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28068" class="marca" role="img" aria-label="Guadarrama: esfuerzo 16,4 %; 10 aceptadas de 48 solicitudes (20,8 %)"><title>Guadarrama: esfuerzo 16,4 %; 10 aceptadas de 48 solicitudes (20,8 %)</title>
+    <defs>
+     <path id="mbef34c6375" d="M 0 2.547681 
+C 0.675653 2.547681 1.323724 2.279242 1.801483 1.801483 
+C 2.279242 1.323724 2.547681 0.675653 2.547681 0 
+C 2.547681 -0.675653 2.279242 -1.323724 1.801483 -1.801483 
+C 1.323724 -2.279242 0.675653 -2.547681 0 -2.547681 
+C -0.675653 -2.547681 -1.323724 -2.279242 -1.801483 -1.801483 
+C -2.279242 -1.323724 -2.547681 -0.675653 -2.547681 0 
+C -2.547681 0.675653 -2.279242 1.323724 -1.801483 1.801483 
+C -1.323724 2.279242 -0.675653 2.547681 0 2.547681 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbef34c6375" x="260.909228" y="155.449367" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28141" class="marca" role="img" aria-label="Sevilla la Nueva: esfuerzo 16,4 %; 8 aceptadas de 47 solicitudes (17,0 %)"><title>Sevilla la Nueva: esfuerzo 16,4 %; 8 aceptadas de 47 solicitudes (17,0 %)</title>
+    <defs>
+     <path id="m7d7a2dcc54" d="M 0 2.540082 
+C 0.673638 2.540082 1.319775 2.272443 1.796109 1.796109 
+C 2.272443 1.319775 2.540082 0.673638 2.540082 0 
+C 2.540082 -0.673638 2.272443 -1.319775 1.796109 -1.796109 
+C 1.319775 -2.272443 0.673638 -2.540082 0 -2.540082 
+C -0.673638 -2.540082 -1.319775 -2.272443 -1.796109 -1.796109 
+C -2.272443 -1.319775 -2.540082 -0.673638 -2.540082 0 
+C -2.540082 0.673638 -2.272443 1.319775 -1.796109 1.796109 
+C -1.319775 2.272443 -0.673638 2.540082 0 2.540082 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7d7a2dcc54" x="260.758891" y="165.882629" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28002" class="marca" role="img" aria-label="Ajalvir: esfuerzo 16,0 %; 13 aceptadas de 47 solicitudes (27,7 %)"><title>Ajalvir: esfuerzo 16,0 %; 13 aceptadas de 47 solicitudes (27,7 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7d7a2dcc54" x="248.721791" y="136.76655" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28091" class="marca" role="img" aria-label="Morata de Tajuña: esfuerzo 16,0 %; 11 aceptadas de 45 solicitudes (24,4 %)"><title>Morata de Tajuña: esfuerzo 16,0 %; 11 aceptadas de 45 solicitudes (24,4 %)</title>
+    <defs>
+     <path id="m16011736a1" d="M 0 2.524511 
+C 0.669508 2.524511 1.311685 2.258513 1.785099 1.785099 
+C 2.258513 1.311685 2.524511 0.669508 2.524511 0 
+C 2.524511 -0.669508 2.258513 -1.311685 1.785099 -1.785099 
+C 1.311685 -2.258513 0.669508 -2.524511 0 -2.524511 
+C -0.669508 -2.524511 -1.311685 -2.258513 -1.785099 -1.785099 
+C -2.258513 -1.311685 -2.524511 -0.669508 -2.524511 0 
+C -2.524511 0.669508 -2.258513 1.311685 -1.785099 1.785099 
+C -1.311685 2.258513 -0.669508 2.524511 0 2.524511 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m16011736a1" x="248.747156" y="145.566076" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28129" class="marca" role="img" aria-label="San Agustín del Guadalix: esfuerzo 13,4 %; 4 aceptadas de 44 solicitudes (9,1 %)"><title>San Agustín del Guadalix: esfuerzo 13,4 %; 4 aceptadas de 44 solicitudes (9,1 %)</title>
+    <defs>
+     <path id="mece69c429f" d="M 0 2.51653 
+C 0.667392 2.51653 1.307538 2.251373 1.779456 1.779456 
+C 2.251373 1.307538 2.51653 0.667392 2.51653 0 
+C 2.51653 -0.667392 2.251373 -1.307538 1.779456 -1.779456 
+C 1.307538 -2.251373 0.667392 -2.51653 0 -2.51653 
+C -0.667392 -2.51653 -1.307538 -2.251373 -1.779456 -1.779456 
+C -2.251373 -1.307538 -2.51653 -0.667392 -2.51653 0 
+C -2.51653 0.667392 -2.251373 1.307538 -1.779456 1.779456 
+C -1.307538 2.251373 -0.667392 2.51653 0 2.51653 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mece69c429f" x="157.586371" y="187.587342" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28082" class="marca" role="img" aria-label="Manzanares el Real: esfuerzo 15,9 %; 13 aceptadas de 42 solicitudes (31,0 %)"><title>Manzanares el Real: esfuerzo 15,9 %; 13 aceptadas de 42 solicitudes (31,0 %)</title>
+    <defs>
+     <path id="m3ef35cb75d" d="M 0 2.500151 
+C 0.663048 2.500151 1.299028 2.23672 1.767874 1.767874 
+C 2.23672 1.299028 2.500151 0.663048 2.500151 0 
+C 2.500151 -0.663048 2.23672 -1.299028 1.767874 -1.767874 
+C 1.299028 -2.23672 0.663048 -2.500151 0 -2.500151 
+C -0.663048 -2.500151 -1.299028 -2.23672 -1.767874 -1.767874 
+C -2.23672 -1.299028 -2.500151 -0.663048 -2.500151 0 
+C -2.500151 0.663048 -2.23672 1.299028 -1.767874 1.767874 
+C -1.299028 2.23672 -0.663048 2.500151 0 2.500151 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m3ef35cb75d" x="242.942678" y="127.75443" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28032" class="marca" role="img" aria-label="Camarma de Esteruelas: esfuerzo 15,3 %; 11 aceptadas de 41 solicitudes (26,8 %)"><title>Camarma de Esteruelas: esfuerzo 15,3 %; 11 aceptadas de 41 solicitudes (26,8 %)</title>
+    <defs>
+     <path id="m7da86b402d" d="M 0 2.491742 
+C 0.660818 2.491742 1.294659 2.229196 1.761927 1.761927 
+C 2.229196 1.294659 2.491742 0.660818 2.491742 0 
+C 2.491742 -0.660818 2.229196 -1.294659 1.761927 -1.761927 
+C 1.294659 -2.229196 0.660818 -2.491742 0 -2.491742 
+C -0.660818 -2.491742 -1.294659 -2.229196 -1.761927 -1.761927 
+C -2.229196 -1.294659 -2.491742 -0.660818 -2.491742 0 
+C -2.491742 0.660818 -2.229196 1.294659 -1.761927 1.761927 
+C -1.294659 2.229196 -0.660818 2.491742 0 2.491742 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m7da86b402d" x="224.951489" y="139.039024" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28167" class="marca" role="img" aria-label="Velilla de San Antonio: esfuerzo 16,4 %; 10 aceptadas de 40 solicitudes (25,0 %)"><title>Velilla de San Antonio: esfuerzo 16,4 %; 10 aceptadas de 40 solicitudes (25,0 %)</title>
+    <defs>
+     <path id="me2a42fe040" d="M 0 2.483177 
+C 0.658546 2.483177 1.290209 2.221534 1.755871 1.755871 
+C 2.221534 1.290209 2.483177 0.658546 2.483177 0 
+C 2.483177 -0.658546 2.221534 -1.290209 1.755871 -1.755871 
+C 1.290209 -2.221534 0.658546 -2.483177 0 -2.483177 
+C -0.658546 -2.483177 -1.290209 -2.221534 -1.755871 -1.755871 
+C -2.221534 -1.290209 -2.483177 -0.658546 -2.483177 0 
+C -2.483177 0.658546 -2.221534 1.290209 -1.755871 1.755871 
+C -1.290209 2.221534 -0.658546 2.483177 0 2.483177 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me2a42fe040" x="260.736882" y="144.04557" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28038" class="marca" role="img" aria-label="Cercedilla: esfuerzo 16,0 %; 6 aceptadas de 39 solicitudes (15,4 %)"><title>Cercedilla: esfuerzo 16,0 %; 6 aceptadas de 39 solicitudes (15,4 %)</title>
+    <defs>
+     <path id="m623020f259" d="M 0 2.47445 
+C 0.656232 2.47445 1.285674 2.213726 1.7497 1.7497 
+C 2.213726 1.285674 2.47445 0.656232 2.47445 0 
+C 2.47445 -0.656232 2.213726 -1.285674 1.7497 -1.7497 
+C 1.285674 -2.213726 0.656232 -2.47445 0 -2.47445 
+C -0.656232 -2.47445 -1.285674 -2.213726 -1.7497 -1.7497 
+C -2.213726 -1.285674 -2.47445 -0.656232 -2.47445 0 
+C -2.47445 0.656232 -2.213726 1.285674 -1.7497 1.7497 
+C -1.285674 2.213726 -0.656232 2.47445 0 2.47445 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m623020f259" x="248.348688" y="170.362025" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28133" class="marca" role="img" aria-label="San Martín de Valdeiglesias: esfuerzo 14,1 %; 4 aceptadas de 37 solicitudes (10,8 %)"><title>San Martín de Valdeiglesias: esfuerzo 14,1 %; 4 aceptadas de 37 solicitudes (10,8 %)</title>
+    <defs>
+     <path id="m9ffdb90bf5" d="M 0 2.456479 
+C 0.651466 2.456479 1.276337 2.197649 1.736993 1.736993 
+C 2.197649 1.276337 2.456479 0.651466 2.456479 0 
+C 2.456479 -0.651466 2.197649 -1.276337 1.736993 -1.736993 
+C 1.276337 -2.197649 0.651466 -2.456479 0 -2.456479 
+C -0.651466 -2.456479 -1.276337 -2.197649 -1.736993 -1.736993 
+C -2.197649 -1.276337 -2.456479 -0.651466 -2.456479 0 
+C -2.456479 0.651466 -2.197649 1.276337 -1.736993 1.736993 
+C -1.276337 2.197649 -0.651466 2.456479 0 2.456479 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9ffdb90bf5" x="179.278312" y="182.880123" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28160" class="marca" role="img" aria-label="Valdemorillo: esfuerzo 13,5 %; 12 aceptadas de 37 solicitudes (32,4 %)"><title>Valdemorillo: esfuerzo 13,5 %; 12 aceptadas de 37 solicitudes (32,4 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9ffdb90bf5" x="158.655721" y="123.703661" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28033" class="marca" role="img" aria-label="Campo Real: esfuerzo 15,8 %; 11 aceptadas de 36 solicitudes (30,6 %)"><title>Campo Real: esfuerzo 15,8 %; 11 aceptadas de 36 solicitudes (30,6 %)</title>
+    <defs>
+     <path id="md80b428060" d="M 0 2.447219 
+C 0.64901 2.447219 1.271526 2.189365 1.730445 1.730445 
+C 2.189365 1.271526 2.447219 0.64901 2.447219 0 
+C 2.447219 -0.64901 2.189365 -1.271526 1.730445 -1.730445 
+C 1.271526 -2.189365 0.64901 -2.447219 0 -2.447219 
+C -0.64901 -2.447219 -1.271526 -2.189365 -1.730445 -1.730445 
+C -2.189365 -1.271526 -2.447219 -0.64901 -2.447219 0 
+C -2.447219 0.64901 -2.189365 1.271526 -1.730445 1.730445 
+C -1.271526 2.189365 -0.64901 2.447219 0 2.447219 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md80b428060" x="239.773027" y="128.840506" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28046" class="marca" role="img" aria-label="Collado Mediano: esfuerzo 13,9 %; 13 aceptadas de 36 solicitudes (36,1 %)"><title>Collado Mediano: esfuerzo 13,9 %; 13 aceptadas de 36 solicitudes (36,1 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md80b428060" x="173.083993" y="113.635443" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28075" class="marca" role="img" aria-label="Loeches: esfuerzo 16,3 %; 10 aceptadas de 33 solicitudes (30,3 %)"><title>Loeches: esfuerzo 16,3 %; 10 aceptadas de 33 solicitudes (30,3 %)</title>
+    <defs>
+     <path id="mc6aa31d293" d="M 0 2.41823 
+C 0.641322 2.41823 1.256464 2.16343 1.709947 1.709947 
+C 2.16343 1.256464 2.41823 0.641322 2.41823 0 
+C 2.41823 -0.641322 2.16343 -1.256464 1.709947 -1.709947 
+C 1.256464 -2.16343 0.641322 -2.41823 0 -2.41823 
+C -0.641322 -2.41823 -1.256464 -2.16343 -1.709947 -1.709947 
+C -2.16343 -1.256464 -2.41823 -0.641322 -2.41823 0 
+C -2.41823 0.641322 -2.16343 1.256464 -1.709947 1.709947 
+C -1.256464 2.16343 -0.641322 2.41823 0 2.41823 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc6aa31d293" x="259.399334" y="129.531646" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28026" class="marca" role="img" aria-label="Brunete: esfuerzo 18,1 %; 7 aceptadas de 32 solicitudes (21,9 %)"><title>Brunete: esfuerzo 18,1 %; 7 aceptadas de 32 solicitudes (21,9 %)</title>
+    <defs>
+     <path id="mf916fe9e8c" d="M 0 2.408128 
+C 0.638643 2.408128 1.251215 2.154392 1.702804 1.702804 
+C 2.154392 1.251215 2.408128 0.638643 2.408128 0 
+C 2.408128 -0.638643 2.154392 -1.251215 1.702804 -1.702804 
+C 1.251215 -2.154392 0.638643 -2.408128 0 -2.408128 
+C -0.638643 -2.408128 -1.251215 -2.154392 -1.702804 -1.702804 
+C -2.154392 -1.251215 -2.408128 -0.638643 -2.408128 0 
+C -2.408128 0.638643 -2.154392 1.251215 -1.702804 1.702804 
+C -1.251215 2.154392 -0.638643 2.408128 0 2.408128 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mf916fe9e8c" x="324.101524" y="152.598418" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28154" class="marca" role="img" aria-label="Torres de la Alameda: esfuerzo 14,8 %; 1 aceptadas de 31 solicitudes (3,2 %)"><title>Torres de la Alameda: esfuerzo 14,8 %; 1 aceptadas de 31 solicitudes (3,2 %)</title>
+    <defs>
+     <path id="mc50c9f4fdd" d="M 0 2.397786 
+C 0.6359 2.397786 1.245841 2.14514 1.695491 1.695491 
+C 2.14514 1.245841 2.397786 0.6359 2.397786 0 
+C 2.397786 -0.6359 2.14514 -1.245841 1.695491 -1.695491 
+C 1.245841 -2.14514 0.6359 -2.397786 0 -2.397786 
+C -0.6359 -2.397786 -1.245841 -2.14514 -1.695491 -1.695491 
+C -2.14514 -1.245841 -2.397786 -0.6359 -2.397786 0 
+C -2.397786 0.6359 -2.14514 1.245841 -1.695491 1.695491 
+C -1.245841 2.14514 -0.6359 2.397786 0 2.397786 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc50c9f4fdd" x="206.502173" y="203.639608" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28059" class="marca" role="img" aria-label="Fuente el Saz de Jarama: esfuerzo 16,0 %; 3 aceptadas de 30 solicitudes (10,0 %)"><title>Fuente el Saz de Jarama: esfuerzo 16,0 %; 3 aceptadas de 30 solicitudes (10,0 %)</title>
+    <defs>
+     <path id="m3db74e9df9" d="M 0 2.387191 
+C 0.63309 2.387191 1.240336 2.135662 1.687999 1.687999 
+C 2.135662 1.240336 2.387191 0.63309 2.387191 0 
+C 2.387191 -0.63309 2.135662 -1.240336 1.687999 -1.687999 
+C 1.240336 -2.135662 0.63309 -2.387191 0 -2.387191 
+C -0.63309 -2.387191 -1.240336 -2.135662 -1.687999 -1.687999 
+C -2.135662 -1.240336 -2.387191 -0.63309 -2.387191 0 
+C -2.387191 0.63309 -2.135662 1.240336 -1.687999 1.687999 
+C -1.240336 2.135662 -0.63309 2.387191 0 2.387191 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m3db74e9df9" x="247.426289" y="185.099241" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28180" class="marca" role="img" aria-label="Villarejo de Salvanés: esfuerzo 14,7 %; 6 aceptadas de 30 solicitudes (20,0 %)"><title>Villarejo de Salvanés: esfuerzo 14,7 %; 6 aceptadas de 30 solicitudes (20,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m3db74e9df9" x="201.594227" y="157.730127" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28090" class="marca" role="img" aria-label="Moralzarzal: esfuerzo 13,6 %; 5 aceptadas de 30 solicitudes (16,7 %)"><title>Moralzarzal: esfuerzo 13,6 %; 5 aceptadas de 30 solicitudes (16,7 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m3db74e9df9" x="161.224951" y="166.853165" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28067" class="marca" role="img" aria-label="Guadalix de la Sierra: esfuerzo 14,5 %; 4 aceptadas de 29 solicitudes (13,8 %)"><title>Guadalix de la Sierra: esfuerzo 14,5 %; 4 aceptadas de 29 solicitudes (13,8 %)</title>
+    <defs>
+     <path id="m9f27c7c609" d="M 0 2.376328 
+C 0.630209 2.376328 1.234692 2.125943 1.680317 1.680317 
+C 2.125943 1.234692 2.376328 0.630209 2.376328 0 
+C 2.376328 -0.630209 2.125943 -1.234692 1.680317 -1.680317 
+C 1.234692 -2.125943 0.630209 -2.376328 0 -2.376328 
+C -0.630209 -2.376328 -1.234692 -2.125943 -1.680317 -1.680317 
+C -2.125943 -1.234692 -2.376328 -0.630209 -2.376328 0 
+C -2.376328 0.630209 -2.125943 1.234692 -1.680317 1.680317 
+C -1.234692 2.125943 -0.630209 2.376328 0 2.376328 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9f27c7c609" x="193.587703" y="174.717852" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28085" class="marca" role="img" aria-label="Miraflores de la Sierra: esfuerzo 14,5 %; 9 aceptadas de 29 solicitudes (31,0 %)"><title>Miraflores de la Sierra: esfuerzo 14,5 %; 9 aceptadas de 29 solicitudes (31,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m9f27c7c609" x="195.952121" y="127.529725" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28018" class="marca" role="img" aria-label="Becerril de la Sierra: esfuerzo 14,4 %; 2 aceptadas de 27 solicitudes (7,4 %)"><title>Becerril de la Sierra: esfuerzo 14,4 %; 2 aceptadas de 27 solicitudes (7,4 %)</title>
+    <defs>
+     <path id="me0379625cc" d="M 0 2.353729 
+C 0.624216 2.353729 1.22295 2.105725 1.664338 1.664338 
+C 2.105725 1.22295 2.353729 0.624216 2.353729 0 
+C 2.353729 -0.624216 2.105725 -1.22295 1.664338 -1.664338 
+C 1.22295 -2.105725 0.624216 -2.353729 0 -2.353729 
+C -0.624216 -2.353729 -1.22295 -2.105725 -1.664338 -1.664338 
+C -2.105725 -1.22295 -2.353729 -0.624216 -2.353729 0 
+C -2.353729 0.624216 -2.105725 1.22295 -1.664338 1.664338 
+C -1.22295 2.105725 -0.624216 2.353729 0 2.353729 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me0379625cc" x="192.148063" y="192.194937" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28162" class="marca" role="img" aria-label="Valdeolmos-Alalpardo: esfuerzo 13,4 %; 8 aceptadas de 26 solicitudes (30,8 %)"><title>Valdeolmos-Alalpardo: esfuerzo 13,4 %; 8 aceptadas de 26 solicitudes (30,8 %)</title>
+    <defs>
+     <path id="mf87e732250" d="M 0 2.341955 
+C 0.621094 2.341955 1.216833 2.095192 1.656013 1.656013 
+C 2.095192 1.216833 2.341955 0.621094 2.341955 0 
+C 2.341955 -0.621094 2.095192 -1.216833 1.656013 -1.656013 
+C 1.216833 -2.095192 0.621094 -2.341955 0 -2.341955 
+C -0.621094 -2.341955 -1.216833 -2.095192 -1.656013 -1.656013 
+C -2.095192 -1.216833 -2.341955 -0.621094 -2.341955 0 
+C -2.341955 0.621094 -2.095192 1.216833 -1.656013 1.656013 
+C -1.216833 2.095192 -0.621094 2.341955 0 2.341955 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mf87e732250" x="156.267749" y="128.255696" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28072" class="marca" role="img" aria-label="Hoyo de Manzanares: esfuerzo 15,4 %; 4 aceptadas de 22 solicitudes (18,2 %)"><title>Hoyo de Manzanares: esfuerzo 15,4 %; 4 aceptadas de 22 solicitudes (18,2 %)</title>
+    <defs>
+     <path id="mbb11a84512" d="M 0 2.291155 
+C 0.607621 2.291155 1.190438 2.049745 1.620091 1.620091 
+C 2.049745 1.190438 2.291155 0.607621 2.291155 0 
+C 2.291155 -0.607621 2.049745 -1.190438 1.620091 -1.620091 
+C 1.190438 -2.049745 0.607621 -2.291155 0 -2.291155 
+C -0.607621 -2.291155 -1.190438 -2.049745 -1.620091 -1.620091 
+C -2.049745 -1.190438 -2.291155 -0.607621 -2.291155 0 
+C -2.291155 0.607621 -2.049745 1.190438 -1.620091 1.620091 
+C -1.190438 2.049745 -0.607621 2.291155 0 2.291155 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbb11a84512" x="227.759461" y="162.706329" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28023" class="marca" role="img" aria-label="El Boalo: esfuerzo 14,4 %; 3 aceptadas de 22 solicitudes (13,6 %)"><title>El Boalo: esfuerzo 14,4 %; 3 aceptadas de 22 solicitudes (13,6 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbb11a84512" x="189.761879" y="175.146835" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28164" class="marca" role="img" aria-label="Valdetorres de Jarama: esfuerzo 15,2 %; 4 aceptadas de 22 solicitudes (18,2 %)"><title>Valdetorres de Jarama: esfuerzo 15,2 %; 4 aceptadas de 22 solicitudes (18,2 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbb11a84512" x="219.192321" y="162.706329" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28168" class="marca" role="img" aria-label="El Vellón: esfuerzo 15,7 %; 5 aceptadas de 22 solicitudes (22,7 %)"><title>El Vellón: esfuerzo 15,7 %; 5 aceptadas de 22 solicitudes (22,7 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mbb11a84512" x="237.790438" y="150.265823" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28149" class="marca" role="img" aria-label="Torrejón de la Calzada: esfuerzo 15,3 %; 3 aceptadas de 21 solicitudes (14,3 %)"><title>Torrejón de la Calzada: esfuerzo 15,3 %; 3 aceptadas de 21 solicitudes (14,3 %)</title>
+    <defs>
+     <path id="mc8d7d0992e" d="M 0 2.277382 
+C 0.603969 2.277382 1.183282 2.037423 1.610352 1.610352 
+C 2.037423 1.183282 2.277382 0.603969 2.277382 0 
+C 2.277382 -0.603969 2.037423 -1.183282 1.610352 -1.610352 
+C 1.183282 -2.037423 0.603969 -2.277382 0 -2.277382 
+C -0.603969 -2.277382 -1.183282 -2.037423 -1.610352 -1.610352 
+C -2.037423 -1.183282 -2.277382 -0.603969 -2.277382 0 
+C -2.277382 0.603969 -2.037423 1.183282 -1.610352 1.610352 
+C -1.183282 2.037423 -0.603969 2.277382 0 2.277382 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc8d7d0992e" x="223.861783" y="173.36962" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28151" class="marca" role="img" aria-label="Torrelaguna: esfuerzo 13,9 %; 3 aceptadas de 20 solicitudes (15,0 %)"><title>Torrelaguna: esfuerzo 13,9 %; 3 aceptadas de 20 solicitudes (15,0 %)</title>
+    <defs>
+     <path id="mc5a5dcf60a" d="M 0 2.263108 
+C 0.600183 2.263108 1.175866 2.024653 1.600259 1.600259 
+C 2.024653 1.175866 2.263108 0.600183 2.263108 0 
+C 2.263108 -0.600183 2.024653 -1.175866 1.600259 -1.600259 
+C 1.175866 -2.024653 0.600183 -2.263108 0 -2.263108 
+C -0.600183 -2.263108 -1.175866 -2.024653 -1.600259 -1.600259 
+C -2.024653 -1.175866 -2.263108 -0.600183 -2.263108 0 
+C -2.263108 0.600183 -2.024653 1.175866 -1.600259 1.600259 
+C -1.175866 2.024653 -0.600183 2.263108 0 2.263108 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc5a5dcf60a" x="172.932093" y="171.414684" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28036" class="marca" role="img" aria-label="Casarrubuelos: esfuerzo 16,0 %; 2 aceptadas de 20 solicitudes (10,0 %)"><title>Casarrubuelos: esfuerzo 16,0 %; 2 aceptadas de 20 solicitudes (10,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mc5a5dcf60a" x="248.97337" y="185.099241" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28066" class="marca" role="img" aria-label="Griñón: esfuerzo 14,3 %; 1 aceptadas de 19 solicitudes (5,3 %)"><title>Griñón: esfuerzo 14,3 %; 1 aceptadas de 19 solicitudes (5,3 %)</title>
+    <defs>
+     <path id="med4a554a28" d="M 0 2.248289 
+C 0.596253 2.248289 1.168166 2.011395 1.58978 1.58978 
+C 2.011395 1.168166 2.248289 0.596253 2.248289 0 
+C 2.248289 -0.596253 2.011395 -1.168166 1.58978 -1.58978 
+C 1.168166 -2.011395 0.596253 -2.248289 0 -2.248289 
+C -0.596253 -2.248289 -1.168166 -2.011395 -1.58978 -1.58978 
+C -2.011395 -1.168166 -2.248289 -0.596253 -2.248289 0 
+C -2.248289 0.596253 -2.011395 1.168166 -1.58978 1.58978 
+C -1.168166 2.011395 -0.596253 2.248289 0 2.248289 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#med4a554a28" x="188.413094" y="198.063558" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28145" class="marca" role="img" aria-label="Talamanca de Jarama: esfuerzo 16,1 %; 2 aceptadas de 19 solicitudes (10,5 %)"><title>Talamanca de Jarama: esfuerzo 16,1 %; 2 aceptadas de 19 solicitudes (10,5 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#med4a554a28" x="252.375406" y="183.658761" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28144" class="marca" role="img" aria-label="Soto del Real: esfuerzo 12,9 %; 6 aceptadas de 19 solicitudes (31,6 %)"><title>Soto del Real: esfuerzo 12,9 %; 6 aceptadas de 19 solicitudes (31,6 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#med4a554a28" x="139.130444" y="126.039574" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28041" class="marca" role="img" aria-label="Cobeña: esfuerzo 12,6 %; 2 aceptadas de 19 solicitudes (10,5 %)"><title>Cobeña: esfuerzo 12,6 %; 2 aceptadas de 19 solicitudes (10,5 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#med4a554a28" x="125.93928" y="183.658761" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28156" class="marca" role="img" aria-label="Valdeavero: esfuerzo 15,7 %; 2 aceptadas de 18 solicitudes (11,1 %)"><title>Valdeavero: esfuerzo 15,7 %; 2 aceptadas de 18 solicitudes (11,1 %)</title>
+    <defs>
+     <path id="m8ecb9894f2" d="M 0 2.232872 
+C 0.592165 2.232872 1.160155 1.997602 1.578879 1.578879 
+C 1.997602 1.160155 2.232872 0.592165 2.232872 0 
+C 2.232872 -0.592165 1.997602 -1.160155 1.578879 -1.578879 
+C 1.160155 -1.997602 0.592165 -2.232872 0 -2.232872 
+C -0.592165 -2.232872 -1.160155 -1.997602 -1.578879 -1.578879 
+C -1.997602 -1.160155 -2.232872 -0.592165 -2.232872 0 
+C -2.232872 0.592165 -1.997602 1.160155 -1.578879 1.578879 
+C -1.160155 1.997602 -0.592165 2.232872 0 2.232872 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m8ecb9894f2" x="237.589219" y="182.058228" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28053" class="marca" role="img" aria-label="Daganzo de Arriba: esfuerzo 14,5 %; 3 aceptadas de 17 solicitudes (17,6 %)"><title>Daganzo de Arriba: esfuerzo 14,5 %; 3 aceptadas de 17 solicitudes (17,6 %)</title>
+    <defs>
+     <path id="m8d1ad617b4" d="M 0 2.216799 
+C 0.587902 2.216799 1.151804 1.983223 1.567513 1.567513 
+C 1.983223 1.151804 2.216799 0.587902 2.216799 0 
+C 2.216799 -0.587902 1.983223 -1.151804 1.567513 -1.567513 
+C 1.151804 -1.983223 0.587902 -2.216799 0 -2.216799 
+C -0.587902 -2.216799 -1.151804 -1.983223 -1.567513 -1.567513 
+C -1.983223 -1.151804 -2.216799 -0.587902 -2.216799 0 
+C -2.216799 0.587902 -1.983223 1.151804 -1.567513 1.567513 
+C -1.151804 1.983223 -0.587902 2.216799 0 2.216799 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m8d1ad617b4" x="194.924706" y="164.169918" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28165" class="marca" role="img" aria-label="Valdilecha: esfuerzo 16,0 %; 6 aceptadas de 16 solicitudes (37,5 %)"><title>Valdilecha: esfuerzo 16,0 %; 6 aceptadas de 16 solicitudes (37,5 %)</title>
+    <defs>
+     <path id="m295a23f561" d="M 0 2.2 
+C 0.583447 2.2 1.143076 1.968194 1.555635 1.555635 
+C 1.968194 1.143076 2.2 0.583447 2.2 0 
+C 2.2 -0.583447 1.968194 -1.143076 1.555635 -1.555635 
+C 1.143076 -1.968194 0.583447 -2.2 0 -2.2 
+C -0.583447 -2.2 -1.143076 -1.968194 -1.555635 -1.555635 
+C -1.968194 -1.143076 -2.2 -0.583447 -2.2 0 
+C -2.2 0.583447 -1.968194 1.143076 -1.555635 1.555635 
+C -1.143076 1.968194 -0.583447 2.2 0 2.2 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m295a23f561" x="249.089411" y="109.834177" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28171" class="marca" role="img" aria-label="Villa del Prado: esfuerzo 15,4 %; 2 aceptadas de 16 solicitudes (12,5 %)"><title>Villa del Prado: esfuerzo 15,4 %; 2 aceptadas de 16 solicitudes (12,5 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m295a23f561" x="225.145745" y="178.256962" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28099" class="marca" role="img" aria-label="Navas del Rey: esfuerzo 12,0 %; 0 aceptadas de 15 solicitudes (0,0 %)"><title>Navas del Rey: esfuerzo 12,0 %; 0 aceptadas de 15 solicitudes (0,0 %)</title>
+    <defs>
+     <path id="m875534ada7" d="M 0 2.182394 
+C 0.578778 2.182394 1.133928 1.952443 1.543186 1.543186 
+C 1.952443 1.133928 2.182394 0.578778 2.182394 0 
+C 2.182394 -0.578778 1.952443 -1.133928 1.543186 -1.543186 
+C 1.133928 -1.952443 0.578778 -2.182394 0 -2.182394 
+C -0.578778 -2.182394 -1.133928 -1.952443 -1.543186 -1.543186 
+C -1.952443 -1.133928 -2.182394 -0.578778 -2.182394 0 
+C -2.182394 0.578778 -1.952443 1.133928 -1.543186 1.543186 
+C -1.133928 1.952443 -0.578778 2.182394 0 2.182394 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m875534ada7" x="105.890121" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28125" class="marca" role="img" aria-label="Robledo de Chavela: esfuerzo 12,9 %; 3 aceptadas de 14 solicitudes (21,4 %)"><title>Robledo de Chavela: esfuerzo 12,9 %; 3 aceptadas de 14 solicitudes (21,4 %)</title>
+    <defs>
+     <path id="m169fc768a5" d="M 0 2.163885 
+C 0.573869 2.163885 1.124311 1.935884 1.530098 1.530098 
+C 1.935884 1.124311 2.163885 0.573869 2.163885 0 
+C 2.163885 -0.573869 1.935884 -1.124311 1.530098 -1.530098 
+C 1.124311 -1.935884 0.573869 -2.163885 0 -2.163885 
+C -0.573869 -2.163885 -1.124311 -1.935884 -1.530098 -1.530098 
+C -1.935884 -1.124311 -2.163885 -0.573869 -2.163885 0 
+C -2.163885 0.573869 -1.935884 1.124311 -1.530098 1.530098 
+C -1.124311 1.935884 -0.573869 2.163885 0 2.163885 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m169fc768a5" x="138.799123" y="153.820253" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28043" class="marca" role="img" aria-label="Colmenar de Oreja: esfuerzo 13,7 %; 3 aceptadas de 14 solicitudes (21,4 %)"><title>Colmenar de Oreja: esfuerzo 13,7 %; 3 aceptadas de 14 solicitudes (21,4 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m169fc768a5" x="165.95641" y="153.820253" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28146" class="marca" role="img" aria-label="Tielmes: esfuerzo 16,0 %; 1 aceptadas de 14 solicitudes (7,1 %)"><title>Tielmes: esfuerzo 16,0 %; 1 aceptadas de 14 solicitudes (7,1 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m169fc768a5" x="248.13613" y="192.918987" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28089" class="marca" role="img" aria-label="Moraleja de Enmedio: esfuerzo 14,4 %; 5 aceptadas de 14 solicitudes (35,7 %)"><title>Moraleja de Enmedio: esfuerzo 14,4 %; 5 aceptadas de 14 solicitudes (35,7 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m169fc768a5" x="190.173619" y="114.721519" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28030" class="marca" role="img" aria-label="La Cabrera: esfuerzo 13,7 %; 2 aceptadas de 13 solicitudes (15,4 %)"><title>La Cabrera: esfuerzo 13,7 %; 2 aceptadas de 13 solicitudes (15,4 %)</title>
+    <defs>
+     <path id="m1695837afc" d="M 0 2.144356 
+C 0.56869 2.144356 1.114164 1.918413 1.516289 1.516289 
+C 1.918413 1.114164 2.144356 0.56869 2.144356 0 
+C 2.144356 -0.56869 1.918413 -1.114164 1.516289 -1.516289 
+C 1.114164 -1.918413 0.56869 -2.144356 0 -2.144356 
+C -0.56869 -2.144356 -1.114164 -1.918413 -1.516289 -1.516289 
+C -1.918413 -1.114164 -2.144356 -0.56869 -2.144356 0 
+C -2.144356 0.56869 -1.918413 1.114164 -1.516289 1.516289 
+C -1.114164 1.918413 -0.56869 2.144356 0 2.144356 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m1695837afc" x="167.556418" y="170.362025" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28110" class="marca" role="img" aria-label="Perales de Tajuña: esfuerzo 15,0 %; 2 aceptadas de 13 solicitudes (15,4 %)"><title>Perales de Tajuña: esfuerzo 15,0 %; 2 aceptadas de 13 solicitudes (15,4 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m1695837afc" x="210.998078" y="170.362025" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28170" class="marca" role="img" aria-label="Villaconejos: esfuerzo 16,9 %; 5 aceptadas de 12 solicitudes (41,7 %)"><title>Villaconejos: esfuerzo 16,9 %; 5 aceptadas de 12 solicitudes (41,7 %)</title>
+    <defs>
+     <path id="m5b678286eb" d="M 0 2.123665 
+C 0.563203 2.123665 1.103414 1.899903 1.501658 1.501658 
+C 1.899903 1.103414 2.123665 0.563203 2.123665 0 
+C 2.123665 -0.563203 1.899903 -1.103414 1.501658 -1.501658 
+C 1.103414 -1.899903 0.563203 -2.123665 0 -2.123665 
+C -0.563203 -2.123665 -1.103414 -1.899903 -1.501658 -1.501658 
+C -1.899903 -1.103414 -2.123665 -0.563203 -2.123665 0 
+C -2.123665 0.563203 -1.899903 1.103414 -1.501658 1.501658 
+C -1.103414 1.899903 -0.563203 2.123665 0 2.123665 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m5b678286eb" x="279.26266" y="98.43038" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28052" class="marca" role="img" aria-label="Chinchón: esfuerzo 16,0 %; 6 aceptadas de 12 solicitudes (50,0 %)"><title>Chinchón: esfuerzo 16,0 %; 6 aceptadas de 12 solicitudes (50,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m5b678286eb" x="247.148956" y="75.622785" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28140" class="marca" role="img" aria-label="Serranillos del Valle: esfuerzo 14,8 %; 4 aceptadas de 11 solicitudes (36,4 %)"><title>Serranillos del Valle: esfuerzo 14,8 %; 4 aceptadas de 11 solicitudes (36,4 %)</title>
+    <defs>
+     <path id="mb3aeb943db" d="M 0 2.101638 
+C 0.557361 2.101638 1.091969 1.880196 1.486083 1.486083 
+C 1.880196 1.091969 2.101638 0.557361 2.101638 0 
+C 2.101638 -0.557361 1.880196 -1.091969 1.486083 -1.486083 
+C 1.091969 -1.880196 0.557361 -2.101638 0 -2.101638 
+C -0.557361 -2.101638 -1.091969 -1.880196 -1.486083 -1.486083 
+C -1.880196 -1.091969 -2.101638 -0.557361 -2.101638 0 
+C -2.101638 0.557361 -1.880196 1.091969 -1.486083 1.486083 
+C -1.091969 1.880196 -0.557361 2.101638 0 2.101638 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mb3aeb943db" x="205.821794" y="112.944304" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28119" class="marca" role="img" aria-label="Quijorna: esfuerzo 16,4 %; 0 aceptadas de 11 solicitudes (0,0 %)"><title>Quijorna: esfuerzo 16,4 %; 0 aceptadas de 11 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mb3aeb943db" x="261.136517" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28093" class="marca" role="img" aria-label="Navacerrada: esfuerzo 15,4 %; 3 aceptadas de 11 solicitudes (27,3 %)"><title>Navacerrada: esfuerzo 15,4 %; 3 aceptadas de 11 solicitudes (27,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mb3aeb943db" x="226.042871" y="137.825316" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28183" class="marca" role="img" aria-label="Zarzalejo: esfuerzo 14,5 %; 2 aceptadas de 10 solicitudes (20,0 %)"><title>Zarzalejo: esfuerzo 14,5 %; 2 aceptadas de 10 solicitudes (20,0 %)</title>
+    <defs>
+     <path id="me37270f958" d="M 0 2.078054 
+C 0.551106 2.078054 1.079715 1.859097 1.469406 1.469406 
+C 1.859097 1.079715 2.078054 0.551106 2.078054 0 
+C 2.078054 -0.551106 1.859097 -1.079715 1.469406 -1.469406 
+C 1.079715 -1.859097 0.551106 -2.078054 0 -2.078054 
+C -0.551106 -2.078054 -1.079715 -1.859097 -1.469406 -1.469406 
+C -1.859097 -1.079715 -2.078054 -0.551106 -2.078054 0 
+C -2.078054 0.551106 -1.859097 1.079715 -1.469406 1.469406 
+C -1.079715 1.859097 -0.551106 2.078054 0 2.078054 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me37270f958" x="195.59441" y="157.730127" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28042" class="marca" role="img" aria-label="Colmenar del Arroyo: esfuerzo 11,5 %; 4 aceptadas de 10 solicitudes (40,0 %)"><title>Colmenar del Arroyo: esfuerzo 11,5 %; 4 aceptadas de 10 solicitudes (40,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me37270f958" x="89.757282" y="102.991899" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28028" class="marca" role="img" aria-label="Bustarviejo: esfuerzo 14,5 %; 2 aceptadas de 10 solicitudes (20,0 %)"><title>Bustarviejo: esfuerzo 14,5 %; 2 aceptadas de 10 solicitudes (20,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me37270f958" x="193.590456" y="157.730127" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28008" class="marca" role="img" aria-label="Aldea del Fresno: esfuerzo 16,2 %; 3 aceptadas de 10 solicitudes (30,0 %)"><title>Aldea del Fresno: esfuerzo 16,2 %; 3 aceptadas de 10 solicitudes (30,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me37270f958" x="254.439234" y="130.361013" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28095" class="marca" role="img" aria-label="Navalagamella: esfuerzo 15,0 %; 3 aceptadas de 10 solicitudes (30,0 %)"><title>Navalagamella: esfuerzo 15,0 %; 3 aceptadas de 10 solicitudes (30,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#me37270f958" x="212.525169" y="130.361013" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28087" class="marca" role="img" aria-label="Los Molinos: esfuerzo 15,5 %; 2 aceptadas de 9 solicitudes (22,2 %)"><title>Los Molinos: esfuerzo 15,5 %; 2 aceptadas de 9 solicitudes (22,2 %)</title>
+    <defs>
+     <path id="m81b8929d00" d="M 0 2.052628 
+C 0.544363 2.052628 1.066504 1.83635 1.451427 1.451427 
+C 1.83635 1.066504 2.052628 0.544363 2.052628 0 
+C 2.052628 -0.544363 1.83635 -1.066504 1.451427 -1.451427 
+C 1.066504 -1.83635 0.544363 -2.052628 0 -2.052628 
+C -0.544363 -2.052628 -1.066504 -1.83635 -1.451427 -1.451427 
+C -1.83635 -1.066504 -2.052628 -0.544363 -2.052628 0 
+C -2.052628 0.544363 -1.83635 1.066504 -1.451427 1.451427 
+C -1.066504 1.83635 -0.544363 2.052628 0 2.052628 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m81b8929d00" x="230.988997" y="151.648101" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28094" class="marca" role="img" aria-label="Navalafuente: esfuerzo 14,3 %; 2 aceptadas de 9 solicitudes (22,2 %)"><title>Navalafuente: esfuerzo 14,3 %; 2 aceptadas de 9 solicitudes (22,2 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m81b8929d00" x="188.351794" y="151.648101" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28056" class="marca" role="img" aria-label="Fresnedillas de la Oliva: esfuerzo 13,0 %; 1 aceptadas de 8 solicitudes (12,5 %)"><title>Fresnedillas de la Oliva: esfuerzo 13,0 %; 1 aceptadas de 8 solicitudes (12,5 %)</title>
+    <defs>
+     <path id="m3b36a7b504" d="M 0 2.024986 
+C 0.537033 2.024986 1.052142 1.811621 1.431881 1.431881 
+C 1.811621 1.052142 2.024986 0.537033 2.024986 0 
+C 2.024986 -0.537033 1.811621 -1.052142 1.431881 -1.431881 
+C 1.052142 -1.811621 0.537033 -2.024986 0 -2.024986 
+C -0.537033 -2.024986 -1.052142 -1.811621 -1.431881 -1.431881 
+C -1.811621 -1.052142 -2.024986 -0.537033 -2.024986 0 
+C -2.024986 0.537033 -1.811621 1.052142 -1.431881 1.431881 
+C -1.052142 1.811621 -0.537033 2.024986 0 2.024986 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m3b36a7b504" x="142.108624" y="178.256962" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28012" class="marca" role="img" aria-label="Anchuelo: esfuerzo 15,2 %; 2 aceptadas de 7 solicitudes (28,6 %)"><title>Anchuelo: esfuerzo 15,2 %; 2 aceptadas de 7 solicitudes (28,6 %)</title>
+    <defs>
+     <path id="m0169e18e4e" d="M 0 1.994617 
+C 0.528979 1.994617 1.036363 1.784452 1.410407 1.410407 
+C 1.784452 1.036363 1.994617 0.528979 1.994617 0 
+C 1.994617 -0.528979 1.784452 -1.036363 1.410407 -1.410407 
+C 1.036363 -1.784452 0.528979 -1.994617 0 -1.994617 
+C -0.528979 -1.994617 -1.036363 -1.784452 -1.410407 -1.410407 
+C -1.784452 -1.036363 -1.994617 -0.528979 -1.994617 0 
+C -1.994617 0.528979 -1.784452 1.036363 -1.410407 1.410407 
+C -1.036363 1.784452 -0.528979 1.994617 0 1.994617 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m0169e18e4e" x="220.122006" y="134.270886" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28035" class="marca" role="img" aria-label="Carabaña: esfuerzo 17,0 %; 0 aceptadas de 7 solicitudes (0,0 %)"><title>Carabaña: esfuerzo 17,0 %; 0 aceptadas de 7 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m0169e18e4e" x="283.172284" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28137" class="marca" role="img" aria-label="Los Santos de la Humosa: esfuerzo 14,1 %; 0 aceptadas de 7 solicitudes (0,0 %)"><title>Los Santos de la Humosa: esfuerzo 14,1 %; 0 aceptadas de 7 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m0169e18e4e" x="180.725835" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28019" class="marca" role="img" aria-label="Belmonte de Tajo: esfuerzo 14,2 %; 1 aceptadas de 6 solicitudes (16,7 %)"><title>Belmonte de Tajo: esfuerzo 14,2 %; 1 aceptadas de 6 solicitudes (16,7 %)</title>
+    <defs>
+     <path id="m870f1cd323" d="M 0 1.960797 
+C 0.520009 1.960797 1.01879 1.754195 1.386493 1.386493 
+C 1.754195 1.01879 1.960797 0.520009 1.960797 0 
+C 1.960797 -0.520009 1.754195 -1.01879 1.386493 -1.386493 
+C 1.01879 -1.754195 0.520009 -1.960797 0 -1.960797 
+C -0.520009 -1.960797 -1.01879 -1.754195 -1.386493 -1.386493 
+C -1.754195 -1.01879 -1.960797 -0.520009 -1.960797 0 
+C -1.960797 0.520009 -1.754195 1.01879 -1.386493 1.386493 
+C -1.01879 1.754195 -0.520009 1.960797 0 1.960797 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m870f1cd323" x="182.65547" y="166.853165" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28116" class="marca" role="img" aria-label="Pozuelo del Rey: esfuerzo 16,2 %; 1 aceptadas de 6 solicitudes (16,7 %)"><title>Pozuelo del Rey: esfuerzo 16,2 %; 1 aceptadas de 6 solicitudes (16,7 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m870f1cd323" x="255.734745" y="166.853165" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28057" class="marca" role="img" aria-label="Fresno de Torote: esfuerzo 15,5 %; 2 aceptadas de 6 solicitudes (33,3 %)"><title>Fresno de Torote: esfuerzo 15,5 %; 2 aceptadas de 6 solicitudes (33,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#m870f1cd323" x="230.20387" y="121.237975" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28109" class="marca" role="img" aria-label="Pelayos de la Presa: esfuerzo 14,6 %; 0 aceptadas de 5 solicitudes (0,0 %)"><title>Pelayos de la Presa: esfuerzo 14,6 %; 0 aceptadas de 5 solicitudes (0,0 %)</title>
+    <defs>
+     <path id="ma0448cdd24" d="M 0 1.922442 
+C 0.509838 1.922442 0.998862 1.719881 1.359372 1.359372 
+C 1.719881 0.998862 1.922442 0.509838 1.922442 0 
+C 1.922442 -0.509838 1.719881 -0.998862 1.359372 -1.359372 
+C 0.998862 -1.719881 0.509838 -1.922442 0 -1.922442 
+C -0.509838 -1.922442 -0.998862 -1.719881 -1.359372 -1.359372 
+C -1.719881 -0.998862 -1.922442 -0.509838 -1.922442 0 
+C -1.922442 0.509838 -1.719881 0.998862 -1.359372 1.359372 
+C -0.998862 1.719881 -0.509838 1.922442 0 1.922442 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma0448cdd24" x="199.379197" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28901" class="marca" role="img" aria-label="Lozoyuela-Navas-Sieteiglesias: esfuerzo 14,5 %; 1 aceptadas de 5 solicitudes (20,0 %)"><title>Lozoyuela-Navas-Sieteiglesias: esfuerzo 14,5 %; 1 aceptadas de 5 solicitudes (20,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma0448cdd24" x="195.890601" y="157.730127" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28060" class="marca" role="img" aria-label="Fuentidueña de Tajo: esfuerzo 14,8 %; 0 aceptadas de 5 solicitudes (0,0 %)"><title>Fuentidueña de Tajo: esfuerzo 14,8 %; 0 aceptadas de 5 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma0448cdd24" x="207.264578" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28021" class="marca" role="img" aria-label="El Berrueco: esfuerzo 12,5 %; 2 aceptadas de 5 solicitudes (40,0 %)"><title>El Berrueco: esfuerzo 12,5 %; 2 aceptadas de 5 solicitudes (40,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#ma0448cdd24" x="123.609678" y="102.991899" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28120" class="marca" role="img" aria-label="Rascafría: esfuerzo 11,6 %; 1 aceptadas de 4 solicitudes (25,0 %)"><title>Rascafría: esfuerzo 11,6 %; 1 aceptadas de 4 solicitudes (25,0 %)</title>
+    <defs>
+     <path id="mcedea44f64" d="M 0 1.877817 
+C 0.498003 1.877817 0.975676 1.679959 1.327817 1.327817 
+C 1.679959 0.975676 1.877817 0.498003 1.877817 0 
+C 1.877817 -0.498003 1.679959 -0.975676 1.327817 -1.327817 
+C 0.975676 -1.679959 0.498003 -1.877817 0 -1.877817 
+C -0.498003 -1.877817 -0.975676 -1.679959 -1.327817 -1.327817 
+C -1.679959 -0.975676 -1.877817 -0.498003 -1.877817 0 
+C -1.877817 0.498003 -1.679959 0.975676 -1.327817 1.327817 
+C -0.975676 1.679959 -0.498003 1.877817 0 1.877817 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcedea44f64" x="92.394458" y="144.04557" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28173" class="marca" role="img" aria-label="Villamanrique de Tajo: esfuerzo 17,2 %; 0 aceptadas de 4 solicitudes (0,0 %)"><title>Villamanrique de Tajo: esfuerzo 17,2 %; 0 aceptadas de 4 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcedea44f64" x="290.665864" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28027" class="marca" role="img" aria-label="Buitrago del Lozoya: esfuerzo 14,1 %; 0 aceptadas de 4 solicitudes (0,0 %)"><title>Buitrago del Lozoya: esfuerzo 14,1 %; 0 aceptadas de 4 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcedea44f64" x="180.10583" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28076" class="marca" role="img" aria-label="Lozoya: esfuerzo 11,9 %; 0 aceptadas de 4 solicitudes (0,0 %)"><title>Lozoya: esfuerzo 11,9 %; 0 aceptadas de 4 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcedea44f64" x="103.397352" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28178" class="marca" role="img" aria-label="Villanueva de Perales: esfuerzo 14,8 %; 2 aceptadas de 3 solicitudes (66,7 %)"><title>Villanueva de Perales: esfuerzo 14,8 %; 2 aceptadas de 3 solicitudes (66,7 %)</title>
+    <defs>
+     <path id="md3e829a7c7" d="M 0 1.823841 
+C 0.483688 1.823841 0.947631 1.631669 1.28965 1.28965 
+C 1.631669 0.947631 1.823841 0.483688 1.823841 0 
+C 1.823841 -0.483688 1.631669 -0.947631 1.28965 -1.28965 
+C 0.947631 -1.631669 0.483688 -1.823841 0 -1.823841 
+C -0.483688 -1.823841 -0.947631 -1.631669 -1.28965 -1.28965 
+C -1.631669 -0.947631 -1.823841 -0.483688 -1.823841 0 
+C -1.823841 0.483688 -1.631669 0.947631 -1.28965 1.28965 
+C -0.947631 1.631669 -0.483688 1.823841 0 1.823841 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md3e829a7c7" x="204.494322" y="30.007595" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28175" class="marca" role="img" aria-label="Villamantilla: esfuerzo 14,4 %; 0 aceptadas de 3 solicitudes (0,0 %)"><title>Villamantilla: esfuerzo 14,4 %; 0 aceptadas de 3 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md3e829a7c7" x="189.992006" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28174" class="marca" role="img" aria-label="Villamanta: esfuerzo 14,6 %; 1 aceptadas de 3 solicitudes (33,3 %)"><title>Villamanta: esfuerzo 14,6 %; 1 aceptadas de 3 solicitudes (33,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md3e829a7c7" x="196.887261" y="121.237975" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28122" class="marca" role="img" aria-label="Ribatejada: esfuerzo 12,7 %; 1 aceptadas de 3 solicitudes (33,3 %)"><title>Ribatejada: esfuerzo 12,7 %; 1 aceptadas de 3 solicitudes (33,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md3e829a7c7" x="129.951167" y="121.237975" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28051" class="marca" role="img" aria-label="Chapinería: esfuerzo 15,1 %; 1 aceptadas de 3 solicitudes (33,3 %)"><title>Chapinería: esfuerzo 15,1 %; 1 aceptadas de 3 solicitudes (33,3 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#md3e829a7c7" x="216.125656" y="121.237975" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28031" class="marca" role="img" aria-label="Cadalso de los Vidrios: esfuerzo 10,8 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Cadalso de los Vidrios: esfuerzo 10,8 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <defs>
+     <path id="mee781feb98" d="M 0 1.754064 
+C 0.465183 1.754064 0.911376 1.569245 1.24031 1.24031 
+C 1.569245 0.911376 1.754064 0.465183 1.754064 0 
+C 1.754064 -0.465183 1.569245 -0.911376 1.24031 -1.24031 
+C 0.911376 -1.569245 0.465183 -1.754064 0 -1.754064 
+C -0.465183 -1.754064 -0.911376 -1.569245 -1.24031 -1.24031 
+C -1.569245 -0.911376 -1.754064 -0.465183 -1.754064 0 
+C -1.754064 0.465183 -1.569245 0.911376 -1.24031 1.24031 
+C -0.911376 1.569245 -0.465183 1.754064 0 1.754064 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="61.786232" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28037" class="marca" role="img" aria-label="Cenicientos: esfuerzo 12,8 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Cenicientos: esfuerzo 12,8 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="133.026971" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28048" class="marca" role="img" aria-label="Corpa: esfuerzo 14,9 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Corpa: esfuerzo 14,9 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="207.594005" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28136" class="marca" role="img" aria-label="Santorcaz: esfuerzo 17,0 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Santorcaz: esfuerzo 17,0 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="282.952188" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28157" class="marca" role="img" aria-label="Valdelaguna: esfuerzo 14,6 %; 1 aceptadas de 2 solicitudes (50,0 %)"><title>Valdelaguna: esfuerzo 14,6 %; 1 aceptadas de 2 solicitudes (50,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="197.383478" y="75.622785" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28150" class="marca" role="img" aria-label="Torrejón de Velasco: esfuerzo 15,7 %; 1 aceptadas de 2 solicitudes (50,0 %)"><title>Torrejón de Velasco: esfuerzo 15,7 %; 1 aceptadas de 2 solicitudes (50,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="237.3186" y="75.622785" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28088" class="marca" role="img" aria-label="Montejo de la Sierra: esfuerzo 11,8 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Montejo de la Sierra: esfuerzo 11,8 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="98.904532" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28050" class="marca" role="img" aria-label="Cubas de la Sagra: esfuerzo 14,0 %; 0 aceptadas de 2 solicitudes (0,0 %)"><title>Cubas de la Sagra: esfuerzo 14,0 %; 0 aceptadas de 2 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mee781feb98" x="175.526878" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28055" class="marca" role="img" aria-label="Estremera: esfuerzo 11,7 %; 0 aceptadas de 1 solicitudes (0,0 %)"><title>Estremera: esfuerzo 11,7 %; 0 aceptadas de 1 solicitudes (0,0 %)</title>
+    <defs>
+     <path id="mcb4e1f1c8b" d="M 0 1.65 
+C 0.437585 1.65 0.857307 1.476146 1.166726 1.166726 
+C 1.476146 0.857307 1.65 0.437585 1.65 0 
+C 1.65 -0.437585 1.476146 -0.857307 1.166726 -1.166726 
+C 0.857307 -1.476146 0.437585 -1.65 0 -1.65 
+C -0.437585 -1.65 -0.857307 -1.476146 -1.166726 -1.166726 
+C -1.476146 -0.857307 -1.65 -0.437585 -1.65 0 
+C -1.65 0.437585 -1.476146 0.857307 -1.166726 1.166726 
+C -0.857307 1.476146 -0.437585 1.65 0 1.65 
+z
+" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </defs>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcb4e1f1c8b" x="95.128845" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="b28102" class="marca" role="img" aria-label="Orusco de Tajuña: esfuerzo 14,0 %; 0 aceptadas de 1 solicitudes (0,0 %)"><title>Orusco de Tajuña: esfuerzo 14,0 %; 0 aceptadas de 1 solicitudes (0,0 %)</title>
+    <g clip-path="url(#p0903daba9b)">
+     <use xlink:href="#mcb4e1f1c8b" x="176.126945" y="212.468354" fill="#474a52" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.45" stroke-width="0.5"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 43.524414 223.416 
+L 445.284414 223.416 
+" fill="none" stroke="#d9dbe0" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="text_16">
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#0b4f9c" x="61.786232" y="141.388899" transform="rotate(-0 61.786232 141.388899)">23,7 %, toda la convocatoria</text>
+   </g>
+   <g id="patch_4">
+    <path d="M 372.514089 131.218871 
+Q 377.900936 138.660002 383.287783 146.101132 
+" fill="none" stroke="#5c6069" stroke-width="0.5" stroke-linecap="round"/>
+   </g>
+   <g id="text_17">
+    <text font-size="7.8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#1d1d1f" x="380.463466" y="125.725164" transform="rotate(-0 380.463466 125.725164)">Madrid</text>
+   </g>
+   <g id="text_18">
+    <text font-size="7.2px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#5c6069" x="61.786232" y="18.267323" transform="rotate(-0 61.786232 18.267323)">Tamaño del punto: solicitudes del municipio</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0903daba9b">
+   <rect x="43.524414" y="7.2" width="401.76" height="216.216"/>
+  </clipPath>
+ </defs>
+</svg>
