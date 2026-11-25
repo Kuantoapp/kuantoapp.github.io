@@ -1,4 +1,4 @@
-# Kuanto
+# <img src="app/img/logo.svg" alt="" width="44" height="44" align="absmiddle"> Kuanto
 
 **Cuánto dinero te sobra al mes según dónde vivas en la Comunidad de Madrid.**
 

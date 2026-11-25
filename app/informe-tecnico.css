@@ -22,7 +22,10 @@ main.doc { display: block; }
 
 /* portada */
 .portada { display: flex; flex-direction: column; justify-content: flex-end; min-height: 250mm; padding: 22mm 18mm; background: var(--tinta); color: var(--tinta-texto); }
-.portada .sello { margin: 0 0 auto; color: var(--tinta-acento); font-size: 11pt; font-weight: 600; }
+/* el anillo azul del logo no se ve sobre la tinta: va sobre un disco claro */
+.portada .marca-doc { display: flex; align-items: center; gap: 4mm; margin: 0 0 auto; color: var(--tinta-texto); font-family: var(--fuente); font-size: 22pt; font-weight: 500; letter-spacing: -0.02em; }
+.portada .marca-doc img { width: 13mm; height: 13mm; padding: 1mm; border-radius: 50%; background: var(--tinta-texto); }
+.portada .sello { margin: 0 0 6mm; color: var(--tinta-acento); font-size: 11pt; font-weight: 600; }
 .portada h1 { margin: 0; color: var(--tinta-texto); font-size: 34pt; line-height: 1.05; }
 .portada .subtitulo { margin: 8mm 0 12mm; color: var(--tinta-texto-2); font-size: 13pt; text-align: left; }
 .portada .ficha { margin-top: 0; }
