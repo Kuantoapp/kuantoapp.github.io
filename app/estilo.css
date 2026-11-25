@@ -770,13 +770,39 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .navegacion, .indice, .cierre, .acciones-portada, .globo, .grafico .valores { display: none; }
   .recomendaciones-breve { columns: auto; }
   .pagina { font-size: 10.5pt; }
-  .pagina .bloque, .pagina .bloque.lamina { width: auto; margin: 0; padding: 0 0 4mm; border: 0; }
+  /* En papel el informe fluye seguido: sin salto por capítulo, solo una línea que lo separa, y gráficos con un alto
+     máximo para que el que no cabe no deje media página en blanco al saltar a la siguiente. */
+  .pagina .bloque, .pagina .bloque.lamina { width: auto; margin: 0; padding: 0; border: 0; }
   .pagina .bloque.lamina.portada { min-height: 255mm; padding: 24mm 14mm; border-radius: 0; break-after: page; }
-  .puntos-clave, .resumen, .capitulo, .anexos { break-before: page; }
-  .tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2 { font-size: 22pt; }
-  .grafico, .ficha-rec, .esencial, .implica, .motor li, .claves li, .cifras-clave p { break-inside: avoid; }
-  .grafico { margin: 6mm 0; padding: 4mm; }
-  .detalle { border: 0; }
+  .puntos-clave, .resumen, .capitulo, .anexos { margin-top: 9mm; padding-top: 5mm; border-top: 1.5pt solid var(--acento); }
+  .puntos-clave { margin-top: 0; padding-top: 0; border-top: 0; }
+  .tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2 { font-size: 19pt; }
+  .pagina h2, .capitulo-n, .grafico header, .esencial h3, .implica h3, .ficha-rec h3, #calidad > h3 { break-after: avoid; }
+  .esencial li { break-inside: avoid; }
+  .pagina h2, .pagina h3, .grafico, .implica, .motor li, .claves li, .cifras-clave p, .scqa section, .ficha-rec dl div, .avisos-portada li { break-inside: avoid; }
+  /* las fichas de recomendación sí se parten, pero entre filas: una entera que no cabe dejaba media página vacía */
+  .fichas-rec { gap: 4mm; margin-top: 4mm; }
+  .ficha-rec { padding: 4mm 5mm; }
+  .ficha-rec h3 { font-size: 13pt; break-after: avoid; }
+  .evidencia { margin-bottom: 2mm; break-after: avoid; }
+  .ficha-rec dl { gap: 2mm; }
+  .avisos-portada { display: block; margin-top: 2mm; } /* en rejilla saltaba entera de página */
+  .avisos-portada li { padding: 2.5mm 2mm 2.5mm 12mm; font-size: 9.5pt; }
+  .avisos-portada li::before { top: 2mm; left: 1mm; font-size: 14pt; }
+  .grafico { margin: 3mm 0; padding: 2.5mm 4mm; }
+  .grafico header { margin-bottom: 1.5mm; }
+  .grafico h3 { font-size: 11.5pt; }
+  .grafico-sub, .grafico figcaption { font-size: 8pt; }
+  .grafico figcaption { margin-top: 1.5mm; padding-top: 1.5mm; }
+  .grafico img, .grafico svg { max-height: 68mm; } /* dos gráficos por página: el que no cabe no deja media página en blanco */
+  .esencial, .implica { margin: 4mm 0; }
+  .entradilla { margin: 3mm 0 5mm; }
+  .detalle { margin-top: 3mm; border: 0; }
+  .detalle > summary { min-height: 0; padding: 2mm 0; }
+  .capas details > :not(summary), .detalle p { margin-bottom: 2mm; }
+  .destacado { margin: 4mm 0 2mm; }
+  .cifra-grande { font-size: 26pt; }
+  p, li { orphans: 3; widows: 3; }
   .pagina a { color: inherit; text-decoration: none; }
   * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
