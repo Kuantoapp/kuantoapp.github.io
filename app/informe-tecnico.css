@@ -25,6 +25,7 @@ main.doc { display: block; } /* estilo.css pone main en flex para la herramienta
 .indice-doc li:not(:has(> a[href="#resumen-ejecutivo"], > a[href="#anexos"], > a[href="#notas"], > a[href="#referencias"])) { counter-increment: it; }
 .indice-doc li:not(:has(> a[href="#resumen-ejecutivo"], > a[href="#anexos"], > a[href="#notas"], > a[href="#referencias"]))::before { content: counters(it, ".") ". "; color: var(--acento); }
 .indice-doc a { color: var(--texto); }
+.indice-doc .pag { float: right; color: var(--texto-3); font-family: var(--fuente); font-size: 10pt; font-variant-numeric: tabular-nums; } /* lo escribe la segunda pasada */
 
 /* capítulos y apartados numerados (resumen, anexos, notas y referencias sin número) */
 .capitulo { margin-top: 10mm; padding-top: 5mm; border-top: 1.5pt solid var(--acento); counter-reset: sub; }
@@ -46,7 +47,7 @@ h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
 .doc .claves li::before { top: 2.5mm; font-size: 20pt; }
 .doc .scqa { margin-bottom: 4mm; gap: 4mm 8mm; }
 .doc .scqa h3 { font-size: 12pt; }
-.doc .scqa p { font-size: 9.5pt; }
+.doc .scqa p { font-size: 9.5pt; text-align: left; } /* columnas estrechas: justificado abre huecos */
 .doc .recomendaciones-breve { columns: auto; padding-left: 6mm; }
 
 /* resultados: titular de conclusión, resultado principal e implicaciones */
@@ -70,6 +71,7 @@ h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
 .doc .grafico-sub, .doc .grafico figcaption { font-size: 8pt; }
 .doc .grafico figcaption p { text-align: left; }
 .doc .grafico img, .doc .grafico svg { max-height: 82mm; }
+.doc #g01 img, .doc #g01 svg, .doc #g03 img, .doc #g03 svg, .doc #g05 img, .doc #g05 svg, .doc #g07 img, .doc #g07 svg { max-height: 150mm; } /* texto pequeño: a tamaño completo para que se lea en papel */
 
 /* recomendaciones */
 .doc .fichas-rec { gap: 4mm; }
@@ -92,7 +94,7 @@ sup.nota a { color: var(--acento); }
   .doc { max-width: none; padding: 0; }
   .portada { break-after: page; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .indice-doc { break-after: page; }
-  #resumen-ejecutivo, #metodologia, #resultados, #recomendaciones, #anexos { break-before: page; border-top: 0; margin-top: 0; padding-top: 0; }
+  #resumen-ejecutivo, #resultados, #recomendaciones, #anexos { break-before: page; border-top: 0; margin-top: 0; padding-top: 0; }
   .capitulo > h2, .sub > h3, h3.sin-numero, .titular, .rotulo, .rotulo-implica, .grafico header { break-after: avoid; }
   .doc p, .doc li, .doc blockquote, .resultado, .implica, .ficha-rec dl div, .motor li, .cifras-clave p, .scqa section { break-inside: avoid; }
   .doc * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
