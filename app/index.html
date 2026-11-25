@@ -43,20 +43,7 @@
       </figure>
     </section>
 
-    <section class="bloque perfiles" aria-labelledby="titulo-perfiles">
-      <h2 id="titulo-perfiles">No a todos les llega igual.</h2>
-      <p class="entradilla">Elige un hogar y mira lo que dicen los datos.</p>
-      <fieldset class="selector-perfil">
-        <legend>Hogar</legend>
-        <label><input type="radio" name="perfil-portada" value="smi" checked> Sola con el SMI</label>
-        <label><input type="radio" name="perfil-portada" value="madre"> Madre sola con un hijo</label>
-        <label><input type="radio" name="perfil-portada" value="pareja"> Pareja de 29 años</label> <!-- sin-fuente: edad que define el perfil -->
-      </fieldset>
-      <div class="paneles-perfil" aria-live="polite">
-        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">8,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">14,1 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
-        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">7 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">11,41 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">9,8 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
-        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que los sueldos no llegan a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">12,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">3,5 %</strong> de los casos en que viven más lejos, la hora extra de viaje les rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
-      </div>
+    <section class="bloque cifras" aria-label="Kuanto en dos cifras">
       <ul class="cifras-heroe">
         <li><span class="cifra">199</span> zonas comparadas: los otros 178 municipios y los 21 distritos de la capital</li> <!-- fuente: datos/zonas.geojson -->
         <li><span class="cifra">1 de cada 3</span> hogares que viven de alquiler en la Comunidad dedica más del 40 % de lo que ingresa a la vivienda</li> <!-- fuente: ECV 2025, INE, elaboración propia: 36,0 %, entre 28,6 y 43,4 %; estimado -->
@@ -86,17 +73,6 @@
       <p class="remate">Con todo eso, Kuanto te dice también cuánto vale cada hora de viaje: lo que ganas o pierdes al mes por vivir más lejos o más cerca que en tu zona de referencia.</p>
     </section>
 
-    <section class="bloque prueba" aria-labelledby="titulo-prueba">
-      <h2 id="titulo-prueba">Lo probamos frente a una IA.</h2>
-      <p>Hicimos a Gemini y a ChatGPT la pregunta que haría cualquiera antes de buscar piso, en su versión gratuita y una vez cada uno, para dos perfiles que trabajan en Getafe.</p> <!-- fuente: prueba del 25-11-2026, docs/kuanto-frente-a-ia.md -->
-      <ul class="serie">
-        <li><span class="cifra">2,1 y 3,9 %</span> de error medio en el sueldo neto, Gemini y ChatGPT; Kuanto aplica el IRPF y las cotizaciones de 2026.</li> <!-- fuente: docs/kuanto-frente-a-ia.md; estimado -->
-        <li><span class="cifra">3 de 4</span> respuestas aconsejaban un abono 14,50 € al mes más caro del necesario: el B2 en vez del interzonal B1-B2.</li> <!-- fuente: BOCM-20251231-2 y docs/kuanto-frente-a-ia.md -->
-        <li><span class="cifra">4 a 6</span> zonas miraron los asistentes; Kuanto da cifra en 99 de las 199 para esos perfiles.</li> <!-- fuente: docs/kuanto-frente-a-ia.md; estimado -->
-      </ul>
-      <p>Los asistentes aciertan los precios de los abonos y proponen zonas parecidas a las de Kuanto, y son solo cuatro respuestas, que ilustran y no miden. Lo que añade Kuanto: cada cifra con su fuente en la metodología, el mismo resultado para la misma entrada y tu sueldo sin salir de tu navegador.</p>
-    </section>
-
     <section class="bloque calculo" aria-labelledby="titulo-calculo">
       <h2 id="titulo-calculo">Así sale la cifra.</h2>
       <p class="formula">
@@ -108,6 +84,33 @@
         <p><strong>El alquiler</strong> es el precio por metro cuadrado de los contratos por la superficie de tu vivienda, 69 m² si no la cambias, actualizado con el IPC de alquiler y llevado al precio de los contratos nuevos con la Estadística de viviendas declaradas en el IRPF 2024 de la Agencia Tributaria.</p> <!-- fuente: SERPAVI, INE y AEAT, datos/hogares.json y datos/alquiler.json; estimado -->
         <p><strong>La cesta básica</strong> es lo que gastan de media los hogares de Madrid en comida, suministros, internet y móvil, ajustado al tamaño del tuyo.</p> <!-- fuente: Encuesta de Presupuestos Familiares del INE, catálogo de la Comunidad de Madrid; estimado -->
       </div>
+    </section>
+
+    <section class="bloque perfiles" aria-labelledby="titulo-perfiles">
+      <h2 id="titulo-perfiles">No a todos les llega igual.</h2>
+      <p class="entradilla">Elige un hogar y mira lo que dicen los datos.</p>
+      <fieldset class="selector-perfil">
+        <legend>Hogar</legend>
+        <label><input type="radio" name="perfil-portada" value="smi" checked> Sola con el SMI</label>
+        <label><input type="radio" name="perfil-portada" value="madre"> Madre sola con un hijo</label>
+        <label><input type="radio" name="perfil-portada" value="pareja"> Pareja de 29 años</label> <!-- sin-fuente: edad que define el perfil -->
+      </fieldset>
+      <div class="paneles-perfil" aria-live="polite">
+        <p class="panel-perfil" data-perfil="smi"><span><strong class="cifra">18 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">8,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">14,1 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+        <p class="panel-perfil" data-perfil="madre"><span><strong class="cifra">7 de 158</strong> zonas con alquiler en las que el sueldo no llega a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">11,41 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">9,8 %</strong> de los casos en que vive más lejos, la hora extra de viaje le rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+        <p class="panel-perfil" data-perfil="pareja"><span><strong class="cifra">0 de 158</strong> zonas con alquiler en las que los sueldos no llegan a fin de mes, con un trabajo en un destino típico</span><span><strong class="cifra">12,80 €</strong> netos por cada hora trabajada</span><span><strong class="cifra">3,5 %</strong> de los casos en que viven más lejos, la hora extra de viaje les rinde al menos lo que una de trabajo</span></p> <!-- fuente: datos/analisis.json, los mismos perfiles que saber-mas.html#perfiles; estimado -->
+      </div>
+    </section>
+
+    <section class="bloque prueba" aria-labelledby="titulo-prueba">
+      <h2 id="titulo-prueba">Lo probamos frente a una IA.</h2>
+      <p>Hicimos a Gemini y a ChatGPT la pregunta que haría cualquiera antes de buscar piso, en su versión gratuita y una vez cada uno, para dos perfiles que trabajan en Getafe.</p> <!-- fuente: prueba del 25-11-2026, docs/kuanto-frente-a-ia.md -->
+      <ul class="serie">
+        <li><span class="cifra">2,1 y 3,9 %</span> de error medio en el sueldo neto, Gemini y ChatGPT; Kuanto aplica el IRPF y las cotizaciones de 2026.</li> <!-- fuente: docs/kuanto-frente-a-ia.md; estimado -->
+        <li><span class="cifra">3 de 4</span> respuestas aconsejaban un abono 14,50 € al mes más caro del necesario: el B2 en vez del interzonal B1-B2.</li> <!-- fuente: BOCM-20251231-2 y docs/kuanto-frente-a-ia.md -->
+        <li><span class="cifra">4 a 6</span> zonas miraron los asistentes; Kuanto da cifra en 99 de las 199 para esos perfiles.</li> <!-- fuente: docs/kuanto-frente-a-ia.md; estimado -->
+      </ul>
+      <p>Los asistentes aciertan los precios de los abonos y proponen zonas parecidas a las de Kuanto, y son solo cuatro respuestas, que ilustran y no miden. Lo que añade Kuanto: cada cifra con su fuente en la metodología, el mismo resultado para la misma entrada y tu sueldo sin salir de tu navegador.</p>
     </section>
 
     <section class="bloque fiarse" aria-labelledby="titulo-fiarse">

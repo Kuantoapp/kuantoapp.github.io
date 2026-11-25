@@ -581,6 +581,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #portada .heroe .entradilla { margin: clamp(12px, 2.5svh, 24px) 0 clamp(16px, 3.5svh, 32px); }
   #portada .plano-lienzo { max-height: 62svh; }
 }
+.bloque.cifras .cifras-heroe { margin-top: 0; padding-top: 0; border-top: 0; } /* bloque propio bajo el héroe: su borde ya separa */
 @media (min-width: 56.0625rem) and (max-height: 42rem) {
   #portada .heroe { padding-block: 16px; }
 }
