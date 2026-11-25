@@ -333,7 +333,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .notas-calculo strong { color: var(--texto); }
 .pagina code { font-size: 0.9em; overflow-wrap: anywhere; }
 
-/* Cuánto fiarte: los avisos, uno por línea, en el mismo tono que «Antes de leer el mapa». */
+/* Lo que Kuanto te resuelve: una pregunta por línea, en el mismo tono que «Antes de leer el mapa». */
 .avisos-portada { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; padding: 0; list-style: none; }
 .avisos-portada li { padding: 20px 0; border-top: 1px solid var(--linea); color: var(--texto-2); }
 .fuentes-portada { margin: 32px 0 0; color: var(--texto-3); font-size: 15px; }
@@ -583,9 +583,9 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #portada .cifras-heroe { margin-top: clamp(8px, 2svh, 32px); padding-top: clamp(16px, 2.5svh, 32px); }
   #portada .cifras-heroe .cifra { font-size: clamp(40px, min(6.5vw, 7svh), 80px); }
 }
-/* La lámina del dato lleva la prueba frente a una IA en lugar de una figura: sus cifras, en una columna. */
-.dato-prueba h3 { margin: 0 0 12px; font-size: 21px; font-weight: 600; line-height: 1.3; }
-.dato .serie { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-block: 32px; }
+@media (min-width: 56.0625rem) and (max-height: 42rem) {
+  #portada .cifras-heroe { margin-top: 8px; padding-top: 12px; font-size: 14px; }
+}
 
 /* --- Filas numeradas (cuatro cuentas, comprobaciones, avisos): se marcan como una hoja al pasar ------------- */
 .ficha-tecnica, .avisos-portada { counter-reset: fila; }
