@@ -36,7 +36,7 @@ El 25-11-2026 se pasó cada pregunta una sola vez, en un chat nuevo.
 
 > Hola, soy madre soltera, tengo 34 años y un hijo. Trabajo de administrativa en Getafe, de lunes a viernes, y gano 25.290 € brutos al año. Voy en transporte público. Busco un piso de alquiler en la Comunidad de Madrid para los dos. ¿Qué zonas me recomiendas para que me llegue el dinero y no tarde mucho en ir al trabajo? Dime unas cuantas zonas con el alquiler, el transporte, la comida y los gastos básicos, y lo que me sobraría al mes.
 
-Son dos de los [seis perfiles precalculados](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#perfiles) de la web, con Getafe como lugar de trabajo.
+Son dos de los [seis perfiles precalculados](https://kuantoapp.github.io/saber-mas.html#perfiles) de la web, con Getafe como lugar de trabajo.
 
 | Asistente | Fuentes que dijo usar, perfil A | Perfil B |
 |---|---|---|
@@ -126,7 +126,7 @@ Para la misma persona y zona hay hasta unos 300 € al mes de diferencia (fuente
 - **Compara todas las zonas con datos.** En estos perfiles da cifra en 99 de las 199 zonas y enseña las horas junto al dinero; los asistentes miraron entre 4 y 6 (fuente: la consulta de arriba y las respuestas de la prueba).
 - **Privacidad.** En la web, el sueldo y la situación familiar no salen del navegador. Para preguntar a un asistente hay que contárselos a su proveedor.
 
-**Dónde Kuanto se queda corto.** El alquiler es un suelo, usa 69 m² por defecto también para quien vive sola, las zonas donde más sobra pueden quedar a unas 70 horas de viaje al mes y no propone barrios dentro de un municipio ni ayudas a medida (fuente: la consulta de arriba y la [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites); estimado).
+**Dónde Kuanto se queda corto.** El alquiler es un suelo, usa 69 m² por defecto también para quien vive sola, las zonas donde más sobra pueden quedar a unas 70 horas de viaje al mes y no propone barrios dentro de un municipio ni ayudas a medida (fuente: la consulta de arriba y la [nota metodológica](https://kuantoapp.github.io/metodologia.html#titulo-limites); estimado).
 
 ## Kuanto y la IA juntos, con MCP
 

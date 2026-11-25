@@ -65,4 +65,4 @@ El repositorio está pensado para bucles agénticos: los agentes cierran el cicl
 
 ## Web publicada
 
-La carpeta `app/` se publica tal cual en <https://yeraybc.github.io/DataMad-hackaton-2026/>. La publica [`.github/workflows/pages.yml`](.github/workflows/pages.yml) en cada push a `main` que cambie `app/`; para publicar sin cambios, *Actions → Pages → Run workflow*. Requiere el repositorio público y Pages con origen «GitHub Actions» (decisión D5). Solo se publica `app/`: los ejemplos de `tests/fixtures/` no están en la web.
+La carpeta `app/` se publica tal cual en <https://kuantoapp.github.io/>. La publica [`.github/workflows/pages.yml`](.github/workflows/pages.yml) en cada push a `main` que cambie `app/`; para publicar sin cambios, *Actions → Pages → Run workflow*. Requiere el repositorio público y Pages con origen «GitHub Actions» (decisión D5). Solo se publica `app/`: los ejemplos de `tests/fixtures/` no están en la web.

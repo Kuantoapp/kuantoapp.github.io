@@ -10,7 +10,7 @@ from mesobra import coche, pipeline_analisis, pipeline_euros, sdm
 
 RAIZ = Path(__file__).parent.parent
 APP_DATOS = RAIZ / "app" / "datos"
-BASE = "https://yeraybc.github.io/DataMad-hackaton-2026/datos/"
+BASE = "https://kuantoapp.github.io/datos/"
 ODBL = "https://opendatacommons.org/licenses/odbl/1-0/"
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 ESQUEMA_KPI = "https://raw.githubusercontent.com/smart-data-models/dataModel.KeyPerformanceIndicator/master/KeyPerformanceIndicator/schema.json"

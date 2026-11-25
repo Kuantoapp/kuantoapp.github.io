@@ -1,6 +1,6 @@
 # Ideas
 
-Esta carpeta es el historial de cómo se eligió Kuanto. Guarda las fichas de las ideas que el equipo valoró al empezar el datathon y no se actualiza: lo vigente está en la [web](https://yeraybc.github.io/DataMad-hackaton-2026/) y en [`docs/`](../docs/README.md).
+Esta carpeta es el historial de cómo se eligió Kuanto. Guarda las fichas de las ideas que el equipo valoró al empezar el datathon y no se actualiza: lo vigente está en la [web](https://kuantoapp.github.io/) y en [`docs/`](../docs/README.md).
 
 | Carpeta | Qué contiene |
 |---|---|

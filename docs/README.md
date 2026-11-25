@@ -7,7 +7,7 @@ Qué documento leer según lo que busques. Si no sabes nada de Kuanto, empieza p
 | Si eres… | Lee |
 |---|---|
 | Alguien que quiere saber qué es y cómo se usa | [Cómo funciona Kuanto](como-funciona.md), [preguntas frecuentes](preguntas-frecuentes.md), [Kuanto frente a preguntar a una IA](kuanto-frente-a-ia.md) y [glosario](glosario.md) |
-| Economista o analista | [Datos y fuentes](datos-y-fuentes.md), [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) (cálculo, supuestos, límites y validación), [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html), [verificaciones](verificaciones/README.md) y [decisiones clave](decisiones-clave.md) |
+| Economista o analista | [Datos y fuentes](datos-y-fuentes.md), [nota metodológica](https://kuantoapp.github.io/metodologia.html) (cálculo, supuestos, límites y validación), [informe de análisis](https://kuantoapp.github.io/informe.html), [verificaciones](verificaciones/README.md) y [decisiones clave](decisiones-clave.md) |
 | Quien reutiliza los datos | [Datos y fuentes](datos-y-fuentes.md), [datos abiertos de Kuanto](../app/datos/LEEME.md) (licencias, cita y diccionario de cada fichero), [fuentes descargadas](../data/README.md) y [diccionarios de los ficheros grandes](datos/) |
 | Desarrollador | [Arquitectura](arquitectura.md), [trazabilidad](trazabilidad.md), [reproducir Kuanto](reproducir.md), [CONTRIBUTING.md](../CONTRIBUTING.md) y [AGENTS.md](../AGENTS.md) |
 | Diseñador | La dirección visual, resumida en [decisiones clave](decisiones-clave.md#la-publicación) y completa en el [registro de decisiones](decisiones.md) (entradas del 2026-11-21 y 2026-11-24), y las pautas en la skill [`dm-diseno-web`](../.claude/skills/dm-diseno-web/SKILL.md) |
