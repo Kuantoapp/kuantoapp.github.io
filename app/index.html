@@ -230,13 +230,13 @@
           <legend>Hogar</legend>
           <label>Perfil
             <select name="perfil">
-              <option value="solo">Vivo solo en un piso entero</option>
+              <option value="solo">Vivo solo, sin compartir piso</option>
               <option value="comparte">Comparto piso</option>
-              <option value="pareja">Pareja con dos sueldos</option>
-              <option value="monoparental">Familia monoparental</option>
+              <option value="pareja">Vivo en pareja y trabajamos los dos</option>
+              <option value="monoparental">Vivo solo con mis hijos</option>
             </select>
           </label>
-          <p class="ayuda">El perfil rellena los datos siguientes; ajústalos si no son los tuyos. Lo que no encaja con él no se puede elegir: quien vive solo no tiene pareja ni hijos en casa, la pareja son dos adultos y la familia monoparental, un adulto con algún hijo.</p>
+          <p class="ayuda">Elige el que más se parezca a tu caso: rellena los datos de abajo y luego puedes cambiarlos. Si vives solo no hay pareja ni hijos; en pareja sois dos adultos; solo con tus hijos, un adulto con al menos un hijo.</p>
           <label>Adultos <span class="consejo">Tú y, si la hay, tu pareja.</span>
             <select name="adultos"><option value="1">Uno</option><option value="2">Dos</option></select>
           </label>
@@ -254,10 +254,10 @@
             </select>
           </label>
           <p class="ayuda">Con dos hijos solo es numerosa en los supuestos del art. 2.2 de la Ley 40/2003 (por ejemplo, un hijo con discapacidad); con tres o más hijos lo es por regla general (art. 2.1). Aplica los precios de familia numerosa del BOCM a todo el hogar.</p>
-          <label>Vivienda (m²) <span class="consejo">Si no lo sabes, deja el que trae el perfil.</span> <input name="m2" type="number" inputmode="decimal"></label>
+          <label>Vivienda (m²) <span class="consejo">Si no lo sabes, deja el que viene por defecto.</span> <input name="m2" type="number" inputmode="decimal"></label>
           <p class="ayuda">El tamaño por defecto es el mismo para todos los perfiles y sobrestima el alquiler de quien vive solo.</p>
-          <label>Hogares que pagáis el alquiler, el tuyo incluido <input name="personas" type="number" inputmode="numeric"></label>
-          <p class="ayuda">Tu pareja y tus hijos son tu hogar. Si no compartes piso, pon uno. En los gastos del piso, cada hogar más cuenta como un adulto.</p>
+          <label>Integrantes que pagáis el alquiler, tú incluido <input name="personas" type="number" inputmode="numeric"></label>
+          <p class="ayuda">Cuenta cuántos pagáis el alquiler por separado: si sois 3 compañeros de piso, pon 3; si vives solo, en pareja o con tu familia, pon 1. En los gastos del piso, cada uno de más cuenta como un adulto.</p> <!-- sin-fuente: ejemplo de cómo rellenar el campo -->
         </fieldset>
         </div>
       </div>
@@ -284,18 +284,18 @@
           <label>Modo
             <select name="modo"><option value="tp">Transporte público</option></select>
           </label>
-          <label>Viajes al mes de ocio y fin de semana
+          <label hidden>Viajes al mes de ocio y fin de semana
             <select name="nolab">
               <option value="0">Ninguno</option>
               <option value="8">Unos 8</option>
               <option value="16">Unos 16</option> <!-- sin-fuente: opción de un supuesto del cálculo, decisiones de 2026-11-18 -->
             </select>
           </label>
-          <p class="ayuda">Se suponen por la misma ruta del trabajo y se pagan con el título más barato del mes.</p>
+          <p class="ayuda" hidden>Se suponen por la misma ruta del trabajo y se pagan con el título más barato del mes.</p>
         </fieldset>
         </div>
       </div>
-      <div class="menu" data-tarjeta="4" data-titulo="Zona de referencia" data-entradilla="La zona con la que se compara el resto.">
+      <div class="menu" data-tarjeta="4" data-titulo="Zona de referencia" data-entradilla="Tu punto de partida: cada zona del mapa se compara con esta para ver si vivir allí te compensa.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-referencia">Zona de referencia</button>
         <div class="menu-panel" id="m-referencia">
         <fieldset>
@@ -309,9 +309,10 @@
       </div>
     </form>
     <form id="escenario" class="menus" novalidate autocomplete="off">
-      <div class="menu" data-tarjeta="6" data-titulo="Otros escenarios" data-entradilla="Opcional: mira qué pasaría si algo cambia, o pasa ya al mapa. Desde el mapa también puedes añadirlos.">
+      <div class="menu" data-tarjeta="6" data-titulo="Otros escenarios" data-entradilla="Opcional. Te recomendamos usarlo después de ver el mapa con tus datos: vuelve aquí para probar qué pasaría si algo cambia. También puedes abrirlo desde el mapa.">
         <button type="button" class="menu-boton" aria-expanded="false" aria-controls="m-escenario">Otros escenarios</button>
         <div class="menu-panel" id="m-escenario">
+        <p class="aviso">Opcional: mejor después de ver el mapa con tus datos.</p>
         <fieldset>
           <legend>Otros escenarios: ¿y si…?</legend>
           <button type="button" id="quitar-escenario" disabled>Quitar el escenario</button>
