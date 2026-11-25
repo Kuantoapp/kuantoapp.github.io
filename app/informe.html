@@ -26,7 +26,6 @@
 
   <main class="pagina informe tecnico">
     <header class="bloque lamina portada" aria-labelledby="titulo-informe">
-      <p class="antetitulo">Informe técnico · Kuanto · DataMad 2026</p>
       <h1 id="titulo-informe">¿Dónde puede vivir quien trabaja en la Comunidad de Madrid?</h1>
       <p class="entradilla">Alquiler, sueldos, transporte y ayudas, zona a zona: qué dicen los datos públicos, qué no pueden decir todavía y qué puede hacer la Administración.</p>
       <dl class="ficha">
@@ -42,11 +41,11 @@
       <h2 id="titulo-puntos">Puntos clave</h2>
       <ol class="claves">
         <li><strong>El alquiler pesa más en el centro y el sur de la capital.</strong> En la zona mediana, el alquiler mediano equivale al 15,3 % de la renta media del hogar; en Centro y Puente de Vallecas, al 24,0 % (fuente: SERPAVI, MIVAU, y ADRH, INE, 2024). <a href="#esfuerzo">Capítulo 4</a></li><!-- sin-fuente: número de capítulo en el enlace -->
-        <li><strong>En diez años el peso apenas cambia en conjunto, pero sube en 12 de los 21 distritos.</strong> Son contratos declarados, antiguos incluidos: quien firma hoy puede pagar bastante más (fuente: SERPAVI y ADRH, 2015-2024; estimado). <a href="#cambio">Capítulo 5</a></li>
+        <li><strong>En diez años el peso apenas cambia en conjunto, pero sube más que su error en 12 de los 21 distritos.</strong> Son contratos declarados, antiguos incluidos: quien firma hoy puede pagar bastante más (fuente: SERPAVI y ADRH, 2015-2024; estimado). <a href="#cambio">Capítulo 5</a></li>
         <li><strong>Con el SMI no sobra nada en 18 de 158 zonas,</strong> entre 8 y 33 según dónde caiga el alquiler, y vivir más lejos solo compensa el tiempo de viaje en uno de cada siete pares de casa y trabajo (fuente: <code>datos/analisis.json</code>, bloque <code>titulares</code>; estimado). <a href="#sueldos">Capítulo 6</a></li>
         <li><strong>Uno de cada tres hogares inquilinos está sobrecargado:</strong> el 36,0 % dedica a la vivienda más del 40 % de su renta, entre el 28,6 y el 43,4 % con un 95 % de confianza (fuente: ECV 2025, INE; estimado). <a href="#sobrecarga">Capítulo 7</a></li>
-        <li><strong>En el Bono Alquiler Joven, la proporción aceptada no cambia de forma apreciable con el peso del alquiler</strong> (p = 0,82). Que se pida más donde el alquiler aprieta es solo un indicio (fuente: Bono Alquiler Joven 2022; <code>bono_inferencia.json</code>; estimado). <a href="#bono">Capítulo 8</a></li>
-        <li><strong>El diseño del Bono y del abono decide más de lo que parece.</strong> Con 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope del Bono en 16 de 138 municipios, 14 por menos de 80 €; y sin prórroga del descuento, ir a trabajar costaría en 2027 entre 9,23 y 32,76 € más al mes (fuente: <code>datos/analisis.json</code>, bloque <code>simulacion</code>; estimado). <a href="#simulacion">Capítulos 9 y 10</a></li>
+        <li><strong>No se aprecia que el Bono Alquiler Joven acepte una proporción distinta donde el alquiler pesa más</strong> (p = 0,82). Que se pida más donde el alquiler aprieta es solo un indicio (fuente: Bono Alquiler Joven 2022; <code>bono_inferencia.json</code>; estimado). <a href="#bono">Capítulo 8</a></li>
+        <li><strong>El diseño del Bono y del abono decide más de lo que parece.</strong> Con 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope del Bono de la ronda de 2024 en 16 de 138 municipios, 14 por menos de 80 €; y sin prórroga del descuento, ir a trabajar costaría en 2027 entre 9,23 y 32,76 € más al mes (fuente: <code>datos/analisis.json</code>, bloque <code>simulacion</code>; estimado). <a href="#simulacion">Capítulos 9 y 10</a></li>
       </ol>
     </section>
 
@@ -56,7 +55,7 @@
       <div class="cifras-clave" role="list">
         <p role="listitem"><span class="cifra">15,3 %</span> de la renta del hogar se va en el alquiler en la zona mediana (fuente: SERPAVI y ADRH, 2024)</p>
         <p role="listitem"><span class="cifra">36,0 %</span> de los hogares inquilinos, sobrecargados; intervalo de 28,6 a 43,4 (fuente: ECV 2025, INE; estimado)</p>
-        <p role="listitem"><span class="cifra">16 de 138</span> municipios fuera del tope del Bono para quien cobra el SMI (fuente: bloque <code>simulacion</code>; estimado)</p>
+        <p role="listitem"><span class="cifra">16 de 138</span> municipios fuera del tope del Bono de la ronda de 2024 (RD 42/2022), con 69 m² y el SMI (fuente: bloque <code>simulacion</code>; estimado)</p>
         <p role="listitem"><span class="cifra">9 a 33 €</span> más al mes si en 2027 se acaba el descuento del abono (fuente: bloque <code>simulacion</code>; estimado)</p>
       </div>
       <div class="scqa">
@@ -70,11 +69,11 @@
         <li><a href="#r1">Publicar por municipio el motivo del rechazo del Bono</a></li>
         <li><a href="#r2">Concretar qué renta cuenta en el Bono para quien no presenta la declaración</a></li>
         <li><a href="#r3">Anunciar pronto si se prorroga el descuento del abono en 2027</a></li>
-        <li><a href="#r4">Publicar el alquiler de los contratos nuevos y por sección censal</a></li>
+        <li><a href="#r4">Publicar el alquiler de los contratos firmados cada año</a></li>
         <li><a href="#r5">Medir la sobrecarga por zona con una fuente que lo permita</a></li>
-        <li><a href="#r6">Contar la solicitud del Bono donde vive quien la pide</a></li>
-        <li><a href="#r7">Revisar el tope de alquiler del Bono con el alquiler de hoy</a></li>
-        <li><a href="#r8">Evaluar varias convocatorias antes de repartir el crédito por territorio</a></li>
+        <li><a href="#r6">Publicar el perfil de quien pide el Bono y compararlo con quien alquila</a></li>
+        <li><a href="#r7">Evaluar varias convocatorias antes de repartir el crédito por territorio</a></li>
+        <li><a href="#r8">Revisar el tope de alquiler en la primera convocatoria del RD 326/2026</a></li>
       </ol>
     </section>
 
@@ -172,7 +171,7 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>Un mismo alquiler no pesa lo mismo en todas partes: el esfuerzo depende tanto de la renta como del precio. Una ayuda que solo mire el precio llegará antes al norte de la capital, donde el alquiler es más caro y la renta más alta, que al sur, donde pesa más.</p>
+        <p>Un mismo alquiler no pesa lo mismo en todas partes: el esfuerzo depende tanto de la renta como del precio. Un criterio territorial basado solo en el precio señalaría zonas distintas de las de mayor esfuerzo.</p>
       </aside>
       <details class="detalle"><summary>Detalle técnico: cómo se mide y cómo leer el mapa</summary>
               <div class="capas">
@@ -206,7 +205,7 @@
 
     <section class="bloque capitulo" id="cambio" aria-labelledby="titulo-cambio">
       <p class="capitulo-n">Capítulo 5</p><!-- sin-fuente: número de capítulo -->
-      <h2 id="titulo-cambio">Con los contratos declarados, el peso del alquiler apenas cambia entre 2015 y 2024 en conjunto, pero sube en 12 de los 21 distritos; quien firma hoy puede pagar bastante más</h2><!-- [^cambio] -->
+      <h2 id="titulo-cambio">Con los contratos declarados, el peso del alquiler apenas cambia entre 2015 y 2024 en conjunto, pero sube más que su error en 12 de los 21 distritos; quien firma hoy puede pagar bastante más</h2><!-- [^cambio] -->
       <div class="esencial">
         <h3>Lo esencial</h3>
         <ul>
@@ -267,7 +266,7 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>Mandar a vivir lejos a quien cobra poco no le sale a cuenta: lo que ahorra en alquiler se le va en transporte y en tiempo. Las políticas de vivienda asequible funcionan mejor cerca de donde está el empleo.</p>
+        <p>Para quien cobra el SMI, vivir más lejos solo compensa el tiempo de viaje en uno de cada siete pares de casa y trabajo, si cada hora de viaje se valora como una hora de trabajo (fuente: bloque <code>titulares</code>; estimado). Abaratar la vivienda lejos del empleo le ayuda poco si no baja también el tiempo de viaje.</p>
       </aside>
       <details class="detalle"><summary>Detalle técnico: los seis sueldos</summary>
               <div class="capas">
@@ -357,12 +356,12 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>Con un solo año y sin el motivo del rechazo no se puede saber si el crédito se agotó antes donde hacía más falta. Ver las <a href="#r1">recomendaciones 1</a>, <a href="#r6">6</a> y <a href="#r8">8</a>.</p><!-- sin-fuente: números de recomendación -->
+        <p>Con un solo año y sin el motivo del rechazo no se puede saber si el crédito se agotó antes donde hacía más falta. Ver las <a href="#r1">recomendaciones 1</a>, <a href="#r6">6</a> y <a href="#r7">7</a>.</p><!-- sin-fuente: números de recomendación -->
       </aside>
       <details class="detalle"><summary>Detalle técnico: el Bono frente a la necesidad</summary>
               <div class="capas">
         <h3>Qué dice la estadística</h3>
-        <blockquote>En los municipios donde el alquiler se come más renta, más jóvenes piden el Bono. La proporción rechazada no cambia con el esfuerzo, así que hay más rechazos porque hay más solicitudes. La relación es débil y en parte se explica porque allí alquilan más jóvenes: es una pista, no una prueba.</blockquote>
+        <blockquote>En los municipios donde el alquiler se come más renta, más jóvenes piden el Bono. No se aprecia que la proporción rechazada cambie con el esfuerzo, así que hay más rechazos porque hay más solicitudes (fuente: <code>bono_inferencia.json</code>; estimado). La relación es débil y en parte se explica porque allí alquilan más jóvenes: es una pista, no una prueba.</blockquote>
         <details><summary>Las cifras del modelo</summary>
           <p>De dónde sale esa lectura, con las cifras de <code>bono_inferencia.json</code> (<code>python -m mesobra.bono_inferencia</code>):</p>
           <ul>
@@ -414,7 +413,7 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>Los dos ajustes más baratos de la ayuda no cuestan dinero: concretar qué renta cuenta para quien no declara y revisar un tope que deja fuera a municipios por pocos euros. Ver las <a href="#r2">recomendaciones 2</a> y <a href="#r7">7</a>.</p><!-- sin-fuente: números de recomendación -->
+        <p>Concretar qué renta cuenta para quien no declara no cuesta dinero; revisar el tope amplía quién puede pedir la ayuda y, con el crédito fijo, cuántos se quedan fuera. Ver las <a href="#r2">recomendaciones 2</a> y <a href="#r8">8</a>.</p><!-- sin-fuente: números de recomendación -->
       </aside>
       <details class="detalle"><summary>Detalle técnico: simulación del Bono</summary>
               <div class="dato">
@@ -472,7 +471,7 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>El coste cae más sobre quien vive en las coronas de fuera, que es quien más lejos está de su trabajo. Ver la <a href="#r3">recomendación 3</a>.</p><!-- sin-fuente: número de recomendación -->
+        <p>En euros, la subida es mayor en las coronas de fuera, donde el abono es más caro. Ver la <a href="#r3">recomendación 3</a>.</p><!-- sin-fuente: número de recomendación -->
       </aside>
       <details class="detalle"><summary>Detalle técnico: fin del descuento</summary>
               <div class="capas">
@@ -506,9 +505,9 @@
         </li>
         <li class="ficha-rec" id="r2">
           <h3>Concretar qué renta cuenta en el Bono para quien no presenta la declaración</h3>
-          <p class="evidencia solida">Evidencia sólida, en una simulación</p>
+          <p class="evidencia solida">Sólida en la norma; efecto estimado</p>
           <dl>
-            <div><dt>Qué hacer</dt><dd>Decir en la próxima convocatoria qué cifra del certificado de imputaciones se compara con el límite de tres veces el IPREM cuando no hay declaración, igual que el art. 10.g lo hace para quien declara (fuente: Acuerdo de 26-12-2024, BDNS 805618).</dd></div>
+            <div><dt>Qué hacer</dt><dd>Decir en la próxima convocatoria qué cifra del certificado de imputaciones se compara con el límite de renta que fije la convocatoria cuando no hay declaración, igual que el art. 10.g lo hace para quien declara (fuente: Acuerdo de 26-12-2024, BDNS 805618).</dd></div>
             <div><dt>A quién compete</dt><dd>Consejería de Vivienda, al redactar el Acuerdo del Consejo de Gobierno.</dd></div>
             <div><dt>Lo sostiene</dt><dd>Para un joven o una pareja con el sueldo mediano, la respuesta cambia el resultado de 122 municipios a ninguno (fuente: bloque <code>simulacion</code>; estimado). El Acuerdo de 26-12-2024 parte de la base imponible general y del ahorro (art. 10.g), pero para quien no presenta la declaración remite al certificado de imputaciones sin concretar la cifra (<a href="#simulacion">cap. 9</a>).</dd></div>
             <div><dt>Coste</dt><dd>Nulo: es una frase en la norma.</dd></div>
@@ -516,19 +515,19 @@
         </li>
         <li class="ficha-rec" id="r3">
           <h3>Anunciar pronto si el descuento del abono sigue en 2027</h3>
-          <p class="evidencia solida">Evidencia sólida, con un supuesto de ruta</p>
+          <p class="evidencia solida">Sólida en la norma; euros estimados</p>
           <dl>
             <div><dt>Qué hacer</dt><dd>Decidir y publicar con antelación si se prorroga el descuento, y por qué parte, para que los hogares de las coronas de fuera puedan prever el gasto.</dd></div>
-            <div><dt>A quién compete</dt><dd>Gobierno de España, que financia una parte con el Real Decreto-ley 17/2025, y Consorcio Regional de Transportes, por el resto.</dd></div>
+            <div><dt>A quién compete</dt><dd>Gobierno de España, que financia una parte con el Real Decreto-ley 17/2025, y Comunidad de Madrid, a través del Consorcio Regional de Transportes, por el resto.</dd></div>
             <div><dt>Lo sostiene</dt><dd>Sin prórroga, ir a trabajar costaría entre 9,23 y 32,76 € más al mes según la corona, y 9,30 € con el Abono Joven (fuente: bloque <code>simulacion</code>; BOCM-20251231-2 y BOCM-20251231-3; estimado) (<a href="#descuento">cap. 10</a>).</dd></div>
             <div><dt>Qué falta</dt><dd>Cuántas personas usan cada abono en cada corona, que no está en los datos abiertos usados aquí.</dd></div>
           </dl>
         </li>
         <li class="ficha-rec" id="r4">
-          <h3>Publicar el alquiler de los contratos nuevos y por sección censal</h3>
+          <h3>Publicar el alquiler de los contratos firmados cada año</h3>
           <p class="evidencia solida">Evidencia sólida</p>
           <dl>
-            <div><dt>Qué hacer</dt><dd>Añadir al SERPAVI una serie de los contratos firmados cada año y bajar de municipio y distrito a sección censal donde el secreto estadístico lo permita.</dd></div>
+            <div><dt>Qué hacer</dt><dd>Añadir al SERPAVI una serie de los contratos firmados cada año, con el mismo detalle territorial que ya publica para el conjunto de los contratos declarados.</dd></div>
             <div><dt>A quién compete</dt><dd>Ministerio de Vivienda y Agenda Urbana, que publica el SERPAVI.</dd></div>
             <div><dt>Lo sostiene</dt><dd>El SERPAVI mezcla contratos antiguos y nuevos y va por detrás del mercado: en la provincia de Madrid, en 2024, el índice de los contratos en vigor subió un 2,7 % y el de los nuevos un 9,2 % (fuente: INE, IPVA, tabla 59005; nota metodológica) (<a href="#cambio">cap. 5</a>).</dd></div>
             <div><dt>Coste</dt><dd>Medio: el dato está en las declaraciones del IRPF.</dd></div>
@@ -545,26 +544,16 @@
           </dl>
         </li>
         <li class="ficha-rec" id="r6">
-          <h3>Contar la solicitud del Bono donde vive quien la pide</h3>
+          <h3>Publicar el perfil de quien pide el Bono y compararlo con quien alquila</h3>
           <p class="evidencia solida">Evidencia sólida</p>
           <dl>
-            <div><dt>Qué hacer</dt><dd>Publicar las solicitudes por municipio de residencia y no solo por el del piso, con la edad y el tramo de ingresos agregados.</dd></div>
+            <div><dt>Qué hacer</dt><dd>Publicar las solicitudes por edad y tramo de ingresos, y cruzarlas con los jóvenes que alquilan en cada municipio, no con todos los jóvenes.</dd></div>
             <div><dt>A quién compete</dt><dd>Consejería de Vivienda.</dd></div>
-            <div><dt>Lo sostiene</dt><dd>Hoy la solicitud cuenta en el municipio del piso, cuenta solicitudes y no personas, y el denominador son todos los jóvenes, no quienes alquilan o cumplen los requisitos. Sin esto no se puede comparar la ayuda con la necesidad de cada municipio (<a href="#bono">cap. 8</a>).</dd></div><!-- sin-fuente: número de capítulo -->
+            <div><dt>Lo sostiene</dt><dd>Hoy el conjunto cuenta solicitudes y no personas, y el único denominador disponible son todos los jóvenes, no quienes alquilan o cumplen los requisitos. Sin esto no se puede comparar la ayuda con la necesidad de cada municipio (<a href="#bono">cap. 8</a>).</dd></div><!-- sin-fuente: número de capítulo -->
             <div><dt>Coste</dt><dd>Bajo: datos de la propia solicitud.</dd></div>
           </dl>
         </li>
         <li class="ficha-rec" id="r7">
-          <h3>Revisar el tope de alquiler del Bono con el alquiler de hoy</h3>
-          <p class="evidencia supuesto">Depende de un supuesto</p>
-          <dl>
-            <div><dt>Qué hacer</dt><dd>Comprobar el tope de 600 € y de 900 € de cada municipio (fuente: BOCM-20250110-20) contra el alquiler actual de una vivienda del tamaño que alquila un joven, y valorar topes por tamaño del hogar.</dd></div>
-            <div><dt>A quién compete</dt><dd>Consejería de Vivienda, con el Ministerio de Vivienda por el RD 42/2022.</dd></div>
-            <div><dt>Lo sostiene</dt><dd>Con 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope en 16 de 138 municipios, 14 por menos de 80 € al mes (fuente: bloque <code>simulacion</code>; estimado). Pero 69 m² es mucho para quien vive solo: con una vivienda más pequeña entrarían más municipios (<a href="#simulacion">cap. 9</a>).</dd></div>
-            <div><dt>Qué falta</dt><dd>El alquiler por tamaño de vivienda y los contratos de habitaciones, que no tienen fuente reutilizable.</dd></div>
-          </dl>
-        </li>
-        <li class="ficha-rec" id="r8">
           <h3>Evaluar varias convocatorias antes de repartir el crédito por territorio</h3>
           <p class="evidencia indicio">Indicio</p>
           <dl>
@@ -572,6 +561,16 @@
             <div><dt>A quién compete</dt><dd>Consejería de Vivienda, con el apoyo de un equipo de evaluación.</dd></div>
             <div><dt>Lo sostiene</dt><dd>Con un solo año, que haya más rechazadas por 1.000 jóvenes donde el alquiler pesa más, reflejo sobre todo de más solicitudes, sale al límite en el modelo principal (p = 0,043) y no en la segunda vía (p = 0,17) (fuente: <code>bono_inferencia.json</code>; estimado) (<a href="#bono">cap. 8</a>).</dd></div>
             <div><dt>Qué falta</dt><dd>Los datos por municipio de las convocatorias posteriores y la orden de reajuste del crédito de julio de 2026.</dd></div>
+          </dl>
+        </li>
+        <li class="ficha-rec" id="r8">
+          <h3>Revisar el tope de alquiler en la primera convocatoria del RD 326/2026</h3>
+          <p class="evidencia supuesto">Depende de un supuesto</p>
+          <dl>
+            <div><dt>Qué hacer</dt><dd>La próxima convocatoria de Madrid irá por el RD 326/2026, con un tope de 1.000 € al mes y de 500 € en los municipios de 10.000 habitantes o menos (fuente: RD 326/2026, art. 133.1.e, BOE-A-2026-8872). Comprobar si ese tope de 500 € deja fuera a municipios pequeños con el alquiler actual de una vivienda del tamaño que alquila un joven.</dd></div>
+            <div><dt>A quién compete</dt><dd>Ministerio de Vivienda y Agenda Urbana, que fija el tope, y Consejería de Vivienda, que puede subirlo con un acuerdo previo con el Ministerio (fuente: RD 326/2026, arts. 133 y 135).</dd></div>
+            <div><dt>Lo sostiene</dt><dd>Con el tope de la ronda de 2024 (RD 42/2022) y 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope en 16 de 138 municipios, 14 por menos de 80 € al mes (fuente: bloque <code>simulacion</code>; estimado); con el tope del RD 326/2026 no se ha simulado. Pero 69 m² es mucho para quien vive solo: con una vivienda más pequeña entrarían más municipios (<a href="#simulacion">cap. 9</a>).</dd></div>
+            <div><dt>Qué falta</dt><dd>El alquiler por tamaño de vivienda y los contratos de habitaciones, que no tienen fuente reutilizable.</dd></div>
           </dl>
         </li>
       </ol>
@@ -609,7 +608,7 @@
         <li>Del Bono hay un solo año, la convocatoria de 2022, comparada con el esfuerzo de 2023. Con un año no se puede ver si la ayuda sigue a la necesidad con el tiempo.</li>
         <li>El conjunto de datos por municipio no da el motivo de los rechazos: no cumplir requisitos y crédito agotado van juntos. La Orden de 1-08-2024 mandó publicar en la sede electrónica el listado de excluidos con su motivo, solicitante a solicitante, para quienes tuvieron que subsanar; este informe no lo usa (fuente: Orden de 1-08-2024, BOCM-20240816-2).</li>
         <li>Con menos de 70 alquileres declarados en el SERPAVI, el esfuerzo de una zona es impreciso. Los mapas lo marcan con borde negro, y los extremos del texto se dan solo entre zonas con más alquileres declarados (fuente: SERPAVI, MIVAU, recuento de inmuebles por zona).</li>
-        <li>La solicitud cuenta en el municipio del piso, no en el de residencia; cuenta solicitudes, no personas, y el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen los requisitos.</li>
+        <li>La solicitud cuenta en el municipio del piso, que el Bono exige que sea la residencia habitual; cuenta solicitudes, no personas, y el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen los requisitos.</li>
         <li>Son datos por municipio: lo que pasa en un municipio no se puede atribuir a cada joven que vive en él (falacia ecológica). Madrid entra en el Bono como un solo municipio.</li>
         <li>Los municipios sin esfuerzo son pequeños o rurales, así que el resultado del Bono habla de los municipios urbanos.</li>
         <li>Es una correlación entre municipios, no un efecto causal.</li>

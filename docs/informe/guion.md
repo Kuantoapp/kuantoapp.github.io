@@ -34,7 +34,7 @@ El tiempo de viaje entra en la rama 2 (cap. 6), porque se mide sobre cada sueldo
 | 2 | Kuanto cruza 89 descargas de fuentes públicas en 199 zonas para responder una pregunta que ningún dato público responde solo | — |
 | 3 | Lo que sobra es neto menos alquiler, transporte y cesta, y cada pieza sale de una norma o una estadística oficial | Diagrama (HTML) |
 | 4 | El alquiler pesa más en el centro y el sur de la capital; en Chamartín sale más bajo porque la renta media del hogar es un 78 % más alta, no porque el alquiler sea más barato | G1, G2, G3 |
-| 5 | Con los contratos declarados, el peso del alquiler apenas cambia entre 2015 y 2024 en conjunto, pero sube en 12 de los 21 distritos; quien firma hoy puede pagar bastante más | G4, G5 |
+| 5 | Con los contratos declarados, el peso del alquiler apenas cambia entre 2015 y 2024 en conjunto, pero sube más que su error en 12 de los 21 distritos; quien firma hoy puede pagar bastante más | G4, G5 |
 | 6 | Con el SMI no sobra nada en 18 de 158 zonas (entre 8 y 33), y vivir más lejos rara vez compensa: el ahorro llega al neto por hora en 1 de cada 7 pares | G8 |
 | 7 | Uno de cada tres hogares inquilinos (36 %, entre 29 y 43 %) dedica a la vivienda más del 40 % de su renta; por zona, todavía no se puede medir | G10 |
 | 8 | La proporción aceptada del Bono no depende del esfuerzo de alquiler (p = 0,82): hay más rechazos donde más se pide, y que se pida más donde el alquiler pesa más es solo un indicio | G6, G7 |
