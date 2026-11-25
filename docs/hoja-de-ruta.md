@@ -2,7 +2,7 @@
 
 Qué hace Kuanto hoy y a dónde queremos llevarlo. Son intenciones, sin fechas ni compromisos: el orden puede cambiar según los datos que aparezcan y lo que pida quien lo usa. Lo ya decidido está en el [registro de decisiones](decisiones.md).
 
-Las mismas ideas, en tarjetas, en el [tablero de la hoja de ruta](https://github.com/users/izan-diaz/projects/1). Si algo no coincide, manda este documento.
+Las mismas ideas, en tarjetas, en el [tablero de la hoja de ruta](https://github.com/orgs/Kuantoapp/projects/1). Si algo no coincide, manda este documento.
 
 ## De un vistazo
 
@@ -58,7 +58,7 @@ Sobre esto se construye lo que viene:
 | Los resultados como ficheros abiertos, que la web lee sin servidor | [`app/datos/`](../app/datos/LEEME.md) |
 | Un asistente MCP para consultarlos desde una IA | [Reproducir Kuanto](reproducir.md) |
 | Un enlace que guarda lo que has escrito en el formulario | [`app/vista.js`](../app/vista.js) |
-| Un informe técnico en web y PDF, con el cambio del esfuerzo del alquiler entre 2015 y 2024 | [Informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html) |
+| Un informe técnico en web y PDF, con el cambio del esfuerzo del alquiler entre 2015 y 2024 | [Informe de análisis](https://kuantoapp.github.io/informe.html) |
 
 ## Siguiente
 
@@ -74,7 +74,7 @@ Sobre esto se construye lo que viene:
 
 - **Para quién:** personas y administración.
 - **Qué hace:** muestra si una zona se está encareciendo y dónde crece la presión.
-- **Qué reutiliza:** el análisis del informe. De 142 zonas con dato en los dos años, el esfuerzo sube en 68, pero solo en 31 sube más que su error (estimado; fuente: SERPAVI y ADRH, 2015-2024, [informe técnico](https://yeraybc.github.io/DataMad-hackaton-2026/informe-tecnico.html)).
+- **Qué reutiliza:** el análisis del informe. De 142 zonas con dato en los dos años, el esfuerzo sube en 68, pero solo en 31 sube más que su error (estimado; fuente: SERPAVI y ADRH, 2015-2024, [informe técnico](https://kuantoapp.github.io/informe-tecnico.html)).
 - **Qué hace falta:** llevarlo del informe a la herramienta, con el error de cada zona a la vista.
 - **Condición:** los datos recogen todos los contratos declarados, también los antiguos, así que no dicen cuánto cuesta alquilar hoy.
 
@@ -174,4 +174,4 @@ El porqué de cada una está en [decisiones clave](decisiones-clave.md).
 
 ## Proponer una idea
 
-[Abre una issue](https://github.com/yeraybc/DataMad-hackaton-2026/issues) y cuenta qué problema resuelve, para quién y con qué datos.
+[Abre una issue](https://github.com/Kuantoapp/kuantoapp.github.io/issues) y cuenta qué problema resuelve, para quién y con qué datos.
