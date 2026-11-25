@@ -1,0 +1,101 @@
+/* Informe técnico en PDF (#468): documento para quien estudia o valora el análisis. Solo lo usa informe-tecnico.html,
+   que no se enlaza desde la web; la web (informe.html) no cambia. Tokens y gráficos, de estilo.css. Capítulos, apartados,
+   anexos y gráficos se numeran con contadores CSS, así el texto no lleva cifras sueltas. */
+body { margin: 0; background: #fff; }
+main.doc { display: block; } /* estilo.css pone main en flex para la herramienta */
+.doc { max-width: 178mm; margin: 0 auto; padding: 12mm 0; color: var(--texto); font-family: var(--fuente); font-size: 10.5pt; line-height: 1.5; counter-reset: cap anx grafico; }
+.doc p, .doc li, .doc dd { text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
+.doc h1, .doc h2, .doc h3 { font-family: var(--fuente-titular); font-weight: 400; color: var(--texto); text-align: left; hyphens: manual; }
+.doc a { color: var(--acento); text-decoration: none; }
+.doc code { font-size: 0.88em; overflow-wrap: anywhere; }
+
+/* portada */
+.portada { display: flex; flex-direction: column; justify-content: flex-end; min-height: 250mm; padding: 22mm 18mm; background: var(--tinta); color: var(--tinta-texto); }
+.portada .sello { margin: 0 0 auto; color: var(--tinta-acento); font-size: 11pt; font-weight: 600; }
+.portada h1 { margin: 0; color: var(--tinta-texto); font-size: 34pt; line-height: 1.05; }
+.portada .subtitulo { margin: 8mm 0 12mm; color: var(--tinta-texto-2); font-size: 13pt; text-align: left; }
+.portada .ficha { margin-top: 0; }
+.portada .ficha dd { text-align: left; }
+
+/* índice */
+.indice-doc { padding-top: 4mm; }
+.indice-doc ol { margin: 0; padding: 0; list-style: none; counter-reset: it; }
+.indice-doc > ol > li { margin: 3mm 0 0; font-family: var(--fuente-titular); font-size: 13pt; }
+.indice-doc li li { margin: 1mm 0 0 9mm; font-family: var(--fuente); font-size: 10pt; }
+.indice-doc li:not(:has(> a[href="#resumen-ejecutivo"], > a[href="#anexos"], > a[href="#notas"], > a[href="#referencias"])) { counter-increment: it; }
+.indice-doc li:not(:has(> a[href="#resumen-ejecutivo"], > a[href="#anexos"], > a[href="#notas"], > a[href="#referencias"]))::before { content: counters(it, ".") ". "; color: var(--acento); }
+.indice-doc a { color: var(--texto); }
+.indice-doc .pag { float: right; color: var(--texto-3); font-family: var(--fuente); font-size: 10pt; font-variant-numeric: tabular-nums; } /* lo escribe la segunda pasada */
+
+/* capítulos y apartados numerados (resumen, anexos, notas y referencias sin número) */
+.capitulo { margin-top: 10mm; padding-top: 5mm; border-top: 1.5pt solid var(--acento); counter-reset: sub; }
+.capitulo h2 { margin: 0 0 4mm; font-size: 22pt; line-height: 1.1; }
+.capitulo:not(#resumen-ejecutivo, #anexos, #notas, #referencias) { counter-increment: cap; }
+.capitulo:not(#resumen-ejecutivo, #anexos, #notas, #referencias) > h2::before { content: counter(cap) "  "; color: var(--acento); }
+.sub { margin-top: 6mm; counter-increment: sub; }
+.sub h3 { margin: 0 0 2mm; font-size: 14pt; }
+.capitulo:not(#anexos) .sub > h3::before { content: counter(cap) "." counter(sub) "  "; color: var(--acento); }
+#anexos .sub { counter-increment: anx; }
+#anexos .sub > h3::before { content: "Anexo " counter(anx, upper-alpha) ". "; color: var(--acento); }
+h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
+
+/* resumen ejecutivo: se reutilizan las clases de estilo.css con tamaños de papel */
+.doc .cifras-clave { margin: 4mm 0 6mm; gap: 6mm; }
+.doc .cifras-clave .cifra { font-size: 24pt; }
+.doc .cifras-clave p { font-size: 9pt; text-align: left; }
+.doc .claves li { padding: 3mm 0 3mm 12mm; font-size: 10pt; }
+.doc .claves li::before { top: 2.5mm; font-size: 20pt; }
+.doc .scqa { margin-bottom: 4mm; gap: 4mm 8mm; }
+.doc .scqa h3 { font-size: 12pt; }
+.doc .scqa p { font-size: 9.5pt; text-align: left; } /* columnas estrechas: justificado abre huecos */
+.doc .recomendaciones-breve { columns: auto; padding-left: 6mm; }
+
+/* resultados: titular de conclusión, resultado principal e implicaciones */
+.titular { margin: 0 0 3mm; font-family: var(--fuente-titular); font-size: 13.5pt; line-height: 1.25; text-align: left !important; }
+.resultado { margin: 3mm 0 4mm; padding: 3mm 5mm; background: var(--acento-suave); border-left: 2.5pt solid var(--acento); }
+.resultado ul { margin: 0; padding-left: 5mm; }
+.resultado li { margin: 1mm 0; }
+.rotulo, .rotulo-implica { margin: 0 0 1mm; color: var(--acento); font-size: 9pt; font-weight: 600; text-align: left !important; }
+.rotulo-implica { margin-top: 4mm; }
+.implica { margin: 0 0 2mm; padding: 2mm 0 2mm 5mm; border-left: 2.5pt solid var(--texto-3); background: transparent; }
+.doc .destacado { margin: 3mm 0 1mm; font-size: 10.5pt; }
+.doc .cifra-grande { font-size: 20pt; }
+.doc details > summary { display: none; } /* los bloques reutilizados de la web ya van con su título de apartado */
+.doc .capas details > :not(summary) { margin: 0 0 2mm; font-size: inherit; }
+.doc .capas, .doc .dato, .doc .dato-texto { display: block; }
+.doc blockquote { margin: 3mm 0; padding: 3mm 5mm; font-size: 10.5pt; background: var(--elevado); border: 0; border-radius: 0; box-shadow: none; }
+
+/* gráficos: numeración, tamaño de papel y nunca partidos */
+.doc .grafico { max-width: none; margin: 4mm 0; padding: 3mm 4mm; border-radius: 2mm; break-inside: avoid; }
+.doc .grafico h3 { font-family: var(--fuente); font-size: 11pt; font-weight: 600; }
+.doc .grafico-sub, .doc .grafico figcaption { font-size: 8pt; }
+.doc .grafico figcaption p { text-align: left; }
+.doc .grafico img, .doc .grafico svg { max-height: 82mm; }
+.doc #g01 img, .doc #g01 svg, .doc #g03 img, .doc #g03 svg, .doc #g05 img, .doc #g05 svg, .doc #g07 img, .doc #g07 svg { max-height: 150mm; } /* texto pequeño: a tamaño completo para que se lea en papel */
+
+/* recomendaciones */
+.doc .fichas-rec { gap: 4mm; }
+.doc .ficha-rec { padding: 4mm 5mm; border-radius: 2mm; }
+.doc .ficha-rec h3 { font-family: var(--fuente); font-size: 12pt; font-weight: 600; }
+.doc .ficha-rec dl div { grid-template-columns: 32mm 1fr; }
+.doc .avisos-portada { display: block; margin-top: 2mm; }
+.doc .avisos-portada li { padding: 2mm 2mm 2mm 11mm; font-size: 9.5pt; }
+.doc .avisos-portada li::before { top: 1.5mm; left: 1mm; font-size: 13pt; }
+
+/* notas y referencias */
+sup.nota { font-size: 0.68em; line-height: 0; }
+sup.nota a { color: var(--acento); }
+.notas { columns: 2; column-gap: 8mm; padding-left: 7mm; font-size: 8pt; line-height: 1.35; }
+.notas li { margin: 0 0 1mm; break-inside: avoid; text-align: left; }
+.doc .lista-fuentes { font-size: 8.5pt; }
+.doc .lista-fuentes li { margin: 0 0 2mm; text-align: left; }
+
+@media print {
+  .doc { max-width: none; padding: 0; }
+  .portada { break-after: page; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .indice-doc { break-after: page; }
+  #resumen-ejecutivo, #resultados, #recomendaciones, #anexos { break-before: page; border-top: 0; margin-top: 0; padding-top: 0; }
+  .capitulo > h2, .sub > h3, h3.sin-numero, .titular, .rotulo, .rotulo-implica, .grafico header { break-after: avoid; }
+  .doc p, .doc li, .doc blockquote, .resultado, .implica, .ficha-rec dl div, .motor li, .cifras-clave p, .scqa section { break-inside: avoid; }
+  .doc * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

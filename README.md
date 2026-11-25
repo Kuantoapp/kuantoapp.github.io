@@ -91,6 +91,7 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 
 - **Código:** MIT ([`LICENSE`](LICENSE)).
 - **Datos que publica Kuanto:** CC BY 4.0, salvo los ficheros que derivan de OpenStreetMap, que llevan ODbL 1.0. La licencia, la cita exigida por cada fuente y el diccionario de cada fichero están en [Datos abiertos de Kuanto](app/datos/LEEME.md).
+- **Interoperabilidad:** los indicadores de alquiler y esfuerzo se publican también como entidades NGSI-LD del modelo `KeyPerformanceIndicator` de [Smart Data Models](https://smartdatamodels.org/), validadas contra su esquema oficial ([`app/datos/sdm/`](app/datos/sdm/LEEME.md)), para que otras plataformas puedan reutilizarlos.
 - Las fuentes de terceros conservan sus condiciones. Elaboración propia con datos del INE (www.ine.es), la Comunidad de Madrid, el Ministerio de Vivienda y Agenda Urbana, la Agencia Tributaria, el Consorcio Regional de Transportes de Madrid (Powered by CRTM), el BOE y © OpenStreetMap contributors. Ninguno de ellos participa en el proyecto ni lo avala.
 
 ## Sobre el proyecto
