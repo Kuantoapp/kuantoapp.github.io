@@ -4,7 +4,7 @@ Las dudas más habituales sobre Kuanto, con una respuesta corta y dónde ampliar
 
 ## ¿Mi sueldo sale de mi ordenador?
 
-No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión ([Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
+No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión. Lo que escribes solo queda en tu navegador, en la dirección de la página y en la pestaña mientras la tengas abierta: si compartes el enlace, compartes también tus datos ([por qué importa](como-funciona.md#por-qué-la-cuenta-se-hace-en-tu-navegador), [Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
 
 ## ¿De qué año son los datos?
 
@@ -20,7 +20,21 @@ Porque no hay alquiler publicado para ella o no hay ruta en transporte público 
 
 ## El alquiler de mi zona me parece bajo. ¿Está mal?
 
-Probablemente es más bajo que lo que verías en un portal de anuncios. Kuanto usa contratos declarados a Hacienda, no anuncios, y aunque los ajusta a contrato nuevo, conviene leerlo como un suelo. Por eso la web da también una horquilla entre un alquiler barato y uno caro de la zona ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)).
+Probablemente es más bajo que lo que verías en un portal de anuncios. Kuanto usa contratos declarados a Hacienda, no anuncios, y aunque los ajusta a contrato nuevo ([qué es ese ajuste](como-funciona.md#qué-es-el-ajuste-a-contrato-nuevo)), conviene leerlo como un suelo. Por eso la web da también una horquilla entre un alquiler barato y uno caro de la zona ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)).
+
+Los contratos declarados tienen una ventaja: son lo que la gente paga de verdad, en todas las zonas y con una fuente oficial y abierta. Su límite es que van por detrás del mercado. Nos gustaría contar con una muestra mayor de anuncios de alquiler, que reflejan el precio al que se ofrece un piso hoy, y estudiaremos incorporarla si encontramos una fuente que se pueda reutilizar con una licencia abierta y que cubra toda la Comunidad.
+
+## ¿Por qué me sobra más de lo que me queda en realidad?
+
+Porque «lo que sobra» no es lo que ahorras: es el margen que te queda para todo lo que Kuanto no cuenta. La cuenta solo resta tres gastos (el alquiler, el transporte al trabajo y una cesta básica), y deja fuera muchos otros:
+
+- La cesta básica es comida, luz, gas, agua, teléfono e Internet, y nada más. No incluye ropa, ocio, salud, seguros, gastos de la comunidad ni deudas. Tampoco las comidas fuera de casa, que en Madrid suman de media 1.852 € al año por unidad de consumo (fuente: INE, EPF de 2025, vía el catálogo de la Comunidad de Madrid; `hogares.json`).
+- Es el gasto medio de los hogares de Madrid, no el tuyo. Si tu calefacción gasta más (en la sierra, por ejemplo) o comes fuera a diario, tu gasto real será mayor.
+- El transporte solo cuenta los viajes al trabajo, salvo que añadas viajes de ocio en el formulario.
+- El alquiler es un suelo (ver la pregunta anterior). Si firmas hoy, probablemente pagues más.
+- El neto supone tributación individual, contrato indefinido y menos de 65 años. Si tu situación es otra, tu neto real puede ser distinto ([cómo se calcula](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-piezas)).
+
+Sirve para comparar zonas entre sí con la misma vara, no para hacer tu presupuesto al euro ([Supuestos](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos)).
 
 ## ¿Por qué mi neto no coincide con mi nómina?
 
