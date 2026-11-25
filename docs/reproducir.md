@@ -25,7 +25,7 @@ python -m mesobra.tiempos         # transporte público → data/processed/tiemp
 python -m mesobra.coche           # opcional: coche → data/processed/tiempos_coche.parquet
 ```
 
-Sin `tiempos_coche.parquet`, `tiempos.json` sale sin el modo coche. La duración medida de estos pasos está en la [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-mantenimiento).
+Sin `tiempos_coche.parquet`, `tiempos.json` sale sin el modo coche. La duración medida de estos pasos está en la [nota metodológica](https://kuantoapp.github.io/metodologia.html#titulo-mantenimiento).
 
 ## 2. Todos los datos de la web
 
@@ -72,13 +72,13 @@ La ventaja de combinarlo con una IA es que ella entiende la pregunta y explica, 
 Con uv no hace falta clonar nada:
 
 ```bash
-claude mcp add mesobra -- uvx --from git+https://github.com/yeraybc/DataMad-hackaton-2026 mesobra-mcp
+claude mcp add mesobra -- uvx --from git+https://github.com/Kuantoapp/kuantoapp.github.io mesobra-mcp
 ```
 
 Para otros clientes MCP, el mismo comando en su bloque de configuración:
 
 ```json
-{ "mcpServers": { "mesobra": { "command": "uvx", "args": ["--from", "git+https://github.com/yeraybc/DataMad-hackaton-2026", "mesobra-mcp"] } } }
+{ "mcpServers": { "mesobra": { "command": "uvx", "args": ["--from", "git+https://github.com/Kuantoapp/kuantoapp.github.io", "mesobra-mcp"] } } }
 ```
 
 Desde un clon, `uvx --from . mesobra-mcp` arranca el mismo servidor. Pregunta de ejemplo: «Tengo 30 años, vivo solo, gano 24.000 € brutos al año y trabajo en Getafe cinco días a la semana en transporte público. ¿En qué zonas me sobra más dinero al mes y cuántas horas de viaje implican?». El destino va por código INE: Getafe es 28065.

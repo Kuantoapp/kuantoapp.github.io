@@ -6,7 +6,7 @@ La descripción en DCAT-AP, legible por máquinas, está en [dcat.jsonld](dcat.j
 
 ## Dónde se descargan
 
-Cada fichero se publica en `https://yeraybc.github.io/DataMad-hackaton-2026/datos/` seguido de su ruta. La web del proyecto está en https://yeraybc.github.io/DataMad-hackaton-2026/ y el código en https://github.com/yeraybc/DataMad-hackaton-2026. Para dudas o errores, abre una issue en https://github.com/yeraybc/DataMad-hackaton-2026/issues.
+Cada fichero se publica en `https://kuantoapp.github.io/datos/` seguido de su ruta. La web del proyecto está en https://kuantoapp.github.io/ y el código en https://github.com/Kuantoapp/kuantoapp.github.io. Para dudas o errores, abre una issue en https://github.com/Kuantoapp/kuantoapp.github.io/issues.
 
 ## Licencia por fichero
 
@@ -30,7 +30,7 @@ Texto de las licencias: [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0
 
 Texto sugerido, con el fichero que uses y su fecha de generación (`meta.generado`):
 
-> Equipo Kuanto (DataMad 2026), `<fichero>`, generado el `<fecha>`. https://yeraybc.github.io/DataMad-hackaton-2026/datos/`<fichero>`. Datos derivados de fuentes oficiales y de OpenStreetMap, con licencia `<ODbL 1.0 o CC BY 4.0>`.
+> Equipo Kuanto (DataMad 2026), `<fichero>`, generado el `<fecha>`. https://kuantoapp.github.io/datos/`<fichero>`. Datos derivados de fuentes oficiales y de OpenStreetMap, con licencia `<ODbL 1.0 o CC BY 4.0>`.
 
 Además, cada fuente pide su cita. Quien reutilice un fichero debe incluir las de las fuentes que figuran en su `meta.fuentes` y en su distribución de [dcat.jsonld](dcat.jsonld), con la fecha de actualización del original que da `meta.nota`:
 

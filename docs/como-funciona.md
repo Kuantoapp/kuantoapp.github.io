@@ -1,6 +1,6 @@
 # Cómo funciona Kuanto
 
-Qué cuenta hace Kuanto, con qué datos y qué no sabe, explicado sin tecnicismos. Es para cualquiera que quiera entender las cifras antes de fiarse de ellas. El detalle completo, con cada fórmula y cada supuesto, está en la [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html).
+Qué cuenta hace Kuanto, con qué datos y qué no sabe, explicado sin tecnicismos. Es para cualquiera que quiera entender las cifras antes de fiarse de ellas. El detalle completo, con cada fórmula y cada supuesto, está en la [nota metodológica](https://kuantoapp.github.io/metodologia.html).
 
 ## La pregunta
 
@@ -70,13 +70,13 @@ Para acercarse a ese precio, Kuanto usa una estadística de la Agencia Tributari
 
 Para los distritos de Madrid se usan sus códigos postales. Los municipios pequeños, que la estadística no detalla, toman un valor típico de los municipios medianos ([registro de decisiones](decisiones.md), 2026-11-20).
 
-Aun así, la cifra es un suelo y no el precio de un anuncio: sale de contratos declarados, y se lleva a hoy con el IPC de los alquileres en vigor, que sube menos que el de los nuevos ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)). En la ficha de cada zona, la cifra principal es la del contrato nuevo, y la de los inquilinos de siempre sale como referencia.
+Aun así, la cifra es un suelo y no el precio de un anuncio: sale de contratos declarados, y se lleva a hoy con el IPC de los alquileres en vigor, que sube menos que el de los nuevos ([Límites](https://kuantoapp.github.io/metodologia.html#titulo-limites)). En la ficha de cada zona, la cifra principal es la del contrato nuevo, y la de los inquilinos de siempre sale como referencia.
 
 ## Por qué la cuenta se hace en tu navegador
 
 Para calcular lo que te sobra, Kuanto necesita datos que dicen mucho de ti: cuánto ganas, dónde trabajas, con quién vives y cuántos hijos tienes. Por eso Kuanto nunca los recibe.
 
-Los datos de las 199 zonas ya están calculados y publicados como ficheros abiertos. La web los descarga y hace la última resta en tu dispositivo, con lo que escribes. Lo que escribes no se envía a ningún servidor. Solo queda en tu navegador: en la dirección de la página (para que puedas volver atrás o guardar el enlace) y en la pestaña mientras la tengas abierta. Si compartes el enlace, compartes también lo que escribiste. No hay registro, ni cuentas, ni analítica, ni recursos de otras webs, y una vez abierta la página funciona sin conexión ([Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
+Los datos de las 199 zonas ya están calculados y publicados como ficheros abiertos. La web los descarga y hace la última resta en tu dispositivo, con lo que escribes. Lo que escribes no se envía a ningún servidor. Solo queda en tu navegador: en la dirección de la página (para que puedas volver atrás o guardar el enlace) y en la pestaña mientras la tengas abierta. Si compartes el enlace, compartes también lo que escribiste. No hay registro, ni cuentas, ni analítica, ni recursos de otras webs, y una vez abierta la página funciona sin conexión ([Hecho para que lo compruebes](https://kuantoapp.github.io/saber-mas.html#titulo-confianza)).
 
 La alternativa habitual es preguntar a un chat de inteligencia artificial o rellenar una calculadora en una web. En ese caso, tu sueldo y tu situación familiar viajan a los servidores de otra empresa. Según el servicio y su configuración, pueden quedarse guardados en tu historial, revisarse o usarse para entrenar modelos, y dejas de controlar dónde acaban. Con Kuanto ese riesgo no existe, porque no hay ningún servidor que los reciba. Además, el código es abierto: cualquiera puede comprobar que es así.
 
@@ -92,12 +92,12 @@ Un ejemplo de estimación: el último alquiler publicado es de 2024. Según el I
 
 - El alquiler sale de contratos declarados, no de anuncios, así que es un suelo: lo mínimo razonable que pagarías, no lo que verás en un portal. Firmar hoy suele costar más.
 - El neto supone tributación individual y no incluye deducciones como la de alquiler de Madrid para menores de 40 años, así que en esos casos el neto real puede ser mayor.
-- Los tiempos de viaje salen de un simulador que no da exactamente lo mismo dos veces: en dos cálculos iguales, algún trayecto llega a cambiar 7 minutos (fuente: [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)). Fíate de las horas al mes y de las diferencias grandes entre zonas, no de un minuto arriba o abajo.
+- Los tiempos de viaje salen de un simulador que no da exactamente lo mismo dos veces: en dos cálculos iguales, algún trayecto llega a cambiar 7 minutos (fuente: [Límites](https://kuantoapp.github.io/metodologia.html#titulo-limites)). Fíate de las horas al mes y de las diferencias grandes entre zonas, no de un minuto arriba o abajo.
 
-La lista completa, con cifras y fuentes, está en [Supuestos](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos) y [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites) de la nota metodológica.
+La lista completa, con cifras y fuentes, está en [Supuestos](https://kuantoapp.github.io/metodologia.html#titulo-supuestos) y [Límites](https://kuantoapp.github.io/metodologia.html#titulo-limites) de la nota metodológica.
 
 ## Para saber más
 
-- [Cómo funciona Kuanto](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html), en la web: los cuatro pasos de los datos al mapa y cómo leer los colores.
-- [Informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html): lo que dicen los datos sobre alquiler, sueldos y ayudas en la Comunidad.
+- [Cómo funciona Kuanto](https://kuantoapp.github.io/saber-mas.html), en la web: los cuatro pasos de los datos al mapa y cómo leer los colores.
+- [Informe de análisis](https://kuantoapp.github.io/informe.html): lo que dicen los datos sobre alquiler, sueldos y ayudas en la Comunidad.
 - [Glosario](glosario.md): qué significa cada término.

@@ -18,9 +18,9 @@ Todo sale de datos públicos. Ni el INE, ni el Ministerio de Vivienda y Agenda U
 | Coche | Coste por kilómetro de la Orden HFP/792/2023 y red de calles de OpenStreetMap | 0,26 €/km, Orden de 2023 | De zona a zona | Reutilización con cita del BOE; ODbL 1.0 |
 | Cesta básica | Encuesta de Presupuestos Familiares (EPF) de la Comunidad de Madrid, IPC por subgrupos del INE y EPF de España por nivel de ingresos | EPF de 2025, IPC hasta 2026-10 | Comunidad (España para el tramo de ingresos y el IPC del agua) | CC BY 4.0 |
 
-Fuente de la tabla: la sección [De dónde sale cada pieza](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-fuentes) de la nota metodológica y el bloque `meta.fuentes` de cada fichero de [`app/datos/`](../app/datos/LEEME.md).
+Fuente de la tabla: la sección [De dónde sale cada pieza](https://kuantoapp.github.io/metodologia.html#titulo-fuentes) de la nota metodológica y el bloque `meta.fuentes` de cada fichero de [`app/datos/`](../app/datos/LEEME.md).
 
-El [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html#titulo-fuentes) usa además la renta por sección del ADRH, el Bono Alquiler Joven del catálogo de la Comunidad de Madrid, la Encuesta de Condiciones de Vida (ECV) y el Censo de 2021 del INE. Sus fuentes están en la sección «Fuentes» del propio informe.
+El [informe de análisis](https://kuantoapp.github.io/informe.html#titulo-fuentes) usa además la renta por sección del ADRH, el Bono Alquiler Joven del catálogo de la Comunidad de Madrid, la Encuesta de Condiciones de Vida (ECV) y el Censo de 2021 del INE. Sus fuentes están en la sección «Fuentes» del propio informe.
 
 ## Cómo se ponen de acuerdo las fuentes
 
@@ -48,4 +48,4 @@ Un dato publicado se usa tal cual, con su fecha. Cuando hace falta un paso más,
 | La misma descripción, legible por máquinas (DCAT-AP) | [`app/datos/dcat.jsonld`](../app/datos/dcat.jsonld) |
 | Las columnas de los ficheros descargados más grandes | [`docs/datos/`](datos/) |
 | La comprobación de fuentes, normas y licencias con el publicador | [`docs/verificaciones/`](verificaciones/) |
-| Cuándo caduca cada dato | [Mantenimiento](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-mantenimiento), en la nota metodológica |
+| Cuándo caduca cada dato | [Mantenimiento](https://kuantoapp.github.io/metodologia.html#titulo-mantenimiento), en la nota metodológica |

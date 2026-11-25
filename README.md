@@ -2,13 +2,13 @@
 
 **Cuánto dinero te sobra al mes según dónde vivas en la Comunidad de Madrid.**
 
-[![Web publicada](https://github.com/yeraybc/DataMad-hackaton-2026/actions/workflows/pages.yml/badge.svg)](https://github.com/yeraybc/DataMad-hackaton-2026/actions/workflows/pages.yml)
+[![Web publicada](https://github.com/Kuantoapp/kuantoapp.github.io/actions/workflows/pages.yml/badge.svg)](https://github.com/Kuantoapp/kuantoapp.github.io/actions/workflows/pages.yml)
 [![Código: MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-blue)](LICENSE)
 [![Datos: CC BY 4.0 y ODbL](https://img.shields.io/badge/datos-CC%20BY%204.0%20%C2%B7%20ODbL-blue)](app/datos/LEEME.md#licencia-por-fichero)
 
-[**Abrir Kuanto**](https://yeraybc.github.io/DataMad-hackaton-2026/) · [Cómo funciona](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html) · [Nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) · [Informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html)
+[**Abrir Kuanto**](https://kuantoapp.github.io/) · [Cómo funciona](https://kuantoapp.github.io/saber-mas.html) · [Nota metodológica](https://kuantoapp.github.io/metodologia.html) · [Informe de análisis](https://kuantoapp.github.io/informe.html)
 
-[![Portada de Kuanto: «Cuánto te sobra al mes, zona a zona», con el mapa de zonas de la Comunidad de Madrid](docs/img/portada.png)](https://yeraybc.github.io/DataMad-hackaton-2026/)
+[![Portada de Kuanto: «Cuánto te sobra al mes, zona a zona», con el mapa de zonas de la Comunidad de Madrid](docs/img/portada.png)](https://kuantoapp.github.io/)
 
 ## El problema
 
@@ -47,15 +47,15 @@ Cada fuente se descarga tal cual y se guarda con su huella digital. Un paquete d
 - El IRPF, las cotizaciones y las tarifas son los de 2026, con cada parámetro citado a su BOE o BOCM.
 - Las afirmaciones sobre fuentes y normas se contrastaron con el publicador original ([verificaciones](docs/verificaciones/README.md)) y cada decisión del equipo está registrada con su motivo ([registro de decisiones](docs/decisiones.md)).
 - Cualquier cifra se puede seguir hasta su descarga original ([trazabilidad](docs/trazabilidad.md)), y los datos de la web se regeneran desde esas descargas con un comando.
-- Los supuestos y los límites están escritos en la [nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos).
+- Los supuestos y los límites están escritos en la [nota metodológica](https://kuantoapp.github.io/metodologia.html#titulo-supuestos).
 
 ## Inicio rápido
 
 Ver la web en local, sin instalar nada más que Python:
 
 ```bash
-git clone https://github.com/yeraybc/DataMad-hackaton-2026.git
-cd DataMad-hackaton-2026
+git clone https://github.com/Kuantoapp/kuantoapp.github.io.git
+cd kuantoapp.github.io
 python -m http.server -d app      # y abre http://localhost:8000/
 ```
 
@@ -78,7 +78,7 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 | Saber qué significa un término | [Glosario](docs/glosario.md) |
 | Saber de qué fuente sale cada pieza | [Datos y fuentes](docs/datos-y-fuentes.md) |
 | Saber por qué Kuanto es como es | [Decisiones clave](docs/decisiones-clave.md) |
-| Revisar el método, los supuestos y los límites | [Nota metodológica](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html) e [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html) |
+| Revisar el método, los supuestos y los límites | [Nota metodológica](https://kuantoapp.github.io/metodologia.html) e [informe de análisis](https://kuantoapp.github.io/informe.html) |
 | Reutilizar los datos | [Datos abiertos de Kuanto](app/datos/LEEME.md) |
 | Saber de dónde sale cada descarga | [Fuentes descargadas](data/README.md) |
 | Entender cómo está construido | [Arquitectura](docs/arquitectura.md) |
@@ -98,4 +98,4 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 
 Kuanto es el proyecto del equipo para [DataMad 2026](https://eventos.urjc.es/155632/detail/datamad-2026.html), el datathon de datos abiertos de la Comunidad de Madrid. Lo han hecho [@yeraybc](https://github.com/yeraybc), [@izan-diaz](https://github.com/izan-diaz) y [@alexjimenez-git](https://github.com/alexjimenez-git), con agentes de IA que escriben el código y revisores automáticos que lo comprueban ([cómo trabajamos](CONTRIBUTING.md)).
 
-Dudas o errores: [abre una issue](https://github.com/yeraybc/DataMad-hackaton-2026/issues).
+Dudas o errores: [abre una issue](https://github.com/Kuantoapp/kuantoapp.github.io/issues).

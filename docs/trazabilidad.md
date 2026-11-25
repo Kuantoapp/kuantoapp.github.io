@@ -31,7 +31,7 @@ Todas las cifras siguen el mismo camino. Para cualquier otra, el punto de entrad
 | Verificaciones | Que las afirmaciones sobre fuentes, normas y licencias coinciden con el publicador original | [`docs/verificaciones/`](verificaciones/) |
 | Registro de decisiones | Por qué se eligió cada fuente, método o supuesto, con fecha y PR | [`docs/decisiones.md`](decisiones.md) |
 | Normas citadas | Que cada parámetro del IRPF, de las cotizaciones y de las tarifas cita su BOE o BOCM | `src/mesobra/parametros_2026.py`, `src/mesobra/transporte.py` |
-| Tests | Que el neto coincide con los ejemplos de la Agencia Tributaria, los precios con los del BOCM y la cuenta de Python con la de JavaScript | `tests/`, [Validación](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-validacion) |
+| Tests | Que el neto coincide con los ejemplos de la Agencia Tributaria, los precios con los del BOCM y la cuenta de Python con la de JavaScript | `tests/`, [Validación](https://kuantoapp.github.io/metodologia.html#titulo-validacion) |
 
 ## Qué impide que se cuele una cifra sin fuente
 
@@ -48,4 +48,4 @@ Estas comprobaciones las hacen máquinas, en cada cambio:
 2. Abre el fichero de `app/datos/` que la produce (por ejemplo, `alquiler.json` para el alquiler) y lee su bloque `meta`: fuentes, año del dato y método.
 3. Busca la fuente en [`data/README.md`](../data/README.md), descárgala de la URL original y compara su SHA-256 con el anotado.
 4. Si quieres rehacer el cálculo, sigue [Reproducir Kuanto](reproducir.md). `git status` te dirá si tus ficheros de `app/datos/` salen distintos de los publicados.
-5. Si algo no cuadra, [abre una issue](https://github.com/yeraybc/DataMad-hackaton-2026/issues).
+5. Si algo no cuadra, [abre una issue](https://github.com/Kuantoapp/kuantoapp.github.io/issues).
