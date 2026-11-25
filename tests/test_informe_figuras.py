@@ -84,8 +84,11 @@ def test_especificaciones_en_rechazadas_por_punto():
     }
     bi = {
         "espacial": {"k5": espacial, "k8": espacial},
-        "robustez_vivienda_alquilada": {"control_alquiler": {"k5": m, "k8": m}},
+        "robustez_vivienda_alquilada": {
+            "control_alquiler": {"k5": m, "k8": m},
+            "principal_misma_submuestra": {"espacial": {"k5": espacial}},
+        },
     }
     d = f.especificaciones(bi)
-    assert len(d) == 11
+    assert len(d) == 9  # sin SAR, SLX ni SDEM: su β no es el efecto
     assert d.loc[0, ["b", "lo", "hi"]].round(3).tolist() == [1.0, 0.804, 1.196]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="542.929345pt" height="295.735508pt" viewBox="0 0 542.929345 295.735508" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg stroke-linejoin="round" xmlns:xlink="http://www.w3.org/1999/xlink" width="542.929345pt" height="295.735508pt" viewBox="0 0 542.929345 295.735508" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <defs>
   
  </defs>
@@ -296,7 +296,7 @@ L 236.755623 94.242844
 L 377.24306 124.602844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t7.2" class="marca" role="img" aria-label="Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)"><title>Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t6" class="marca" role="img" aria-label="Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)"><title>Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="377.24306" y="124.602844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -306,7 +306,7 @@ L 377.24306 124.602844
 L 362.490433 138.402844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t8.2" class="marca" role="img" aria-label="Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)"><title>Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t7" class="marca" role="img" aria-label="Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)"><title>Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="362.490433" y="138.402844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -316,7 +316,7 @@ L 362.490433 138.402844
 L 303.737051 152.202844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t9.2" class="marca" role="img" aria-label="Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)"><title>Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t8" class="marca" role="img" aria-label="Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)"><title>Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="303.737051" y="152.202844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -326,7 +326,7 @@ L 303.737051 152.202844
 L 298.88379 166.002844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t10.2" class="marca" role="img" aria-label="Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)"><title>Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t9" class="marca" role="img" aria-label="Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)"><title>Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="298.88379" y="166.002844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -336,7 +336,7 @@ L 298.88379 166.002844
 L 238.973339 179.802844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t11.2" class="marca" role="img" aria-label="Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)"><title>Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t10" class="marca" role="img" aria-label="Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)"><title>Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="238.973339" y="179.802844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -346,7 +346,7 @@ L 238.973339 179.802844
 L 237.302017 193.602844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t12.2" class="marca" role="img" aria-label="El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)"><title>El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t11" class="marca" role="img" aria-label="El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)"><title>El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="237.302017" y="193.602844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -356,7 +356,7 @@ L 237.302017 193.602844
 L 218.1461 207.402844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t13.2" class="marca" role="img" aria-label="Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)"><title>Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t12" class="marca" role="img" aria-label="Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)"><title>Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="218.1461" y="207.402844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -366,7 +366,7 @@ L 218.1461 207.402844
 L 217.149735 221.202844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t14.2" class="marca" role="img" aria-label="Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)"><title>Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t13" class="marca" role="img" aria-label="Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)"><title>Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="217.149735" y="221.202844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -376,7 +376,7 @@ L 217.149735 221.202844
 L 212.52146 235.002844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t15.2" class="marca" role="img" aria-label="Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)"><title>Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t14" class="marca" role="img" aria-label="Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)"><title>Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="212.52146" y="235.002844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
@@ -386,7 +386,7 @@ L 212.52146 235.002844
 L 155.85723 248.802844 
 " clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t16.2" class="marca" role="img" aria-label="El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)"><title>El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t15" class="marca" role="img" aria-label="El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)"><title>El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
      <use xlink:href="#m8c2d921bd3" x="155.85723" y="248.802844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>

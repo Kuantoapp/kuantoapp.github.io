@@ -5,7 +5,7 @@
 
 const globo = document.createElement("div");
 globo.className = "globo";
-globo.setAttribute("role", "status");
+globo.setAttribute("aria-hidden", "true"); // el lector ya lee el aria-label de la marca con foco
 globo.hidden = true;
 document.body.append(globo);
 
@@ -40,10 +40,10 @@ async function insertar(figura) {
   const respuesta = await fetch(img.getAttribute("src"));
   if (!respuesta.ok) return; // se queda la imagen
   const svg = new DOMParser().parseFromString(await respuesta.text(), "image/svg+xml").documentElement;
-  if (svg.nodeName !== "svg") return;
+  if (svg.nodeName !== "svg" || svg.querySelector("parsererror")) return;
   svg.removeAttribute("width");
   svg.removeAttribute("height");
-  svg.setAttribute("role", "img");
+  svg.setAttribute("role", "group"); // con «img», las marcas con foco quedarían ocultas al lector
   svg.setAttribute("aria-label", img.alt);
   img.replaceWith(svg);
   const marcas = [...svg.querySelectorAll(".marca")];
@@ -80,7 +80,7 @@ async function insertar(figura) {
   });
 }
 
-for (const f of document.querySelectorAll("figure.grafico")) insertar(f);
+for (const f of document.querySelectorAll("figure.grafico")) insertar(f).catch(() => {}); // sin red, se queda la imagen
 
 // En papel no hay clic: el detalle técnico se imprime abierto (?imprimir lo abre para generar el PDF sin diálogo).
 const detalles = () => document.querySelectorAll("main details:not(.valores):not([open])");

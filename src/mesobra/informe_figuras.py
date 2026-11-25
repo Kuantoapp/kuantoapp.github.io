@@ -131,7 +131,9 @@ def sin_estilos(svg: str) -> str:
     svg = re.sub(r'style="([^"]*)"', atributos, svg)
     if "style=" in svg:
         raise ValueError("Queda un estilo en línea en el SVG")
-    return svg
+    return svg.replace(
+        "<svg ", '<svg stroke-linejoin="round" ', 1
+    )  # sustituye al <style> de matplotlib
 
 
 def leer_publicado() -> dict:
@@ -154,7 +156,8 @@ def nombres(zonas: gpd.GeoDataFrame) -> pd.Series:
 
 def ic_esfuerzo(tabla: pd.DataFrame, zona: pd.DataFrame, anio: int) -> pd.DataFrame:
     """Esfuerzo de `anio` por zona con el semiancho de su IC 95 % (fracción) y sus testigos (#354)."""
-    t = tabla[(tabla["anio"] == anio) & (tabla["zona_id"] != MADRID)].merge(
+    antes = tabla[(tabla["anio"] == anio) & (tabla["zona_id"] != MADRID)]
+    t = antes.merge(
         zona[zona["anio"] == anio][
             ["zona_id", "testigos", "cuantia_p25", "cuantia_p75"]
         ],
@@ -162,7 +165,12 @@ def ic_esfuerzo(tabla: pd.DataFrame, zona: pd.DataFrame, anio: int) -> pd.DataFr
         validate="one_to_one",
     )
     semi = semiancho_lognormal(t["cuantia_p25"], t["cuantia_p75"], t["testigos"])
-    return t.assign(error=t["esfuerzo"] * semi).set_index("zona_id")
+    t = t.assign(error=t["esfuerzo"] * semi)
+    if len(t) != len(antes) or t["error"].isna().any():
+        raise ValueError(
+            f"{len(antes) - len(t)} zonas sin alquiler_zona o con error nulo en {anio}"
+        )
+    return t.set_index("zona_id")
 
 
 def cortes_quintil(valores: pd.Series) -> list[float]:
@@ -320,7 +328,7 @@ def g02_franja_error(t: pd.DataFrame, nombre: pd.Series, ruta: Path) -> None:
         color=APAGADO,
         va="bottom",
     )
-    techo = 32  # una zona con 11 alquileres declarados va de −6 a 40 %: se corta; el pie del informe lo dice
+    techo = 32  # dos zonas con 10 y 11 alquileres declarados no caben: se corta; el pie del informe lo dice
     ax.text(2, techo - 1, f"{n} de {len(d)} zonas (en azul): su intervalo del 95 %\ncruza al menos un corte de quintil",
             fontsize=7.8, color=ACENTO, fontweight="semibold", va="top")  # fmt: skip
     ax.text(2, techo - 5.2, f"{len(d) - n} zonas (en gris): el intervalo queda dentro de su clase", fontsize=7.8,
@@ -328,7 +336,7 @@ def g02_franja_error(t: pd.DataFrame, nombre: pd.Series, ruta: Path) -> None:
     ax.set_ylim(4, techo)
     ax.set_xlim(-2, len(d) + 8)
     ax.set_xticks([])
-    ax.set_xlabel("157 zonas, de menor a mayor esfuerzo")
+    ax.set_xlabel(f"{len(d)} zonas, de menor a mayor esfuerzo")
     _formato(ax, "y", " %")
     _rejilla(ax, "y")
     guardar(fig, ruta, globos)
@@ -496,7 +504,7 @@ def g06_aceptadas_esfuerzo(bono: pd.DataFrame, nombre: pd.Series, ruta: Path) ->
     ax.text(d["x"].min(), 100 * total + 1.6, f"{es(100 * total)} %, toda la convocatoria", fontsize=7.4,
             color=ACENTO, va="bottom")  # fmt: skip
     for _, f in d.sort_values("solicitudes", ascending=False).iterrows():
-        (m,) = ax.plot(f["x"], f["prop"], "o", ms=2.2 + 1.1 * np.sqrt(f["solicitudes"]) ** 0.5, color=TEXTO_2,
+        (m,) = ax.plot(f["x"], f["prop"], "o", ms=2.2 + 1.1 * f["solicitudes"] ** 0.25, color=TEXTO_2,
                        alpha=0.45, mec="white", mew=0.5)  # fmt: skip
         texto = (f"{nombre[f['municipio_id']]}: esfuerzo {es(f['x'])} %; {int(f['aceptadas'])} aceptadas de "
                  f"{int(f['solicitudes'])} solicitudes ({es(f['prop'])} %)")  # fmt: skip
@@ -522,33 +530,24 @@ def g06_aceptadas_esfuerzo(bono: pd.DataFrame, nombre: pd.Series, ruta: Path) ->
 
 
 def especificaciones(bi: dict) -> pd.DataFrame:
-    """β del esfuerzo sobre las rechazadas por 1.000 jóvenes en todas las especificaciones de `bono_inferencia`."""
+    """β del esfuerzo sobre las rechazadas por 1.000 jóvenes en las especificaciones de `bono_inferencia` cuyo β es
+    el efecto del esfuerzo. Fuera, SAR, SLX y SDEM: su β es solo una parte (efectos directo e indirecto)."""
     e = bi["espacial"]
-    c = bi["robustez_vivienda_alquilada"]["control_alquiler"]
+    r = bi["robustez_vivienda_alquilada"]
     filas = [
-        (
-            "Error espacial heterocedástico, 5 vecinos (principal)",
-            e["k5"]["sem_het"],
-            "principal",
-        ),
+        ("Error espacial heterocedástico, 5 vecinos (principal)", e["k5"]["sem_het"], "principal"),
         ("Error espacial heterocedástico, 8 vecinos", e["k8"]["sem_het"], "espacial"),
-        (
-            "Error espacial heterocedástico, dos pasos, 5 vecinos",
-            e["k5"]["sem_het_dos_pasos"],
-            "espacial",
-        ),
+        ("Error espacial heterocedástico, dos pasos, 5 vecinos", e["k5"]["sem_het_dos_pasos"], "espacial"),
         ("Error espacial, máxima verosimilitud, 5 vecinos", e["k5"]["sem"], "espacial"),
-        ("Retardo espacial (SAR), 5 vecinos", e["k5"]["sar"], "espacial"),
-        ("Durbin espacial del error (SDEM), 5 vecinos", e["k5"]["sdem"], "espacial"),
-        ("Retardo de las explicativas (SLX), 5 vecinos", e["k5"]["slx"], "espacial"),
         ("Mínimos cuadrados", e["k5"]["ols"], "mco"),
         ("Mínimos cuadrados, errores robustos HAC", e["k5"]["ols_hac"], "mco"),
-        ("Con % de jóvenes en alquiler, 5 vecinos", c["k5"], "control"),
-        ("Con % de jóvenes en alquiler, 8 vecinos", c["k8"], "control"),
-    ]
+        ("Principal en los 112 municipios con % de alquiler", r["principal_misma_submuestra"]["espacial"]["k5"]["sem_het"], "control"),
+        ("Con % de jóvenes en alquiler, 5 vecinos (112)", r["control_alquiler"]["k5"], "control"),
+        ("Con % de jóvenes en alquiler, 8 vecinos (112)", r["control_alquiler"]["k8"], "control"),
+    ]  # fmt: skip
     d = pd.DataFrame([(n, m["beta"], m["se"], m["p"], g) for n, m, g in filas],
                      columns=["modelo", "beta", "se", "p", "grupo"])  # fmt: skip
-    # por punto de esfuerzo (el modelo lo mide en fracción): rechazadas por 1.000 jóvenes
+    # por punto de esfuerzo (el modelo lo mide en fracción); IC z asintótico, como da spreg
     return d.assign(
         b=d["beta"] / 100,
         lo=(d["beta"] - 1.96 * d["se"]) / 100,
@@ -576,8 +575,8 @@ def g07_forest(bi: dict, ruta: Path) -> None:
     d = especificaciones(bi)
     if (
         round(d.at[0, "p"], 3) != 0.043
-        or round(d.at[9, "p"], 2) != 0.22
-        or round(d.at[8, "p"], 2) != 0.17
+        or round(d.at[7, "p"], 2) != 0.22
+        or round(d.at[5, "p"], 2) != 0.17
     ):
         raise ValueError(
             "Las p de bono_inferencia.json no son las publicadas (0,043, 0,17 y 0,22)"
@@ -594,16 +593,14 @@ def g07_forest(bi: dict, ruta: Path) -> None:
     ax.axvline(0, color=TEXTO_2, lw=0.8)
     for yi, (_, f) in zip(y, d.iterrows(), strict=True):
         _fila_forest(ax, yi, f, globos)
-    ax.axhspan(1.5, 3.5, color=LINEA, alpha=0.35, lw=0)
-    ax.text(
-        -0.95,
-        2.5,
-        "sin\nespacio",
-        ha="center",
-        va="center",
-        fontsize=6.8,
-        color=APAGADO,
-    )
+    ax.axhspan(2.5, 4.5, color=LINEA, alpha=0.35, lw=0)
+    ax.text(-0.95, 3.5, "sin W", ha="center", va="center", fontsize=6.8, color=APAGADO)
+    ax.axhline(2.5, color=NEUTRO, lw=0.6, ls=(0, (2, 2)))
+    ax.text(-0.95, 1, "n = 112", ha="center", va="center", fontsize=6.8, color=APAGADO)
+    if (n0 := int((d["lo"] <= 0).sum())) != 5:
+        raise ValueError(
+            f"{n0} intervalos tocan el cero; el titular de G07 dice 5 de 9"
+        )
     ax.set_yticks(y, d["modelo"], fontsize=7.8)
     ax.set_xlim(-1.1, 2.8)
     ax.set_xlabel(
@@ -660,11 +657,12 @@ def rinde_por_perfil(titulares: list[dict]) -> pd.DataFrame:
     """Neto por hora, mediana y cuartiles de lo que rinde la hora extra, leídos de los titulares publicados."""
     filas = []
     for etiqueta, prefijo in PERFILES:
-        t = next(
+        textos = [
             x["texto"]
             for x in titulares
             if x["texto"].startswith(prefijo) and "por hora extra" in x["texto"]
-        )
+        ]
+        t = textos[0] if textos else ""  # sin titular: falla abajo con su nombre
         m = re.search(
             rf"neto estimado de {_NUM} €.*mediana estimada de {_NUM} €.*cuartiles {_NUM} a {_NUM}\)",
             t,
@@ -836,7 +834,7 @@ def g11_tope(ruta: Path) -> None:
             (p,) = ax.plot(v, y, "o", ms=6, color=c, mec="white", mew=0.8)
             _globo(
                 p,
-                f"t{y}",
+                f"t{len(ys)}",
                 f"{n}: {es(v, 2)} € al mes por encima del tope de {t} € (estimado)",
                 globos,
             )

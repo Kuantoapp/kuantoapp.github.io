@@ -63,7 +63,9 @@ Abreviaturas de origen: **AJ** = `app/datos/analisis.json`; **BI** = `data/proce
 | Con % de jóvenes en alquiler: β = 46 (p = 0,22) k = 5; β = 34 (p = 0,37) k = 8; 112 municipios | INF; BI `robustez_vivienda_alquilada` | E |
 | 16 de 138 municipios fuera del tope (SMI, 69 m²); 14 por menos de 80 €; Madrid por 79,51 € | INF; AJ `simulacion` | E |
 | Importes sobre el tope de cada municipio (El Molar 6,81 … Pozuelo 108,24) | INF; AJ; `app/datos/alquiler.json` | E |
-| Criterios alternativos: 72, 65 y 14 municipios; horas de viaje 112–138, 106–135, 104–134 | INF; AJ | E |
+| Criterios alternativos: 72, 65 y 14 municipios (12 el joven de 29 años, solo en G12); horas de viaje 112–138, 106–135, 104–134 | INF; AJ | E |
+| 8 de los 21 distritos de Madrid, por debajo del tope | INF; DEC | E |
+| G7: 9 especificaciones, 5 intervalos tocan el cero; principal en los 112 municipios, p = 0,022 | BI | E |
 | Pareja y joven: 122 municipios con base imponible, 0 con bruto | INF; AJ | E |
 | Enfermera: supera el límite en 6,84 € (cotización 2026) y 15,57 € (2024) | INF | E |
 | Tope: 600 € y 900 € en 55 municipios del Anexo II; ingresos hasta 3 × IPREM = 25.200 € | INF (BOCM-20250110-20) | |
