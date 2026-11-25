@@ -333,7 +333,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .notas-calculo strong { color: var(--texto); }
 .pagina code { font-size: 0.9em; overflow-wrap: anywhere; }
 
-/* Cuánto fiarte: los avisos, uno por línea, en el mismo tono que «Antes de leer el mapa». */
+/* Lo que Kuanto te resuelve: una pregunta por línea, en el mismo tono que «Antes de leer el mapa». */
 .avisos-portada { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; padding: 0; list-style: none; }
 .avisos-portada li { padding: 20px 0; border-top: 1px solid var(--linea); color: var(--texto-2); }
 .fuentes-portada { margin: 32px 0 0; color: var(--texto-3); font-size: 15px; }
@@ -574,6 +574,18 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .heroe-texto > :nth-child(n + 3) { animation-delay: 160ms; }
 }
 @keyframes entra-zona { from { opacity: 0; } }
+/* La primera vista de la portada (texto y plano) cabe entera bajo la barra y queda centrada; los tamaños se adaptan al alto de la pantalla (#456). */
+@media (min-width: 56.0625rem) {
+  #portada .heroe { min-height: calc(100svh - var(--alto-nav)); padding-block: clamp(24px, 4svh, 56px); align-content: center; }
+  #portada .heroe h1 { font-size: clamp(48px, min(8.4vw, 11svh), 112px); }
+  #portada .heroe .entradilla { margin: clamp(12px, 2.5svh, 24px) 0 clamp(16px, 3.5svh, 32px); }
+  #portada .plano-lienzo { max-height: 62svh; }
+}
+.bloque.cifras { padding-block: clamp(40px, 6vw, 72px); } /* dos cifras sueltas: sin el relleno entero de un bloque */
+.bloque.cifras .cifras-heroe { margin-top: 0; padding-top: 0; border-top: 0; } /* bloque propio bajo el héroe: su borde ya separa */
+@media (min-width: 56.0625rem) and (max-height: 42rem) {
+  #portada .heroe { padding-block: 16px; }
+}
 
 /* --- Filas numeradas (cuatro cuentas, comprobaciones, avisos): se marcan como una hoja al pasar ------------- */
 .ficha-tecnica, .avisos-portada { counter-reset: fila; }
