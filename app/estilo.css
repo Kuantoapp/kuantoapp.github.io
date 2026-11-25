@@ -685,7 +685,8 @@ a { color: var(--acento); text-underline-offset: 2px; }
 
 /* Informe técnico en tres capas (#468): estructura de consultora con la identidad de Kuanto. Capítulos, gráficos y
    recomendaciones se numeran con contadores CSS (el número no es una cifra del texto); el PDF sale de @media print. */
-.tecnico { --evidencia-solida: #01665e; counter-reset: grafico; }
+:root { --evidencia-solida: #01665e; } /* píldora «sólida» del informe: un token propio, no el --ganas del mapa */
+.tecnico { counter-reset: grafico; }
 .pagina .lamina a.boton-principal { color: var(--tinta); } /* le gana a .pagina .lamina a: 17:1 sobre blanco */
 .lamina .boton-secundario { border-color: var(--tinta-acento); }
 .tecnico h1 { max-width: 20ch; }
