@@ -29,6 +29,7 @@ const TODOS = ["alquiler", "hogares", "netos", "tarifas", "tiempos"];
 export const METRICAS = {
   precio_hora: {
     titulo: "Precio de la hora de viaje",
+    boton: "Ver si compensa vivir más lejos",
     unidad: "€ al mes por cada hora de viaje extra al mes frente a la zona de referencia",
     corta: "€ por hora extra",
     datos: TODOS,
@@ -40,6 +41,7 @@ export const METRICAS = {
   },
   sobra: {
     titulo: "Lo que sobra al mes",
+    boton: "Ver cuánto te sobra al mes",
     unidad: "€/mes del hogar tras alquiler, transporte y cesta básica",
     corta: "€/mes",
     datos: TODOS,
@@ -52,6 +54,7 @@ export const METRICAS = {
   },
   horas: {
     titulo: "Horas de viaje al mes",
+    boton: "Ver cuánto tiempo viajas",
     unidad: "h/mes de ida y vuelta al trabajo",
     corta: "h/mes",
     datos: ["tiempos", "tarifas"], // horas = minutos de ruta × días × semanas_mes: no entran ni el alquiler ni los netos

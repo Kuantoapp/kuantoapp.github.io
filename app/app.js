@@ -108,7 +108,7 @@ function prepararFormulario(api) {
   for (const [clave, m] of Object.entries(METRICAS)) {
     const etiqueta = document.createElement("label");
     const radio = Object.assign(document.createElement("input"), { type: "radio", name: "metrica", value: clave, checked: clave === "precio_hora" });
-    etiqueta.append(radio, m.titulo);
+    etiqueta.append(radio, m.boton);
     metricas.append(etiqueta);
   }
   const refs = formulario().elements.ref;
