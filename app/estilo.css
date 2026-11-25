@@ -266,7 +266,13 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .navegacion a, .boton-nav { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--texto-2); font: inherit; font-size: 15px; text-decoration: none; white-space: nowrap; transition: color 0.15s var(--curva), background-color 0.15s var(--curva); }
 .navegacion a:hover { color: var(--texto); }
 .navegacion a[aria-current="page"] { color: var(--texto); font-weight: 600; }
-.navegacion .marca { flex: none; padding-left: 0; color: var(--texto); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.navegacion .marca { flex: none; padding-left: 0; color: var(--texto); font-size: 20px; font-weight: 500; letter-spacing: -0.02em; gap: 8px; } /* logo (#476) y palabra en Instrument Sans, que casa con su trazo fino */
+.navegacion .marca img { flex: none; display: block; }
+@media (max-width: 22.5rem) { /* a 320 px el logo no puede empujar «Calcular» fuera de la barra */
+  .navegacion-interior { gap: 8px; }
+  .navegacion .marca { gap: 6px; padding-right: 0; font-size: 17px; }
+  .navegacion .marca img { width: 24px; height: 24px; }
+}
 .boton-nav { padding: 0 16px; border: 0; background: var(--acento); color: var(--superficie); font-weight: 600; cursor: pointer; }
 .navegacion .boton-nav, .navegacion .boton-nav:hover { color: var(--superficie); }
 .boton-nav:hover { background: var(--acento-fuerte); }
@@ -327,7 +333,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .notas-calculo strong { color: var(--texto); }
 .pagina code { font-size: 0.9em; overflow-wrap: anywhere; }
 
-/* Cuánto fiarte: los avisos, uno por línea, en el mismo tono que «Antes de leer el mapa». */
+/* Lo que Kuanto te resuelve: una pregunta por línea, en el mismo tono que «Antes de leer el mapa». */
 .avisos-portada { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin: 40px 0 0; padding: 0; list-style: none; }
 .avisos-portada li { padding: 20px 0; border-top: 1px solid var(--linea); color: var(--texto-2); }
 .fuentes-portada { margin: 32px 0 0; color: var(--texto-3); font-size: 15px; }
@@ -500,11 +506,10 @@ a { color: var(--acento); text-underline-offset: 2px; }
 .pagina { background-color: var(--fondo); background-image: radial-gradient(circle at 1px 1px, var(--punto) 1px, transparent 1.4px); background-size: 24px 24px; }
 
 /* --- Tipografía: dos voces de una misma familia ------------------------------------------------------------ */
-.pagina h1, .pagina h2, .navegacion .marca, #guia-titulo { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.015em; }
+.pagina h1, .pagina h2, #guia-titulo { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.015em; }
 .pagina h1 { max-width: 13ch; font-size: clamp(48px, 8.4vw, 112px); line-height: 0.95; }
 .pagina h2 { font-size: clamp(38px, 5.6vw, 68px); line-height: 1; }
 .pagina h3, .ficha-tecnica dt, .pieza h3 { font-weight: 500; letter-spacing: -0.01em; }
-.navegacion .marca { font-size: 28px; letter-spacing: -0.01em; }
 #guia-titulo { font-size: 34px; line-height: 1.05; }
 .cifras-heroe .cifra, .cifra-grande, .serie .cifra, .panel-perfil .cifra { font-family: var(--fuente-titular); font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
 .cifra-grande { font-size: clamp(88px, 13vw, 168px); line-height: 0.9; }
@@ -569,6 +574,18 @@ a { color: var(--acento); text-underline-offset: 2px; }
   .heroe-texto > :nth-child(n + 3) { animation-delay: 160ms; }
 }
 @keyframes entra-zona { from { opacity: 0; } }
+/* La primera vista de la portada (texto y plano) cabe entera bajo la barra y queda centrada; los tamaños se adaptan al alto de la pantalla (#456). */
+@media (min-width: 56.0625rem) {
+  #portada .heroe { min-height: calc(100svh - var(--alto-nav)); padding-block: clamp(24px, 4svh, 56px); align-content: center; }
+  #portada .heroe h1 { font-size: clamp(48px, min(8.4vw, 11svh), 112px); }
+  #portada .heroe .entradilla { margin: clamp(12px, 2.5svh, 24px) 0 clamp(16px, 3.5svh, 32px); }
+  #portada .plano-lienzo { max-height: 62svh; }
+}
+.bloque.cifras { padding-block: clamp(40px, 6vw, 72px); } /* dos cifras sueltas: sin el relleno entero de un bloque */
+.bloque.cifras .cifras-heroe { margin-top: 0; padding-top: 0; border-top: 0; } /* bloque propio bajo el héroe: su borde ya separa */
+@media (min-width: 56.0625rem) and (max-height: 42rem) {
+  #portada .heroe { padding-block: 16px; }
+}
 
 /* --- Filas numeradas (cuatro cuentas, comprobaciones, avisos): se marcan como una hoja al pasar ------------- */
 .ficha-tecnica, .avisos-portada { counter-reset: fila; }
