@@ -4,7 +4,7 @@ Las dudas más habituales sobre Kuanto, con una respuesta corta y dónde ampliar
 
 ## ¿Mi sueldo sale de mi ordenador?
 
-No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión. Lo que escribes solo queda en tu navegador, en la dirección de la página: si compartes el enlace, compartes también tus datos ([por qué importa](como-funciona.md#por-qué-la-cuenta-se-hace-en-tu-navegador), [Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
+No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión. Lo que escribes solo queda en tu navegador, en la dirección de la página y en la pestaña mientras la tengas abierta: si compartes el enlace, compartes también tus datos ([por qué importa](como-funciona.md#por-qué-la-cuenta-se-hace-en-tu-navegador), [Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
 
 ## ¿De qué año son los datos?
 
