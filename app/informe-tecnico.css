@@ -4,14 +4,17 @@
 body { margin: 0; background: #fff; }
 @page { size: A4; margin: 20mm 20mm 20mm; }
 @page {
-  @top-left { content: "Kuanto · ¿Dónde puede vivir quien trabaja en la Comunidad de Madrid?"; font: 7.5pt sans-serif; color: #5c6069; vertical-align: bottom; padding-bottom: 3mm; border-bottom: 0.5pt solid #c9ccd2; }
-  @top-right { content: "Informe técnico · noviembre de 2026"; font: 7.5pt sans-serif; color: #5c6069; vertical-align: bottom; padding-bottom: 3mm; border-bottom: 0.5pt solid #c9ccd2; }
-  @bottom-left { content: "Cifras estimadas marcadas como tales; fuentes en las notas"; font: 7.5pt sans-serif; color: #5c6069; }
-  @bottom-right { content: counter(page); font: 8pt sans-serif; color: #1f2329; }
+  @top-left { content: "Kuanto · ¿Dónde puede vivir quien trabaja en la Comunidad de Madrid?"; font: 7.5pt "Instrument Sans", sans-serif; color: #5c6069; vertical-align: bottom; padding-bottom: 3mm; border-bottom: 0.5pt solid #c9ccd2; }
+  @top-right { content: "Informe técnico · noviembre de 2026"; font: 7.5pt "Instrument Sans", sans-serif; color: #5c6069; vertical-align: bottom; padding-bottom: 3mm; border-bottom: 0.5pt solid #c9ccd2; }
+  @bottom-left { content: "Cifras estimadas marcadas como tales; fuentes en las notas"; font: 7.5pt "Instrument Sans", sans-serif; color: #5c6069; }
+  @bottom-right { content: counter(page); font: 8pt "Instrument Sans", sans-serif; color: #1f2329; }
 }
 @page :first { margin: 0; @top-left { content: none; border: 0; } @top-right { content: none; border: 0; } @bottom-left { content: none; } @bottom-right { content: none; } }
-main.doc { display: block; } /* estilo.css pone main en flex para la herramienta */
-.doc { max-width: 178mm; margin: 0 auto; padding: 12mm 0; color: var(--texto); font-family: var(--fuente); font-size: 10pt; line-height: 1.45; counter-reset: cap anx grafico; }
+main.doc { display: block; }
+.doc .motor li { grid-template-columns: 34mm 1fr; gap: 4mm; padding: 1.5mm 0; }
+.doc .motor-paso { font-size: 12pt; }
+.doc .motor-de { font-size: 9.5pt; } /* estilo.css pone main en flex para la herramienta */
+.doc { max-width: 178mm; margin: 0 auto; padding: 12mm 0; color: var(--texto); font-family: var(--fuente), "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.45; counter-reset: cap anx grafico; }
 .doc p, .doc li, .doc dd { text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
 .doc h1, .doc h2, .doc h3 { font-family: var(--fuente-titular); font-weight: 400; color: var(--texto); text-align: left; hyphens: manual; }
 .doc a { color: var(--acento); text-decoration: none; }
@@ -59,7 +62,7 @@ h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
 .doc .recomendaciones-breve { columns: auto; padding-left: 6mm; }
 
 /* resultados: titular de conclusión, resultado principal e implicaciones */
-.titular { margin: 0 0 3mm; font-family: var(--fuente-titular); font-size: 13.5pt; line-height: 1.25; text-align: left !important; }
+.titular { margin: 0 0 3mm; font-family: var(--fuente-titular); font-size: 12pt; line-height: 1.3; color: var(--texto-2); text-align: left !important; }
 .resultado { margin: 3mm 0 4mm; padding: 2.5mm 4mm; background: #f4f5f7; border-left: 2pt solid var(--acento); }
 .resultado ul { margin: 0; padding-left: 5mm; }
 .resultado li { margin: 1mm 0; }
@@ -67,14 +70,14 @@ h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
 .rotulo-implica { margin-top: 4mm; }
 .implica { margin: 0 0 2mm; padding: 1.5mm 0; border: 0; border-top: 0.5pt solid var(--texto-3); border-bottom: 0.5pt solid var(--texto-3); background: transparent; }
 .doc .destacado { margin: 3mm 0 1mm; font-size: 10.5pt; }
-.doc .cifra-grande { font-size: 20pt; }
+.doc .cifra-grande { font-size: 16pt; margin-bottom: 1mm; }
 .doc details > summary { display: none; } /* los bloques reutilizados de la web ya van con su título de apartado */
 .doc .capas details > :not(summary) { margin: 0 0 2mm; font-size: inherit; }
 .doc .capas, .doc .dato, .doc .dato-texto { display: block; }
-.doc blockquote { margin: 3mm 0; padding: 2.5mm 4mm; font-size: 10pt; background: var(--elevado); border: 0; border-radius: 0; box-shadow: none; }
+.doc blockquote { margin: 3mm 0; padding: 2.5mm 4mm; font-size: 10pt; background: none; border: 0; border-left: 2pt solid var(--linea-control); border-radius: 0; box-shadow: none; }
 
 /* gráficos: como «exhibits» de informe, con filete arriba y sin tarjeta. Todos al 80 % de su tamaño natural, así el
-   texto de todos los gráficos mide lo mismo (unos 6,4 pt) y ninguno ocupa más de lo que necesita. */
+   texto de todos los gráficos mide lo mismo (unos 6,4 pt; salvo g01, g07 y g12) y ninguno ocupa más de lo que necesita. */
 .doc .grafico { max-width: none; margin: 5mm 0; padding: 2mm 0 0; background: none; border: 0; border-top: 1pt solid var(--texto); border-radius: 0; box-shadow: none; break-inside: avoid; }
 .doc .grafico header { margin-bottom: 2mm; }
 .doc .grafico-n { margin: 0 0 0.5mm; font-size: 7.5pt; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -85,9 +88,9 @@ h3.sin-numero { margin: 6mm 0 2mm; font-size: 14pt; }
 .doc .grafico img, .doc .grafico svg { max-width: 100%; max-height: none; height: auto; margin: 0; } /* estilo.css limita el alto en impresión; aquí manda el ancho */
 .doc #g01 :is(img, svg) { width: 100%; } /* el mapa, a todo el ancho: sus rótulos son los más pequeños */ .doc #g02 :is(img, svg) { width: 129mm; } .doc #g03 :is(img, svg) { width: 131mm; }
 .doc #g04 :is(img, svg) { width: 124mm; } .doc #g05 :is(img, svg) { width: 140mm; } .doc #g06 :is(img, svg) { width: 128mm; }
-.doc #g07 :is(img, svg) { width: 178mm; } .doc #g08 :is(img, svg) { width: 168mm; } .doc #g10 :is(img, svg) { width: 150mm; }
-.doc #g11 :is(img, svg) { width: 153mm; } .doc #g12 :is(img, svg) { width: 145mm; } .doc #g13 :is(img, svg) { width: 135mm; }
-.doc #g14 :is(img, svg) { width: 125mm; } /* ancho natural del SVG en pt × 0,8 × 0,3528 mm/pt */
+.doc #g07 :is(img, svg) { width: 100%; } .doc #g08 :is(img, svg) { width: 168mm; } .doc #g10 :is(img, svg) { width: 150mm; }
+.doc #g11 :is(img, svg) { width: 153mm; } .doc #g12 :is(img, svg) { width: 159mm; } .doc #g13 :is(img, svg) { width: 135mm; }
+.doc #g14 :is(img, svg) { width: 125mm; } /* ancho natural del SVG en pt × 0,8 × 0,3528 mm/pt; el mapa y el gráfico 9 (g07, no cabe a 0,8) a todo el ancho; g12 a 0,875 para que sus rótulos de 6,8 px no bajen de 6 pt */
 
 /* recomendaciones: ficha como tabla con filetes */
 .doc .fichas-rec { gap: 5mm; }
