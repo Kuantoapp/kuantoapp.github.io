@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="439.98375pt" height="192.22pt" viewBox="0 0 439.98375 192.22" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 192.22 
+L 439.98375 192.22 
+L 439.98375 0 
+L 0 0 
+L 0 192.22 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 31.02375 173.52 
+L 432.78375 173.52 
+L 432.78375 7.2 
+L 31.02375 7.2 
+L 31.02375 173.52 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="49.285568" y="183.098125" transform="rotate(-0 49.285568 183.098125)">2015</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="89.867386" y="183.098125" transform="rotate(-0 89.867386 183.098125)">2016</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="130.449205" y="183.098125" transform="rotate(-0 130.449205 183.098125)">2017</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="171.031023" y="183.098125" transform="rotate(-0 171.031023 183.098125)">2018</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="211.612841" y="183.098125" transform="rotate(-0 211.612841 183.098125)">2019</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6"/>
+     <g id="text_6">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="252.194659" y="183.098125" transform="rotate(-0 252.194659 183.098125)">2020</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7"/>
+     <g id="text_7">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="292.776477" y="183.098125" transform="rotate(-0 292.776477 183.098125)">2021</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_8"/>
+     <g id="text_8">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="333.358295" y="183.098125" transform="rotate(-0 333.358295 183.098125)">2022</text>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_9"/>
+     <g id="text_9">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="373.940114" y="183.098125" transform="rotate(-0 373.940114 183.098125)">2023</text>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_10"/>
+     <g id="text_10">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="414.521932" y="183.098125" transform="rotate(-0 414.521932 183.098125)">2024</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_11">
+      <path d="M 31.02375 166.098906 
+L 432.78375 166.098906 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_12"/>
+     <g id="text_11">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="169.137969" transform="rotate(-0 27.52375 169.137969)">14 %</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_13">
+      <path d="M 31.02375 144.035099 
+L 432.78375 144.035099 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_14"/>
+     <g id="text_12">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="147.074161" transform="rotate(-0 27.52375 147.074161)">16 %</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_15">
+      <path d="M 31.02375 121.971292 
+L 432.78375 121.971292 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_16"/>
+     <g id="text_13">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="125.010354" transform="rotate(-0 27.52375 125.010354)">18 %</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_17">
+      <path d="M 31.02375 99.907484 
+L 432.78375 99.907484 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_18"/>
+     <g id="text_14">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="102.946547" transform="rotate(-0 27.52375 102.946547)">20 %</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_19">
+      <path d="M 31.02375 77.843677 
+L 432.78375 77.843677 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_20"/>
+     <g id="text_15">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="80.882739" transform="rotate(-0 27.52375 80.882739)">22 %</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_21">
+      <path d="M 31.02375 55.77987 
+L 432.78375 55.77987 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_22"/>
+     <g id="text_16">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="58.818932" transform="rotate(-0 27.52375 58.818932)">24 %</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_23">
+      <path d="M 31.02375 33.716062 
+L 432.78375 33.716062 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_24"/>
+     <g id="text_17">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="36.755125" transform="rotate(-0 27.52375 36.755125)">26 %</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_25">
+      <path d="M 31.02375 11.652255 
+L 432.78375 11.652255 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_26"/>
+     <g id="text_18">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="14.691317" transform="rotate(-0 27.52375 14.691317)">28 %</text>
+     </g>
+    </g>
+   </g>
+   <g id="FillBetweenPolyCollection_1">
+    <defs>
+     <path id="m77cbc1ecea" d="M 49.285568 -154.219376 
+L 49.285568 -34.541692 
+L 89.867386 -29.731904 
+L 130.449205 -32.150653 
+L 171.031023 -30.754696 
+L 211.612841 -46.92752 
+L 252.194659 -53.408643 
+L 292.776477 -52.514016 
+L 333.358295 -48.557535 
+L 373.940114 -47.362709 
+L 414.521932 -47.812251 
+L 414.521932 -136.266256 
+L 414.521932 -136.266256 
+L 373.940114 -139.106813 
+L 333.358295 -150.022307 
+L 292.776477 -156.387181 
+L 252.194659 -168.472144 
+L 211.612841 -159.531089 
+L 171.031023 -146.92154 
+L 130.449205 -152.638141 
+L 89.867386 -157.175677 
+L 49.285568 -154.219376 
+z
+"/>
+    </defs>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m77cbc1ecea" x="0" y="192.22" style="fill: #0b4f9c; fill-opacity: 0.08"/>
+    </g>
+   </g>
+   <g id="line2d_27">
+    <path d="M 49.285568 109.433984 
+L 89.867386 108.334652 
+L 130.449205 106.467069 
+L 171.031023 107.645967 
+L 211.612841 91.736457 
+L 252.194659 88.378667 
+L 292.776477 90.058558 
+L 333.358295 93.527326 
+L 373.940114 101.746282 
+L 414.521932 104.418679 
+" clip-path="url(#p745e72afb8)" style="fill: none; stroke: #0b4f9c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="m2015" class="marca" tabindex="0" role="img" aria-label="Madrid, 2015: 19,1 %"><title>Madrid, 2015: 19,1 %</title>
+    <defs>
+     <path id="mce96ec3049" d="M 0 3.5 
+C 0.928211 3.5 1.81853 3.131218 2.474874 2.474874 
+C 3.131218 1.81853 3.5 0.928211 3.5 0 
+C 3.5 -0.928211 3.131218 -1.81853 2.474874 -2.474874 
+C 1.81853 -3.131218 0.928211 -3.5 0 -3.5 
+C -0.928211 -3.5 -1.81853 -3.131218 -2.474874 -2.474874 
+C -3.131218 -1.81853 -3.5 -0.928211 -3.5 0 
+C -3.5 0.928211 -3.131218 1.81853 -2.474874 2.474874 
+C -1.81853 3.131218 -0.928211 3.5 0 3.5 
+z
+" style="stroke: #ffffff"/>
+    </defs>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#mce96ec3049" x="49.285568" y="109.433984" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2016" class="marca" tabindex="0" role="img" aria-label="Madrid, 2016: 19,2 %"><title>Madrid, 2016: 19,2 %</title>
+    <defs>
+     <path id="m7f5665bdd9" d="M 0 0.05 
+C 0.01326 0.05 0.025979 0.044732 0.035355 0.035355 
+C 0.044732 0.025979 0.05 0.01326 0.05 0 
+C 0.05 -0.01326 0.044732 -0.025979 0.035355 -0.035355 
+C 0.025979 -0.044732 0.01326 -0.05 0 -0.05 
+C -0.01326 -0.05 -0.025979 -0.044732 -0.035355 -0.035355 
+C -0.044732 -0.025979 -0.05 -0.01326 -0.05 0 
+C -0.05 0.01326 -0.044732 0.025979 -0.035355 0.035355 
+C -0.025979 0.044732 -0.01326 0.05 0 0.05 
+z
+" style="stroke: #ffffff"/>
+    </defs>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="89.867386" y="108.334652" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2017" class="marca" tabindex="0" role="img" aria-label="Madrid, 2017: 19,4 %"><title>Madrid, 2017: 19,4 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="130.449205" y="106.467069" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2018" class="marca" tabindex="0" role="img" aria-label="Madrid, 2018: 19,3 %"><title>Madrid, 2018: 19,3 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="171.031023" y="107.645967" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2019" class="marca" tabindex="0" role="img" aria-label="Madrid, 2019: 20,7 %"><title>Madrid, 2019: 20,7 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="211.612841" y="91.736457" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2020" class="marca" tabindex="0" role="img" aria-label="Madrid, 2020: 21,0 %"><title>Madrid, 2020: 21,0 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#mce96ec3049" x="252.194659" y="88.378667" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2021" class="marca" tabindex="0" role="img" aria-label="Madrid, 2021: 20,9 %"><title>Madrid, 2021: 20,9 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="292.776477" y="90.058558" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2022" class="marca" tabindex="0" role="img" aria-label="Madrid, 2022: 20,6 %"><title>Madrid, 2022: 20,6 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="333.358295" y="93.527326" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2023" class="marca" tabindex="0" role="img" aria-label="Madrid, 2023: 19,8 %"><title>Madrid, 2023: 19,8 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#m7f5665bdd9" x="373.940114" y="101.746282" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="m2024" class="marca" tabindex="0" role="img" aria-label="Madrid, 2024: 19,6 %"><title>Madrid, 2024: 19,6 %</title>
+    <g clip-path="url(#p745e72afb8)">
+     <use xlink:href="#mce96ec3049" x="414.521932" y="104.418679" style="fill: #0b4f9c; stroke: #ffffff"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 31.02375 173.52 
+L 432.78375 173.52 
+" style="fill: none; stroke: #d9dbe0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="53.34375" y="33.587863" transform="rotate(-0 53.34375 33.587863)">del distrito más bajo al más alto</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 600; font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1d1d1f" x="49.285568" y="101.433984" transform="rotate(-0 49.285568 101.433984)">19,1 %</text>
+   </g>
+   <g id="text_21">
+    <text style="font-weight: 600; font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1d1d1f" x="252.194659" y="80.378667" transform="rotate(-0 252.194659 80.378667)">21,0 %</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 600; font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1d1d1f" x="414.521932" y="96.418679" transform="rotate(-0 414.521932 96.418679)">19,6 %</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p745e72afb8">
+   <rect x="31.02375" y="7.2" width="401.76" height="166.32"/>
+  </clipPath>
+ </defs>
+</svg>

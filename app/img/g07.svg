@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="630.471438pt" height="327.028664pt" viewBox="0 0 630.471438 327.028664" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M -0 327.028664 
+L 630.471438 327.028664 
+L 630.471438 0 
+L -0 0 
+L -0 327.028664 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 215.150188 192.811238 
+L 616.910188 192.811238 
+L 616.910188 7.2 
+L 215.150188 7.2 
+L 215.150188 192.811238 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 225.451726 192.811238 
+L 225.451726 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_1">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="225.451726" y="202.389363" transform="rotate(-0 225.451726 202.389363)">−1,0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 276.959418 192.811238 
+L 276.959418 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_2">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="276.959418" y="202.389363" transform="rotate(-0 276.959418 202.389363)">−0,5</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 328.467111 192.811238 
+L 328.467111 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_3">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="328.467111" y="202.389363" transform="rotate(-0 328.467111 202.389363)">0,0</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 379.974803 192.811238 
+L 379.974803 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_4">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="379.974803" y="202.389363" transform="rotate(-0 379.974803 202.389363)">0,5</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 431.482495 192.811238 
+L 431.482495 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_5">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="431.482495" y="202.389363" transform="rotate(-0 431.482495 202.389363)">1,0</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_11">
+      <path d="M 482.990188 192.811238 
+L 482.990188 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_12"/>
+     <g id="text_6">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="482.990188" y="202.389363" transform="rotate(-0 482.990188 202.389363)">1,5</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_13">
+      <path d="M 534.49788 192.811238 
+L 534.49788 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_14"/>
+     <g id="text_7">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="534.49788" y="202.389363" transform="rotate(-0 534.49788 202.389363)">2,0</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_15">
+      <path d="M 586.005572 192.811238 
+L 586.005572 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_16"/>
+     <g id="text_8">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="586.005572" y="202.389363" transform="rotate(-0 586.005572 202.389363)">2,5</text>
+     </g>
+    </g>
+    <g id="text_9">
+     <text style="font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #474a52" x="416.030188" y="215.10991" transform="rotate(-0 416.030188 215.10991)">Rechazadas por 1.000 jóvenes por cada punto de esfuerzo de más (IC 95 %; estimado)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_17"/>
+     <g id="text_10">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="18.756265" transform="rotate(-0 211.650188 18.756265)">Error espacial heterocedástico, 5 vecinos (principal)</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_18"/>
+     <g id="text_11">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="35.630014" transform="rotate(-0 211.650188 35.630014)">Error espacial heterocedástico, 8 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_19"/>
+     <g id="text_12">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="52.503763" transform="rotate(-0 211.650188 52.503763)">Error espacial heterocedástico, dos pasos, 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_20"/>
+     <g id="text_13">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="69.377512" transform="rotate(-0 211.650188 69.377512)">Error espacial, máxima verosimilitud, 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_21"/>
+     <g id="text_14">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="86.095261" transform="rotate(-0 211.650188 86.095261)">Retardo espacial (SAR), 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_22"/>
+     <g id="text_15">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="102.96901" transform="rotate(-0 211.650188 102.96901)">Durbin espacial del error (SDEM), 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_23"/>
+     <g id="text_16">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="119.842758" transform="rotate(-0 211.650188 119.842758)">Retardo de las explicativas (SLX), 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_24"/>
+     <g id="text_17">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="136.872507" transform="rotate(-0 211.650188 136.872507)">Mínimos cuadrados</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_25"/>
+     <g id="text_18">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="153.746256" transform="rotate(-0 211.650188 153.746256)">Mínimos cuadrados, errores robustos HAC</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_26"/>
+     <g id="text_19">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="170.620005" transform="rotate(-0 211.650188 170.620005)">Con % de jóvenes en alquiler, 5 vecinos</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_27"/>
+     <g id="text_20">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="187.493754" transform="rotate(-0 211.650188 187.493754)">Con % de jóvenes en alquiler, 8 vecinos</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 215.150188 159.06374 
+L 616.910188 159.06374 
+L 616.910188 125.316242 
+L 215.150188 125.316242 
+z
+" clip-path="url(#p0687038c11)" style="fill: #d9dbe0; opacity: 0.35"/>
+   </g>
+   <g id="line2d_28">
+    <path d="M 328.467111 192.811238 
+L 328.467111 7.2 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_29">
+    <path d="M 331.488308 15.636874 
+L 505.692535 15.636874 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.9; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f10" class="marca" tabindex="0" role="img" aria-label="Error espacial heterocedástico, 5 vecinos (principal): 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,03 a 1,72; p = 0,043; estimado)"><title>Error espacial heterocedástico, 5 vecinos (principal): 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,03 a 1,72; p = 0,043; estimado)</title>
+    <defs>
+     <path id="ma38c0dd0f2" d="M -0 4.242641 
+L 4.242641 0 
+L 0 -4.242641 
+L -4.242641 -0 
+z
+" style="stroke: #ffffff; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </defs>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#ma38c0dd0f2" x="418.590422" y="15.636874" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="line2d_30">
+    <path d="M 329.278546 32.510623 
+L 507.015038 32.510623 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f9" class="marca" tabindex="0" role="img" aria-label="Error espacial heterocedástico, 8 vecinos: 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,01 a 1,73; p = 0,048; estimado)"><title>Error espacial heterocedástico, 8 vecinos: 0,87 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,01 a 1,73; p = 0,048; estimado)</title>
+    <defs>
+     <path id="m1b30bf09e7" d="M 0 3 
+C 0.795609 3 1.55874 2.683901 2.12132 2.12132 
+C 2.683901 1.55874 3 0.795609 3 0 
+C 3 -0.795609 2.683901 -1.55874 2.12132 -2.12132 
+C 1.55874 -2.683901 0.795609 -3 0 -3 
+C -0.795609 -3 -1.55874 -2.683901 -2.12132 -2.12132 
+C -2.683901 -1.55874 -3 -0.795609 -3 0 
+C -3 0.795609 -2.683901 1.55874 -2.12132 2.12132 
+C -1.55874 2.683901 -0.795609 3 0 3 
+z
+" style="stroke: #ffffff; stroke-width: 0.8"/>
+    </defs>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="418.146792" y="32.510623" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_31">
+    <path d="M 327.910801 49.384372 
+L 501.990159 49.384372 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f8" class="marca" tabindex="0" role="img" aria-label="Error espacial heterocedástico, dos pasos, 5 vecinos: 0,84 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,01 a 1,68; p = 0,051; estimado)"><title>Error espacial heterocedástico, dos pasos, 5 vecinos: 0,84 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,01 a 1,68; p = 0,051; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="414.95048" y="49.384372" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_32">
+    <path d="M 336.832581 66.258121 
+L 496.105896 66.258121 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f7" class="marca" tabindex="0" role="img" aria-label="Error espacial, máxima verosimilitud, 5 vecinos: 0,85 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,08 a 1,63; p = 0,030; estimado)"><title>Error espacial, máxima verosimilitud, 5 vecinos: 0,85 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % 0,08 a 1,63; p = 0,030; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="416.469238" y="66.258121" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_33">
+    <path d="M 322.311006 83.13187 
+L 472.83968 83.13187 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f6" class="marca" tabindex="0" role="img" aria-label="Retardo espacial (SAR), 5 vecinos: 0,67 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,06 a 1,40; p = 0,072; estimado)"><title>Retardo espacial (SAR), 5 vecinos: 0,67 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,06 a 1,40; p = 0,072; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="397.575343" y="83.13187" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_34">
+    <path d="M 312.166818 100.005619 
+L 491.170618 100.005619 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f5" class="marca" tabindex="0" role="img" aria-label="Durbin espacial del error (SDEM), 5 vecinos: 0,71 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,16 a 1,58; p = 0,109; estimado)"><title>Durbin espacial del error (SDEM), 5 vecinos: 0,71 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,16 a 1,58; p = 0,109; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="401.668718" y="100.005619" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_35">
+    <path d="M 305.011231 116.879368 
+L 500.067773 116.879368 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f4" class="marca" tabindex="0" role="img" aria-label="Retardo de las explicativas (SLX), 5 vecinos: 0,72 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,23 a 1,67; p = 0,139; estimado)"><title>Retardo de las explicativas (SLX), 5 vecinos: 0,72 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,23 a 1,67; p = 0,139; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="402.539502" y="116.879368" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_36">
+    <path d="M 313.072979 133.753117 
+L 469.113369 133.753117 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f3" class="marca" tabindex="0" role="img" aria-label="Mínimos cuadrados: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,15 a 1,37; p = 0,118; estimado)"><title>Mínimos cuadrados: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,15 a 1,37; p = 0,118; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="391.093174" y="133.753117" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_37">
+    <path d="M 302.707717 150.626866 
+L 479.478631 150.626866 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f2" class="marca" tabindex="0" role="img" aria-label="Mínimos cuadrados, errores robustos HAC: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,25 a 1,47; p = 0,167; estimado)"><title>Mínimos cuadrados, errores robustos HAC: 0,61 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,25 a 1,47; p = 0,167; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="391.093174" y="150.626866" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_38">
+    <path d="M 300.090361 167.500615 
+L 450.994032 167.500615 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f1" class="marca" tabindex="0" role="img" aria-label="Con % de jóvenes en alquiler, 5 vecinos: 0,46 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,28 a 1,19; p = 0,221; estimado)"><title>Con % de jóvenes en alquiler, 5 vecinos: 0,46 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,28 a 1,19; p = 0,221; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="375.542197" y="167.500615" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="line2d_39">
+    <path d="M 288.061774 184.374363 
+L 438.228716 184.374363 
+" clip-path="url(#p0687038c11)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="f0" class="marca" tabindex="0" role="img" aria-label="Con % de jóvenes en alquiler, 8 vecinos: 0,34 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,39 a 1,07; p = 0,365; estimado)"><title>Con % de jóvenes en alquiler, 8 vecinos: 0,34 rechazadas por 1.000 jóvenes por punto de esfuerzo (IC 95 % −0,39 a 1,07; p = 0,365; estimado)</title>
+    <g clip-path="url(#p0687038c11)">
+     <use xlink:href="#m1b30bf09e7" x="363.145245" y="184.374363" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+    </g>
+   </g>
+   <g id="patch_4">
+    <path d="M 215.150187 192.811238 
+L 616.910188 192.811238 
+" style="fill: none; stroke: #d9dbe0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b4f9c" x="611.759418" y="17.55914" transform="rotate(-0 611.759418 17.55914)">p = 0,043</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b4f9c" x="611.759418" y="34.432889" transform="rotate(-0 611.759418 34.432889)">p = 0,048</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="51.306638" transform="rotate(-0 611.759418 51.306638)">p = 0,051</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b4f9c" x="611.759418" y="68.180387" transform="rotate(-0 611.759418 68.180387)">p = 0,030</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="85.054136" transform="rotate(-0 611.759418 85.054136)">p = 0,072</text>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="101.927885" transform="rotate(-0 611.759418 101.927885)">p = 0,109</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="118.801633" transform="rotate(-0 611.759418 118.801633)">p = 0,139</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="135.675382" transform="rotate(-0 611.759418 135.675382)">p = 0,118</text>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="152.549131" transform="rotate(-0 611.759418 152.549131)">p = 0,167</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="169.42288" transform="rotate(-0 611.759418 169.42288)">p = 0,221</text>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="611.759418" y="186.296629" transform="rotate(-0 611.759418 186.296629)">p = 0,365</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 6.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #5c6069" transform="translate(225.731995 139.875733)">sin</text>
+    <text style="font-size: 6.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #5c6069" transform="translate(217.602808 148.037593)">espacio</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_5">
+    <path d="M 215.150188 295.488 
+L 616.910188 295.488 
+L 616.910188 254.991003 
+L 215.150188 254.991003 
+L 215.150188 295.488 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_9">
+     <g id="line2d_40">
+      <path d="M 215.150188 295.488 
+L 215.150188 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_41"/>
+     <g id="text_33">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="215.150188" y="305.066125" transform="rotate(-0 215.150188 305.066125)">−0,2</text>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_42">
+      <path d="M 272.544473 295.488 
+L 272.544473 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_43"/>
+     <g id="text_34">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="272.544473" y="305.066125" transform="rotate(-0 272.544473 305.066125)">−0,1</text>
+     </g>
+    </g>
+    <g id="xtick_11">
+     <g id="line2d_44">
+      <path d="M 329.938759 295.488 
+L 329.938759 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_45"/>
+     <g id="text_35">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="329.938759" y="305.066125" transform="rotate(-0 329.938759 305.066125)">0,0</text>
+     </g>
+    </g>
+    <g id="xtick_12">
+     <g id="line2d_46">
+      <path d="M 387.333045 295.488 
+L 387.333045 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_47"/>
+     <g id="text_36">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="387.333045" y="305.066125" transform="rotate(-0 387.333045 305.066125)">0,1</text>
+     </g>
+    </g>
+    <g id="xtick_13">
+     <g id="line2d_48">
+      <path d="M 444.72733 295.488 
+L 444.72733 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_49"/>
+     <g id="text_37">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="444.72733" y="305.066125" transform="rotate(-0 444.72733 305.066125)">0,2</text>
+     </g>
+    </g>
+    <g id="xtick_14">
+     <g id="line2d_50">
+      <path d="M 502.121616 295.488 
+L 502.121616 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_51"/>
+     <g id="text_38">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="502.121616" y="305.066125" transform="rotate(-0 502.121616 305.066125)">0,3</text>
+     </g>
+    </g>
+    <g id="xtick_15">
+     <g id="line2d_52">
+      <path d="M 559.515902 295.488 
+L 559.515902 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_53"/>
+     <g id="text_39">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="559.515902" y="305.066125" transform="rotate(-0 559.515902 305.066125)">0,4</text>
+     </g>
+    </g>
+    <g id="xtick_16">
+     <g id="line2d_54">
+      <path d="M 616.910188 295.488 
+L 616.910188 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_55"/>
+     <g id="text_40">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="616.910188" y="305.066125" transform="rotate(-0 616.910188 305.066125)">0,5</text>
+     </g>
+    </g>
+    <g id="text_41">
+     <text style="font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #474a52" x="416.030188" y="317.786672" transform="rotate(-0 416.030188 317.786672)">Correlación parcial del esfuerzo con las rechazadas por 1.000 jóvenes (otra escala)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_12">
+     <g id="line2d_56"/>
+     <g id="text_42">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="269.155029" transform="rotate(-0 211.650188 269.155029)">Correlación parcial, fijada antes de ver los datos</text>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_57"/>
+     <g id="text_43">
+      <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="211.650188" y="288.060005" transform="rotate(-0 211.650188 288.060005)">Ídem, tasas suavizadas (Bayes empírico)</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_58">
+    <path d="M 329.938759 295.488 
+L 329.938759 254.991003 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #474a52; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_59">
+    <path d="M 309.849012 266.035638 
+L 502.434829 266.035638 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="r1" class="marca" tabindex="0" role="img" aria-label="Correlación parcial, fijada antes de ver los datos: r = 0,137 (IC 95 % −0,04 a 0,30; p = 0,118; estimado)"><title>Correlación parcial, fijada antes de ver los datos: r = 0,137 (IC 95 % −0,04 a 0,30; p = 0,118; estimado)</title>
+    <defs>
+     <path id="mf87cb67f3f" d="M -3 3 
+L 3 3 
+L 3 -3 
+L -3 -3 
+z
+" style="stroke: #ffffff; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </defs>
+    <g clip-path="url(#paffb8b7729)">
+     <use xlink:href="#mf87cb67f3f" x="408.391032" y="266.035638" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="line2d_60">
+    <path d="M 320.905083 284.443364 
+L 512.439818 284.443364 
+" clip-path="url(#paffb8b7729)" style="fill: none; stroke: #474a52; stroke-opacity: 0.5; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="r0" class="marca" tabindex="0" role="img" aria-label="Ídem, tasas suavizadas (Bayes empírico): r = 0,156 (IC 95 % −0,02 a 0,32; p = 0,075; estimado)"><title>Ídem, tasas suavizadas (Bayes empírico): r = 0,156 (IC 95 % −0,02 a 0,32; p = 0,075; estimado)</title>
+    <g clip-path="url(#paffb8b7729)">
+     <use xlink:href="#mf87cb67f3f" x="419.217986" y="284.443364" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="patch_6">
+    <path d="M 215.150188 295.488 
+L 616.910188 295.488 
+" style="fill: none; stroke: #d9dbe0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_44">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="605.43133" y="267.957904" transform="rotate(-0 605.43133 267.957904)">p = 0,118</text>
+   </g>
+   <g id="text_45">
+    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="605.43133" y="286.36563" transform="rotate(-0 605.43133 286.36563)">p = 0,075</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0687038c11">
+   <rect x="215.150188" y="7.2" width="401.76" height="185.611238"/>
+  </clipPath>
+  <clipPath id="paffb8b7729">
+   <rect x="215.150188" y="254.991003" width="401.76" height="40.496997"/>
+  </clipPath>
+ </defs>
+</svg>

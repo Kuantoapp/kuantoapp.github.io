@@ -1,0 +1,1765 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="457.029822pt" height="215.396664pt" viewBox="0 0 457.029822 215.396664" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 215.396664 
+L 457.029822 215.396664 
+L 457.029822 0 
+L 0 0 
+L 0 215.396664 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 31.02375 195.696 
+L 432.78375 195.696 
+L 432.78375 7.2 
+L 31.02375 7.2 
+L 31.02375 195.696 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="text_1">
+     <text style="font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #474a52" x="231.90375" y="206.154672" transform="rotate(-0 231.90375 206.154672)">157 zonas, de menor a mayor esfuerzo</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_1">
+      <path d="M 31.02375 188.964 
+L 432.78375 188.964 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="192.003062" transform="rotate(-0 27.52375 192.003062)">5 %</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_3">
+      <path d="M 31.02375 155.304 
+L 432.78375 155.304 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_3">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="158.343062" transform="rotate(-0 27.52375 158.343062)">10 %</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_5">
+      <path d="M 31.02375 121.644 
+L 432.78375 121.644 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_4">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="124.683062" transform="rotate(-0 27.52375 124.683062)">15 %</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_7">
+      <path d="M 31.02375 87.984 
+L 432.78375 87.984 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_5">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="91.023062" transform="rotate(-0 27.52375 91.023062)">20 %</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_9">
+      <path d="M 31.02375 54.324 
+L 432.78375 54.324 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_6">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="57.363062" transform="rotate(-0 27.52375 57.363062)">25 %</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_11">
+      <path d="M 31.02375 20.664 
+L 432.78375 20.664 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_12"/>
+     <g id="text_7">
+      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="27.52375" y="23.703062" transform="rotate(-0 27.52375 23.703062)">30 %</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_13">
+    <path d="M 31.02375 129.342352 
+L 432.78375 129.342352 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #a9adb6; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_14">
+    <path d="M 31.02375 123.09232 
+L 432.78375 123.09232 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #a9adb6; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_15">
+    <path d="M 31.02375 115.079924 
+L 432.78375 115.079924 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #a9adb6; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_16">
+    <path d="M 31.02375 100.331709 
+L 432.78375 100.331709 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #a9adb6; stroke-width: 0.7"/>
+   </g>
+   <g id="e28031" class="marca" tabindex="0" role="img" aria-label="Cadalso de los Vidrios: 10,7 %, 53 alquileres declarados"><title>Cadalso de los Vidrios: 10,7 %, 53 alquileres declarados</title>
+    <path d="M 35.835247 160.947972 
+L 35.835247 140.877823 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_17">
+    <defs>
+     <path id="m6a95d991c9" d="M 0 1.3 
+C 0.344764 1.3 0.675454 1.163024 0.919239 0.919239 
+C 1.163024 0.675454 1.3 0.344764 1.3 0 
+C 1.3 -0.344764 1.163024 -0.675454 0.919239 -0.919239 
+C 0.675454 -1.163024 0.344764 -1.3 0 -1.3 
+C -0.344764 -1.3 -0.675454 -1.163024 -0.919239 -0.919239 
+C -1.163024 -0.675454 -1.3 -0.344764 -1.3 0 
+C -1.3 0.344764 -1.163024 0.675454 -0.919239 0.919239 
+C -0.675454 1.163024 -0.344764 1.3 0 1.3 
+z
+" style="stroke: #ffffff; stroke-width: 0.3"/>
+    </defs>
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="35.835247" y="150.912897" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28135" class="marca" tabindex="0" role="img" aria-label="Santa María de la Alameda: 11,6 %, 11 alquileres declarados, su intervalo cruza un corte"><title>Santa María de la Alameda: 11,6 %, 11 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 38.240996 198.050989 
+L 38.240996 91.623766 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_18">
+    <defs>
+     <path id="md2d0844a79" d="M 0 1.3 
+C 0.344764 1.3 0.675454 1.163024 0.919239 0.919239 
+C 1.163024 0.675454 1.3 0.344764 1.3 0 
+C 1.3 -0.344764 1.163024 -0.675454 0.919239 -0.919239 
+C 0.675454 -1.163024 0.344764 -1.3 0 -1.3 
+C -0.344764 -1.3 -0.675454 -1.163024 -0.919239 -0.919239 
+C -1.163024 -0.675454 -1.3 -0.344764 -1.3 0 
+C -1.3 0.344764 -1.163024 0.675454 -0.919239 0.919239 
+C -0.675454 1.163024 -0.344764 1.3 0 1.3 
+z
+" style="stroke: #ffffff; stroke-width: 0.3"/>
+    </defs>
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="38.240996" y="144.837378" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28099" class="marca" tabindex="0" role="img" aria-label="Navas del Rey: 11,6 %, 45 alquileres declarados"><title>Navas del Rey: 11,6 %, 45 alquileres declarados</title>
+    <path d="M 40.646744 152.270914 
+L 40.646744 137.038103 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_19">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="40.646744" y="144.654508" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28055" class="marca" tabindex="0" role="img" aria-label="Estremera: 11,8 %, 11 alquileres declarados, su intervalo cruza un corte"><title>Estremera: 11,8 %, 11 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 43.052493 176.354063 
+L 43.052493 110.080611 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_20">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="43.052493" y="143.217337" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28159" class="marca" tabindex="0" role="img" aria-label="Valdemaqueda: 11,9 %, 11 alquileres declarados, su intervalo cruza un corte"><title>Valdemaqueda: 11,9 %, 11 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 45.458241 171.686455 
+L 45.458241 112.781368 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_21">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="45.458241" y="142.233911" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28088" class="marca" tabindex="0" role="img" aria-label="Montejo de la Sierra: 12,1 %, 10 alquileres declarados, su intervalo cruza un corte"><title>Montejo de la Sierra: 12,1 %, 10 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 47.86399 157.848979 
+L 47.86399 124.413956 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_22">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="47.86399" y="141.131468" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28021" class="marca" tabindex="0" role="img" aria-label="El Berrueco: 12,4 %, 15 alquileres declarados, su intervalo cruza un corte"><title>El Berrueco: 12,4 %, 15 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 50.269738 154.899644 
+L 50.269738 123.904689 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_23">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="50.269738" y="139.402167" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28042" class="marca" tabindex="0" role="img" aria-label="Colmenar del Arroyo: 12,4 %, 66 alquileres declarados"><title>Colmenar del Arroyo: 12,4 %, 66 alquileres declarados</title>
+    <path d="M 52.675487 146.936967 
+L 52.675487 131.251114 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_24">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="52.675487" y="139.09404" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28176" class="marca" tabindex="0" role="img" aria-label="Villanueva de la Cañada: 12,6 %, 1180 alquileres declarados"><title>Villanueva de la Cañada: 12,6 %, 1180 alquileres declarados</title>
+    <path d="M 55.081235 139.336561 
+L 55.081235 136.112416 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_25">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="55.081235" y="137.724488" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28056" class="marca" tabindex="0" role="img" aria-label="Fresnedillas de la Oliva: 12,7 %, 47 alquileres declarados, su intervalo cruza un corte"><title>Fresnedillas de la Oliva: 12,7 %, 47 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 57.486984 147.715725 
+L 57.486984 127.025455 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_26">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="57.486984" y="137.37059" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28120" class="marca" tabindex="0" role="img" aria-label="Rascafría: 12,7 %, 50 alquileres declarados, su intervalo cruza un corte"><title>Rascafría: 12,7 %, 50 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 59.892732 149.032264 
+L 59.892732 125.21264 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_27">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="59.892732" y="137.122452" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28009" class="marca" tabindex="0" role="img" aria-label="Algete: 12,8 %, 694 alquileres declarados"><title>Algete: 12,8 %, 694 alquileres declarados</title>
+    <path d="M 62.298481 138.324736 
+L 62.298481 134.141411 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_28">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="62.298481" y="136.233073" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28037" class="marca" tabindex="0" role="img" aria-label="Cenicientos: 12,8 %, 21 alquileres declarados, su intervalo cruza un corte"><title>Cenicientos: 12,8 %, 21 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 64.704229 143.564434 
+L 64.704229 128.855276 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_29">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="64.704229" y="136.209855" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28122" class="marca" tabindex="0" role="img" aria-label="Ribatejada: 12,9 %, 14 alquileres declarados, su intervalo cruza un corte"><title>Ribatejada: 12,9 %, 14 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 67.109978 167.968599 
+L 67.109978 103.859996 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_30">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="67.109978" y="135.914297" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28041" class="marca" tabindex="0" role="img" aria-label="Cobeña: 12,9 %, 261 alquileres declarados"><title>Cobeña: 12,9 %, 261 alquileres declarados</title>
+    <path d="M 69.515726 138.678798 
+L 69.515726 132.457712 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_31">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="69.515726" y="135.568255" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28162" class="marca" tabindex="0" role="img" aria-label="Valdeolmos-Alalpardo: 13,0 %, 246 alquileres declarados"><title>Valdeolmos-Alalpardo: 13,0 %, 246 alquileres declarados</title>
+    <path d="M 71.921475 137.702244 
+L 71.921475 132.740588 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_32">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="71.921475" y="135.221416" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28129" class="marca" tabindex="0" role="img" aria-label="San Agustín del Guadalix: 13,0 %, 801 alquileres declarados"><title>San Agustín del Guadalix: 13,0 %, 801 alquileres declarados</title>
+    <path d="M 74.327223 136.954039 
+L 74.327223 132.980683 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_33">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="74.327223" y="134.967361" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28144" class="marca" tabindex="0" role="img" aria-label="Soto del Real: 13,1 %, 294 alquileres declarados"><title>Soto del Real: 13,1 %, 294 alquileres declarados</title>
+    <path d="M 76.732972 137.710699 
+L 76.732972 131.593817 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_34">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="76.732972" y="134.652258" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28151" class="marca" tabindex="0" role="img" aria-label="Torrelaguna: 13,3 %, 255 alquileres declarados"><title>Torrelaguna: 13,3 %, 255 alquileres declarados</title>
+    <path d="M 79.13872 136.294046 
+L 79.13872 129.597571 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_35">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="79.13872" y="132.945808" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28901" class="marca" tabindex="0" role="img" aria-label="Lozoyuela-Navas-Sieteiglesias: 13,3 %, 13 alquileres declarados, su intervalo cruza un corte"><title>Lozoyuela-Navas-Sieteiglesias: 13,3 %, 13 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 81.544469 156.544095 
+L 81.544469 108.984216 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_36">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="81.544469" y="132.764156" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28043" class="marca" tabindex="0" role="img" aria-label="Colmenar de Oreja: 13,4 %, 47 alquileres declarados, su intervalo cruza un corte"><title>Colmenar de Oreja: 13,4 %, 47 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 83.950217 142.962518 
+L 83.950217 122.004294 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_37">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="83.950217" y="132.483406" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28152" class="marca" tabindex="0" role="img" aria-label="Torrelodones: 13,4 %, 807 alquileres declarados"><title>Torrelodones: 13,4 %, 807 alquileres declarados</title>
+    <path d="M 86.355966 134.432398 
+L 86.355966 130.32364 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_38">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="86.355966" y="132.378019" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28183" class="marca" tabindex="0" role="img" aria-label="Zarzalejo: 13,4 %, 36 alquileres declarados, su intervalo cruza un corte"><title>Zarzalejo: 13,4 %, 36 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 88.761714 143.237926 
+L 88.761714 121.098056 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_39">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="88.761714" y="132.167991" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28175" class="marca" tabindex="0" role="img" aria-label="Villamantilla: 13,5 %, 59 alquileres declarados, su intervalo cruza un corte"><title>Villamantilla: 13,5 %, 59 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 91.167463 141.453103 
+L 91.167463 122.668913 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_40">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="91.167463" y="132.061008" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28160" class="marca" tabindex="0" role="img" aria-label="Valdemorillo: 13,5 %, 476 alquileres declarados"><title>Valdemorillo: 13,5 %, 476 alquileres declarados</title>
+    <path d="M 93.573211 133.85512 
+L 93.573211 129.429115 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_41">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="93.573211" y="131.642118" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28133" class="marca" tabindex="0" role="img" aria-label="San Martín de Valdeiglesias: 13,5 %, 258 alquileres declarados, su intervalo cruza un corte"><title>San Martín de Valdeiglesias: 13,5 %, 258 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 95.97896 135.48405 
+L 95.97896 127.654961 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_42">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="95.97896" y="131.569505" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28108" class="marca" tabindex="0" role="img" aria-label="Pedrezuela: 13,5 %, 414 alquileres declarados, su intervalo cruza un corte"><title>Pedrezuela: 13,5 %, 414 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 98.384708 133.852709 
+L 98.384708 129.008767 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_43">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="98.384708" y="131.430738" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28090" class="marca" tabindex="0" role="img" aria-label="Moralzarzal: 13,7 %, 377 alquileres declarados, su intervalo cruza un corte"><title>Moralzarzal: 13,7 %, 377 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 100.790457 134.2705 
+L 100.790457 126.946379 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_44">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="100.790457" y="130.608439" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28050" class="marca" tabindex="0" role="img" aria-label="Cubas de la Sagra: 13,7 %, 18 alquileres declarados, su intervalo cruza un corte"><title>Cubas de la Sagra: 13,7 %, 18 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 103.196205 152.041977 
+L 103.196205 108.40745 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_45">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="103.196205" y="130.224713" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28125" class="marca" tabindex="0" role="img" aria-label="Robledo de Chavela: 13,7 %, 87 alquileres declarados, su intervalo cruza un corte"><title>Robledo de Chavela: 13,7 %, 87 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 105.601954 137.893894 
+L 105.601954 122.239532 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_46">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="105.601954" y="130.066713" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28089" class="marca" tabindex="0" role="img" aria-label="Moraleja de Enmedio: 13,8 %, 97 alquileres declarados, su intervalo cruza un corte"><title>Moraleja de Enmedio: 13,8 %, 97 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 108.007702 136.171327 
+L 108.007702 122.8043 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_47">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="108.007702" y="129.487813" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28076" class="marca" tabindex="0" role="img" aria-label="Lozoya: 13,8 %, 36 alquileres declarados, su intervalo cruza un corte"><title>Lozoya: 13,8 %, 36 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 110.413451 139.567031 
+L 110.413451 119.213625 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_48">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="110.413451" y="129.390328" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28094" class="marca" tabindex="0" role="img" aria-label="Navalafuente: 13,9 %, 87 alquileres declarados, su intervalo cruza un corte"><title>Navalafuente: 13,9 %, 87 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 112.819199 137.785921 
+L 112.819199 120.51497 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_49">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="112.819199" y="129.150446" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28046" class="marca" tabindex="0" role="img" aria-label="Collado Mediano: 13,9 %, 240 alquileres declarados, su intervalo cruza un corte"><title>Collado Mediano: 13,9 %, 240 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 115.224948 133.112949 
+L 115.224948 124.674685 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_50">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="115.224948" y="128.893817" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28030" class="marca" tabindex="0" role="img" aria-label="La Cabrera: 14,0 %, 93 alquileres declarados, su intervalo cruza un corte"><title>La Cabrera: 14,0 %, 93 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 117.630696 133.797811 
+L 117.630696 122.803901 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_51">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="117.630696" y="128.300856" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28066" class="marca" tabindex="0" role="img" aria-label="Griñón: 14,1 %, 266 alquileres declarados, su intervalo cruza un corte"><title>Griñón: 14,1 %, 266 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 120.036445 130.833589 
+L 120.036445 123.899935 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_52">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="120.036445" y="127.366762" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28095" class="marca" tabindex="0" role="img" aria-label="Navalagamella: 14,1 %, 85 alquileres declarados, su intervalo cruza un corte"><title>Navalagamella: 14,1 %, 85 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 122.442193 134.173048 
+L 122.442193 120.559598 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_53">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="122.442193" y="127.366323" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28102" class="marca" tabindex="0" role="img" aria-label="Orusco de Tajuña: 14,2 %, 22 alquileres declarados, su intervalo cruza un corte"><title>Orusco de Tajuña: 14,2 %, 22 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 124.847942 151.736279 
+L 124.847942 102.502894 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_54">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="124.847942" y="127.119586" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28083" class="marca" tabindex="0" role="img" aria-label="Meco: 14,2 %, 406 alquileres declarados, su intervalo cruza un corte"><title>Meco: 14,2 %, 406 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 127.25369 129.82644 
+L 127.25369 124.393357 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_55">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="127.25369" y="127.109899" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28006" class="marca" tabindex="0" role="img" aria-label="Alcobendas: 14,2 %, 6933 alquileres declarados"><title>Alcobendas: 14,2 %, 6933 alquileres declarados</title>
+    <path d="M 129.659439 127.980079 
+L 129.659439 126.144548 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_56">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="129.659439" y="127.062313" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28023" class="marca" tabindex="0" role="img" aria-label="El Boalo: 14,2 %, 297 alquileres declarados, su intervalo cruza un corte"><title>El Boalo: 14,2 %, 297 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 132.065187 130.081963 
+L 132.065187 123.771041 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_57">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="132.065187" y="126.926502" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28109" class="marca" tabindex="0" role="img" aria-label="Pelayos de la Presa: 14,2 %, 79 alquileres declarados, su intervalo cruza un corte"><title>Pelayos de la Presa: 14,2 %, 79 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 134.470936 133.822753 
+L 134.470936 119.920224 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_58">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="134.470936" y="126.871489" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28018" class="marca" tabindex="0" role="img" aria-label="Becerril de la Sierra: 14,2 %, 249 alquileres declarados, su intervalo cruza un corte"><title>Becerril de la Sierra: 14,2 %, 249 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 136.876684 130.807644 
+L 136.876684 122.916543 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_59">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="136.876684" y="126.862094" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28174" class="marca" tabindex="0" role="img" aria-label="Villamanta: 14,2 %, 44 alquileres declarados, su intervalo cruza un corte"><title>Villamanta: 14,2 %, 44 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 139.282433 138.202225 
+L 139.282433 115.507126 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_60">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="139.282433" y="126.854675" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28053" class="marca" tabindex="0" role="img" aria-label="Daganzo de Arriba: 14,3 %, 236 alquileres declarados, su intervalo cruza un corte"><title>Daganzo de Arriba: 14,3 %, 236 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 141.688181 130.231569 
+L 141.688181 123.0933 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_61">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="141.688181" y="126.662434" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28110" class="marca" tabindex="0" role="img" aria-label="Perales de Tajuña: 14,3 %, 112 alquileres declarados, su intervalo cruza un corte"><title>Perales de Tajuña: 14,3 %, 112 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 144.09393 133.546434 
+L 144.09393 119.463325 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_62">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="144.09393" y="126.50488" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28027" class="marca" tabindex="0" role="img" aria-label="Buitrago del Lozoya: 14,3 %, 119 alquileres declarados, su intervalo cruza un corte"><title>Buitrago del Lozoya: 14,3 %, 119 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 146.499678 135.366961 
+L 146.499678 117.513084 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_63">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="146.499678" y="126.440023" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28067" class="marca" tabindex="0" role="img" aria-label="Guadalix de la Sierra: 14,4 %, 176 alquileres declarados, su intervalo cruza un corte"><title>Guadalix de la Sierra: 14,4 %, 176 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 148.905427 130.958623 
+L 148.905427 120.86045 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_64">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="148.905427" y="125.909537" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28157" class="marca" tabindex="0" role="img" aria-label="Valdelaguna: 14,4 %, 27 alquileres declarados, su intervalo cruza un corte"><title>Valdelaguna: 14,4 %, 27 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 151.311175 140.204339 
+L 151.311175 111.152603 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_65">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="151.311175" y="125.678471" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28019" class="marca" tabindex="0" role="img" aria-label="Belmonte de Tajo: 14,5 %, 38 alquileres declarados, su intervalo cruza un corte"><title>Belmonte de Tajo: 14,5 %, 38 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 153.716924 133.276983 
+L 153.716924 117.261098 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_66">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="153.716924" y="125.269041" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28164" class="marca" tabindex="0" role="img" aria-label="Valdetorres de Jarama: 14,5 %, 185 alquileres declarados, su intervalo cruza un corte"><title>Valdetorres de Jarama: 14,5 %, 185 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 156.122672 129.128614 
+L 156.122672 121.065061 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_67">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="156.122672" y="125.096837" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28061" class="marca" tabindex="0" role="img" aria-label="Galapagar: 14,5 %, 2165 alquileres declarados"><title>Galapagar: 14,5 %, 2165 alquileres declarados</title>
+    <path d="M 158.528421 126.44562 
+L 158.528421 123.690451 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_68">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="158.528421" y="125.068036" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28180" class="marca" tabindex="0" role="img" aria-label="Villarejo de Salvanés: 14,5 %, 289 alquileres declarados, su intervalo cruza un corte"><title>Villarejo de Salvanés: 14,5 %, 289 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 160.934169 127.27255 
+L 160.934169 122.482992 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_69">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="160.934169" y="124.877771" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28051" class="marca" tabindex="0" role="img" aria-label="Chapinería: 14,6 %, 40 alquileres declarados, su intervalo cruza un corte"><title>Chapinería: 14,6 %, 40 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 163.339918 137.158241 
+L 163.339918 112.124916 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_70">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="163.339918" y="124.641579" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28115" class="marca" tabindex="0" role="img" aria-label="Pozuelo de Alarcón: 14,6 %, 3954 alquileres declarados, su intervalo cruza un corte"><title>Pozuelo de Alarcón: 14,6 %, 3954 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 165.745666 126.348956 
+L 165.745666 122.702264 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_71">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="165.745666" y="124.52561" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28048" class="marca" tabindex="0" role="img" aria-label="Corpa: 14,6 %, 31 alquileres declarados, su intervalo cruza un corte"><title>Corpa: 14,6 %, 31 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 168.151415 135.946679 
+L 168.151415 112.251154 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_72">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="168.151415" y="124.098917" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28172" class="marca" tabindex="0" role="img" aria-label="Villalbilla: 14,6 %, 215 alquileres declarados, su intervalo cruza un corte"><title>Villalbilla: 14,6 %, 215 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 170.557163 128.53062 
+L 170.557163 119.659202 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_73">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="170.557163" y="124.094911" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28028" class="marca" tabindex="0" role="img" aria-label="Bustarviejo: 14,7 %, 110 alquileres declarados, su intervalo cruza un corte"><title>Bustarviejo: 14,7 %, 110 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 172.962912 128.835752 
+L 172.962912 119.148613 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_74">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="172.962912" y="123.992182" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28052" class="marca" tabindex="0" role="img" aria-label="Chinchón: 14,7 %, 143 alquileres declarados, su intervalo cruza un corte"><title>Chinchón: 14,7 %, 143 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 175.36866 128.519392 
+L 175.36866 118.472889 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_75">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="175.36866" y="123.49614" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28181" class="marca" tabindex="0" role="img" aria-label="Villaviciosa de Odón: 14,8 %, 1020 alquileres declarados, su intervalo cruza un corte"><title>Villaviciosa de Odón: 14,8 %, 1020 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 177.774409 125.36957 
+L 177.774409 121.122825 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_76">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="177.774409" y="123.246198" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28085" class="marca" tabindex="0" role="img" aria-label="Miraflores de la Sierra: 14,8 %, 338 alquileres declarados, su intervalo cruza un corte"><title>Miraflores de la Sierra: 14,8 %, 338 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 180.180157 127.157191 
+L 180.180157 119.206499 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_77">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="180.180157" y="123.181845" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28093" class="marca" tabindex="0" role="img" aria-label="Navacerrada: 14,8 %, 168 alquileres declarados, su intervalo cruza un corte"><title>Navacerrada: 14,8 %, 168 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 182.585906 128.196335 
+L 182.585906 118.108963 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_78">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="182.585906" y="123.152649" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28171" class="marca" tabindex="0" role="img" aria-label="Villa del Prado: 14,8 %, 144 alquileres declarados, su intervalo cruza un corte"><title>Villa del Prado: 14,8 %, 144 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 184.991654 128.51464 
+L 184.991654 117.730133 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_79">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="184.991654" y="123.122387" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28060" class="marca" tabindex="0" role="img" aria-label="Fuentidueña de Tajo: 14,8 %, 12 alquileres declarados, su intervalo cruza un corte"><title>Fuentidueña de Tajo: 14,8 %, 12 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 187.397403 140.052532 
+L 187.397403 106.041908 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_80">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="187.397403" y="123.04722" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28178" class="marca" tabindex="0" role="img" aria-label="Villanueva de Perales: 14,8 %, 23 alquileres declarados, su intervalo cruza un corte"><title>Villanueva de Perales: 14,8 %, 23 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 189.803151 136.705127 
+L 189.803151 108.858307 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_81">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="189.803151" y="122.781717" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28104" class="marca" tabindex="0" role="img" aria-label="Paracuellos de Jarama: 14,9 %, 1115 alquileres declarados, su intervalo cruza un corte"><title>Paracuellos de Jarama: 14,9 %, 1115 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 192.2089 124.501087 
+L 192.2089 119.990818 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_82">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="192.2089" y="122.245953" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28044" class="marca" tabindex="0" role="img" aria-label="Colmenarejo: 14,9 %, 456 alquileres declarados, su intervalo cruza un corte"><title>Colmenarejo: 14,9 %, 456 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 194.614648 125.103753 
+L 194.614648 119.304316 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_83">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="194.614648" y="122.204034" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28137" class="marca" tabindex="0" role="img" aria-label="Los Santos de la Humosa: 14,9 %, 31 alquileres declarados, su intervalo cruza un corte"><title>Los Santos de la Humosa: 14,9 %, 31 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 197.020397 140.877222 
+L 197.020397 103.432097 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_84">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="197.020397" y="122.15466" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28036" class="marca" tabindex="0" role="img" aria-label="Casarrubuelos: 15,0 %, 72 alquileres declarados, su intervalo cruza un corte"><title>Casarrubuelos: 15,0 %, 72 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 199.426145 127.71242 
+L 199.426145 115.881117 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_85">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="199.426145" y="121.796769" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28127" class="marca" tabindex="0" role="img" aria-label="Las Rozas de Madrid: 15,0 %, 5645 alquileres declarados"><title>Las Rozas de Madrid: 15,0 %, 5645 alquileres declarados</title>
+    <path d="M 201.831894 122.805329 
+L 201.831894 120.387647 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_86">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="201.831894" y="121.596488" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28154" class="marca" tabindex="0" role="img" aria-label="Torres de la Alameda: 15,0 %, 261 alquileres declarados, su intervalo cruza un corte"><title>Torres de la Alameda: 15,0 %, 261 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 204.237642 125.449803 
+L 204.237642 117.739975 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_87">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="204.237642" y="121.594889" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28140" class="marca" tabindex="0" role="img" aria-label="Serranillos del Valle: 15,1 %, 47 alquileres declarados, su intervalo cruza un corte"><title>Serranillos del Valle: 15,1 %, 47 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 206.643391 128.901776 
+L 206.643391 113.477214 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_88">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="206.643391" y="121.189495" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28087" class="marca" tabindex="0" role="img" aria-label="Los Molinos: 15,1 %, 129 alquileres declarados, su intervalo cruza un corte"><title>Los Molinos: 15,1 %, 129 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 209.049139 127.343273 
+L 209.049139 114.980838 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_89">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="209.049139" y="121.162056" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28045" class="marca" tabindex="0" role="img" aria-label="Colmenar Viejo: 15,1 %, 3158 alquileres declarados"><title>Colmenar Viejo: 15,1 %, 3158 alquileres declarados</title>
+    <path d="M 211.454888 122.144913 
+L 211.454888 119.70477 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_90">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="211.454888" y="120.924842" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28072" class="marca" tabindex="0" role="img" aria-label="Hoyo de Manzanares: 15,2 %, 391 alquileres declarados, su intervalo cruza un corte"><title>Hoyo de Manzanares: 15,2 %, 391 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 213.860636 123.885825 
+L 213.860636 117.130209 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_91">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="213.860636" y="120.508017" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28156" class="marca" tabindex="0" role="img" aria-label="Valdeavero: 15,2 %, 45 alquileres declarados, su intervalo cruza un corte"><title>Valdeavero: 15,2 %, 45 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 216.266385 129.534048 
+L 216.266385 110.990181 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_92">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="216.266385" y="120.262115" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28082" class="marca" tabindex="0" role="img" aria-label="Manzanares el Real: 15,2 %, 575 alquileres declarados"><title>Manzanares el Real: 15,2 %, 575 alquileres declarados</title>
+    <path d="M 218.672133 122.686775 
+L 218.672133 117.317322 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_93">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="218.672133" y="120.002049" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28033" class="marca" tabindex="0" role="img" aria-label="Campo Real: 15,3 %, 421 alquileres declarados"><title>Campo Real: 15,3 %, 421 alquileres declarados</title>
+    <path d="M 221.077882 122.59348 
+L 221.077882 116.582996 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_94">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="221.077882" y="119.588238" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28013" class="marca" tabindex="0" role="img" aria-label="Aranjuez: 15,3 %, 3995 alquileres declarados"><title>Aranjuez: 15,3 %, 3995 alquileres declarados</title>
+    <path d="M 223.48363 120.597288 
+L 223.48363 118.363366 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_95">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="223.48363" y="119.480327" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28149" class="marca" tabindex="0" role="img" aria-label="Torrejón de la Calzada: 15,4 %, 245 alquileres declarados, su intervalo cruza un corte"><title>Torrejón de la Calzada: 15,4 %, 245 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 225.889379 122.887295 
+L 225.889379 115.047821 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_96">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="225.889379" y="118.967558" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28165" class="marca" tabindex="0" role="img" aria-label="Valdilecha: 15,6 %, 156 alquileres declarados, su intervalo cruza un corte"><title>Valdilecha: 15,6 %, 156 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 228.295127 122.893997 
+L 228.295127 112.870037 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_97">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="228.295127" y="117.882017" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28010" class="marca" tabindex="0" role="img" aria-label="Alpedrete: 15,6 %, 804 alquileres declarados"><title>Alpedrete: 15,6 %, 804 alquileres declarados</title>
+    <path d="M 230.700876 119.628165 
+L 230.700876 115.841859 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_98">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="230.700876" y="117.735012" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28038" class="marca" tabindex="0" role="img" aria-label="Cercedilla: 15,7 %, 341 alquileres declarados, su intervalo cruza un corte"><title>Cercedilla: 15,7 %, 341 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 233.106624 121.262271 
+L 233.106624 113.271511 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_99">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="233.106624" y="117.266891" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28150" class="marca" tabindex="0" role="img" aria-label="Torrejón de Velasco: 15,8 %, 78 alquileres declarados, su intervalo cruza un corte"><title>Torrejón de Velasco: 15,8 %, 78 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 235.512373 124.418084 
+L 235.512373 107.851198 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_100">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="235.512373" y="116.134641" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28168" class="marca" tabindex="0" role="img" aria-label="El Vellón: 15,8 %, 148 alquileres declarados, su intervalo cruza un corte"><title>El Vellón: 15,8 %, 148 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 237.918121 121.790866 
+L 237.918121 110.146214 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_101">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="237.918121" y="115.96854" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28032" class="marca" tabindex="0" role="img" aria-label="Camarma de Esteruelas: 15,9 %, 316 alquileres declarados, su intervalo cruza un corte"><title>Camarma de Esteruelas: 15,9 %, 316 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 240.32387 118.880776 
+L 240.32387 112.761248 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_102">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="240.32387" y="115.821012" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28170" class="marca" tabindex="0" role="img" aria-label="Villaconejos: 15,9 %, 33 alquileres declarados, su intervalo cruza un corte"><title>Villaconejos: 15,9 %, 33 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 242.729618 132.019781 
+L 242.729618 99.363058 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_103">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="242.729618" y="115.69142" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28059" class="marca" tabindex="0" role="img" aria-label="Fuente el Saz de Jarama: 15,9 %, 401 alquileres declarados, su intervalo cruza un corte"><title>Fuente el Saz de Jarama: 15,9 %, 401 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 245.135367 119.003544 
+L 245.135367 112.3085 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_104">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="245.135367" y="115.656022" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28004" class="marca" tabindex="0" role="img" aria-label="El Álamo: 15,9 %, 389 alquileres declarados, su intervalo cruza un corte"><title>El Álamo: 15,9 %, 389 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 247.541115 118.390836 
+L 247.541115 112.477577 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_105">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="247.541115" y="115.434207" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28136" class="marca" tabindex="0" role="img" aria-label="Santorcaz: 15,9 %, 20 alquileres declarados, su intervalo cruza un corte"><title>Santorcaz: 15,9 %, 20 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 249.946864 129.452483 
+L 249.946864 101.364658 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_106">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="249.946864" y="115.40857" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28075" class="marca" tabindex="0" role="img" aria-label="Loeches: 15,9 %, 196 alquileres declarados, su intervalo cruza un corte"><title>Loeches: 15,9 %, 196 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 252.352612 120.731217 
+L 252.352612 110.060221 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_107">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="252.352612" y="115.395719" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28145" class="marca" tabindex="0" role="img" aria-label="Talamanca de Jarama: 15,9 %, 244 alquileres declarados, su intervalo cruza un corte"><title>Talamanca de Jarama: 15,9 %, 244 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 254.758361 119.699722 
+L 254.758361 111.088622 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_108">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="254.758361" y="115.394172" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28903" class="marca" tabindex="0" role="img" aria-label="Tres Cantos: 15,9 %, 2809 alquileres declarados, su intervalo cruza un corte"><title>Tres Cantos: 15,9 %, 2809 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 257.164109 116.535369 
+L 257.164109 114.18588 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_109">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="257.164109" y="115.360624" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807905" class="marca" tabindex="0" role="img" aria-label="Chamartín: 16,0 %, 15758 alquileres declarados, su intervalo cruza un corte"><title>Chamartín: 16,0 %, 15758 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 259.569858 115.948339 
+L 259.569858 114.330466 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_110">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="259.569858" y="115.139402" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28057" class="marca" tabindex="0" role="img" aria-label="Fresno de Torote: 16,0 %, 16 alquileres declarados, su intervalo cruza un corte"><title>Fresno de Torote: 16,0 %, 16 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 261.975606 136.402454 
+L 261.975606 93.678088 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_111">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="261.975606" y="115.040271" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28146" class="marca" tabindex="0" role="img" aria-label="Tielmes: 16,1 %, 106 alquileres declarados, su intervalo cruza un corte"><title>Tielmes: 16,1 %, 106 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 264.381355 120.210938 
+L 264.381355 108.7326 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_112">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="264.381355" y="114.471769" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28022" class="marca" tabindex="0" role="img" aria-label="Boadilla del Monte: 16,1 %, 1822 alquileres declarados, su intervalo cruza un corte"><title>Boadilla del Monte: 16,1 %, 1822 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 266.787103 116.273799 
+L 266.787103 112.412975 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_113">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="266.787103" y="114.343387" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28035" class="marca" tabindex="0" role="img" aria-label="Carabaña: 16,1 %, 59 alquileres declarados, su intervalo cruza un corte"><title>Carabaña: 16,1 %, 59 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 269.192852 124.149537 
+L 269.192852 104.105685 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_114">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="269.192852" y="114.127611" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28068" class="marca" tabindex="0" role="img" aria-label="Guadarrama: 16,1 %, 904 alquileres declarados, su intervalo cruza un corte"><title>Guadarrama: 16,1 %, 904 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 271.5986 116.183518 
+L 271.5986 111.732418 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_115">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="271.5986" y="113.957968" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807909" class="marca" tabindex="0" role="img" aria-label="Moncloa-Aravaca: 16,1 %, 10848 alquileres declarados"><title>Moncloa-Aravaca: 16,1 %, 10848 alquileres declarados</title>
+    <path d="M 274.004349 114.965596 
+L 274.004349 112.851133 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_116">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="274.004349" y="113.908365" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28012" class="marca" tabindex="0" role="img" aria-label="Anchuelo: 16,3 %, 36 alquileres declarados, su intervalo cruza un corte"><title>Anchuelo: 16,3 %, 36 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 276.410097 124.833147 
+L 276.410097 101.196922 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_117">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="276.410097" y="113.015034" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28091" class="marca" tabindex="0" role="img" aria-label="Morata de Tajuña: 16,3 %, 300 alquileres declarados, su intervalo cruza un corte"><title>Morata de Tajuña: 16,3 %, 300 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 278.815846 117.441477 
+L 278.815846 107.830486 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_118">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="278.815846" y="112.635981" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28167" class="marca" tabindex="0" role="img" aria-label="Velilla de San Antonio: 16,5 %, 524 alquileres declarados"><title>Velilla de San Antonio: 16,5 %, 524 alquileres declarados</title>
+    <path d="M 281.221594 114.420003 
+L 281.221594 109.217075 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_119">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="281.221594" y="111.818539" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28141" class="marca" tabindex="0" role="img" aria-label="Sevilla la Nueva: 16,6 %, 564 alquileres declarados"><title>Sevilla la Nueva: 16,6 %, 564 alquileres declarados</title>
+    <path d="M 283.627343 113.548712 
+L 283.627343 108.529932 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_120">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="283.627343" y="111.039322" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28002" class="marca" tabindex="0" role="img" aria-label="Ajalvir: 16,6 %, 509 alquileres declarados"><title>Ajalvir: 16,6 %, 509 alquileres declarados</title>
+    <path d="M 286.033091 113.445997 
+L 286.033091 108.246268 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_121">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="286.033091" y="110.846133" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28054" class="marca" tabindex="0" role="img" aria-label="El Escorial: 16,7 %, 1001 alquileres declarados"><title>El Escorial: 16,7 %, 1001 alquileres declarados</title>
+    <path d="M 288.43884 112.305192 
+L 288.43884 107.46923 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_122">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="288.43884" y="109.887211" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28008" class="marca" tabindex="0" role="img" aria-label="Aldea del Fresno: 16,8 %, 69 alquileres declarados, su intervalo cruza un corte"><title>Aldea del Fresno: 16,8 %, 69 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 290.844588 118.321967 
+L 290.844588 100.953014 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_123">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="290.844588" y="109.637491" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28173" class="marca" tabindex="0" role="img" aria-label="Villamanrique de Tajo: 16,8 %, 20 alquileres declarados, su intervalo cruza un corte"><title>Villamanrique de Tajo: 16,8 %, 20 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 293.250337 125.807229 
+L 293.250337 93.079813 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_124">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="293.250337" y="109.443521" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28080" class="marca" tabindex="0" role="img" aria-label="Majadahonda: 16,8 %, 4231 alquileres declarados"><title>Majadahonda: 16,8 %, 4231 alquileres declarados</title>
+    <path d="M 295.656085 110.926516 
+L 295.656085 107.552675 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_125">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="295.656085" y="109.239595" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28177" class="marca" tabindex="0" role="img" aria-label="Villanueva del Pardillo: 16,9 %, 835 alquileres declarados"><title>Villanueva del Pardillo: 16,9 %, 835 alquileres declarados</title>
+    <path d="M 298.061834 111.712826 
+L 298.061834 106.35736 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_126">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="298.061834" y="109.035093" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28131" class="marca" tabindex="0" role="img" aria-label="San Lorenzo de El Escorial: 16,9 %, 1463 alquileres declarados"><title>San Lorenzo de El Escorial: 16,9 %, 1463 alquileres declarados</title>
+    <path d="M 300.467582 111.032002 
+L 300.467582 106.917366 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_127">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="300.467582" y="108.974684" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28062" class="marca" tabindex="0" role="img" aria-label="Garganta de los Montes: 16,9 %, 10 alquileres declarados, su intervalo cruza un corte"><title>Garganta de los Montes: 16,9 %, 10 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 302.873331 216.396664 
+L 302.873331 -1 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_128">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="302.873331" y="108.836274" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28015" class="marca" tabindex="0" role="img" aria-label="Arroyomolinos: 17,0 %, 1015 alquileres declarados"><title>Arroyomolinos: 17,0 %, 1015 alquileres declarados</title>
+    <path d="M 305.279079 109.826974 
+L 305.279079 106.373344 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_129">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="305.279079" y="108.100159" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28096" class="marca" tabindex="0" role="img" aria-label="Navalcarnero: 17,0 %, 1296 alquileres declarados"><title>Navalcarnero: 17,0 %, 1296 alquileres declarados</title>
+    <path d="M 307.684828 109.877694 
+L 307.684828 106.125802 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_130">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="307.684828" y="108.001748" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28040" class="marca" tabindex="0" role="img" aria-label="Ciempozuelos: 17,1 %, 1398 alquileres declarados"><title>Ciempozuelos: 17,1 %, 1398 alquileres declarados</title>
+    <path d="M 310.090576 109.559453 
+L 310.090576 105.992783 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_131">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="310.090576" y="107.776118" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28161" class="marca" tabindex="0" role="img" aria-label="Valdemoro: 17,1 %, 3975 alquileres declarados"><title>Valdemoro: 17,1 %, 3975 alquileres declarados</title>
+    <path d="M 312.496325 108.432666 
+L 312.496325 106.453982 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_132">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="312.496325" y="107.443324" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28116" class="marca" tabindex="0" role="img" aria-label="Pozuelo del Rey: 17,2 %, 28 alquileres declarados, su intervalo cruza un corte"><title>Pozuelo del Rey: 17,2 %, 28 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 314.902073 126.863404 
+L 314.902073 87.176811 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_133">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="314.902073" y="107.020108" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28086" class="marca" tabindex="0" role="img" aria-label="El Molar: 17,3 %, 604 alquileres declarados"><title>El Molar: 17,3 %, 604 alquileres declarados</title>
+    <path d="M 317.307822 108.964269 
+L 317.307822 103.934958 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_134">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="317.307822" y="106.449613" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28132" class="marca" tabindex="0" role="img" aria-label="San Martín de la Vega: 17,5 %, 569 alquileres declarados"><title>San Martín de la Vega: 17,5 %, 569 alquileres declarados</title>
+    <path d="M 319.71357 108.073463 
+L 319.71357 101.073317 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_135">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="319.71357" y="104.57339" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28134" class="marca" tabindex="0" role="img" aria-label="San Sebastián de los Reyes: 17,6 %, 5619 alquileres declarados"><title>San Sebastián de los Reyes: 17,6 %, 5619 alquileres declarados</title>
+    <path d="M 322.119319 104.988515 
+L 322.119319 102.955586 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_136">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="322.119319" y="103.972051" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28119" class="marca" tabindex="0" role="img" aria-label="Quijorna: 17,8 %, 153 alquileres declarados, su intervalo cruza un corte"><title>Quijorna: 17,8 %, 153 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 324.525067 108.770439 
+L 324.525067 97.108995 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_137">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="324.525067" y="102.939717" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28014" class="marca" tabindex="0" role="img" aria-label="Arganda del Rey: 17,9 %, 3132 alquileres declarados"><title>Arganda del Rey: 17,9 %, 3132 alquileres declarados</title>
+    <path d="M 326.930816 103.664824 
+L 326.930816 101.053936 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_138">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="326.930816" y="102.35938" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28123" class="marca" tabindex="0" role="img" aria-label="Rivas-Vaciamadrid: 18,0 %, 3160 alquileres declarados"><title>Rivas-Vaciamadrid: 18,0 %, 3160 alquileres declarados</title>
+    <path d="M 329.336564 102.745862 
+L 329.336564 100.585421 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_139">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="329.336564" y="101.665641" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807908" class="marca" tabindex="0" role="img" aria-label="Fuencarral-El Pardo: 18,0 %, 20653 alquileres declarados"><title>Fuencarral-El Pardo: 18,0 %, 20653 alquileres declarados</title>
+    <path d="M 331.742313 102.284103 
+L 331.742313 100.779389 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_140">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="331.742313" y="101.531746" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807921" class="marca" tabindex="0" role="img" aria-label="Barajas: 18,2 %, 4054 alquileres declarados, su intervalo cruza un corte"><title>Barajas: 18,2 %, 4054 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 334.148061 101.956062 
+L 334.148061 98.857403 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_141">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="334.148061" y="100.406732" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807916" class="marca" tabindex="0" role="img" aria-label="Hortaleza: 18,2 %, 14435 alquileres declarados, su intervalo cruza un corte"><title>Hortaleza: 18,2 %, 14435 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 336.55381 101.197777 
+L 336.55381 99.42813 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_142">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="336.55381" y="100.312953" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28026" class="marca" tabindex="0" role="img" aria-label="Brunete: 18,3 %, 760 alquileres declarados, su intervalo cruza un corte"><title>Brunete: 18,3 %, 760 alquileres declarados, su intervalo cruza un corte</title>
+    <path d="M 338.959558 102.501805 
+L 338.959558 96.72945 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_143">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#md2d0844a79" x="338.959558" y="99.615628" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28113" class="marca" tabindex="0" role="img" aria-label="Pinto: 18,6 %, 3064 alquileres declarados"><title>Pinto: 18,6 %, 3064 alquileres declarados</title>
+    <path d="M 341.365307 98.607348 
+L 341.365307 96.225277 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_144">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="341.365307" y="97.416312" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28047" class="marca" tabindex="0" role="img" aria-label="Collado Villalba: 18,8 %, 4829 alquileres declarados"><title>Collado Villalba: 18,8 %, 4829 alquileres declarados</title>
+    <path d="M 343.771055 97.397563 
+L 343.771055 95.209018 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_145">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="343.771055" y="96.303291" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28073" class="marca" tabindex="0" role="img" aria-label="Humanes de Madrid: 18,8 %, 1031 alquileres declarados"><title>Humanes de Madrid: 18,8 %, 1031 alquileres declarados</title>
+    <path d="M 346.176804 97.953244 
+L 346.176804 94.202227 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_146">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="346.176804" y="96.077736" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28005" class="marca" tabindex="0" role="img" aria-label="Alcalá de Henares: 18,9 %, 12836 alquileres declarados"><title>Alcalá de Henares: 18,9 %, 12836 alquileres declarados</title>
+    <path d="M 348.582552 96.027222 
+L 348.582552 94.845918 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_147">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="348.582552" y="95.43657" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28065" class="marca" tabindex="0" role="img" aria-label="Getafe: 19,0 %, 12120 alquileres declarados"><title>Getafe: 19,0 %, 12120 alquileres declarados</title>
+    <path d="M 350.988301 95.788459 
+L 350.988301 94.309967 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_148">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="350.988301" y="95.049213" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28084" class="marca" tabindex="0" role="img" aria-label="Mejorada del Campo: 19,0 %, 878 alquileres declarados"><title>Mejorada del Campo: 19,0 %, 878 alquileres declarados</title>
+    <path d="M 353.394049 96.907262 
+L 353.394049 92.941566 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_149">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="353.394049" y="94.924414" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807904" class="marca" tabindex="0" role="img" aria-label="Salamanca: 19,0 %, 17072 alquileres declarados"><title>Salamanca: 19,0 %, 17072 alquileres declarados</title>
+    <path d="M 355.799798 95.933486 
+L 355.799798 93.760719 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_150">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="355.799798" y="94.847102" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807903" class="marca" tabindex="0" role="img" aria-label="Retiro: 19,2 %, 10267 alquileres declarados"><title>Retiro: 19,2 %, 10267 alquileres declarados</title>
+    <path d="M 358.205546 94.523786 
+L 358.205546 92.095034 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_151">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="358.205546" y="93.30941" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28148" class="marca" tabindex="0" role="img" aria-label="Torrejón de Ardoz: 19,4 %, 7467 alquileres declarados"><title>Torrejón de Ardoz: 19,4 %, 7467 alquileres declarados</title>
+    <path d="M 360.611295 93.174918 
+L 360.611295 91.449931 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_152">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="360.611295" y="92.312424" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28130" class="marca" tabindex="0" role="img" aria-label="San Fernando de Henares: 19,7 %, 1896 alquileres declarados"><title>San Fernando de Henares: 19,7 %, 1896 alquileres declarados</title>
+    <path d="M 363.017043 91.66126 
+L 363.017043 88.696353 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_153">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="363.017043" y="90.178806" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807915" class="marca" tabindex="0" role="img" aria-label="Ciudad Lineal: 19,8 %, 22285 alquileres declarados"><title>Ciudad Lineal: 19,8 %, 22285 alquileres declarados</title>
+    <path d="M 365.422792 90.157482 
+L 365.422792 88.969843 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_154">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="365.422792" y="89.563663" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28049" class="marca" tabindex="0" role="img" aria-label="Coslada: 20,0 %, 4118 alquileres declarados"><title>Coslada: 20,0 %, 4118 alquileres declarados</title>
+    <path d="M 367.82854 89.009029 
+L 367.82854 86.725147 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_155">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="367.82854" y="87.867088" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28007" class="marca" tabindex="0" role="img" aria-label="Alcorcón: 20,2 %, 9323 alquileres declarados"><title>Alcorcón: 20,2 %, 9323 alquileres declarados</title>
+    <path d="M 370.234289 87.728938 
+L 370.234289 86.148777 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_156">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="370.234289" y="86.938858" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28074" class="marca" tabindex="0" role="img" aria-label="Leganés: 20,2 %, 10663 alquileres declarados"><title>Leganés: 20,2 %, 10663 alquileres declarados</title>
+    <path d="M 372.640037 87.428593 
+L 372.640037 85.879121 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_157">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="372.640037" y="86.653857" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807907" class="marca" tabindex="0" role="img" aria-label="Chamberí: 20,3 %, 19653 alquileres declarados"><title>Chamberí: 20,3 %, 19653 alquileres declarados</title>
+    <path d="M 375.045786 87.199297 
+L 375.045786 85.106241 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_158">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="375.045786" y="86.152769" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28058" class="marca" tabindex="0" role="img" aria-label="Fuenlabrada: 20,3 %, 8651 alquileres declarados"><title>Fuenlabrada: 20,3 %, 8651 alquileres declarados</title>
+    <path d="M 377.451534 86.640658 
+L 377.451534 85.223074 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_159">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="377.451534" y="85.931866" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807902" class="marca" tabindex="0" role="img" aria-label="Arganzuela: 20,3 %, 16437 alquileres declarados"><title>Arganzuela: 20,3 %, 16437 alquileres declarados</title>
+    <path d="M 379.857283 86.597804 
+L 379.857283 84.850092 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_160">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="379.857283" y="85.723948" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807920" class="marca" tabindex="0" role="img" aria-label="San Blas-Canillejas: 20,5 %, 11435 alquileres declarados"><title>San Blas-Canillejas: 20,5 %, 11435 alquileres declarados</title>
+    <path d="M 382.263031 85.756767 
+L 382.263031 84.121601 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_161">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="382.263031" y="84.939184" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28092" class="marca" tabindex="0" role="img" aria-label="Móstoles: 20,6 %, 9733 alquileres declarados"><title>Móstoles: 20,6 %, 9733 alquileres declarados</title>
+    <path d="M 384.66878 85.032167 
+L 384.66878 83.504148 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_162">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="384.66878" y="84.268157" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e28106" class="marca" tabindex="0" role="img" aria-label="Parla: 20,8 %, 5902 alquileres declarados"><title>Parla: 20,8 %, 5902 alquileres declarados</title>
+    <path d="M 387.074528 83.897322 
+L 387.074528 81.836146 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_163">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="387.074528" y="82.866734" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807919" class="marca" tabindex="0" role="img" aria-label="Vicálvaro: 20,8 %, 5348 alquileres declarados"><title>Vicálvaro: 20,8 %, 5348 alquileres declarados</title>
+    <path d="M 389.480277 84.013822 
+L 389.480277 81.311276 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_164">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="389.480277" y="82.662549" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807914" class="marca" tabindex="0" role="img" aria-label="Moratalaz: 21,1 %, 6250 alquileres declarados"><title>Moratalaz: 21,1 %, 6250 alquileres declarados</title>
+    <path d="M 391.886025 81.459646 
+L 391.886025 79.400235 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_165">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="391.886025" y="80.429941" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807906" class="marca" tabindex="0" role="img" aria-label="Tetuán: 21,4 %, 20271 alquileres declarados"><title>Tetuán: 21,4 %, 20271 alquileres declarados</title>
+    <path d="M 394.291774 79.472588 
+L 394.291774 77.737271 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_166">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="394.291774" y="78.604929" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807918" class="marca" tabindex="0" role="img" aria-label="Villa de Vallecas: 21,9 %, 7904 alquileres declarados"><title>Villa de Vallecas: 21,9 %, 7904 alquileres declarados</title>
+    <path d="M 396.697522 76.202007 
+L 396.697522 74.367515 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_167">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="396.697522" y="75.284761" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807917" class="marca" tabindex="0" role="img" aria-label="Villaverde: 22,1 %, 9599 alquileres declarados"><title>Villaverde: 22,1 %, 9599 alquileres declarados</title>
+    <path d="M 399.103271 74.776764 
+L 399.103271 72.898369 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_168">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="399.103271" y="73.837566" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807910" class="marca" tabindex="0" role="img" aria-label="Latina: 22,3 %, 19942 alquileres declarados"><title>Latina: 22,3 %, 19942 alquileres declarados</title>
+    <path d="M 401.509019 73.20312 
+L 401.509019 71.98545 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_169">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="401.509019" y="72.594285" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807911" class="marca" tabindex="0" role="img" aria-label="Carabanchel: 22,6 %, 21978 alquileres declarados"><title>Carabanchel: 22,6 %, 21978 alquileres declarados</title>
+    <path d="M 403.914768 71.320693 
+L 403.914768 70.095203 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_170">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="403.914768" y="70.707948" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807912" class="marca" tabindex="0" role="img" aria-label="Usera: 23,4 %, 9408 alquileres declarados"><title>Usera: 23,4 %, 9408 alquileres declarados</title>
+    <path d="M 406.320516 66.205485 
+L 406.320516 64.070257 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_171">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="406.320516" y="65.137871" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807901" class="marca" tabindex="0" role="img" aria-label="Centro: 24,0 %, 20518 alquileres declarados"><title>Centro: 24,0 %, 20518 alquileres declarados</title>
+    <path d="M 408.726265 62.424372 
+L 408.726265 60.230942 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_172">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="408.726265" y="61.327657" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="e2807913" class="marca" tabindex="0" role="img" aria-label="Puente de Vallecas: 24,0 %, 16332 alquileres declarados"><title>Puente de Vallecas: 24,0 %, 16332 alquileres declarados</title>
+    <path d="M 411.132013 61.838619 
+L 411.132013 60.485588 
+" clip-path="url(#p458a67b11a)" style="fill: none; stroke: #a9adb6; stroke-opacity: 0.75; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_173">
+    <g clip-path="url(#p458a67b11a)">
+     <use xlink:href="#m6a95d991c9" x="411.132013" y="61.162104" style="fill: #a9adb6; stroke: #ffffff; stroke-width: 0.3"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 31.02375 195.696 
+L 432.78375 195.696 
+" style="fill: none; stroke: #d9dbe0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 7.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="417.146385" y="131.290594" transform="rotate(-0 417.146385 131.290594)">13,9</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 7.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="417.146385" y="125.040562" transform="rotate(-0 417.146385 125.040562)">14,8</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 7.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="417.146385" y="117.028166" transform="rotate(-0 417.146385 117.028166)">16,0</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 7.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="417.146385" y="102.279951" transform="rotate(-0 417.146385 102.279951)">18,2</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 7px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #5c6069" transform="translate(417.146385 74.737071)">cortes de</text>
+    <text style="font-size: 7px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #5c6069" transform="translate(417.146385 83.138985)">quintil</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 600; font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #0b4f9c" transform="translate(40.646744 20.639543)">89 de 157 zonas (en azul): su intervalo del 95 %</text>
+    <text style="font-weight: 600; font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #0b4f9c" transform="translate(40.646744 30.001676)">cruza al menos un corte de quintil</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 7.8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5c6069" x="40.646744" y="48.133181" transform="rotate(-0 40.646744 48.133181)">68 zonas (en gris): el intervalo queda dentro de su clase</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p458a67b11a">
+   <rect x="31.02375" y="7.2" width="401.76" height="188.496"/>
+  </clipPath>
+ </defs>
+</svg>
