@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Kuanto · Informe técnico (PDF)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="informe-tecnico.css">
+</head>
+<body>
+  <!-- Fuente del PDF descargable: documento técnico para quien estudia o valora el análisis. No se enlaza desde
+       la web; la web es informe.html. Se monta desde informe.html y cada «(fuente: …)» pasa a una nota numerada. -->
+  <main class="doc">
+
+    <header class="portada">
+      <p class="sello">Informe técnico</p>
+      <h1>¿Dónde puede vivir quien trabaja en la Comunidad de Madrid?</h1>
+      <p class="subtitulo">Alquiler, sueldos, transporte y ayudas públicas, zona a zona: diagnóstico, método y recomendaciones para la Administración</p>
+      <dl class="ficha">
+        <div><dt>Destinatarios</dt><dd>Personal técnico de la Consejería de Vivienda, del Consorcio Regional de Transportes y de otras administraciones que deban estudiar o valorar el análisis; jurado de DataMad</dd></div>
+        <div><dt>Autoría</dt><dd>Equipo de Kuanto, proyecto presentado a DataMad 2026</dd></div>
+        <div><dt>Fecha de cierre de los datos</dt><dd>23 de noviembre de 2026<!-- sin-fuente: fecha de cierre --></dd></div>
+        <div><dt>Versión interactiva</dt><dd>La web de Kuanto incluye la herramienta, los gráficos interactivos y la misma información en formato de consulta</dd></div>
+        <div><dt>Cómo citar</dt><dd>Kuanto (2026). <i>¿Dónde puede vivir quien trabaja en la Comunidad de Madrid? Informe técnico.</i> DataMad 2026.</dd></div>
+      </dl>
+    </header>
+
+    <nav class="indice-doc" aria-label="Índice">
+      <h2 class="sin-numero">Índice</h2>
+      <ol>
+        <li><a href="#resumen-ejecutivo">Resumen ejecutivo</a></li>
+        <li><a href="#introduccion">Introducción</a></li>
+        <li><a href="#datos">Datos, unidades y cobertura</a></li>
+        <li><a href="#metodologia">Metodología</a>
+          <ol>
+            <li><a href="#met-esfuerzo">Indicador de esfuerzo de alquiler y su error</a></li>
+            <li><a href="#met-cambio">Cambio entre años</a></li>
+            <li><a href="#met-sobra">Lo que sobra a fin de mes y el valor del tiempo</a></li>
+            <li><a href="#met-sobrecarga">Sobrecarga de los hogares inquilinos</a></li>
+            <li><a href="#met-bono">Bono Alquiler Joven: datos, modelos y dependencia espacial</a></li>
+            <li><a href="#met-simulacion">Simulación de los requisitos del Bono</a></li>
+            <li><a href="#met-descuento">Fin del descuento del abono</a></li>
+            <li><a href="#met-validacion">Validación</a></li>
+          </ol>
+        </li>
+        <li><a href="#resultados">Resultados</a>
+          <ol>
+            <li><a href="#res-esfuerzo">Esfuerzo de alquiler en 2024</a></li>
+            <li><a href="#res-cambio">Cambio entre 2015 y 2024</a></li>
+            <li><a href="#res-sueldos">Seis sueldos de referencia</a></li>
+            <li><a href="#res-sobrecarga">Sobrecarga de los hogares inquilinos</a></li>
+            <li><a href="#res-bono">Bono Alquiler Joven frente a la necesidad</a></li>
+            <li><a href="#res-simulacion">Requisitos del Bono: tope e ingresos</a></li>
+            <li><a href="#res-descuento">Fin del descuento del abono</a></li>
+          </ol>
+        </li>
+        <li><a href="#calidad">Calidad del dato y limitaciones</a></li>
+        <li><a href="#recomendaciones">Recomendaciones</a></li>
+        <li><a href="#anexos">Anexos</a></li>
+        <li><a href="#notas">Notas</a></li>
+        <li><a href="#referencias">Referencias</a></li>
+      </ol>
+    </nav>
+
+    <section class="capitulo" id="resumen-ejecutivo">
+      <h2>Resumen ejecutivo</h2>
+      <div class="cifras-clave"><p role="listitem"><span class="cifra">15,3 %</span> de la renta del hogar se va en el alquiler en la zona mediana<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] --></p>
+<p role="listitem"><span class="cifra">36,0 %</span> de los hogares inquilinos, sobrecargados; intervalo de 28,6 a 43,4 (estimado)<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] --></p>
+<p role="listitem"><span class="cifra">16 de 138</span> municipios fuera del tope del Bono de la ronda de 2024 (RD 42/2022), con 69 m² y el SMI (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] --></p>
+<p role="listitem"><span class="cifra">9 a 33 €</span> más al mes si en 2027 se acaba el descuento del abono (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] --></p></div>
+      <h3 class="sin-numero">Puntos clave</h3>
+      <ol class="claves"><li><strong>Frente a lo que ingresan de media sus hogares, el alquiler típico de una zona pesa un 15 %; en el centro y el sur de Madrid, hasta un 24 %.</strong> Es un 15,3 % en la zona típica de la Comunidad y llega al 24,0 % en Centro y Puente de Vallecas. Sirve para comparar zonas, no es lo que paga cada familia. En el norte de la capital pesa menos porque los hogares ingresan más, aunque allí el alquiler también es caro<sup class="nota"><a href="#nota-4">4</a></sup><!-- [^n4] -->. <a href="#esfuerzo">Capítulo 4</a></li><!-- sin-fuente: número de capítulo en el enlace -->
+<li><strong>En diez años el peso del alquiler apenas se ha movido en el conjunto de la Comunidad, pero ha subido con claridad en 12 de los 21 distritos de Madrid.</strong> «Con claridad» quiere decir que la subida es mayor que el margen de error del dato. La cifra mezcla contratos nuevos y antiguos, así que se queda corta: quien firma un contrato hoy puede pagar bastante más que esa media (estimado)<sup class="nota"><a href="#nota-5">5</a></sup><!-- [^n5] -->. <a href="#cambio">Capítulo 5</a></li>
+<li><strong>Para quien vive solo con el salario mínimo, en 18 de las 158 zonas con datos no queda nada a fin de mes.</strong> Después de pagar alquiler, transporte y la compra básica, el sueldo no llega; según lo caro que sea el piso dentro de cada zona, son entre 8 y 33 zonas. Irse a vivir más lejos para pagar menos tampoco suele compensar: solo sale a cuenta el tiempo de viaje de más en 1 de cada 7 combinaciones de casa y trabajo (estimado)<sup class="nota"><a href="#nota-6">6</a></sup><!-- [^n6] -->. <a href="#sueldos">Capítulo 6</a></li>
+<li><strong>Uno de cada tres hogares que viven de alquiler está sobrecargado.</strong> Dedican a la vivienda más del 40 % de lo que ingresan: el 36,0 %, con un margen de entre el 28,6 % y el 43,4 %. Con los datos públicos todavía no se puede saber en qué municipios se concentran (estimado)<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] -->. <a href="#sobrecarga">Capítulo 7</a></li>
+<li><strong>Que el alquiler pese más sobre la renta en un municipio no parece cambiar la probabilidad de que acepten el Bono Alquiler Joven.</strong> En 2022 se aceptaron unas 24 de cada 100 solicitudes con municipio (23,7 %), y la estadística no encuentra diferencias entre municipios con más y menos esfuerzo. Donde el alquiler pesa más, lo que hay es más solicitudes por cada joven, y eso es solo una pista: hace falta más de una convocatoria para confirmarlo (estimado)<sup class="nota"><a href="#nota-7">7</a></sup><!-- [^n7] -->. <a href="#bono">Capítulo 8</a></li>
+<li><strong>Pequeños detalles en el diseño del Bono y del abono pesan mucho en el bolsillo.</strong> Con un piso de 69 m² al alquiler típico, quien cobra el salario mínimo se quedaría fuera del Bono de 2024 en 16 de 138 municipios porque el alquiler pasa del tope, y en 14 de ellos por menos de 80 € al mes. Y si en 2027 se acaba el descuento del abono, ir a trabajar costará a un adulto entre 9,23 y 32,76 € más al mes, más cuanto más lejos del centro, y 9,30 € con el Abono Joven (estimado)<sup class="nota"><a href="#nota-8">8</a></sup><!-- [^n8] -->. <a href="#simulacion">Capítulos 9 y 10</a></li></ol>
+      <h3 class="sin-numero">Planteamiento</h3>
+      <div class="scqa"><section aria-labelledby="scqa-s"><h3 id="scqa-s">Situación</h3><p>En la Comunidad de Madrid, el alquiler se lleva una parte grande del sueldo, y el abono y las ayudas públicas intentan compensarlo. Las estadísticas oficiales miden cada pieza por separado: el alquiler por un lado, la renta por otro, el transporte en sus tarifas y las ayudas en sus convocatorias.</p></section>
+<section aria-labelledby="scqa-c"><h3 id="scqa-c">Complicación</h3><p>Ningún dato público dice cuánto le queda a fin de mes a un hogar concreto en cada zona, ni si las ayudas llegan donde el alquiler pesa más. Las medias de la Comunidad esconden zonas donde a un sueldo bajo no le sobra nada.</p></section>
+<section aria-labelledby="scqa-p"><h3 id="scqa-p">Pregunta</h3><p>¿En qué zonas puede permitirse vivir quien trabaja, y llegan allí el Bono Alquiler Joven y el descuento del abono?</p></section>
+<section aria-labelledby="scqa-r"><h3 id="scqa-r">Respuesta</h3><p>Kuanto cruza las fuentes públicas en 199 zonas y lo calcula para cualquier sueldo<sup class="nota"><a href="#nota-9">9</a></sup><!-- [^n9] -->. Seis hallazgos, cada uno con su capítulo, y ocho recomendaciones, ordenadas por lo sólida que es la evidencia que las sostiene.</p></section></div>
+      <h3 class="sin-numero">Recomendaciones</h3>
+      <ol class="recomendaciones-breve"><li><a href="#r1">Publicar por municipio el motivo del rechazo del Bono</a></li>
+<li><a href="#r2">Concretar qué renta cuenta en el Bono para quien no presenta la declaración</a></li>
+<li><a href="#r3">Anunciar pronto si se prorroga el descuento del abono en 2027</a></li>
+<li><a href="#r4">Publicar el alquiler de los contratos firmados cada año</a></li>
+<li><a href="#r5">Medir la sobrecarga por zona con una fuente que lo permita</a></li>
+<li><a href="#r6">Publicar el perfil de quien pide el Bono y compararlo con quien alquila</a></li>
+<li><a href="#r7">Evaluar varias convocatorias antes de repartir el crédito por territorio</a></li>
+<li><a href="#r8">Revisar el tope de alquiler en la primera convocatoria del RD 326/2026</a></li></ol>
+    </section>
+
+    <section class="capitulo" id="introduccion">
+      <h2>Introducción</h2>
+      <section class="sub"><h3>Objeto del informe</h3>
+        <p>Este informe responde a una pregunta: en qué zonas de la Comunidad de Madrid puede permitirse vivir quien trabaja, y si las ayudas públicas al alquiler y al transporte llegan a esas zonas. Para responderla se cruzan, zona a zona, el alquiler declarado a Hacienda, la renta de los hogares, el sueldo neto de hogares de referencia, el precio del transporte, el tiempo de viaje al trabajo y los datos del Bono Alquiler Joven.</p>
+        <p>El análisis acompaña a Kuanto, una herramienta web que calcula lo que le sobra al mes a un hogar concreto en cada zona. Este documento recoge el diagnóstico de conjunto, el método con el que se ha obtenido, sus límites y las recomendaciones que se derivan.</p>
+      </section>
+      <section class="sub"><h3>A quién va dirigido y cómo leerlo</h3>
+        <p>Está pensado para el personal técnico que tiene que estudiar o valorar el análisis. El resumen ejecutivo da las conclusiones y las recomendaciones; la metodología explica cómo se ha medido cada cosa; los resultados presentan cada hallazgo con su gráfico, su resultado principal y sus implicaciones; el capítulo de calidad del dato dice qué no se puede afirmar.</p>
+        <p>Las cifras que salen de un modelo, una simulación o un supuesto llevan la marca «estimado». La fuente de cada cifra está en las notas numeradas, y los conjuntos de datos y normas usados, en las referencias.</p>
+      </section>
+      <section class="sub"><h3>Qué no es este informe</h3>
+        <p>No es una estadística oficial ni sustituye a las del INE, el Ministerio de Vivienda y Agenda Urbana o la Comunidad de Madrid. Los indicadores comparan zonas y años; no dicen lo que paga una persona concreta, que es lo que calcula la herramienta.</p>
+      </section>
+    </section>
+
+    <section class="capitulo" id="datos">
+      <h2>Datos, unidades y cobertura</h2>
+      <p>El trabajo tiene dos partes. La herramienta calcula, para un hogar y un lugar de trabajo, lo que le sobra al mes en cada zona, las horas de viaje y lo que rinde cada hora de viaje de más. El análisis mira la Comunidad entera: dónde pesa más el alquiler, cómo ha cambiado, si el Bono llega donde hace falta y qué pasaría con otros diseños de la ayuda y del abono.</p>
+<p>Los denominadores cambian de un capítulo a otro y no es un error: hay 199 zonas, 158 con alquiler publicado, 157 con esfuerzo en 2024 y 142 con esfuerzo en 2015 y en 2024; el Bono tiene solicitudes en 159 municipios, 134 con esfuerzo, y la simulación cubre 138<sup class="nota"><a href="#nota-10">10</a></sup><!-- [^n10] -->.</p>
+<p>Para las horas de viaje se calcularon 42.785 pares de zona de residencia y destino en transporte público, con 16 polos de empleo con nombre y los horarios del Consorcio<sup class="nota"><a href="#nota-11">11</a></sup><!-- [^n11] -->.</p>
+      <p>Los conjuntos de datos y normas de los que salen las cifras, con su fecha y su licencia, están en las <a href="#referencias">referencias</a>. Cada fichero descargado queda registrado en el repositorio con su fecha y su huella, de modo que el análisis se puede repetir con los mismos datos.</p>
+    </section>
+
+    <section class="capitulo" id="metodologia">
+      <h2>Metodología</h2>
+      <section class="sub" id="met-esfuerzo"><h3>Indicador de esfuerzo de alquiler y su error</h3>
+        <p>Es la cuantía mediana mensual de los alquileres de vivienda colectiva declarados a Hacienda (SERPAVI) dividida entre la renta neta media mensual por hogar (Atlas de Distribución de Renta de los Hogares del INE). Se calcula para cada municipio y para cada distrito de Madrid, de 2015 a 2024<sup class="nota"><a href="#nota-12">12</a></sup><!-- [^n12] -->. El año es el ejercicio del IRPF en las dos fuentes, así que no hay desfase entre numerador y denominador.</p>
+<p>Un esfuerzo de la quinta parte quiere decir que el alquiler mediano de la zona equivale a la quinta parte de la renta media de sus hogares. Sirve para comparar zonas y años. No es lo que paga una persona concreta: eso lo calcula la herramienta de la <a href="index.html">página principal</a>.</p>
+        <p>Cada mapa pinta los municipios y, en el recuadro, los 21 distritos de Madrid, que a la escala de la Comunidad apenas se verían<sup class="nota"><a href="#nota-9">9</a></sup><!-- [^n9] -->. El gris con trama marca las zonas sin dato: municipios sin dato publicado en el SERPAVI, que no publica la cifra cuando hay pocos contratos, y, desde 2020, los de menos de 100 residentes, a los que el INE asigna la renta común de su comarca<sup class="nota"><a href="#nota-13">13</a></sup><!-- [^n13] -->. Madrid entero no se pinta como una zona más: se ve a través de sus distritos.</p>
+        <p>El borde negro marca las zonas con menos de 70 alquileres declarados de vivienda colectiva en el SERPAVI (los «testigos»: inmuebles con ingresos de alquiler declarados): en el mapa de 2024, ese año; en el del cambio, en 2015 o en 2024. Su valor es impreciso, porque con tan pocos alquileres un puñado mueve la mediana<sup class="nota"><a href="#nota-14">14</a></sup><!-- [^n14] -->.</p>
+<p>Con 70 alquileres declarados, el alquiler mediano de una zona tendría un margen de unos ±8 % en el caso típico, y de más de ±12 % en algo más de una de cada diez zonas, las de alquileres más dispersos (intervalo del 95 % de la mediana; estimado)<sup class="nota"><a href="#nota-15">15</a></sup><!-- [^n15] -->. Con más alquileres declarados, el margen de una zona baja, pero ninguna está libre de error.</p>
+        <p>Los quintiles reparten las zonas con dato en cinco grupos del mismo tamaño, así que el mapa enseña la posición de cada zona respecto a las demás y no la distancia entre ellas. Con quintiles, 17 de los 21 distritos caen en el grupo más alto; con cinco intervalos iguales entre el 10,7 % y el 24,0 %, solo llegan 8, y casi la mitad de las zonas (77 de 157) queda entre el 13,3 % y el 16,0 %<sup class="nota"><a href="#nota-16">16</a></sup><!-- [^n16] -->.</p>
+<p>Las clases son más estrechas que el error del dato: los cortes de los quintiles (13,9; 14,8; 16,0 y 18,2 %) están a saltos del 6,7, el 8,1 y el 13,7 % de uno al siguiente, y el margen del alquiler de la zona típica, con 70 alquileres declarados, es de ±8 % (intervalo del 95 %; estimado). Con los alquileres declarados de cada zona, el margen cruza al menos un corte en 89 de las 157 zonas con dato (estimado; no incluye el error de la renta). Una zona cerca de un corte puede caer en el quintil de al lado: el color da la posición aproximada, no la clase exacta<sup class="nota"><a href="#nota-16">16</a></sup><!-- [^n16] -->.</p>
+        <p>El intervalo del 95 % de la mediana de cada zona sale de los estadísticos de orden, con una lognormal ajustada a los percentiles 25 y 75 de la zona. La lognormal se aparta más de un 5 % de la mediana publicada en 15 de las 158 zonas, las más asimétricas (estimado)<sup class="nota"><a href="#nota-17">17</a></sup><!-- [^n17] -->.</p>
+<p>El umbral solo cubre el error del alquiler: no el de la renta del ADRH, ni el del factor de contrato nuevo. Una zona sin marca no tiene garantizado un margen pequeño<sup class="nota"><a href="#nota-17">17</a></sup><!-- [^n17] -->.</p>
+      </section>
+      <section class="sub" id="met-cambio"><h3>Cambio entre años</h3>
+        <p>El mapa tiene tres clases: baja, sin cambio claro y sube. Una zona baja o sube solo si su cambio supera su propio error: el del alquiler mediano de cada año, que depende de cuántos alquileres declarados tiene y de lo dispersos que son, multiplicado por el esfuerzo de ese año y combinado el de los dos años (raíz de la suma de sus cuadrados) (intervalo del 95 %; estimado)<sup class="nota"><a href="#nota-18">18</a></sup><!-- [^n18] -->. El error mediano es de 0,5 puntos en las zonas con al menos 70 alquileres declarados en los dos años y de 3,0 en las imprecisas (estimado)<sup class="nota"><a href="#nota-18">18</a></sup><!-- [^n18] -->.</p>
+<p>De las 142 zonas con dato en los dos años, 29 bajan (2 de ellas imprecisas), 31 suben (ninguna imprecisa) y 82 no tienen un cambio claro, 31 de ellas imprecisas (estimado)<sup class="nota"><a href="#nota-19">19</a></sup><!-- [^n19] -->. Entre los 21 distritos de Madrid, 12 suben, 3 bajan y 6 no tienen un cambio claro (estimado)<sup class="nota"><a href="#nota-5">5</a></sup><!-- [^n5] -->. Con 142 zonas y un intervalo del 95 %, unas 7 saldrían claras por azar aunque nada hubiera cambiado (estimado). No incluye el error de la renta del ADRH ni el del alquiler de los contratos nuevos<sup class="nota"><a href="#nota-18">18</a></sup><!-- [^n18] -->.</p>
+      </section>
+      <section class="sub" id="met-sobra"><h3>Lo que sobra a fin de mes y el valor del tiempo</h3>
+        <ol aria-label="Cómo se calcula lo que sobra" class="motor">
+<li><span class="motor-paso">Sueldo neto</span><span class="motor-de">IRPF estatal y de Madrid y cotización del trabajador de 2026, como cuota anual de la declaración<sup class="nota"><a href="#nota-20">20</a></sup><!-- [^n20] --></span></li>
+<li><span class="motor-paso">− Alquiler</span><span class="motor-de">€/m² mediano de la zona, llevado a hoy con el IPC del alquiler y a contrato nuevo, por los m² del hogar<sup class="nota"><a href="#nota-21">21</a></sup><!-- [^n21] --></span></li>
+<li><span class="motor-paso">− Transporte</span><span class="motor-de">El título más barato al mes para la ruta de cada persona, con los precios del Consorcio de 2026<sup class="nota"><a href="#nota-22">22</a></sup><!-- [^n22] --></span></li>
+<li><span class="motor-paso">− Cesta</span><span class="motor-de">Alimentación, suministros y comunicaciones por unidad de consumo<sup class="nota"><a href="#nota-23">23</a></sup><!-- [^n23] --></span></li>
+<li class="motor-total"><span class="motor-paso">= Lo que sobra</span><span class="motor-de">Euros al mes en cada zona, con una banda del alquiler barato al caro de la zona, sus percentiles 25 y 75<sup class="nota"><a href="#nota-14">14</a></sup><!-- [^n14] --></span></li>
+</ol>
+        <p>La herramienta se ha pasado por seis casos fijos con sueldo de fuente oficial: una persona sola y un teleoperador de 23 años con el SMI, una pareja de 29 años con el sueldo mediano de Madrid, una madre sola de 34 años con el sueldo mediano de una administrativa, una persona sola de 29 años con el mediano de su edad y una enfermera de 26 años del SERMAS sin trienios, noches ni guardias<sup class="nota"><a href="#nota-24">24</a></sup><!-- [^n24] -->. Para cada uno se calcula cuánto rinde cada hora extra de viaje al vivir más lejos de un destino, frente al neto por hora trabajada, y en cuántas zonas el sobrante mensual mediano sale negativo.</p>
+        <p>Un par es una zona de residencia y un destino de trabajo con ruta en transporte público, alquiler y más horas de viaje que la zona mejor situada para ese destino. Lo que rinde la hora extra es el ahorro de alquiler y cesta frente a esa zona, menos el transporte, dividido entre las horas de más.</p>
+<p>Los sueldos de la pareja, la madre y el joven son medianas de 2022 o 2024 llevadas a 2026 con la Encuesta Trimestral de Coste Laboral, suponiendo que la mediana crece como la media (estimado)<sup class="nota"><a href="#nota-25">25</a></sup><!-- [^n25] -->. Si creció menos, el bruto está sobrevalorado y el neto por hora sale alto. El sueldo de la enfermera no incluye turnos ni guardias, así que queda por debajo de lo que cobra quien los hace<sup class="nota"><a href="#nota-26">26</a></sup><!-- [^n26] -->.</p>
+<p>La banda de las zonas negativas mueve el alquiler entre el percentil 25 y el 75 del SERPAVI. Es la validación que tiene esta cifra: si el resultado de una zona cambia dentro de la banda, no conviene nombrarla<sup class="nota"><a href="#nota-14">14</a></sup><!-- [^n14] -->.</p>
+      </section>
+      <section class="sub" id="met-sobrecarga"><h3>Sobrecarga de los hogares inquilinos</h3>
+        <p>Hogares que alquilan a precio de mercado o reducido, ponderados con el factor de la encuesta. El gasto incluye el alquiler y los gastos de la vivienda, sin descontar ayudas, y se compara con la renta disponible del hogar<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] -->. El intervalo supone un efecto de diseño de 2, porque el fichero público no trae los estratos de la muestra (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</p>
+        <p>Se intentó estimar la sobrecarga por zona combinando la renta del Atlas de Distribución de Renta con el alquiler del SERPAVI. Antes de ejecutarlo se fijó un control: el agregado de la Comunidad tenía que caer dentro del intervalo de la ECV. No cayó. Por eso no se publica ni la cifra ni la tabla por zona<sup class="nota"><a href="#nota-28">28</a></sup><!-- [^n28] -->.</p>
+<p>La causa principal es la renta de los inquilinos. Dentro de cada sección censal, la renta de todos los hogares tiene una dispersión parecida a la de los inquilinos de toda la región, y al fijar la media eso deja la mediana de los inquilinos un 11 % por debajo de la de la ECV (estimado)<sup class="nota"><a href="#nota-29">29</a></sup><!-- [^n29] -->. Pesan menos el alquiler, unos 3 puntos, y la escala de equivalencia de los hogares, unos 2 (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</p>
+<p>Como no se publica, el Bono Alquiler Joven sigue midiendo la necesidad con el esfuerzo de alquiler y no con la sobrecarga.</p>
+      </section>
+      <section class="sub" id="met-bono"><h3>Bono Alquiler Joven: datos, modelos y dependencia espacial</h3>
+        <p>Son las solicitudes, aceptadas y rechazadas de la convocatoria de 2022 en cada municipio, divididas entre sus jóvenes de 18 a 35 años a 1 de enero de 2023<sup class="nota"><a href="#nota-30">30</a></sup><!-- [^n30] -->. La necesidad de cada municipio es su esfuerzo de alquiler de 2023, el año en que cae la mayor parte del plazo y del crédito de la convocatoria.</p>
+        <p>La convocatoria de 2022 tuvo 51.735 solicitudes y 11.477 aceptadas<sup class="nota"><a href="#nota-31">31</a></sup><!-- [^n31] -->. De ellas, 3.352 solicitudes van en una fila «Otro», sin municipio, y ninguna se aceptó<sup class="nota"><a href="#nota-32">32</a></sup><!-- [^n32] -->.</p>
+<p>Contando esa fila se aceptó el 22,2 % de las solicitudes; sin ella, el 23,7 %<sup class="nota"><a href="#nota-33">33</a></sup><!-- [^n33] -->.</p>
+<p>Hay solicitudes en 159 municipios. En 134 se puede calcular el esfuerzo; los otros 25, con 74 solicitudes, no tienen alquileres de vivienda colectiva en el SERPAVI y quedan fuera del gráfico y de los cálculos, nunca como cero<sup class="nota"><a href="#nota-34">34</a></sup><!-- [^n34] -->.</p>
+<p>Madrid tuvo 30.961 solicitudes y 7.324 aceptadas, 9,6 aceptadas por cada 1.000 jóvenes; en el municipio mediano de los 134 fueron 4,0<sup class="nota"><a href="#nota-35">35</a></sup><!-- [^n35] -->.</p>
+<p>Siete municipios están en el tercio con más esfuerzo y en el tercio con menos aceptadas por joven: Boadilla del Monte, Majadahonda, Talamanca de Jarama, Carabaña, Quijorna, Santorcaz y Villamanrique de Tajo<sup class="nota"><a href="#nota-36">36</a></sup><!-- [^n36] -->.</p>
+<p>Cinco de ellos tienen menos de 800 jóvenes y en cuatro no se aceptó ninguna solicitud. Con tan pocos casos, una sola solicitud mueve mucho la tasa, así que esta lista sirve para mirar esos municipios de cerca, no para ordenarlos<sup class="nota"><a href="#nota-37">37</a></sup><!-- [^n37] -->.</p>
+        <p>Los municipios vecinos se parecen entre sí, y eso hace que los errores de un modelo que los trate como independientes estén correlacionados en el espacio. Por eso el análisis mide la autocorrelación espacial de los residuos con el índice de Moran, usa matrices de vecindad de 5 y de 8 vecinos más próximos y compara los modelos de error espacial, que la recogen, con los de mínimos cuadrados, con errores robustos o sin ellos, que no la recogen. El resultado de cada especificación está en el gráfico 9 y su lectura, abajo (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</p>
+        <p>De dónde sale esa lectura, con las cifras de <code>bono_inferencia.json</code> (<code>python -m mesobra.bono_inferencia</code>):</p>
+<ul>
+<li>Más solicitudes donde el esfuerzo es mayor: en una binomial negativa de las solicitudes con la población joven como exposición, el esfuerzo tiene un efecto positivo al límite de la significación, p = 0,051, y esa p es optimista porque los residuos tienen autocorrelación espacial (I de Moran 0,19, p = 0,004) (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+<li>Modelo principal: regresión con error espacial (SEM con heterocedasticidad, GMM iterado) de las rechazadas por 1.000 jóvenes sobre el esfuerzo de 2023, con la renta media del hogar y el tope de alquiler del Bono como controles. Da β ≈ 87 y p = 0,043 con 5 vecinos y 0,048 con 8, en 134 municipios (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->. Un punto más de esfuerzo va con unas 0,9 rechazadas más por 1.000 jóvenes (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+<li>La segunda vía, mínimos cuadrados con errores robustos a la autocorrelación (HAC), no lo confirma: p = 0,17 (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->. Por eso la conclusión es «indicio» y no «relación robusta». El modelo principal y su regla se eligieron después de ver los datos.</li>
+<li>La correlación parcial fijada antes de ver el resultado da r = 0,137, con p = 0,118 (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+<li>Más volumen, misma proporción: entre quienes solicitan, la proporción aceptada no cambia con el esfuerzo (p = 0,82, modelo quasi-binomial; estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->. «Rechazadas por 1.000 jóvenes» mide sobre todo cuántos piden el Bono, no que allí se rechace más.</li>
+<li>En 112 de los 134 municipios, los que tienen porcentaje de jóvenes en alquiler del Censo 2021 (los que tienen dato publicado y al menos 300 personas de 20 a 34 años), ese porcentaje se correlaciona +0,27 con el esfuerzo y +0,61 con las solicitudes por 1.000 (estimado)<sup class="nota"><a href="#nota-39">39</a></sup><!-- [^n39] -->.</li>
+<li>Teniendo en cuenta ese porcentaje, el efecto baja a β = 46 (p = 0,22) con 5 vecinos y a β = 34 (p = 0,37) con 8. Es un análisis exploratorio (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+<li>Sensibilidad, sin elegir la que más conviene: en esos 112 municipios el modelo principal sale significativo (p = 0,022 y 0,030), y con los jóvenes en vivienda alquilada como denominador no es concluyente (r = 0,153) (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+</ul>
+      </section>
+      <section class="sub" id="met-simulacion"><h3>Simulación de los requisitos del Bono</h3>
+        <p>El criterio vigente es el de la ronda de 2024 en Madrid: de 18 a 35 años, ingresos de hasta tres veces el IPREM, 25.200 € al año, y un alquiler de hasta 600 €, o 900 € en los 55 municipios del Anexo II<sup class="nota"><a href="#nota-40">40</a></sup><!-- [^n40] -->. El alquiler es el mediano del SERPAVI actualizado con el IPC para 69 m², y los ingresos, la base imponible general y del ahorro del IRPF, la que fija el art. 10.g del Acuerdo para quien declara (estimado)<sup class="nota"><a href="#nota-41">41</a></sup><!-- [^n41] -->.</p>
+<p>Se comparan dos criterios alternativos, simulados e ilustrativos; no son una propuesta. Los dos quitan el tope y añaden un requisito: que el alquiler y el transporte pasen del 45 % del neto del hogar, o que lo hagan sumando además las horas de viaje de más, valoradas a 9,76 € la hora (estimado)<sup class="nota"><a href="#nota-42">42</a></sup><!-- [^n42] -->.</p>
+        <p>Los 69 m² son mucho para quien vive solo: suben su alquiler y hacen que más municipios pasen del tope. El alquiler mediano del SERPAVI incluye contratos antiguos y es un suelo del precio de hoy<sup class="nota"><a href="#nota-43">43</a></sup><!-- [^n43] -->.</p>
+<p>Dónde trabaja la gente sale de los ocupados de 2023 del Censo anual del INE<sup class="nota"><a href="#nota-44">44</a></sup><!-- [^n44] -->. De los 11.840 pares de zona y destino con peso, 4.239 no tienen ruta en 120 minutos con los horarios del CRTM y llevan 120 minutos imputados (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->. Que no haya ruta no significa que no haya transporte: puede faltar el horario de una línea. Algunos horarios del CRTM están reconstruidos, y esos tiempos pueden ser más cortos que los reales. Los tiempos tienen un margen de unos 5 minutos<sup class="nota"><a href="#nota-45">45</a></sup><!-- [^n45] -->.</p>
+<p>En 46 de los 138 municipios, más de la cuarta parte de los desplazamientos va con el tiempo imputado; en 1 queda fuera más de la cuarta parte de los ocupados, por trabajar en otra provincia o sin municipio conocido, y en 1 hay menos de 100 ocupados observados (estimado)<sup class="nota"><a href="#nota-46">46</a></sup><!-- [^n46] -->. Los recuentos de horas de viaje de esos municipios son menos fiables.</p>
+<p>Validación: los recuentos se han recalculado por una segunda vía, desde <code>datos/analisis.json</code> y <code>datos/alquiler.json</code>, y coinciden. El criterio vigente no depende de los tiempos de viaje.</p>
+      </section>
+      <section class="sub" id="met-descuento"><h3>Fin del descuento del abono</h3>
+        <p>La cifra baja supone que solo se retira el descuento que financia el RDL 17/2025, un 20 % de la tarifa del 30 de noviembre de 2025, o un 50 % en los títulos jóvenes, y el Consorcio mantiene el resto. La alta supone que se acaba todo el descuento y se paga la tarifa oficial de 2026 en lugar del precio con descuento<sup class="nota"><a href="#nota-47">47</a></sup><!-- [^n47] -->. En el joven coinciden, porque el 50 % del RDL es todo su descuento<sup class="nota"><a href="#nota-48">48</a></sup><!-- [^n48] -->.</p>
+<p>Son medias del año, no el precio de un abono: el abono de 30 días se compra unas 11 veces al año. Por abono, la diferencia de la corona C2 es de 35,20 € y la del joven de 10,00 €; la media del joven sale en 9,30 € y no en 9,31 € porque se restan precios mensuales ya redondeados (estimado)<sup class="nota"><a href="#nota-49">49</a></sup><!-- [^n49] -->.</p>
+        <p>El trayecto pasa siempre por la zona A, así que sobrestima a quien trabaja dentro de su propia corona. No tiene en cuenta el abono de Cercanías de Renfe, de 20 € o 10 € para jóvenes, así que subestima a quien lo usa<sup class="nota"><a href="#nota-50">50</a></sup><!-- [^n50] -->. Supone que en 2027 siguen las tarifas de 2026.</p>
+      </section>
+      <section class="sub" id="met-validacion"><h3>Validación</h3>
+        <p>Cómo se validó cada pieza: el neto coincide al céntimo con los ejemplos resueltos del manual de Renta de la AEAT y con 8 casos de 2026 calculados a mano por un revisor aparte, y la interpolación se aparta menos de 1 € al mes del cálculo exacto<sup class="nota"><a href="#nota-51">51</a></sup><!-- [^n51] -->. Los precios de cada título se comprueban contra precios de control del BOCM<sup class="nota"><a href="#nota-52">52</a></sup><!-- [^n52] -->.</p>
+<p>Lo que no está contrastado se dice: ningún caso completo de 2026 se ha cotejado con Renta Web, que no abre hasta 2027, y los tiempos de un par pueden variar hasta 7 minutos entre dos pasadas del simulador<sup class="nota"><a href="#nota-53">53</a></sup><!-- [^n53] -->. El detalle de cada supuesto está en la <a href="metodologia.html">nota metodológica</a>.</p>
+      </section>
+    </section>
+
+    <section class="capitulo" id="resultados">
+      <h2>Resultados</h2>
+      
+      <section class="sub" id="res-esfuerzo">
+        <h3>Esfuerzo de alquiler en 2024</h3>
+        <p class="titular">El alquiler pesa más en el centro y el sur de la capital; en Chamartín sale más bajo porque la renta media del hogar es un 78 % más alta que en Centro, no porque el alquiler sea más barato<sup class="nota"><a href="#nota-54">54</a></sup><!-- [^n54] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>En la zona mediana de la Comunidad, el alquiler mediano equivale al 15,3 % de la renta media del hogar; en Madrid entero, al 19,6 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</li>
+<li>Los valores más altos: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 %; Carabanchel, 22,6 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</li>
+<li>En Chamartín el alquiler mediano es de 1.126 € y en Centro de 950 €, pero la renta del hogar es de 7.051 € frente a 3.965 €<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</li></ul></div>
+        <figure aria-labelledby="t-g01" class="grafico" id="g01">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g01">17 de los 21 distritos de la capital están en el quinto de zonas con más esfuerzo; el máximo, en Centro y el sur<sup class="nota"><a href="#nota-54">54</a></sup><!-- [^n54] --></h3><p class="grafico-sub">Alquiler mediano entre renta neta media del hogar, 2024, en quintiles. Borde oscuro: menos de 70 alquileres declarados<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] --></p></header>
+<img alt="Mapa de la Comunidad de Madrid por municipios, con los 21 distritos de Madrid ampliados, en cinco clases de esfuerzo de alquiler de 2024. Los valores más altos están en el centro y el sur de la capital y en el sureste; los más bajos, en la sierra y el oeste." loading="lazy" src="img/g01.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU) y Atlas de Distribución de Renta de los Hogares (INE), elaboración propia.</p><p>Nota: los quintiles reparten las 157 zonas con dato en cinco grupos iguales; enseñan la posición de cada zona, no la distancia entre ellas<sup class="nota"><a href="#nota-56">56</a></sup><!-- [^n56] -->.</p></figcaption>
+
+</figure>
+<figure aria-labelledby="t-g02" class="grafico" id="g02">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g02">En más de la mitad de las zonas, el error del dato cruza un corte de quintil</h3><p class="grafico-sub">Esfuerzo de 2024 de cada zona con su intervalo del 95 %, de menor a mayor (estimado)<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] --></p></header>
+<img alt="Las 157 zonas ordenadas por esfuerzo de alquiler de 2024, cada una con su intervalo del 95 %. En 89 el intervalo cruza al menos uno de los cortes de quintil, que van del 13,9 al 18,2 %." loading="lazy" src="img/g02.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia; intervalo de la mediana por estadísticos de orden con una lognormal ajustada a los percentiles 25 y 75 de cada zona (estimado).</p><p>Nota: la escala va del 4 al 32 %; el intervalo de dos zonas con 10 y 11 alquileres declarados no cabe entero. Se dibuja el semiancho medio a cada lado, como en el cálculo publicado; el intervalo real es algo asimétrico. Solo recoge el error del alquiler, no el de la renta, así que 89 es una cota inferior (estimado)<sup class="nota"><a href="#nota-17">17</a></sup><!-- [^n17] -->.</p></figcaption>
+
+</figure>
+<figure aria-labelledby="t-g03" class="grafico" id="g03">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g03">Los distritos del norte pagan alquileres altos, pero su renta media lo es más</h3><p class="grafico-sub">Alquiler mediano y renta neta media del hogar, € al mes, 2024; las líneas marcan el mismo esfuerzo<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] --></p></header>
+<img alt="Gráfico de dispersión con un punto por zona: renta media del hogar en el eje horizontal y alquiler mediano en el vertical. Los distritos de Madrid, en azul, tienen los alquileres más altos; los del norte, como Chamartín y Salamanca, tienen además las rentas más altas y quedan cerca de la línea del 15 o del 20 %." loading="lazy" src="img/g03.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</p><p>Nota: la renta es la media de todos los hogares, propietarios incluidos, que suelen ganar más que quien alquila<sup class="nota"><a href="#nota-13">13</a></sup><!-- [^n13] -->.</p></figcaption>
+
+</figure><p>Los valores más altos están en el centro y el sur de la capital: Centro y Puente de Vallecas, 24,0 %; Usera, 23,4 %; Carabanchel, 22,6 %; Latina, 22,3 %; Villaverde, 22,1 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</p><p>En el norte de la capital el esfuerzo baja: Chamartín, 16,0 %; Moncloa-Aravaca, 16,1 %; Salamanca, 19,0 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->. Para Madrid entero es del 19,6 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</p>
+<p>Entre las zonas con al menos 70 alquileres declarados, los valores más bajos son los de Villanueva de la Cañada, 12,6 %; Algete, 12,8 %, y Cobeña, 12,9 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->. Cadalso de los Vidrios sale con un 10,7 %, y Santa María de la Alameda y Navas del Rey con un 11,6 %, pero con 53, 11 y 45 alquileres declarados su valor es impreciso<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->. El umbral de 70 es una elección propia: con 100 saldrían las mismas tres zonas; con 50 entrarían Cadalso de los Vidrios y Colmenar del Arroyo, 12,4 %<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</p><p>El norte no sale más bajo por tener alquileres baratos. En Chamartín el alquiler mediano es de 1.126 € al mes, más que en Centro (950 €), pero la renta media del hogar es de 7.051 € al mes, un 78 % más que en Centro (3.965 €)<sup class="nota"><a href="#nota-1">1</a></sup><!-- [^n1] -->.</p>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">Un mismo alquiler no pesa lo mismo en todas partes: el esfuerzo depende tanto de la renta como del precio. Un criterio territorial basado solo en el precio señalaría zonas distintas de las de mayor esfuerzo.</p>
+      </section>
+      
+      <section class="sub" id="res-cambio">
+        <h3>Cambio entre 2015 y 2024</h3>
+        <p class="titular">Con los contratos declarados, el peso del alquiler apenas cambia entre 2015 y 2024 en conjunto, pero sube más que su error en 12 de los 21 distritos; quien firma hoy puede pagar bastante más (estimado)<sup class="nota"><a href="#nota-57">57</a></sup><!-- [^n57] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>Madrid entero pasa del 19,1 % en 2015 a un máximo del 21,0 % en 2020 y vuelve al 19,6 % en 2024<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] -->.</li>
+<li>De 142 zonas con dato en los dos años, 31 suben más que su error, 29 bajan y 82 no tienen un cambio claro (estimado)<sup class="nota"><a href="#nota-5">5</a></sup><!-- [^n5] -->.</li>
+<li>El SERPAVI recoge todos los contratos declarados, también los antiguos, así que va por detrás del precio de los contratos nuevos<sup class="nota"><a href="#nota-58">58</a></sup><!-- [^n58] -->.</li></ul></div>
+        <figure aria-labelledby="t-g04" class="grafico" id="g04">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g04">Madrid entero vuelve en 2024 casi al nivel de 2015, tras el máximo de 2020</h3><p class="grafico-sub">Esfuerzo de alquiler de Madrid entero, % de la renta del hogar, sobre la banda de sus 21 distritos<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] --></p></header>
+<img alt="Línea del esfuerzo de alquiler de Madrid de 2015 a 2024: 19,1 % en 2015, máximo de 21,0 % en 2020 y 19,6 % en 2024, dentro de una banda entre el distrito más bajo y el más alto." loading="lazy" src="img/g04.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</p></figcaption>
+
+</figure>
+<figure aria-labelledby="t-g05" class="grafico" id="g05">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g05">Doce distritos suben, tres bajan y seis no tienen un cambio claro</h3><p class="grafico-sub">Esfuerzo de 2015 y de 2024 por distrito; el color dice si el cambio supera el error de cada distrito (estimado)<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] --></p></header>
+<img alt="Los 21 distritos de Madrid con su esfuerzo de 2015 y de 2024 unidos por una línea. Suben más que su error 12 distritos, entre ellos Salamanca, Retiro, Latina y Moratalaz; bajan 3, entre ellos Centro; 6 no tienen un cambio claro." loading="lazy" src="img/g05.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</p><p>Nota: un distrito sube o baja si su cambio supera su propio error, el de la mediana de cada año combinado (intervalo del 95 %; estimado). Con 21 distritos cabe esperar uno claro por azar, y con las 142 zonas, unas 7 (estimado)<sup class="nota"><a href="#nota-17">17</a></sup><!-- [^n17] -->.</p></figcaption>
+
+</figure><p class="destacado"><span class="cifra-grande">68 de 142</span> De las 142 zonas con dato en 2015 y en 2024, el esfuerzo sube en 68 y la mediana del cambio es de −0,06 puntos porcentuales: prácticamente plano<sup class="nota"><a href="#nota-59">59</a></sup><!-- [^n59] -->.</p>
+<p>Esto no dice que alquilar hoy cueste lo mismo que en 2015. El SERPAVI recoge todos los inmuebles con ingresos de alquiler declarados en el año, incluidos los contratos firmados hace tiempo, y no el precio de los contratos nuevos<sup class="nota"><a href="#nota-60">60</a></sup><!-- [^n60] -->. Con los contratos declarados, el peso del alquiler sobre la renta media apenas ha cambiado desde 2015; quien firma ahora un contrato puede estar pagando bastante más.</p><p>En Madrid entero pasa del 19,1 % en 2015 a un máximo del 21,0 % en 2020 y vuelve al 19,6 % en 2024<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] -->. Entre las zonas con al menos 70 alquileres declarados en 2015 y en 2024, el esfuerzo baja más en Chinchón (3,1 puntos) y en Moraleja de Enmedio (2,6) y sube más en los distritos de Salamanca (2,3) y Retiro (1,8)<sup class="nota"><a href="#nota-5">5</a></sup><!-- [^n5] -->. Pelayos de la Presa baja 4,0 puntos, pero con 34 alquileres declarados en 2015 ese cambio es impreciso<sup class="nota"><a href="#nota-55">55</a></sup><!-- [^n55] -->. Las mayores bajadas dependen del umbral: Chinchón tiene 76 en uno de los dos años y Moraleja, 80, y con 100 serían Mejorada del Campo (2,2 puntos) y Loeches (1,8). Salamanca y Retiro siguen siendo las mayores subidas con 30, 50, 70 o 100<sup class="nota"><a href="#nota-5">5</a></sup><!-- [^n5] -->.</p>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">El indicador oficial que mezcla contratos nuevos y antiguos tranquiliza más de lo que debe: no ve la subida que paga quien se muda. Ver la <a href="#r4">recomendación 4</a>.</p>
+      </section>
+      
+      <section class="sub" id="res-sueldos">
+        <h3>Seis sueldos de referencia</h3>
+        <p class="titular">Con el SMI no sobra nada en 18 de 158 zonas, y vivir más lejos rara vez compensa: el ahorro llega al neto por hora en 1 de cada 7 pares (estimado)<sup class="nota"><a href="#nota-6">6</a></sup><!-- [^n6] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>Seis hogares de referencia con sueldo de fuente oficial, del SMI a una enfermera del SERMAS (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Con el SMI, el sobrante mediano es negativo en 18 de 158 zonas, entre 8 y 33 con la banda del alquiler; la pareja y la enfermera no tienen ninguna con el alquiler mediano (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Con el SMI, vivir más lejos rinde por hora extra de viaje, en la mediana, −0,34 €: casi nada, y por debajo de lo que se gana trabajando esa hora (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li></ul></div>
+        <figure aria-labelledby="t-g08" class="grafico" id="g08">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g08">Lo que se ahorra viviendo más lejos no llega a lo que se gana trabajando esa hora</h3><p class="grafico-sub">€ que rinde cada hora extra de viaje frente a vivir más cerca, mitad central de los pares y mediana, y neto por hora trabajada (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] --></p></header>
+<img alt="Para cada uno de los seis perfiles, la mitad central de lo que rinde una hora extra de viaje va de unos −5 a 5 €, con la mediana cerca de 0, mientras que el neto por hora trabajada va de 8,80 € con el SMI a 13,94 € la enfermera." loading="lazy" src="img/g08.svg"/>
+<figcaption><p>Fuente: elaboración propia con la herramienta: SERPAVI (MIVAU) e IPC (INE), tiempos con los GTFS del CRTM, tarifas del CRTM y neto con la LIRPF de 2026. Sueldos: SMI (RD 126/2026), encuestas de estructura salarial (INE) llevadas a 2026 con la ETCL, nómina del SERMAS de 2026.</p><p>Nota: un par es una zona de residencia y un destino con ruta, alquiler y más horas que la zona mejor situada; todo es estimado<sup class="nota"><a href="#nota-56">56</a></sup><!-- [^n56] -->.</p></figcaption>
+
+</figure><p>Para la persona sola con el SMI, en ninguna corona la mediana de lo que se ahorra por cada hora extra de viaje llega a su neto por hora, 8,80 €. En las coronas B3, C1 y C2 ese ahorro es de 1,90 a 4,65 € por hora; en la corona A sale negativo, −8,30 €, porque vivir más lejos de un destino céntrico cuesta tiempo y también dinero (estimado)<sup class="nota"><a href="#nota-6">6</a></sup><!-- [^n6] -->. Según el perfil, el ahorro llega al neto por hora en el 3,5 % de los pares, en la pareja, y en el 14,7 %, en el teleoperador (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->. Son pares de zonas, no personas: no están ponderados por cuántos viven y trabajan en cada una, y no incluyen los trayectos sin ruta en 120 minutos.</p>
+<p>Solo quienes cobran el SMI pasan de una decena de zonas en las que no les sobra nada: 18 de 158, entre 8 y 33 según dónde caiga su alquiler dentro de la banda (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->. La madre sola llega a 7 y el joven a 2; la pareja y la enfermera, a ninguna con el alquiler mediano (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</p><ul>
+<li>Persona sola con el SMI: neto de 8,80 € por hora; vivir lejos rinde al menos eso en 1.218 de 8.620 pares (14,1 %); sobrante negativo en 18 de 158 zonas, entre 8 y 33 con la banda (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Teleoperador de 23 años con el SMI: 8,80 € por hora; 1.268 pares (14,7 %); 18 zonas, entre 8 y 30 (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Pareja de 29 años, sueldo mediano de Madrid: 12,80 € por hora; 306 de 8.651 pares (3,5 %); ninguna zona (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Madre sola de 34 años, administrativa: 11,41 € por hora; 846 pares (9,8 %); 7 zonas, entre 0 y 14 (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Persona sola de 29 años, mediano de su edad: 11,69 € por hora; 816 pares (9,5 %); 2 zonas, entre 0 y 8 (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+<li>Enfermera de 26 años del SERMAS: 13,94 € por hora con 37,5 horas semanales; 612 pares (7,1 %); ninguna zona, hasta 3 con la banda (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->.</li>
+</ul>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">Para quien cobra el SMI, vivir más lejos solo compensa el tiempo de viaje en uno de cada siete pares de casa y trabajo, si cada hora de viaje se valora como una hora de trabajo (estimado)<sup class="nota"><a href="#nota-61">61</a></sup><!-- [^n61] -->. Abaratar la vivienda lejos del empleo le ayuda poco si no baja también el tiempo de viaje.</p>
+      </section>
+      
+      <section class="sub" id="res-sobrecarga">
+        <h3>Sobrecarga de los hogares inquilinos</h3>
+        <p class="titular">Uno de cada tres hogares inquilinos (36 %, entre 29 y 43 %) dedica a la vivienda más del 40 % de su renta; por zona, todavía no se puede medir (estimado)<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>El 36,0 % de los hogares que viven de alquiler en la Comunidad está sobrecargado, con un intervalo del 95 % de 28,6 a 43,4 (estimado)<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] -->.</li>
+<li>La encuesta tiene 580 hogares inquilinos en la región, 562 con gasto de vivienda: no da para bajar a municipio<sup class="nota"><a href="#nota-62">62</a></sup><!-- [^n62] -->.</li>
+<li>El modelo por zona se fijó con un control antes de ejecutarlo, no lo pasó y no se publica<sup class="nota"><a href="#nota-28">28</a></sup><!-- [^n28] -->.</li></ul></div>
+        <figure aria-labelledby="t-g10" class="grafico" id="g10">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g10">El modelo por zona cae fuera del intervalo de la encuesta, así que no se publica</h3><p class="grafico-sub">% de hogares inquilinos con gasto en vivienda de más del 40 % de su renta, Comunidad de Madrid (estimado)<sup class="nota"><a href="#nota-2">2</a></sup><!-- [^n2] --></p></header>
+<img alt="La Encuesta de Condiciones de Vida da un 36,0 % con un intervalo de 28,6 a 43,4. La estimación por zona da un 47,2 %, fuera del intervalo." loading="lazy" src="img/g10.svg"/>
+<figcaption><p>Fuente: Encuesta de Condiciones de Vida 2025, microdatos (INE), elaboración propia; estimación por zona con ADRH (INE) y SERPAVI (MIVAU).</p><p>Nota: el intervalo supone un efecto de diseño de 2, porque el fichero público no trae los estratos de la muestra (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</p></figcaption>
+
+</figure><p class="destacado"><span class="cifra-grande">36,0 %</span> De los hogares que viven de alquiler en la Comunidad de Madrid, el 36,0 % dedica a la vivienda más del 40 % de su renta, con un intervalo del 95 % de 28,6 a 43,4 (estimado)<sup class="nota"><a href="#nota-63">63</a></sup><!-- [^n63] -->.</p>
+<p>Es una cifra para toda la Comunidad. La encuesta no permite bajar a municipio ni a distrito: en la muestra hay 580 hogares inquilinos de la región, 562 con gasto de vivienda<sup class="nota"><a href="#nota-62">62</a></sup><!-- [^n62] -->.</p>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">La cifra regional es sólida, pero no hay forma pública de saber en qué municipios se concentra la sobrecarga. Ver la <a href="#r5">recomendación 5</a>.</p>
+      </section>
+      
+      <section class="sub" id="res-bono">
+        <h3>Bono Alquiler Joven frente a la necesidad</h3>
+        <p class="titular">La proporción aceptada del Bono no depende del esfuerzo de alquiler: hay más rechazos donde más se pide, y que se pida más donde el alquiler pesa más es solo un indicio (estimado)<sup class="nota"><a href="#nota-7">7</a></sup><!-- [^n7] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>La convocatoria de 2022 aceptó el 23,7 % de las solicitudes con municipio: 11.477 de 48.383<sup class="nota"><a href="#nota-31">31</a></sup><!-- [^n31] -->.</li>
+<li>Entre quienes solicitan, no se aprecia relación entre la proporción aceptada y el esfuerzo de alquiler (p = 0,82) (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li>
+<li>Que haya más rechazadas por 1.000 jóvenes donde el alquiler pesa más sale al límite (p = 0,043) en el modelo principal y no en la segunda vía (p = 0,17); como la proporción aceptada no cambia, apunta a más solicitudes (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</li></ul></div>
+        <figure aria-labelledby="t-g06" class="grafico" id="g06">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g06">No se aprecia relación entre la proporción aceptada y el esfuerzo de alquiler</h3><p class="grafico-sub">Aceptadas sobre solicitudes del Bono Alquiler Joven 2022 frente al esfuerzo de 2023, por municipio<sup class="nota"><a href="#nota-64">64</a></sup><!-- [^n64] --></p></header>
+<img alt="Un punto por municipio: esfuerzo de alquiler de 2023 en el eje horizontal y proporción de solicitudes aceptadas en el vertical. Los puntos se reparten alrededor de la línea del 23,7 % sin subir ni bajar con el esfuerzo; Madrid, el punto más grande, está cerca de esa línea." loading="lazy" src="img/g06.svg"/>
+<figcaption><p>Fuente: Bono Alquiler Joven 2022 (Comunidad de Madrid), Censo anual (INE), SERPAVI (MIVAU) y ADRH (INE), elaboración propia.</p><p>Nota: 134 municipios con esfuerzo. Los municipios pequeños se separan más de la línea porque con pocas solicitudes una sola cambia mucho la proporción; la dispersión es mayor que la de una binomial (escala 1,88), así que no se dibujan bandas de azar (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</p></figcaption>
+
+</figure>
+<figure aria-labelledby="t-g07" class="grafico" id="g07">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g07">Todas las estimaciones son positivas, pero 5 de los 9 intervalos tocan el cero, y el efecto cae al tener en cuenta cuántos jóvenes alquilan</h3><p class="grafico-sub">Rechazadas por 1.000 jóvenes por cada punto de esfuerzo de más, con su intervalo del 95 % (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] --></p></header>
+<img alt="Nueve estimaciones del efecto del esfuerzo sobre las rechazadas por 1.000 jóvenes, de unas 0,3 a 0,9 por punto. Las de error espacial heterocedástico con 5 y 8 vecinos y la de máxima verosimilitud quedan por encima de cero; la de dos pasos, las de mínimos cuadrados y las que controlan por el porcentaje de jóvenes en alquiler tocan el cero. En los mismos 112 municipios, el modelo principal sin ese control sigue por encima de cero. Abajo, la correlación parcial fijada antes de ver los datos, r = 0,137, cruza el cero." loading="lazy" src="img/g07.svg"/>
+<figcaption><p>Fuente: <code>bono_inferencia.json</code> (<code>python -m mesobra.bono_inferencia</code>) con el Bono Alquiler Joven 2022, el Censo (INE), el SERPAVI y el ADRH; elaboración propia.</p><p>Nota: se dibujan los modelos cuyo coeficiente es el efecto del esfuerzo; el de retardo espacial (SAR) y los de retardo de las explicativas (SLX, SDEM) reparten el efecto entre directo e indirecto y están en el fichero. Las tres últimas filas usan los 112 municipios con porcentaje de jóvenes en alquiler, el resto 134. El modelo principal y su regla se eligieron después de ver los datos; lo único fijado antes es la correlación parcial. Por eso el resultado es un indicio (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] -->.</p></figcaption>
+
+</figure>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">Con un solo año y sin el motivo del rechazo no se puede saber si el crédito se agotó antes donde hacía más falta. Ver las <a href="#r1">recomendaciones 1</a>, <a href="#r6">6</a> y <a href="#r7">7</a>.</p>
+      </section>
+      
+      <section class="sub" id="res-simulacion">
+        <h3>Requisitos del Bono: tope e ingresos</h3>
+        <p class="titular">Con un piso de 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope del Bono en 16 municipios, 14 por menos de 80 €; y medir los ingresos con la base imponible o con el bruto decide si un joven cumple en 122 municipios o en ninguno (estimado)<sup class="nota"><a href="#nota-8">8</a></sup><!-- [^n8] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>Quien vive solo con el SMI cumpliría el Bono vigente en 122 de 138 municipios; en los 16 restantes el alquiler pasa del tope, en 14 por menos de 80 € al mes (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</li>
+<li>Madrid queda fuera por 79,51 € con la mediana de la ciudad, aunque 8 de sus 21 distritos están por debajo del tope (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</li>
+<li>Para la pareja y el joven con el sueldo mediano, cómo se midan los ingresos lo decide todo: con la base imponible, la del art. 10.g del Acuerdo para quien declara, cumplen en 122 municipios; con el bruto, en ninguno (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</li></ul></div>
+        <figure aria-labelledby="t-g11" class="grafico" id="g11">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g11">De los 16 municipios fuera del tope, 14 lo pasan por menos de 80 € al mes</h3><p class="grafico-sub">€ al mes en que el alquiler mediano de 69 m² pasa del tope del Bono vigente, persona sola con el SMI (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] --></p></header>
+<img alt="Los 16 municipios donde el alquiler pasa del tope, separados por tope de 600 y de 900 €. Van de 6,81 € en El Molar a 108,24 € en Pozuelo de Alarcón; solo Las Rozas y Pozuelo pasan de 80 €." loading="lazy" src="img/g11.svg"/>
+<figcaption><p>Fuente: Acuerdo de 26-12-2024 (BOCM-20250110-20), SERPAVI (MIVAU) con el IPC del alquiler (INE); simulación propia.</p><p>Nota: 69 m² es mucho para quien vive solo y sube su alquiler; cumplir los requisitos no es cobrar la ayuda, que se concede mientras quede crédito (estimado)<sup class="nota"><a href="#nota-43">43</a></sup><!-- [^n43] -->.</p></figcaption>
+
+</figure>
+<figure aria-labelledby="t-g12" class="grafico" id="g12">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g12">Quién cumple depende del criterio y de cómo se midan los ingresos</h3><p class="grafico-sub">Municipios, de 138, en que cada perfil cumpliría cada criterio; debajo, con el sueldo bruto en vez de la base imponible (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] --></p></header>
+<img alt="Tabla de colores con seis perfiles y cuatro criterios. Con el Bono vigente cumplen en 122 municipios los perfiles con el SMI, la madre y el joven, y la enfermera en ninguno. Sin tope y con un requisito de esfuerzo, los perfiles con el SMI bajan a 72 y 65 municipios y la madre a 14. Con el sueldo bruto, el joven y la pareja no cumplen en ninguno." loading="lazy" src="img/g12.svg"/>
+<figcaption><p>Fuente: simulación propia con el Acuerdo de 26-12-2024 (BOCM-20250110-20), el RD 42/2022 y la Ley 31/2022 (IPREM); ETCL (INE) para el valor de la hora de viaje.</p><p>Nota: los criterios sin tope son simulados e ilustrativos, no una propuesta; las horas de viaje se valoran a 9,76 € la hora, un supuesto (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</p></figcaption>
+
+</figure><p class="destacado"><span class="cifra-grande">16 de 138</span> Con una vivienda de 69 m² al alquiler mediano, quien vive solo con el SMI pasa del tope de alquiler del Bono en 16 de los 138 municipios simulados; en 14 de ellos, por menos de 80 € al mes (estimado)<sup class="nota"><a href="#nota-8">8</a></sup><!-- [^n8] -->.</p>
+<p>Es una simulación con los seis perfiles de la sección anterior: dice si cada perfil cumpliría los requisitos en cada municipio, no si cobraría la ayuda, que se concede mientras quede crédito. Madrid está entre esos 16, por 79,51 € al mes: el alquiler de la ciudad es la mediana de sus 21 distritos, y 8 de ellos quedan por debajo del tope (estimado)<sup class="nota"><a href="#nota-65">65</a></sup><!-- [^n65] -->.</p><p>Euros al mes en que el alquiler de 69 m² pasa del tope, de menos a más (estimado)<sup class="nota"><a href="#nota-66">66</a></sup><!-- [^n66] -->:</p>
+<ul>
+<li>Con tope de 600 €: El Molar, 6,81; Collado Mediano, 24,44; Pedrezuela, 25,88; Navacerrada, 26,19; El Álamo, 32,15; Villalbilla, 32,67; Sevilla la Nueva, 51,31; Manzanares el Real, 52,82; Hoyo de Manzanares, 71,10; Valdemorillo, 75,69 (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</li>
+<li>Con tope de 900 €: Boadilla del Monte, 31,98; Villaviciosa de Odón, 51,93; Majadahonda, 74,31; Madrid, 79,51; Las Rozas de Madrid, 88,60; Pozuelo de Alarcón, 108,24 (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</li>
+<li>Distritos de Madrid por debajo del tope: Villaverde, Vicálvaro, Usera, Puente de Vallecas, Latina, Moratalaz, Carabanchel y Villa de Vallecas (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</li>
+</ul><p>Con alquiler y transporte entran menos municipios que hoy: 72 de 138 para quien vive solo con el SMI, 65 para el teleoperador y 14 para la madre sola (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->. Lo que decide es el requisito de esfuerzo que se añade, más que el tope que se quita.</p>
+<p>Con horas de viaje, el resultado depende de cómo se traten los trayectos sin ruta en 120 minutos. Para quien vive solo con el SMI va de 112 municipios, sin esos trayectos, a 138, si se les dan 120 minutos; para la madre, de 106 a 135, y para el joven de 29 años, de 104 a 134 (estimado)<sup class="nota"><a href="#nota-67">67</a></sup><!-- [^n67] -->. Según ese tratamiento, el criterio de horas da más o menos municipios que el vigente, con 122: no se puede decir que amplíe el acceso.</p>
+<p>El valor de 9,76 € por hora de viaje es un supuesto, el 32,5 % del coste laboral por hora de Madrid, y es más alto que el neto por hora de quien cobra el SMI, 8,80 € (estimado)<sup class="nota"><a href="#nota-68">68</a></sup><!-- [^n68] -->. En la sección de los sueldos de referencia, la hora de viaje se compara con el neto por hora: son dos valores del tiempo distintos.</p><p>La pareja y el joven entran o no según cómo se midan los ingresos. El Acuerdo parte de la base imponible general y del ahorro del IRPF (art. 10.g), pero para quien no presenta la declaración remite al certificado de imputaciones sin concretar qué cifra cuenta. Con la base imponible cumplen el criterio vigente en 122 municipios; con el sueldo bruto, en ninguno (estimado)<sup class="nota"><a href="#nota-69">69</a></sup><!-- [^n69] -->. Por eso se dan siempre como banda. La pareja no se compara entre criterios: los ingresos que cuentan son los de una persona y el esfuerzo es el del hogar.</p>
+<p>La enfermera está en el umbral: con su nómina de 2024, su base imponible supera el límite en 6,84 € al año con la cotización de 2026 que aplica el modelo, y en 15,57 € con la de 2024; unas cuotas sindicales o colegiales de al menos 15,57 € al año (6,84 € con el modelo) la dejarían dentro, porque el límite es «iguales o inferiores» (Acuerdo, art. 4.1.d) y las cuotas restan de la base (LIRPF, art. 19.2.d) (estimado)<sup class="nota"><a href="#nota-70">70</a></sup><!-- [^n70] -->. Al joven, medido con el bruto, le pasa lo mismo por 9,48 € (estimado)<sup class="nota"><a href="#nota-27">27</a></sup><!-- [^n27] -->.</p>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">Concretar qué renta cuenta para quien no declara no cuesta dinero; revisar el tope amplía quién puede pedir la ayuda y, con el crédito fijo, cuántos se quedan fuera. Ver las <a href="#r2">recomendaciones 2</a> y <a href="#r8">8</a>.</p>
+      </section>
+      
+      <section class="sub" id="res-descuento">
+        <h3>Fin del descuento del abono</h3>
+        <p class="titular">Si en 2027 no se prorroga el descuento del abono, ir a trabajar costará entre 9 y 33 € más al mes (estimado)<sup class="nota"><a href="#nota-71">71</a></sup><!-- [^n71] --></p>
+        <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>Un adulto que va a trabajar cinco días a la semana pagaría entre 9,23 y 19,67 € más al mes en las coronas A y B1 y entre 15,26 y 32,76 € en las B3, C1 y C2 (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</li>
+<li>Con el Abono Joven serían 9,30 € más en todas las coronas (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</li>
+<li>No hay prórroga publicada para 2027 a 21 de noviembre de 2026<sup class="nota"><a href="#nota-72">72</a></sup><!-- [^n72] -->.</li></ul></div>
+        <figure aria-labelledby="t-g13" class="grafico" id="g13">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g13">El coste del fin del descuento crece hacia las coronas de fuera</h3><p class="grafico-sub">€ más al mes, media del año, si solo se retira la parte del RDL 17/2025 (izquierda) o todo el descuento (derecha) (estimado)<sup class="nota"><a href="#nota-73">73</a></sup><!-- [^n73] --></p></header>
+<img alt="Barras de rango por corona tarifaria: de 9,23 a 19,67 € en las coronas A y B1, de 12,18 a 26,11 € en la B2 y de 15,26 a 32,76 € en las B3, C1 y C2. El Abono Joven, 9,30 € en todas." loading="lazy" src="img/g13.svg"/>
+<figcaption><p>Fuente: precios del CRTM de 2026 con descuento (BOCM-20251231-2) y sin él (BOCM-20251231-3), tarifas del 30-11-2025 (BOCM-20130130-9 y BOCM-20211217-35) y RDL 17/2025, art. 8; elaboración propia.</p><p>Nota: cinco días a la semana, ida y vuelta, con la ruta por la zona A; no cuenta el abono de Cercanías de Renfe (estimado)<sup class="nota"><a href="#nota-50">50</a></sup><!-- [^n50] -->.</p></figcaption>
+
+</figure><p>En 2026 los abonos llevan un descuento: una parte la financia el Estado con el Real Decreto-ley 17/2025, que la condiciona a que se aplique, y el resto lo pone el Consorcio Regional de Transportes<sup class="nota"><a href="#nota-74">74</a></sup><!-- [^n74] -->. No hay prórroga publicada para 2027 a 21 de noviembre de 2026<sup class="nota"><a href="#nota-72">72</a></sup><!-- [^n72] -->.</p>
+<p>Si no se prorroga, un adulto que va a trabajar cinco días a la semana pagaría entre 9,23 y 19,67 € más al mes en las coronas A y B1, entre 12,18 y 26,11 € en la B2 y entre 15,26 y 32,76 € en la B3, la C1 y la C2 (estimado)<sup class="nota"><a href="#nota-8">8</a></sup><!-- [^n8] -->. Un joven con el Abono Joven pagaría 9,30 € más en todas (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->.</p>
+        <p class="rotulo-implica">Implicaciones para la Administración</p>
+        <p class="implica">En euros, la subida es mayor en las coronas de fuera, donde el abono es más caro. Ver la <a href="#r3">recomendación 3</a>.</p>
+      </section>
+    </section>
+
+    <section class="capitulo" id="calidad">
+      <h2>Calidad del dato y limitaciones</h2>
+      <div class="resultado"><p class="rotulo">Resultado principal</p><ul><li>39 de las 158 zonas con alquiler tienen menos de 70 alquileres declarados: su valor es impreciso y nunca se usa para nombrar extremos<sup class="nota"><a href="#nota-75">75</a></sup><!-- [^n75] -->.</li>
+<li>Con 70 alquileres declarados, el alquiler mediano de una zona tiene un margen de unos ±8 % en el caso típico (intervalo del 95 %; estimado)<sup class="nota"><a href="#nota-15">15</a></sup><!-- [^n15] -->.</li>
+<li>Lo que no pasa su control no se publica: la sobrecarga por zona (capítulo 7) y un gráfico del Bono que la dispersión de los datos desmentía<sup class="nota"><a href="#nota-76">76</a></sup><!-- [^n76] -->.</li></ul></div>
+      <figure aria-labelledby="t-g14" class="grafico" id="g14">
+<header><p class="grafico-n">Gráfico</p><h3 id="t-g14">Una de cada cuatro zonas con alquiler tiene menos de 70 alquileres declarados</h3><p class="grafico-sub">Zonas según los alquileres declarados de vivienda colectiva en su último año con dato, escala logarítmica<sup class="nota"><a href="#nota-14">14</a></sup><!-- [^n14] --></p></header>
+<img alt="Histograma de las 158 zonas según sus alquileres declarados, de una decena a decenas de miles. 39 zonas quedan por debajo del umbral de 70 y 119 por encima." loading="lazy" src="img/g14.svg"/>
+<figcaption><p>Fuente: SERPAVI (MIVAU), <code>datos/alquiler.json</code>.</p><p>Nota: el umbral de 70 deja el error de la zona típica en torno al ±10 % del €/m² sin marcar un tercio del mapa; es una convención (estimado)<sup class="nota"><a href="#nota-17">17</a></sup><!-- [^n17] -->.</p></figcaption>
+
+</figure>
+      <section class="sub"><h3>Qué no se ha podido hacer</h3><ul class="avisos-portada">
+<li>La sobrecarga por municipio y distrito: la estimación no pasó el control de la ECV y no se publica (ver «Sobrecarga de los inquilinos»).</li>
+<li>Las cifras para quien alquila una habitación: no hay una fuente de precio de habitación que se pueda reutilizar, y la aproximación con un tercio del piso es solo una cota inferior.</li>
+<li>Cuántas personas podrían cobrar el Bono y cuánto costaría: falta leer la orden de reajuste del crédito de julio de 2026.</li>
+<li>Los pesos de dónde trabaja la gente son los ocupados de 2023. El INE publica los de 2024 a 2026 el 24 de noviembre de 2026, después de cerrar este informe<sup class="nota"><a href="#nota-77">77</a></sup><!-- [^n77] -->.</li>
+<!-- sin-fuente: número de artículo --><li>La sensibilidad con la antigua regla de colocación adecuada del art. 301 de la Ley General de la Seguridad Social, que está calculada pero no se presenta.</li>
+</ul></section>
+      <section class="sub"><h3>Limitaciones</h3><ul class="avisos-portada">
+<li>La renta es la media de todos los hogares, propietarios incluidos, que suelen ganar más que quien alquila. El indicador subestima el esfuerzo de los inquilinos, y al ser una media los ingresos altos la empujan hacia arriba.</li>
+<li>El SERPAVI son contratos declarados, no precios de oferta, y solo vivienda colectiva. Incluye contratos antiguos, así que va por detrás del mercado.</li>
+<li>Del Bono hay un solo año, la convocatoria de 2022, comparada con el esfuerzo de 2023. Con un año no se puede ver si la ayuda sigue a la necesidad con el tiempo.</li>
+<li>El conjunto de datos por municipio no da el motivo de los rechazos: no cumplir requisitos y crédito agotado van juntos. La Orden de 1-08-2024 mandó publicar en la sede electrónica el listado de excluidos con su motivo, solicitante a solicitante, para quienes tuvieron que subsanar; este informe no lo usa<sup class="nota"><a href="#nota-78">78</a></sup><!-- [^n78] -->.</li>
+<li>Con menos de 70 alquileres declarados en el SERPAVI, el esfuerzo de una zona es impreciso. Los mapas lo marcan con borde negro, y los extremos del texto se dan solo entre zonas con más alquileres declarados<sup class="nota"><a href="#nota-79">79</a></sup><!-- [^n79] -->.</li>
+<li>La solicitud cuenta en el municipio del piso, que el Bono exige que sea la residencia habitual y permanente (RD 42/2022, art. 7); cuenta solicitudes, no personas, y el denominador son todos los jóvenes, no los inquilinos ni quienes cumplen los requisitos.</li>
+<li>Son datos por municipio: lo que pasa en un municipio no se puede atribuir a cada joven que vive en él (falacia ecológica). Madrid entra en el Bono como un solo municipio.</li>
+<li>Los municipios sin esfuerzo son pequeños o rurales, así que el resultado del Bono habla de los municipios urbanos.</li>
+<li>Es una correlación entre municipios, no un efecto causal.</li>
+</ul></section>
+    </section>
+
+    <section class="capitulo" id="recomendaciones">
+      <h2>Recomendaciones</h2>
+      <p>Cada una dice qué hacer, a quién le toca, qué hallazgo la sostiene y con qué solidez. «Sólida» quiere decir que se apoya en un dato o en una norma; «indicio», en un resultado estadístico al límite; «por comprobar», en algo que todavía no se ha simulado con la norma nueva.</p>
+      <ol class="fichas-rec"><li class="ficha-rec" id="r1">
+<h3>Publicar por municipio el motivo del rechazo del Bono Alquiler Joven</h3>
+<p class="evidencia solida">Evidencia sólida</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Separar en el conjunto de datos abiertos de cada convocatoria las solicitudes rechazadas por no cumplir los requisitos de las que llegaron con el crédito agotado.</dd></div>
+<div><dt>A quién compete</dt><dd>Consejería de Vivienda de la Comunidad de Madrid, que gestiona la ayuda.</dd></div>
+<div><dt>Lo sostiene</dt><dd>El conjunto por municipio mezcla los dos motivos, aunque la Orden de 1-08-2024 mandó publicar en la sede electrónica el listado de excluidos con su motivo para quienes tuvieron que subsanar; el resto quedó excluido en bloque por crédito agotado<sup class="nota"><a href="#nota-80">80</a></sup><!-- [^n80] -->. Sin separarlos no se sabe si el crédito llega donde hace falta (<a href="#bono">cap. 8</a>).</dd></div><!-- sin-fuente: número de capítulo -->
+<div><dt>Coste</dt><dd>Bajo: el dato ya existe en la gestión de la ayuda; es agregarlo por municipio.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r2">
+<h3>Concretar qué renta cuenta en el Bono para quien no presenta la declaración</h3>
+<p class="evidencia solida">Sólida en la norma; efecto estimado</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Decir en la próxima convocatoria qué cifra del certificado de imputaciones se compara con el límite de renta que fije la convocatoria cuando no hay declaración, igual que el art. 10.g lo hace para quien declara<sup class="nota"><a href="#nota-81">81</a></sup><!-- [^n81] -->.</dd></div>
+<div><dt>A quién compete</dt><dd>Consejería de Vivienda, al redactar el Acuerdo del Consejo de Gobierno.</dd></div>
+<div><dt>Lo sostiene</dt><dd>Con el límite de la ronda de 2024 (3 × IPREM), para un joven o una pareja con el sueldo mediano la respuesta cambia el resultado de 122 municipios a ninguno (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->. Con el del RD 326/2026 (5 × IPREM, art. 133.1.d, BOE-A-2026-8872) no se ha simulado y la diferencia puede ser menor. El Acuerdo de 26-12-2024 parte de la base imponible general y del ahorro (art. 10.g), pero para quien no presenta la declaración remite al certificado de imputaciones sin concretar la cifra (<a href="#simulacion">cap. 9</a>).</dd></div>
+<div><dt>Coste</dt><dd>Nulo: es una frase en la norma.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r3">
+<h3>Anunciar pronto si el descuento del abono sigue en 2027</h3>
+<p class="evidencia solida">Sólida en la norma; euros estimados</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Decidir y publicar con antelación si se prorroga el descuento, y por qué parte, para que los hogares de las coronas de fuera puedan prever el gasto.</dd></div>
+<div><dt>A quién compete</dt><dd>Gobierno de España, que financia una parte con el Real Decreto-ley 17/2025, y Comunidad de Madrid, a través del Consorcio Regional de Transportes, por el resto.</dd></div>
+<div><dt>Lo sostiene</dt><dd>Sin prórroga, ir a trabajar costaría entre 9,23 y 32,76 € más al mes según la corona, y 9,30 € con el Abono Joven (estimado)<sup class="nota"><a href="#nota-82">82</a></sup><!-- [^n82] --> (<a href="#descuento">cap. 10</a>).</dd></div>
+<div><dt>Qué falta</dt><dd>Cuántas personas usan cada abono en cada corona, que no está en los datos abiertos usados aquí.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r4">
+<h3>Publicar el alquiler de los contratos firmados cada año</h3>
+<p class="evidencia solida">Evidencia sólida</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Añadir al SERPAVI una serie de los contratos firmados cada año, con el mismo detalle territorial que ya publica para el conjunto de los contratos declarados.</dd></div>
+<div><dt>A quién compete</dt><dd>Ministerio de Vivienda y Agenda Urbana, que publica el SERPAVI.</dd></div>
+<div><dt>Lo sostiene</dt><dd>El SERPAVI mezcla contratos antiguos y nuevos y va por detrás del mercado: en la provincia de Madrid, en 2024, el índice de los contratos en vigor subió un 2,7 % y el de los nuevos un 9,2 %<sup class="nota"><a href="#nota-83">83</a></sup><!-- [^n83] --> (<a href="#cambio">cap. 5</a>).</dd></div>
+<div><dt>Coste</dt><dd>Medio: el dato está en las declaraciones del IRPF.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r5">
+<h3>Medir la sobrecarga de los inquilinos por zona con una fuente que lo permita</h3>
+<p class="evidencia solida">Evidencia sólida</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Ampliar la muestra regional de la Encuesta de Condiciones de Vida o cruzar registros de renta y alquiler de los mismos hogares para estimar la sobrecarga por municipio.</dd></div>
+<div><dt>A quién compete</dt><dd>INE e Instituto de Estadística de la Comunidad de Madrid.</dd></div>
+<div><dt>Lo sostiene</dt><dd>La encuesta tiene 562 hogares inquilinos con gasto de vivienda en la región (580 en total) y el modelo por zona con datos públicos no pasó su control: dio un 47,2 % frente a un intervalo de 28,6 a 43,4 (estimado)<sup class="nota"><a href="#nota-84">84</a></sup><!-- [^n84] --> (<a href="#sobrecarga">cap. 7</a>).</dd></div>
+<div><dt>Coste</dt><dd>Alto si es encuesta; medio si es cruce de registros.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r6">
+<h3>Publicar el perfil de quien pide el Bono y compararlo con quien alquila</h3>
+<p class="evidencia solida">Evidencia sólida</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Publicar las solicitudes por edad y tramo de ingresos, y cruzarlas con los jóvenes que alquilan en cada municipio, no con todos los jóvenes.</dd></div>
+<div><dt>A quién compete</dt><dd>Consejería de Vivienda.</dd></div>
+<div><dt>Lo sostiene</dt><dd>Hoy el conjunto cuenta solicitudes y no personas, y el único denominador disponible son todos los jóvenes, no quienes alquilan o cumplen los requisitos. Sin esto no se puede comparar la ayuda con la necesidad de cada municipio (<a href="#bono">cap. 8</a>).</dd></div><!-- sin-fuente: número de capítulo -->
+<div><dt>Coste</dt><dd>Bajo: datos de la propia solicitud.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r7">
+<h3>Evaluar varias convocatorias antes de repartir el crédito por territorio</h3>
+<p class="evidencia indicio">Indicio</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>Repetir este análisis con las convocatorias de 2022 en adelante antes de usar el esfuerzo de alquiler para repartir el crédito entre municipios.</dd></div>
+<div><dt>A quién compete</dt><dd>Consejería de Vivienda, con el apoyo de un equipo de evaluación.</dd></div>
+<div><dt>Lo sostiene</dt><dd>Con un solo año, que haya más rechazadas por 1.000 jóvenes donde el alquiler pesa más, reflejo sobre todo de más solicitudes, sale al límite en el modelo principal (p = 0,043) y no en la segunda vía (p = 0,17) (estimado)<sup class="nota"><a href="#nota-38">38</a></sup><!-- [^n38] --> (<a href="#bono">cap. 8</a>).</dd></div>
+<div><dt>Qué falta</dt><dd>Los datos por municipio de las convocatorias posteriores y la orden de reajuste del crédito de julio de 2026.</dd></div>
+</dl>
+</li>
+<li class="ficha-rec" id="r8">
+<h3>Revisar el tope de alquiler en la primera convocatoria del RD 326/2026</h3>
+<p class="evidencia supuesto">Por comprobar: no simulado con el RD 326/2026</p>
+<dl>
+<div><dt>Qué hacer</dt><dd>La próxima convocatoria de Madrid irá por el RD 326/2026, con un tope de 1.000 € al mes y de 500 € en los municipios o núcleos de población de 10.000 habitantes o menos<sup class="nota"><a href="#nota-85">85</a></sup><!-- [^n85] -->. Comprobar si ese tope de 500 € deja fuera a municipios o núcleos pequeños con el alquiler actual de una vivienda del tamaño que alquila un joven.</dd></div>
+<div><dt>A quién compete</dt><dd>Consejería de Vivienda, que puede subir el tope con estudios que lo justifiquen, y Ministerio de Vivienda y Agenda Urbana, que debe dar su conformidad con un acuerdo previo<sup class="nota"><a href="#nota-86">86</a></sup><!-- [^n86] -->.</dd></div>
+<div><dt>Lo sostiene</dt><dd>Con el tope de la ronda de 2024 (RD 42/2022) y 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope en 16 de 138 municipios, 14 por menos de 80 € al mes (estimado)<sup class="nota"><a href="#nota-3">3</a></sup><!-- [^n3] -->; con el tope del RD 326/2026 no se ha simulado. Pero 69 m² es mucho para quien vive solo: con una vivienda más pequeña entrarían más municipios (<a href="#simulacion">cap. 9</a>).</dd></div>
+<div><dt>Qué falta</dt><dd>El alquiler por tamaño de vivienda y los contratos de habitaciones, que no tienen fuente reutilizable.</dd></div>
+</dl>
+</li></ol>
+    </section>
+
+    <section class="capitulo" id="anexos">
+      <h2>Anexos</h2>
+      <section class="sub"><h3>Glosario</h3><dl class="glosario">
+<dt>Esfuerzo de alquiler</dt><dd>Alquiler mediano mensual de la zona entre la renta neta media mensual de sus hogares. Sirve para comparar zonas y años, no es lo que paga una persona concreta.</dd>
+<dt>Alquileres declarados (testigos)</dt><dd>Inmuebles de vivienda colectiva con ingresos de alquiler declarados a Hacienda que recoge el SERPAVI. No son contratos firmados en el año.</dd>
+<dt>Sobrecarga</dt><dd>Un hogar está sobrecargado cuando dedica a la vivienda más del 40 % de su renta disponible<sup class="nota"><a href="#nota-87">87</a></sup><!-- [^n87] -->.</dd>
+<dt>Lo que sobra</dt><dd>Neto del hogar menos alquiler, transporte y cesta básica, en euros al mes.</dd>
+<dt>Par</dt><dd>Una zona de residencia y un destino de trabajo con ruta en transporte público.</dd>
+<dt>Corona tarifaria</dt><dd>Anillo del abono del Consorcio Regional de Transportes, de la A, en el centro, a la C2.</dd>
+<dt>Intervalo del 95 %</dt><dd>Rango calculado de forma que, si se repitiera la medida muchas veces, 95 de cada 100 rangos contendrían el valor real; cuanto más ancho, menos preciso el dato.</dd><!-- sin-fuente: definición -->
+<dt>Estimado</dt><dd>Cifra que sale de un modelo, una imputación, una simulación o un supuesto, no de una observación directa.</dd>
+</dl></section>
+      <section class="sub"><h3>Reproducibilidad</h3><ul><li><code>python -m mesobra</code> comprueba que las descargas son las del equipo, regenera los ficheros de <code>datos/</code> y los valida.</li>
+<li><code>python -m mesobra.bono_inferencia</code> regenera los modelos del Bono, y <code>python -m mesobra.informe_figuras</code>, los gráficos de este informe: falla si lo que dibuja no coincide con las cifras publicadas.</li>
+<li>Cada fichero de partida tiene su fecha y su huella SHA-256 en <a href="https://github.com/yeraybc/DataMad-hackaton-2026/blob/main/data/README.md"><code>data/README.md</code></a>; las decisiones, en <a href="https://github.com/yeraybc/DataMad-hackaton-2026/blob/main/docs/decisiones.md"><code>docs/decisiones.md</code></a>; y cada cifra de este informe, en el <a href="https://github.com/yeraybc/DataMad-hackaton-2026/blob/main/docs/informe/cifras.md">registro de cifras</a>.</li>
+        <li>Este PDF se genera desde <code>app/informe-tecnico.html</code> con Chromium sin interfaz; la versión web es <code>app/informe.html</code>.</li></ul></section>
+      <section class="sub"><h3>Aviso sobre las estimaciones</h3><p>Las cifras marcadas «estimado» salen de modelos, simulaciones o supuestos propios del proyecto y pueden cambiar si cambian los datos o los supuestos. No son cifras oficiales. Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Comunidad de Madrid, ni el Consorcio Regional de Transportes participan en este proyecto ni lo patrocinan.</p></section>
+    </section>
+
+    <section class="capitulo" id="notas">
+      <h2>Notas</h2>
+      <p class="nota-previa">Las notas que citan un fichero del proyecto, como <code>datos/analisis.json</code> (y sus bloques <code>titulares</code> y <code>simulacion</code>), <code>datos/alquiler.json</code>, <code>bono_inferencia.json</code> o <code>docs/decisiones.md</code>, remiten al repositorio público de Kuanto: son los datos ya calculados que publica la herramienta, los resultados de los modelos y el registro de cada decisión del análisis. Las fuentes originales de esos ficheros están en las <a href="#referencias">referencias</a>.</p>
+      <ol class="notas">
+        <li id="nota-1">SERPAVI y ADRH, 2024</li><!-- [^n1] -->
+        <li id="nota-2">ECV 2025, INE</li><!-- [^n2] -->
+        <li id="nota-3">Bloque <code>simulacion</code></li><!-- [^n3] -->
+        <li id="nota-4">SERPAVI, MIVAU, y ADRH, INE, 2024</li><!-- [^n4] -->
+        <li id="nota-5">SERPAVI y ADRH, 2015-2024</li><!-- [^n5] -->
+        <li id="nota-6"><code>datos/analisis.json</code>, bloque <code>titulares</code></li><!-- [^n6] -->
+        <li id="nota-7">Bono Alquiler Joven 2022; <code>bono_inferencia.json</code></li><!-- [^n7] -->
+        <li id="nota-8"><code>datos/analisis.json</code>, bloque <code>simulacion</code></li><!-- [^n8] -->
+        <li id="nota-9"><code>datos/zonas.geojson</code></li><!-- [^n9] -->
+        <li id="nota-10"><code>datos/analisis.json</code> y <code>datos/alquiler.json</code></li><!-- [^n10] -->
+        <li id="nota-11"><code>datos/tiempos.json</code>, nota metodológica</li><!-- [^n11] -->
+        <li id="nota-12">SERPAVI, MIVAU; ADRH, INE; elaboración propia</li><!-- [^n12] -->
+        <li id="nota-13">ADRH, INE</li><!-- [^n13] -->
+        <li id="nota-14">SERPAVI, MIVAU</li><!-- [^n14] -->
+        <li id="nota-15">SERPAVI, elaboración propia</li><!-- [^n15] -->
+        <li id="nota-16">SERPAVI y ADRH, 2024, elaboración propia</li><!-- [^n16] -->
+        <li id="nota-17"><code>docs/decisiones.md</code>, 23-11-2026</li><!-- [^n17] -->
+        <li id="nota-18">SERPAVI y ADRH, elaboración propia</li><!-- [^n18] -->
+        <li id="nota-19">SERPAVI y ADRH, 2015-2024, elaboración propia</li><!-- [^n19] -->
+        <li id="nota-20">LIRPF, DL 1/2010 de Madrid, Orden PJC/297/2026; <code>datos/netos.json</code></li><!-- [^n20] -->
+        <li id="nota-21">SERPAVI, MIVAU; IPC, INE; <code>datos/alquiler.json</code></li><!-- [^n21] -->
+        <li id="nota-22">BOCM-20251231-2; GTFS del CRTM con r5py; <code>datos/tarifas.json</code> y <code>datos/tiempos.json</code></li><!-- [^n22] -->
+        <li id="nota-23">Encuesta de Presupuestos Familiares 2025, Comunidad de Madrid; <code>datos/hogares.json</code></li><!-- [^n23] -->
+        <li id="nota-24">RD 126/2026; EAES y EES, INE; BOCM-20260209-6</li><!-- [^n24] -->
+        <li id="nota-25">ETCL, INE</li><!-- [^n25] -->
+        <li id="nota-26">BOCM-20260209-6</li><!-- [^n26] -->
+        <li id="nota-27">Elaboración propia</li><!-- [^n27] -->
+        <li id="nota-28"><code>docs/decisiones.md</code>, 18-11-2026</li><!-- [^n28] -->
+        <li id="nota-29">ADRH y ECV, INE; elaboración propia</li><!-- [^n29] -->
+        <li id="nota-30">Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual de población, INE</li><!-- [^n30] -->
+        <li id="nota-31">Bono Alquiler Joven 2022, Comunidad de Madrid</li><!-- [^n31] -->
+        <li id="nota-32">Bono Alquiler Joven 2022</li><!-- [^n32] -->
+        <li id="nota-33">Bono Alquiler Joven 2022, elaboración propia</li><!-- [^n33] -->
+        <li id="nota-34">Bono 2022 y SERPAVI, elaboración propia</li><!-- [^n34] -->
+        <li id="nota-35">Bono 2022; Censo anual, INE; elaboración propia</li><!-- [^n35] -->
+        <li id="nota-36">Bono 2022, Censo anual, SERPAVI y ADRH</li><!-- [^n36] -->
+        <li id="nota-37">Bono 2022 y Censo anual, INE</li><!-- [^n37] -->
+        <li id="nota-38"><code>bono_inferencia.json</code></li><!-- [^n38] -->
+        <li id="nota-39">Censo 2021, INE; <code>bono_inferencia.json</code></li><!-- [^n39] -->
+        <li id="nota-40">Acuerdo de 26-12-2024, arts. 4.1.a, 4.1.d, 4.4 y 5, texto completo en BDNS 805618, extracto en BOCM-20250110-20; RD 42/2022, arts. 6.1.a, 6.1.d, 6.4 y 8; Ley 31/2022, DA 90.ª, prorrogada por el art. 134.4 de la CE; el IPREM va referido a 14 pagas</li><!-- [^n40] -->
+        <li id="nota-41">SERPAVI, MIVAU; IPC, INE; Acuerdo, art. 10.g</li><!-- [^n41] -->
+        <li id="nota-42">Índice H+T del Center for Neighborhood Technology; ETCL, INE; supuestos propios</li><!-- [^n42] -->
+        <li id="nota-43"><code>simulacion.py</code>, supuestos 11 y 12</li><!-- [^n43] -->
+        <li id="nota-44">Matriz de residencia por trabajo, INE</li><!-- [^n44] -->
+        <li id="nota-45"><code>docs/decisiones.md</code>, 21-11-2026</li><!-- [^n45] -->
+        <li id="nota-46">Bloque <code>simulacion</code>, columnas <code>marca_*</code></li><!-- [^n46] -->
+        <li id="nota-47">RDL 17/2025, art. 8; BOCM-20251231-3 y BOCM-20251231-2</li><!-- [^n47] -->
+        <li id="nota-48">RDL 17/2025, art. 8.b</li><!-- [^n48] -->
+        <li id="nota-49">BOCM-20251231-3 y BOCM-20251231-2; elaboración propia</li><!-- [^n49] -->
+        <li id="nota-50">RDL 17/2025, art. 3</li><!-- [^n50] -->
+        <li id="nota-51"><code>tests/test_neto.py</code>, nota metodológica</li><!-- [^n51] -->
+        <li id="nota-52"><code>tests/test_transporte.py</code></li><!-- [^n52] -->
+        <li id="nota-53">Nota metodológica</li><!-- [^n53] -->
+        <li id="nota-54">SERPAVI (MIVAU) y ADRH (INE), 2024</li><!-- [^n54] -->
+        <li id="nota-55">SERPAVI y ADRH</li><!-- [^n55] -->
+        <li id="nota-56"><code>datos/analisis.json</code></li><!-- [^n56] -->
+        <li id="nota-57">SERPAVI (MIVAU) y ADRH (INE), 2015-2024</li><!-- [^n57] -->
+        <li id="nota-58">Metodología del SERPAVI, MIVAU</li><!-- [^n58] -->
+        <li id="nota-59">SERPAVI y ADRH, sin la fila de Madrid entero</li><!-- [^n59] -->
+        <li id="nota-60">Metodología del SERPAVI, MIVAU, 18-03-2026, §3.1</li><!-- [^n60] -->
+        <li id="nota-61">Bloque <code>titulares</code></li><!-- [^n61] -->
+        <li id="nota-62">Microdatos de la ECV 2025, INE; elaboración propia</li><!-- [^n62] -->
+        <li id="nota-63">Encuesta de Condiciones de Vida 2025, microdatos, INE; elaboración propia</li><!-- [^n63] -->
+        <li id="nota-64">Bono Alquiler Joven 2022; SERPAVI y ADRH</li><!-- [^n64] -->
+        <li id="nota-65">Bloque <code>simulacion</code>; elaboración propia</li><!-- [^n65] -->
+        <li id="nota-66"><code>datos/analisis.json</code> y <code>datos/alquiler.json</code>; elaboración propia</li><!-- [^n66] -->
+        <li id="nota-67">Bloque <code>simulacion</code>, criterios <code>horas_viaje</code> y <code>horas_viaje_sin_imputar</code></li><!-- [^n67] -->
+        <li id="nota-68">ETCL, INE; bloque <code>titulares</code></li><!-- [^n68] -->
+        <li id="nota-69">Bloque <code>simulacion</code>, criterios con <code>_bruto</code></li><!-- [^n69] -->
+        <li id="nota-70">BOCM-20240806-11; RDL 2/2023; elaboración propia</li><!-- [^n70] -->
+        <li id="nota-71"><code>datos/analisis.json</code>, bloque <code>simulacion</code>; BOCM-20251231-2 y BOCM-20251231-3</li><!-- [^n71] -->
+        <li id="nota-72">RDL 17/2025, art. 8, BOE-A-2025-26459</li><!-- [^n72] -->
+        <li id="nota-73">BOCM-20251231-2 y BOCM-20251231-3</li><!-- [^n73] -->
+        <li id="nota-74">RDL 17/2025, arts. 7 y 8</li><!-- [^n74] -->
+        <li id="nota-75"><code>datos/alquiler.json</code>, SERPAVI</li><!-- [^n75] -->
+        <li id="nota-76"><code>docs/decisiones.md</code>, 25-11-2026, y <code>docs/informe/guion.md</code></li><!-- [^n76] -->
+        <li id="nota-77">Calendario del INE; <code>docs/decisiones.md</code>, 20-11-2026</li><!-- [^n77] -->
+        <li id="nota-78">Orden de 1-08-2024, BOCM-20240816-2</li><!-- [^n78] -->
+        <li id="nota-79">SERPAVI, MIVAU, recuento de inmuebles por zona</li><!-- [^n79] -->
+        <li id="nota-80">BOCM-20240816-2</li><!-- [^n80] -->
+        <li id="nota-81">Acuerdo de 26-12-2024, BDNS 805618</li><!-- [^n81] -->
+        <li id="nota-82">Bloque <code>simulacion</code>; BOCM-20251231-2 y BOCM-20251231-3</li><!-- [^n82] -->
+        <li id="nota-83">INE, IPVA, tabla 59005; nota metodológica</li><!-- [^n83] -->
+        <li id="nota-84">ECV 2025, INE; <code>docs/decisiones.md</code>, 18-11-2026</li><!-- [^n84] -->
+        <li id="nota-85">RD 326/2026, art. 133.1.e, BOE-A-2026-8872</li><!-- [^n85] -->
+        <li id="nota-86">RD 326/2026, arts. 133 y 135</li><!-- [^n86] -->
+        <li id="nota-87">ECV, INE</li><!-- [^n87] -->
+      </ol>
+    </section>
+
+    <section class="capitulo" id="referencias">
+      <h2>Referencias</h2>
+      <ul class="lista-fuentes"><li>SERPAVI, base de datos 2011-2024, vivienda colectiva. Origen de los datos: Ministerio de Vivienda y Agenda Urbana, actualizado el 2026-07-09 (fuente: <a href="https://cdn.mivau.gob.es/portal-web-mivau/vivienda/serpavi/2026-03_09_bd_SERPAVI_2011-2024%20-%20DEFINITIVO%20WEB_v2.xlsx">MIVAU</a>).</li>
+<li>Atlas de Distribución de Renta de los Hogares, tabla 31097, actualizada el 2026-10-15, y Censo anual de población, tabla 68542, actualizada el 2025-12-02. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/jaxiT3/Tabla.htm?t=31097">INE</a>).</li>
+<li>Bono Alquiler Joven 2022, actualizado el 2026-02-03. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/ff697366-36f4-41a1-a966-f5ccf3b6db7c">portal de datos abiertos</a>).</li>
+<li>Censo de Población 2021, personas por régimen de tenencia y edad, consulta a medida con referencia a 1-1-2021, hecha el 2026-11-16. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/Censo2021/">INE</a>).</li>
+<li>Normas del Bono Alquiler Joven 2022: Acuerdo del Consejo de Gobierno de 14-09-2022 (extracto BOCM-20220920-16, apartados Primero y Quinto: edad de 18 a 35 años, tope de 600 o 900 € según el Anexo II y concesión mientras haya crédito disponible; texto completo en BDNS 648964); Orden de 6-11-2023 (BOCM-20231114-19), que declara agotado el crédito, y Orden de 1-08-2024 (BOCM-20240816-2), que excluye por no reunir los requisitos o por crédito agotado (art. 9 del Acuerdo) (fuente: <a href="https://www.bocm.es/bocm-20220920-16">BOCM</a>).</li>
+<li>Encuesta de Condiciones de Vida 2025, microdatos. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/dyngs/INEbase/operacion.htm?c=Estadistica_C&amp;cid=1254736176807">INE</a>).</li>
+<li>Censo anual de población, matriz de municipio de residencia por municipio de trabajo (ocupados de 2023), publicada el 2025-12-02. Elaboración propia con datos extraídos del sitio web del INE: www.ine.es (fuente: <a href="https://www.ine.es/metodologia/t20/matriz_ocu_anonim.xlsb">INE</a>).</li>
+<li>Sueldos de los titulares: Encuesta Anual de Estructura Salarial (tablas 28191 y 28201), Encuesta de Estructura Salarial 2022 (tablas 36846 y 36850) y Encuesta Trimestral de Coste Laboral (tabla 6061), INE; SMI del Real Decreto 126/2026 (BOE-A-2026-3815); nóminas de 2026 de la Comunidad de Madrid (BOCM-20260209-6) y jornada del SERMAS (Ley 6/2011, DA 1.ª, BOE-A-2012-2980) (fuente: <a href="https://www.ine.es/jaxiT3/Tabla.htm?t=28191">INE</a>).</li>
+<li>Colectivo Empresarial, ocupados por distrito, actualizado el 2025-07-24. Fuente de los datos: Comunidad de Madrid (fuente: <a href="https://datos.comunidad.madrid/dataset/e40b7dd8-f76b-4c93-980e-12d2531a4e71">portal de datos abiertos</a>).</li>
+<li>Real Decreto 326/2026, ayuda al alquiler para la emancipación de las personas jóvenes, arts. 133 y 135 (BOE-A-2026-8872), versión consolidada consultada el 25-11-2026; Madrid aún no ha convocado con él (fuente: <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2026-8872">BOE</a>).</li>
+<li>Bono Alquiler Joven de la ronda 2024: Acuerdo del Consejo de Gobierno de 26-12-2024 (BOCM-20250110-20), con el RD 42/2022 (BOE-A-2022-802), y el IPREM de la Ley 31/2022 (BOE-A-2022-22128), prorrogado (fuente: <a href="https://www.bocm.es/boletin/CM_Orden_BOCM/2025/01/10/BOCM-20250110-20.PDF">BOCM</a>).</li>
+<li>Tarifas del transporte de 2026 (BOCM-20251231-3) y precios de 2026 con el descuento (BOCM-20251231-2), desde el 1-2-2013 (BOCM-20130130-9) y de las coronas B3, C1 y C2 desde el 1-1-2022 (BOCM-20211217-35); descuento de 2026 del Real Decreto-ley 17/2025 (BOE-A-2025-26459). Basado en datos de la Agencia Estatal Boletín Oficial del Estado (fuente: <a href="https://www.bocm.es/boletin/CM_Orden_BOCM/2025/12/31/BOCM-20251231-3.PDF">BOCM</a>).</li></ul>
+      <p>Ni el Ministerio de Vivienda y Agenda Urbana, ni el INE, ni la Comunidad de Madrid participan en este proyecto ni lo patrocinan.</p>
+    </section>
+  </main>
+  <!-- Definiciones de las notas para el control de cifras con fuente:
+[^n1]: SERPAVI y ADRH, 2024
+[^n2]: ECV 2025, INE
+[^n3]: Bloque simulacion
+[^n4]: SERPAVI, MIVAU, y ADRH, INE, 2024
+[^n5]: SERPAVI y ADRH, 2015-2024
+[^n6]: datos/analisis.json, bloque titulares
+[^n7]: Bono Alquiler Joven 2022; bono_inferencia.json
+[^n8]: datos/analisis.json, bloque simulacion
+[^n9]: datos/zonas.geojson
+[^n10]: datos/analisis.json y datos/alquiler.json
+[^n11]: datos/tiempos.json, nota metodológica
+[^n12]: SERPAVI, MIVAU; ADRH, INE; elaboración propia
+[^n13]: ADRH, INE
+[^n14]: SERPAVI, MIVAU
+[^n15]: SERPAVI, elaboración propia
+[^n16]: SERPAVI y ADRH, 2024, elaboración propia
+[^n17]: docs/decisiones.md, 23-11-2026
+[^n18]: SERPAVI y ADRH, elaboración propia
+[^n19]: SERPAVI y ADRH, 2015-2024, elaboración propia
+[^n20]: LIRPF, DL 1/2010 de Madrid, Orden PJC/297/2026; datos/netos.json
+[^n21]: SERPAVI, MIVAU; IPC, INE; datos/alquiler.json
+[^n22]: BOCM-20251231-2; GTFS del CRTM con r5py; datos/tarifas.json y datos/tiempos.json
+[^n23]: Encuesta de Presupuestos Familiares 2025, Comunidad de Madrid; datos/hogares.json
+[^n24]: RD 126/2026; EAES y EES, INE; BOCM-20260209-6
+[^n25]: ETCL, INE
+[^n26]: BOCM-20260209-6
+[^n27]: Elaboración propia
+[^n28]: docs/decisiones.md, 18-11-2026
+[^n29]: ADRH y ECV, INE; elaboración propia
+[^n30]: Bono Alquiler Joven 2022, Comunidad de Madrid; Censo anual de población, INE
+[^n31]: Bono Alquiler Joven 2022, Comunidad de Madrid
+[^n32]: Bono Alquiler Joven 2022
+[^n33]: Bono Alquiler Joven 2022, elaboración propia
+[^n34]: Bono 2022 y SERPAVI, elaboración propia
+[^n35]: Bono 2022; Censo anual, INE; elaboración propia
+[^n36]: Bono 2022, Censo anual, SERPAVI y ADRH
+[^n37]: Bono 2022 y Censo anual, INE
+[^n38]: bono_inferencia.json
+[^n39]: Censo 2021, INE; bono_inferencia.json
+[^n40]: Acuerdo de 26-12-2024, arts. 4.1.a, 4.1.d, 4.4 y 5, texto completo en BDNS 805618, extracto en BOCM-20250110-20; RD 42/2022, arts. 6.1.a, 6.1.d, 6.4 y 8; Ley 31/2022, DA 90.ª, prorrogada por el art. 134.4 de la CE; el IPREM va referido a 14 pagas
+[^n41]: SERPAVI, MIVAU; IPC, INE; Acuerdo, art. 10.g
+[^n42]: Índice H+T del Center for Neighborhood Technology; ETCL, INE; supuestos propios
+[^n43]: simulacion.py, supuestos 11 y 12
+[^n44]: Matriz de residencia por trabajo, INE
+[^n45]: docs/decisiones.md, 21-11-2026
+[^n46]: Bloque simulacion, columnas marca_*
+[^n47]: RDL 17/2025, art. 8; BOCM-20251231-3 y BOCM-20251231-2
+[^n48]: RDL 17/2025, art. 8.b
+[^n49]: BOCM-20251231-3 y BOCM-20251231-2; elaboración propia
+[^n50]: RDL 17/2025, art. 3
+[^n51]: tests/test_neto.py, nota metodológica
+[^n52]: tests/test_transporte.py
+[^n53]: Nota metodológica
+[^n54]: SERPAVI (MIVAU) y ADRH (INE), 2024
+[^n55]: SERPAVI y ADRH
+[^n56]: datos/analisis.json
+[^n57]: SERPAVI (MIVAU) y ADRH (INE), 2015-2024
+[^n58]: Metodología del SERPAVI, MIVAU
+[^n59]: SERPAVI y ADRH, sin la fila de Madrid entero
+[^n60]: Metodología del SERPAVI, MIVAU, 18-03-2026, §3.1
+[^n61]: Bloque titulares
+[^n62]: Microdatos de la ECV 2025, INE; elaboración propia
+[^n63]: Encuesta de Condiciones de Vida 2025, microdatos, INE; elaboración propia
+[^n64]: Bono Alquiler Joven 2022; SERPAVI y ADRH
+[^n65]: Bloque simulacion; elaboración propia
+[^n66]: datos/analisis.json y datos/alquiler.json; elaboración propia
+[^n67]: Bloque simulacion, criterios horas_viaje y horas_viaje_sin_imputar
+[^n68]: ETCL, INE; bloque titulares
+[^n69]: Bloque simulacion, criterios con _bruto
+[^n70]: BOCM-20240806-11; RDL 2/2023; elaboración propia
+[^n71]: datos/analisis.json, bloque simulacion; BOCM-20251231-2 y BOCM-20251231-3
+[^n72]: RDL 17/2025, art. 8, BOE-A-2025-26459
+[^n73]: BOCM-20251231-2 y BOCM-20251231-3
+[^n74]: RDL 17/2025, arts. 7 y 8
+[^n75]: datos/alquiler.json, SERPAVI
+[^n76]: docs/decisiones.md, 25-11-2026, y docs/informe/guion.md
+[^n77]: Calendario del INE; docs/decisiones.md, 20-11-2026
+[^n78]: Orden de 1-08-2024, BOCM-20240816-2
+[^n79]: SERPAVI, MIVAU, recuento de inmuebles por zona
+[^n80]: BOCM-20240816-2
+[^n81]: Acuerdo de 26-12-2024, BDNS 805618
+[^n82]: Bloque simulacion; BOCM-20251231-2 y BOCM-20251231-3
+[^n83]: INE, IPVA, tabla 59005; nota metodológica
+[^n84]: ECV 2025, INE; docs/decisiones.md, 18-11-2026
+[^n85]: RD 326/2026, art. 133.1.e, BOE-A-2026-8872
+[^n86]: RD 326/2026, arts. 133 y 135
+[^n87]: ECV, INE
+  -->
+  <script type="module" src="informe.js"></script>
+</body>
+</html>
