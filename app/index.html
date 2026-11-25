@@ -30,12 +30,12 @@
     <section class="bloque heroe" aria-labelledby="titulo-portada">
       <div class="heroe-texto">
       <h1 id="titulo-portada" tabindex="-1">Cuánto te sobra al mes, zona a zona.</h1>
-      <p class="entradilla">Antes de elegir dónde vivir, dinos tu sueldo, tu hogar y dónde trabajas. Kuanto resta el alquiler, el transporte y la cesta básica en cada zona de la Comunidad de Madrid y te pinta en un mapa lo que te queda.</p>
+      <p class="entradilla">Antes de elegir dónde vivir, dinos tu sueldo, con quién vives y dónde trabajas. Kuanto resta el alquiler, el transporte y la cesta básica en cada zona de la Comunidad de Madrid y te pinta en un mapa lo que te queda.</p>
       <div class="acciones-heroe">
         <a href="saber-mas.html" class="boton-secundario">Saber más</a>
         <button type="button" class="boton-principal" data-ir-herramienta>Ver cuánto me sobra</button>
       </div>
-      <p class="aparte">Sin registro: lo que escribes no sale de tu navegador. Con datos oficiales del INE, Hacienda, el Ministerio de Vivienda y el Consorcio de Transportes.</p>
+      <p class="aparte">Sin registro: lo que escribes no sale de tu navegador. Con datos públicos del INE, la Agencia Tributaria, el Ministerio de Vivienda, el Consorcio de Transportes y la Comunidad de Madrid.</p>
       </div>
       <figure id="plano" class="plano">
         <div class="plano-lienzo"></div>
@@ -43,7 +43,7 @@
       </figure>
       <ul class="cifras-heroe">
         <li><span class="cifra">199</span> zonas: los otros 178 municipios y los 21 distritos de la capital <span class="fuente">fuente: datos/zonas.geojson</span></li>
-        <li><span class="cifra">1 de cada 3</span> hogares que viven de alquiler en la Comunidad dedica más del 40 % de lo que ingresa a la vivienda: el 36,0 % <span class="fuente">estimado; fuente: ECV 2025, INE</span></li>
+        <li><span class="cifra">1 de cada 3</span> hogares que viven de alquiler en la Comunidad dedica más del 40 % de lo que ingresa a la vivienda: el 36,0 %, entre 28,6 y 43,4 %. Por zona aún no se puede medir <span class="fuente">estimado; fuente: ECV 2025, INE; elaboración propia</span></li>
       </ul>
     </section>
 
@@ -51,7 +51,7 @@
       <div class="dato-texto">
         <h2 id="titulo-dato">El alquiler no pesa lo mismo en todas partes.</h2>
         <p class="destacado"><span class="cifra-grande">24,0 %</span> de la renta media del hogar: eso supone el alquiler mediano en Puente de Vallecas y en Centro; en la zona mediana, el 15,3 % (fuente: SERPAVI y ADRH, 2024, <code>datos/analisis.json</code>).</p>
-        <p>Si vives solo y cobras el SMI, en 18 de las 158 zonas con alquiler el sueldo no te llega para el alquiler mediano, el abono y la cesta media con alquiler, entre 8 y 33 según el alquiler de la zona, mirando la mediana entre los destinos a los que llega cada una (estimado; fuente: <code>datos/analisis.json</code>).</p>
+        <p>Si vives solo y cobras el SMI, en 18 de las 158 zonas con alquiler no llegas a fin de mes después de pagar el alquiler mediano, el transporte y la cesta media; son entre 8 y 33 según lo caro que sea el piso (estimado; fuente: <code>datos/analisis.json</code>).</p>
         <p>Y vivir más lejos no siempre sale a cuenta: para esa misma persona, la hora extra de viaje rinde al menos lo que su hora de trabajo solo en 1.218 de los 8.620 pares de zonas con ruta, alquiler y más viaje que la de referencia, el 14,1 % (estimado; fuente: <code>datos/analisis.json</code>).</p>
         <a href="saber-mas.html#perfiles">Mira cómo cambia según el sueldo y el hogar</a>
       </div>
@@ -89,8 +89,8 @@
       <p class="formula">
         <span>Sueldo neto</span><span class="operador">−</span><span>Alquiler</span><span class="operador">−</span><span>Transporte</span><span class="operador">−</span><span>Cesta básica</span><span class="operador">=</span><strong>Lo que sobra</strong>
       </p>
+      <p><strong>Un ejemplo:</strong> una persona de 30 años que vive sola, gana 24.000 € brutos al año y trabaja en Getafe. Con un piso de 69 m² de precio mediano, si vive en Getafe le sobran unos 291 € al mes, entre 123 y 429 € según lo que cueste el piso; en Parla, unos 467 €, a cambio de unas 26 horas de viaje al mes en vez de 12; en el distrito Centro le faltan unos 378 € (estimado; fuente: cálculo de Kuanto con los valores por defecto de la web, <code>docs/como-funciona.md</code>).</p>
       <div class="notas-calculo">
-        <p><strong>Un ejemplo:</strong> una persona de 30 años que vive sola, gana 24.000 € brutos al año y trabaja en Getafe. Si vive en Getafe le sobran unos 291 € al mes; en Parla, unos 467 €, a cambio de unas 26 horas de viaje al mes en vez de 12; en el distrito Centro le faltan unos 378 € (estimado; fuente: cálculo de Kuanto con los valores por defecto de la web, <code>docs/como-funciona.md</code>).</p>
         <p><strong>Los tiempos</strong> son la mediana de las salidas entre las 7:30 y las 8:30 de un martes laborable, andando y en transporte público, desde el centro de población de cada zona hasta el de tu trabajo.</p>
         <p><strong>El alquiler</strong> es el precio por metro cuadrado de los contratos por la superficie de tu vivienda, 69 m² si no la cambias, actualizado con el IPC de alquiler y llevado al precio de los contratos nuevos con la Estadística de viviendas declaradas en el IRPF 2024 de la Agencia Tributaria (estimado; fuente: SERPAVI, INE y AEAT, <code>datos/hogares.json</code> y <code>datos/alquiler.json</code>).</p>
         <p><strong>La cesta básica</strong> es lo que gastan de media los hogares de Madrid en comida, suministros, internet y móvil, ajustado al tamaño del tuyo (estimado; fuente: Encuesta de Presupuestos Familiares del INE, catálogo de la Comunidad de Madrid).</p>
@@ -98,22 +98,23 @@
     </section>
 
     <section class="bloque fiarse" aria-labelledby="titulo-fiarse">
-      <h2 id="titulo-fiarse">Lo que Kuanto no sabe, te lo dice.</h2>
+      <h2 id="titulo-fiarse">Dónde puede equivocarse Kuanto.</h2>
       <ul class="avisos-portada">
         <li>Lo que sale de un cálculo lleva la marca «estimado», y la ficha de cada zona te da una horquilla: te sobran entre una cifra y otra.</li>
         <li>Una zona con menos de 70 viviendas con alquiler declarado lleva borde punteado en el mapa: su mediana es imprecisa (fuente: SERPAVI, <code>datos/alquiler.json</code>).</li>
-        <li>El alquiler de los contratos declarados es un suelo del precio actual.</li>
+        <li>El alquiler de los contratos declarados es un suelo del precio actual, así que lo que te sobra puede ser menos.</li>
+        <li>La cuenta solo resta el alquiler, el transporte público y la cesta básica: no entran la fianza, el coche, la guardería ni el ocio.</li>
         <li>En 2.405 de los 11.179 pares de zonas con ruta (21,5 %) el tiempo mejora con líneas u horarios que el CRTM publica sin viajes o con horas imposibles y que se reconstruyeron; esos tiempos pueden ser más cortos que los reales y el fichero no dice cuáles (estimado; fuente: <code>datos/tiempos.json</code>).</li>
         <li>Si falta el alquiler o no hay ruta en 120 minutos, la zona sale en gris y nunca como cero (fuente: <code>datos/tiempos.json</code>).</li>
         <li>El neto supone tributación individual y contrato indefinido, y solo se calcula entre 12.000 y 120.000 € brutos al año (fuente: <code>datos/netos.json</code>).</li>
       </ul>
-      <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en <a href="saber-mas.html#fuentes">cómo funciona</a>.</p>
+      <p class="fuentes-portada">Datos abiertos de la Comunidad de Madrid, el INE, la Agencia Tributaria, el Ministerio de Vivienda y Agenda Urbana (SERPAVI) y el CRTM, y © OpenStreetMap contributors (ODbL). Cada fuente, con su licencia, está en <a href="saber-mas.html#fuentes">cómo funciona</a>.</p>
     </section>
 
     <section class="bloque cierre lamina" aria-labelledby="titulo-cierre">
       <div class="cierre-plano" aria-hidden="true"></div>
       <h2 id="titulo-cierre">¿Cuánto te sobra a ti?</h2>
-      <p class="entradilla">Con tres datos (tu sueldo, tu hogar y dónde trabajas) ves el mapa entero de la Comunidad. Sin registro.</p>
+      <p class="entradilla">Con tres datos (tu sueldo, con quién vives y dónde trabajas) ves el mapa entero de la Comunidad. Sin registro.</p>
       <button type="button" class="boton-principal" data-ir-herramienta>Ver cuánto me sobra</button>
     </section>
   </article>
