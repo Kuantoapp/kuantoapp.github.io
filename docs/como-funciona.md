@@ -32,7 +32,19 @@ Una persona de 30 años que vive sola, gana 24.000 € brutos al año y trabaja 
 
 Fuente: cálculo de Kuanto (`mesobra.calculo`) sobre los ficheros de `app/datos/` del 2026-11-24, con los valores por defecto de la web (piso de 69 m², tarifas de 2026 con descuento, alquiler de un contrato nuevo); estimado, porque el neto se calcula con la normativa, el alquiler se actualiza con el IPC y se ajusta a contrato nuevo, y las horas salen de un simulador. Con lo que pagan los inquilinos actuales sobrarían unos 435 €, 574 € y −127 €.
 
-Parla le deja más dinero que Getafe, pero a cambio de más horas de viaje. Kuanto pone las dos cifras juntas para que cada cual decida qué le compensa. La web también da una horquilla del sobrante, porque el alquiler de una zona no es un precio único.
+Así sale, paso a paso, la cifra de Getafe (en euros al mes; estimado, misma fuente):
+
+```
+  1.616,80  sueldo neto
+−   895,88  alquiler de un piso de 69 m² con contrato nuevo
+−    19,30  transporte (títulos de 10 viajes, lo más barato para esos trayectos)
+−   410,36  cesta básica
+=   291,26  lo que sobra
+```
+
+Parla le deja más dinero que Getafe, pero a cambio de más horas de viaje. Kuanto pone las dos cifras juntas para que cada cual decida qué le compensa.
+
+La web da además una horquilla del sobrante, porque en una misma zona hay pisos baratos y caros. En Getafe va de unos 123 € al mes, si el piso está entre los caros de la zona, a unos 429 €, si está entre los baratos (estimado, misma fuente). La cifra central, 291 €, es la de un piso de precio mediano: la mitad de los pisos de la zona cuesta más y la otra mitad, menos.
 
 ### Qué quiere decir «12,7 € por cada hora extra»
 
@@ -74,11 +86,13 @@ Si usas el asistente MCP de Kuanto, la cuenta también se hace en tu equipo. Per
 
 Algunas cifras no son un dato publicado tal cual, sino el resultado de un modelo o de un supuesto: el alquiler llevado a 2026 con el IPC, el ajuste a contrato nuevo, la cesta por tamaño de hogar o parte de los tiempos de viaje. Esas cifras llevan la marca «estimado». Lo que no se sabe no se inventa: las zonas sin alquiler publicado salen en gris.
 
+Un ejemplo de estimación: el último alquiler publicado es de 2024. Según el IPC del alquiler de la Comunidad, entre la media de 2024 y octubre de 2026 los alquileres subieron un 6,9 %, así que el precio de 2024 se multiplica por 1,069 para llevarlo a hoy (estimado; fuente: `alquiler.json`, INE). Es una aproximación razonable, pero no un precio que alguien haya publicado para 2026, y por eso se avisa.
+
 ## Lo que Kuanto no sabe
 
-- El alquiler sale de contratos declarados, no de anuncios, así que es un suelo: firmar hoy suele costar más.
+- El alquiler sale de contratos declarados, no de anuncios, así que es un suelo: lo mínimo razonable que pagarías, no lo que verás en un portal. Firmar hoy suele costar más.
 - El neto supone tributación individual y no incluye deducciones como la de alquiler de Madrid para menores de 40 años, así que en esos casos el neto real puede ser mayor.
-- Los tiempos de viaje salen de un simulador. No los leas al minuto.
+- Los tiempos de viaje salen de un simulador que no da exactamente lo mismo dos veces: en dos cálculos iguales, algún trayecto llega a cambiar 7 minutos (fuente: [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)). Fíate de las horas al mes y de las diferencias grandes entre zonas, no de un minuto arriba o abajo.
 
 La lista completa, con cifras y fuentes, está en [Supuestos](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos) y [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites) de la nota metodológica.
 

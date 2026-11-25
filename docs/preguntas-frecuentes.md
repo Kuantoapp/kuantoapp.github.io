@@ -16,7 +16,7 @@ Porque no son un dato publicado tal cual, sino el resultado de un modelo o de un
 
 ## ¿Por qué mi zona sale en gris?
 
-Porque no hay alquiler publicado para ella o no hay ruta en transporte público en el tiempo máximo que se calcula. En vez de inventar una cifra, Kuanto la deja sin dato. «Sin ruta» no siempre quiere decir que no haya transporte: a veces falta el horario de una línea en los datos del Consorcio. En el mapa del precio de la hora, el que se ve al abrir, una zona también sale en gris claro si tardas casi lo mismo que desde la zona de referencia (menos de 5 horas al mes de diferencia), y la referencia va en blanco ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites), [cómo leer los colores](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-colores)).
+Porque no hay alquiler publicado para ella o no hay ruta en transporte público en menos de 120 minutos, el tiempo máximo que se calcula. En vez de inventar una cifra, Kuanto la deja sin dato. «Sin ruta» no siempre quiere decir que no haya transporte: a veces falta el horario de una línea en los datos del Consorcio. En el mapa del precio de la hora, el que se ve al abrir, una zona también sale en gris claro si tardas casi lo mismo que desde la zona de referencia (menos de 5 horas al mes de diferencia), y la referencia va en blanco ([Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites), [cómo leer los colores](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-colores)).
 
 ## El alquiler de mi zona me parece bajo. ¿Está mal?
 
@@ -38,7 +38,27 @@ Sirve para comparar zonas entre sí con la misma vara, no para hacer tu presupue
 
 ## ¿Por qué mi neto no coincide con mi nómina?
 
-Kuanto da el neto del año entre 12, aunque cobres en 14 pagas, y usa la cuota anual del IRPF, no la retención de la nómina. Tampoco incluye deducciones personales como la de alquiler de Madrid para menores de 40 años. El total del año debería ser parecido; la nómina de cada mes, no ([Por qué la cuota anual y no la retención](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-cuota)).
+Kuanto da el neto del año entre 12, aunque cobres en 14 pagas, y usa la cuota anual del IRPF, no la retención de la nómina. Tampoco resta deducciones como la de familia numerosa o la de alquiler de Madrid para menores de 40 años. El total del año debería ser parecido; la nómina de cada mes, no ([Por qué la cuota anual y no la retención](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-cuota)).
+
+## ¿Me dice Kuanto dónde tengo que vivir?
+
+No. Te dice cuánto dinero te queda y cuánto tiempo pasas viajando en cada zona, con las mismas reglas para todas, para que compares con datos. Lo demás lo decides tú: la familia y los amigos cerca, los colegios, el tipo de barrio o lo que te guste. Kuanto quita incertidumbre a una parte de la decisión; no la toma por ti ([Cómo funciona Kuanto](como-funciona.md)).
+
+## ¿Por qué no sale mi barrio, solo mi municipio o mi distrito?
+
+Porque es el nivel al que los datos son fiables para todas las piezas a la vez. Kuanto usa el alquiler por municipio y por distrito. También se publica por sección censal, pero en trozos tan pequeños hay tan pocos alquileres declarados que la cifra dependería de unos pocos pisos. Ya con zonas enteras, 39 de las 199 tienen menos de 70 alquileres declarados y se marcan como imprecisas (fuente: [Límites](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-limites)). Dentro de tu zona, la horquilla te da una idea de cuánto varía el precio de un piso a otro.
+
+## ¿Sirve si vivo en pareja, con hijos o en un piso compartido?
+
+Sí. El formulario tiene cuatro perfiles: persona sola, piso compartido, pareja con dos sueldos y familia monoparental. Puedes indicar hasta 5 hijos, si sois familia numerosa, los metros del piso y cuántos hogares pagáis el alquiler. En pareja, cada sueldo lleva su propio lugar de trabajo, y Kuanto suma los dos viajes. La cesta y el transporte se ajustan a cada caso, por ejemplo con el Abono Joven de los hijos de 15 a 25 años ([Supuestos](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-supuestos)).
+
+## ¿Y si teletrabajo algunos días o voy en coche?
+
+Puedes elegir de 1 a 5 días presenciales a la semana: con menos días, el viaje cuenta menos horas, y el título de transporte más barato puede cambiar, por ejemplo de un abono mensual a bonos de 10 viajes. También puedes elegir el coche. Entonces se cuentan 0,26 € por kilómetro, el coste que Hacienda acepta sin tributar, sin aparcamiento, peajes ni atascos, así que el coste real y el tiempo en hora punta serán mayores (fuente: [Qué se calcula](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-calculo), Orden HFP/792/2023).
+
+## ¿Qué pasa si se acaba el descuento del abono?
+
+Los precios del transporte de 2026 llevan un descuento (ayuda del Estado del RDL 17/2025 más la aportación de la Comunidad y los ayuntamientos) que solo está aprobado para ese año. En «Otros escenarios» del formulario puedes ver la cuenta con el precio oficial sin descuento. En el ejemplo de [Cómo funciona](como-funciona.md#un-ejemplo), a quien vive en Parla le sobrarían unos 19 € menos al mes (estimado; fuente: cálculo de Kuanto sobre `tarifas.json`). El [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html#titulo-descuento) estudia qué pasaría en toda la Comunidad.
 
 ## ¿Puedo reutilizar los datos?
 
