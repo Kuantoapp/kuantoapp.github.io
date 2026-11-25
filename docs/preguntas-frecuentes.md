@@ -38,7 +38,7 @@ Sirve para comparar zonas entre sí con la misma vara, no para hacer tu presupue
 
 ## ¿Por qué mi neto no coincide con mi nómina?
 
-Kuanto da el neto del año entre 12, aunque cobres en 14 pagas, y usa la cuota anual del IRPF, no la retención de la nómina. Tampoco incluye deducciones personales como la de alquiler de Madrid para menores de 40 años. El total del año debería ser parecido; la nómina de cada mes, no ([Por qué la cuota anual y no la retención](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-cuota)).
+Kuanto da el neto del año entre 12, aunque cobres en 14 pagas, y usa la cuota anual del IRPF, no la retención de la nómina. Tampoco resta deducciones como la de familia numerosa o la de alquiler de Madrid para menores de 40 años. El total del año debería ser parecido; la nómina de cada mes, no ([Por qué la cuota anual y no la retención](https://yeraybc.github.io/DataMad-hackaton-2026/metodologia.html#titulo-cuota)).
 
 ## ¿Me dice Kuanto dónde tengo que vivir?
 
@@ -58,7 +58,7 @@ Puedes elegir de 1 a 5 días presenciales a la semana: con menos días, el viaje
 
 ## ¿Qué pasa si se acaba el descuento del abono?
 
-Los precios del transporte de 2026 llevan un descuento estatal que solo está aprobado para ese año (RDL 17/2025). En «Otros escenarios» del formulario puedes ver la cuenta con el precio oficial sin descuento. En el ejemplo de [Cómo funciona](como-funciona.md#un-ejemplo), a quien vive en Parla le sobrarían unos 19 € menos al mes (estimado; fuente: cálculo de Kuanto sobre `tarifas.json`). El [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html#titulo-descuento) estudia qué pasaría en toda la Comunidad.
+Los precios del transporte de 2026 llevan un descuento (ayuda del Estado del RDL 17/2025 más la aportación de la Comunidad y los ayuntamientos) que solo está aprobado para ese año. En «Otros escenarios» del formulario puedes ver la cuenta con el precio oficial sin descuento. En el ejemplo de [Cómo funciona](como-funciona.md#un-ejemplo), a quien vive en Parla le sobrarían unos 19 € menos al mes (estimado; fuente: cálculo de Kuanto sobre `tarifas.json`). El [informe de análisis](https://yeraybc.github.io/DataMad-hackaton-2026/informe.html#titulo-descuento) estudia qué pasaría en toda la Comunidad.
 
 ## ¿Puedo reutilizar los datos?
 

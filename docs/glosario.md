@@ -39,7 +39,7 @@ Los términos que salen en Kuanto y en su documentación, explicados en una o do
 ## Kuanto por dentro
 
 - **Estimado:** la marca de las cifras que salen de un modelo o de un supuesto en vez de un dato publicado tal cual.
-- **Horquilla:** el rango entre un alquiler barato y uno caro de la misma zona, que da un sobrante alto y uno bajo. Técnicamente son los cuartiles 25 y 75: de cada cuatro pisos de la zona, uno cuesta menos que el extremo barato, uno más que el caro y dos están entre medias.
+- **Horquilla:** el rango entre un alquiler barato y uno caro de la misma zona, que da un sobrante alto y uno bajo. Técnicamente son los cuartiles 25 y 75 (en una zona estimada, el intervalo de la estimación si es más ancho): de cada cuatro pisos de la zona, uno cuesta menos que el extremo barato, uno más que el caro y dos están entre medias.
 - **Zona de referencia:** la zona con la que se compara el resto en el precio de la hora. Por defecto es la zona desde la que menos tardas en llegar al trabajo, y en el formulario se puede cambiar, por ejemplo por donde vives ahora.
 - **Precio de la hora:** cuánto dinero ganas (o pierdes) al mes por cada hora más de viaje si vives en una zona en vez de en la de referencia. Es lo que pinta el mapa al abrir. Explicado con un ejemplo en [Cómo funciona](como-funciona.md#qué-quiere-decir-127--por-cada-hora-extra).
 - **API estática:** los ficheros de datos que publica Kuanto en la web, que cualquiera puede descargar y que la propia web lee. No hay servidor ni base de datos detrás.

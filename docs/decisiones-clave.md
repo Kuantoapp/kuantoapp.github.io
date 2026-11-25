@@ -16,7 +16,7 @@ Las decisiones que dan forma a Kuanto, en lenguaje llano y agrupadas por tema. E
 
 ## El cálculo
 
-- **El neto, con la declaración de la renta (2026-11-15).** Se usa la cuota anual del IRPF, lo que de verdad se paga, y no la retención de la nómina. No se restan deducciones personales, así que, si tienes alguna, tu neto real será igual o algo mayor que el de Kuanto: el error, si lo hay, va del lado prudente.
+- **El neto, con la declaración de la renta (2026-11-15).** Se usa la cuota anual del IRPF, lo que de verdad se paga, y no la retención de la nómina. No se restan deducciones como la de familia numerosa o las autonómicas (por ejemplo, la de Madrid por alquiler), así que, si tienes alguna, tu neto real será igual o mayor que el de Kuanto: el error, si lo hay, va del lado prudente.
 - **El alquiler, como si firmaras hoy (2026-11-20).** La cifra principal usa el precio de un contrato nuevo, que suele ser más alto que lo que pagan los inquilinos de siempre. Lo que pagan estos últimos sale como referencia. La horquilla va del alquiler barato al caro de la zona.
 - **El transporte, por la ruta real (2026-11-15 y 2026-11-18).** Se busca el título más barato para el recorrido de cada persona, con las coronas que cruza y los descuentos de su colectivo (joven, familia numerosa, discapacidad).
 - **Tiempos de viaje con r5py (2026-11-15).** Se calculan con los horarios reales del Consorcio de Transportes. Las líneas que el Consorcio publica sin horarios se reconstruyen y se marcan como estimadas.
