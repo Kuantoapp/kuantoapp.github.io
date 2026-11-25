@@ -584,6 +584,7 @@ a { color: var(--acento); text-underline-offset: 2px; }
   #portada .cifras-heroe .cifra { font-size: clamp(40px, min(6.5vw, 7svh), 80px); }
 }
 @media (min-width: 56.0625rem) and (max-height: 42rem) {
+  #portada .heroe { padding-block: 16px; }
   #portada .cifras-heroe { margin-top: 8px; padding-top: 12px; font-size: 14px; }
 }
 
