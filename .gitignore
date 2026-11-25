@@ -16,3 +16,6 @@ data/*
 *.joblib
 *.h5
 CLAUDE.local.md
+
+# Corto del pitch: pesa más de 5 MB y no se versiona (docs/pitch/guion.md)
+docs/pitch/video/
