@@ -38,7 +38,7 @@ El tiempo de viaje entra en la rama 2 (cap. 6), porque se mide sobre cada sueldo
 | 6 | Con el SMI no sobra nada en 18 de 158 zonas (entre 8 y 33), y vivir más lejos rara vez compensa: el ahorro llega al neto por hora en 1 de cada 7 pares | G8 |
 | 7 | Uno de cada tres hogares inquilinos (36 %, entre 29 y 43 %) dedica a la vivienda más del 40 % de su renta; por zona, todavía no se puede medir | G10 |
 | 8 | La proporción aceptada del Bono no depende del esfuerzo de alquiler (p = 0,82): hay más rechazos donde más se pide, y que se pida más donde el alquiler pesa más es solo un indicio | G6, G7 |
-| 9 | Con un piso de 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope en 16 municipios, 14 por menos de 80 €; para un joven con el sueldo mediano, cómo se definan los ingresos decide si cumple en 122 municipios o en ninguno | G11, G12 |
+| 9 | Con un piso de 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope en 16 municipios, 14 por menos de 80 €; para un joven con el sueldo mediano, medir los ingresos con la base imponible o con el bruto decide si cumple en 122 municipios o en ninguno | G11, G12 |
 | 10 | Si en 2027 no se prorroga el descuento del abono, ir a trabajar costará entre 9 y 33 € más al mes | G13 |
 | 11 | Recomendaciones a la Administración, ordenadas por solidez de la evidencia | — |
 | 12 | Las cifras tienen error y el informe lo dibuja: el umbral de 70 alquileres declarados, clases más estrechas que el error y una validación declarada para cada resultado, también las que no pasaron | G14 |

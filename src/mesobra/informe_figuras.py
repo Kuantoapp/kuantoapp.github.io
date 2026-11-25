@@ -573,10 +573,13 @@ def _fila_forest(ax: plt.Axes, yi: float, f: pd.Series, globos: dict) -> None:
 
 def g07_forest(bi: dict, ruta: Path) -> None:
     d = especificaciones(bi)
+    p = d.set_index("modelo")[
+        "p"
+    ]  # por nombre: reordenar las filas no cambia qué se comprueba
     if (
-        round(d.at[0, "p"], 3) != 0.043
-        or round(d.at[7, "p"], 2) != 0.22
-        or round(d.at[5, "p"], 2) != 0.17
+        round(p["Error espacial heterocedástico, 5 vecinos (principal)"], 3) != 0.043
+        or round(p["Con % de jóvenes en alquiler, 5 vecinos (112)"], 2) != 0.22
+        or round(p["Mínimos cuadrados, errores robustos HAC"], 2) != 0.17
     ):
         raise ValueError(
             "Las p de bono_inferencia.json no son las publicadas (0,043, 0,17 y 0,22)"

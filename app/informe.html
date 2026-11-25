@@ -68,7 +68,7 @@
       <h3>Recomendaciones, de un vistazo</h3>
       <ol class="recomendaciones-breve">
         <li><a href="#r1">Publicar por municipio el motivo del rechazo del Bono</a></li>
-        <li><a href="#r2">Definir en el Acuerdo del Bono qué ingresos cuentan</a></li>
+        <li><a href="#r2">Concretar qué renta cuenta en el Bono para quien no presenta la declaración</a></li>
         <li><a href="#r3">Anunciar pronto si se prorroga el descuento del abono en 2027</a></li>
         <li><a href="#r4">Publicar el alquiler de los contratos nuevos y por sección censal</a></li>
         <li><a href="#r5">Medir la sobrecarga por zona con una fuente que lo permita</a></li>
@@ -319,7 +319,7 @@
       <details class="detalle"><summary>Detalle técnico: sobrecarga</summary>
               <div class="capas">
         <p class="destacado"><span class="cifra-grande">36,0 %</span> De los hogares que viven de alquiler en la Comunidad de Madrid, el 36,0 % dedica a la vivienda más del 40 % de su renta, con un intervalo del 95 % de 28,6 a 43,4 (fuente: Encuesta de Condiciones de Vida 2025, microdatos, INE; elaboración propia; estimado).</p>
-        <p>Es una cifra para toda la Comunidad. La encuesta no permite bajar a municipio ni a distrito: en la muestra hay 562 hogares inquilinos de la región (fuente: ECV 2025, INE).</p>
+        <p>Es una cifra para toda la Comunidad. La encuesta no permite bajar a municipio ni a distrito: en la muestra hay 580 hogares inquilinos de la región, 562 con gasto de vivienda (fuente: microdatos de la ECV 2025, INE; elaboración propia).</p>
         <details><summary>Por qué no hay mapa de la sobrecarga</summary>
           <p>Se intentó estimar la sobrecarga por zona combinando la renta del Atlas de Distribución de Renta con el alquiler del SERPAVI. Antes de ejecutarlo se fijó un control: el agregado de la Comunidad tenía que caer dentro del intervalo de la ECV. No cayó. Por eso no se publica ni la cifra ni la tabla por zona (fuente: <code>docs/decisiones.md</code>, 18-11-2026).</p>
           <p>La causa principal es la renta de los inquilinos. Dentro de cada sección censal, la renta de todos los hogares tiene una dispersión parecida a la de los inquilinos de toda la región, y al fijar la media eso deja la mediana de los inquilinos un 11 % por debajo de la de la ECV (fuente: ADRH y ECV, INE; elaboración propia; estimado). Pesan menos el alquiler, unos 3 puntos, y la escala de equivalencia de los hogares, unos 2 (fuente: elaboración propia; estimado).</p>
@@ -391,13 +391,13 @@
 
     <section class="bloque capitulo" id="simulacion" aria-labelledby="titulo-simulacion">
       <p class="capitulo-n">Capítulo 9</p><!-- sin-fuente: número de capítulo -->
-      <h2 id="titulo-simulacion">Con un piso de 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope del Bono en 16 municipios, 14 por menos de 80 €; y cómo se definan los ingresos decide si un joven cumple en 122 municipios o en ninguno</h2><!-- [^sim] -->
+      <h2 id="titulo-simulacion">Con un piso de 69 m² al alquiler mediano, quien cobra el SMI pasaría del tope del Bono en 16 municipios, 14 por menos de 80 €; y medir los ingresos con la base imponible o con el bruto decide si un joven cumple en 122 municipios o en ninguno</h2><!-- [^sim] -->
       <div class="esencial">
         <h3>Lo esencial</h3>
         <ul>
           <li>Quien vive solo con el SMI cumpliría el Bono vigente en 122 de 138 municipios; en los 16 restantes el alquiler pasa del tope, en 14 por menos de 80 € al mes (fuente: bloque <code>simulacion</code>; estimado).</li>
           <li>Madrid queda fuera por 79,51 € con la mediana de la ciudad, aunque 8 de sus 21 distritos están por debajo del tope (fuente: bloque <code>simulacion</code>; estimado).</li>
-          <li>Para la pareja y el joven con el sueldo mediano, el Acuerdo no dice qué ingresos cuentan: con la base imponible cumplen en 122 municipios, con el bruto en ninguno (fuente: bloque <code>simulacion</code>; estimado).</li>
+          <li>Para la pareja y el joven con el sueldo mediano, cómo se midan los ingresos lo decide todo: con la base imponible, la del art. 10.g del Acuerdo para quien declara, cumplen en 122 municipios; con el bruto, en ninguno (fuente: bloque <code>simulacion</code>; estimado).</li>
         </ul>
       </div>
       <figure class="grafico" id="g11" aria-labelledby="t-g11">
@@ -414,7 +414,7 @@
       </figure>
       <aside class="implica" aria-label="Qué implica">
         <h3>Qué implica para la Administración</h3>
-        <p>Los dos ajustes más baratos de la ayuda no cuestan dinero: aclarar qué ingresos cuentan y revisar un tope que deja fuera a municipios por pocos euros. Ver las <a href="#r2">recomendaciones 2</a> y <a href="#r7">7</a>.</p><!-- sin-fuente: números de recomendación -->
+        <p>Los dos ajustes más baratos de la ayuda no cuestan dinero: concretar qué renta cuenta para quien no declara y revisar un tope que deja fuera a municipios por pocos euros. Ver las <a href="#r2">recomendaciones 2</a> y <a href="#r7">7</a>.</p><!-- sin-fuente: números de recomendación -->
       </aside>
       <details class="detalle"><summary>Detalle técnico: simulación del Bono</summary>
               <div class="dato">
@@ -430,7 +430,7 @@
           </ul>
         </details>
         <details><summary>Qué se mide</summary>
-          <p>El criterio vigente es el de la ronda de 2024 en Madrid: de 18 a 35 años, ingresos de hasta tres veces el IPREM, 25.200 € al año, y un alquiler de hasta 600 €, o 900 € en los 55 municipios del Anexo II (fuente: Acuerdo de 26-12-2024, BOCM-20250110-20, arts. 4.1.d y 4.4; RD 42/2022, art. 6.4; Ley 31/2022, DA 90.ª, prorrogada por el art. 134.4 de la CE). El alquiler es el mediano del SERPAVI actualizado con el IPC para 69 m², y los ingresos, la base imponible del IRPF (fuente: SERPAVI, MIVAU; IPC, INE; supuesto propio; estimado).</p>
+          <p>El criterio vigente es el de la ronda de 2024 en Madrid: de 18 a 35 años, ingresos de hasta tres veces el IPREM, 25.200 € al año, y un alquiler de hasta 600 €, o 900 € en los 55 municipios del Anexo II (fuente: Acuerdo de 26-12-2024, texto completo en BDNS 805618; extracto BOCM-20250110-20, arts. 4.1.a, 4.1.d y 5; RD 42/2022, arts. 6.1.a, 6.1.d y 8; Ley 31/2022, DA 90.ª, prorrogada por el art. 134.4 de la CE). El alquiler es el mediano del SERPAVI actualizado con el IPC para 69 m², y los ingresos, la base imponible del IRPF (fuente: SERPAVI, MIVAU; IPC, INE; supuesto propio; estimado).</p>
           <p>Se comparan dos criterios alternativos, simulados e ilustrativos; no son una propuesta. Los dos quitan el tope y añaden un requisito: que el alquiler y el transporte pasen del 45 % del neto del hogar, o que lo hagan sumando además las horas de viaje de más, valoradas a 9,76 € la hora (fuente: índice H+T del Center for Neighborhood Technology; ETCL, INE; supuestos propios; estimado).</p>
         </details>
         <details><summary>Qué sale con los criterios alternativos</summary>
@@ -439,8 +439,8 @@
           <p>El valor de 9,76 € por hora de viaje es un supuesto, el 32,5 % del coste laboral por hora de Madrid, y es más alto que el neto por hora de quien cobra el SMI, 8,80 € (fuente: ETCL, INE; bloque <code>titulares</code>; estimado). En la sección de los sueldos de referencia, la hora de viaje se compara con el neto por hora: son dos valores del tiempo distintos.</p>
         </details>
         <details><summary>La pareja, el joven y la enfermera</summary>
-          <p>La pareja y el joven entran o no según cómo se midan los ingresos, que el Acuerdo no define. Con la base imponible cumplen el criterio vigente en 122 municipios; con el sueldo bruto, en ninguno (fuente: bloque <code>simulacion</code>, criterios con <code>_bruto</code>; estimado). Por eso se dan siempre como banda. La pareja no se compara entre criterios: los ingresos que cuentan son los de una persona y el esfuerzo es el del hogar.</p>
-          <p>La enfermera está en el umbral: con su nómina de 2024, su base imponible supera el límite en 6,84 € al año con la cotización de 2026 que aplica el modelo, y en 15,57 € con la de 2024; unas cuotas sindicales o colegiales de al menos 15,57 € al año (6,84 € con el modelo) la dejarían dentro, porque el límite es «igual o inferior» (LIRPF, art. 19.2.d) (fuente: BOCM-20240806-11; RDL 2/2023; elaboración propia; estimado). Al joven, medido con el bruto, le pasa lo mismo por 9,48 € (fuente: elaboración propia; estimado).</p>
+          <p>La pareja y el joven entran o no según cómo se midan los ingresos. El Acuerdo parte de la base imponible general y del ahorro del IRPF (art. 10.g), pero para quien no presenta la declaración remite al certificado de imputaciones sin concretar qué cifra cuenta. Con la base imponible cumplen el criterio vigente en 122 municipios; con el sueldo bruto, en ninguno (fuente: bloque <code>simulacion</code>, criterios con <code>_bruto</code>; estimado). Por eso se dan siempre como banda. La pareja no se compara entre criterios: los ingresos que cuentan son los de una persona y el esfuerzo es el del hogar.</p>
+          <p>La enfermera está en el umbral: con su nómina de 2024, su base imponible supera el límite en 6,84 € al año con la cotización de 2026 que aplica el modelo, y en 15,57 € con la de 2024; unas cuotas sindicales o colegiales de al menos 15,57 € al año (6,84 € con el modelo) la dejarían dentro, porque el límite es «iguales o inferiores» (Acuerdo, art. 4.1.d) y las cuotas restan de la base (LIRPF, art. 19.2.d) (fuente: BOCM-20240806-11; RDL 2/2023; elaboración propia; estimado). Al joven, medido con el bruto, le pasa lo mismo por 9,48 € (fuente: elaboración propia; estimado).</p>
         </details>
         <details><summary>Límites y validación</summary>
           <p>Los 69 m² son mucho para quien vive solo: suben su alquiler y hacen que más municipios pasen del tope. El alquiler mediano del SERPAVI incluye contratos antiguos y es un suelo del precio de hoy (fuente: <code>simulacion.py</code>, supuestos 11 y 12).</p>
@@ -505,12 +505,12 @@
           </dl>
         </li>
         <li class="ficha-rec" id="r2">
-          <h3>Definir en el Acuerdo del Bono qué ingresos cuentan</h3>
+          <h3>Concretar qué renta cuenta en el Bono para quien no presenta la declaración</h3>
           <p class="evidencia solida">Evidencia sólida, en una simulación</p>
           <dl>
-            <div><dt>Qué hacer</dt><dd>Decir en la próxima convocatoria si el límite de tres veces el IPREM se compara con la base imponible, con el sueldo bruto o con otra renta.</dd></div>
+            <div><dt>Qué hacer</dt><dd>Decir en la próxima convocatoria qué cifra del certificado de imputaciones se compara con el límite de tres veces el IPREM cuando no hay declaración, igual que el art. 10.g lo hace para quien declara (fuente: Acuerdo de 26-12-2024, BDNS 805618).</dd></div>
             <div><dt>A quién compete</dt><dd>Consejería de Vivienda, al redactar el Acuerdo del Consejo de Gobierno.</dd></div>
-            <div><dt>Lo sostiene</dt><dd>Para un joven o una pareja con el sueldo mediano, la respuesta cambia el resultado de 122 municipios a ninguno (fuente: bloque <code>simulacion</code>; estimado). El Acuerdo de 26-12-2024 solo habla de «rentas anuales» e «información del IRPF» (arts. 4.1.d y 4.4) y no dice qué renta cuenta para un asalariado (<a href="#simulacion">cap. 9</a>).</dd></div>
+            <div><dt>Lo sostiene</dt><dd>Para un joven o una pareja con el sueldo mediano, la respuesta cambia el resultado de 122 municipios a ninguno (fuente: bloque <code>simulacion</code>; estimado). El Acuerdo de 26-12-2024 parte de la base imponible general y del ahorro (art. 10.g), pero para quien no presenta la declaración remite al certificado de imputaciones sin concretar la cifra (<a href="#simulacion">cap. 9</a>).</dd></div>
             <div><dt>Coste</dt><dd>Nulo: es una frase en la norma.</dd></div>
           </dl>
         </li>

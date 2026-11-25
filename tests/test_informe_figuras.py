@@ -92,3 +92,20 @@ def test_especificaciones_en_rechazadas_por_punto():
     d = f.especificaciones(bi)
     assert len(d) == 9  # sin SAR, SLX ni SDEM: su β no es el efecto
     assert d.loc[0, ["b", "lo", "hi"]].round(3).tolist() == [1.0, 0.804, 1.196]
+
+
+def test_ic_esfuerzo_falla_si_se_pierde_una_zona():
+    tabla = pd.DataFrame(
+        {"zona_id": ["a", "b"], "anio": [2024, 2024], "esfuerzo": [0.15, 0.2]}
+    )
+    zona = pd.DataFrame(
+        {
+            "zona_id": ["a"],
+            "anio": [2024],
+            "testigos": [100],
+            "cuantia_p25": [500.0],
+            "cuantia_p75": [800.0],
+        }
+    )
+    with pytest.raises(ValueError, match="1 zonas"):
+        f.ic_esfuerzo(tabla, zona, 2024)

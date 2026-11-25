@@ -80,7 +80,7 @@ async function insertar(figura) {
   });
 }
 
-for (const f of document.querySelectorAll("figure.grafico")) insertar(f).catch(() => {}); // sin red, se queda la imagen
+for (const f of document.querySelectorAll("figure.grafico")) insertar(f).catch((e) => console.warn("gráfico sin interacción:", e)); // sin red, se queda la imagen
 
 // En papel no hay clic: el detalle técnico se imprime abierto (?imprimir lo abre para generar el PDF sin diálogo).
 const detalles = () => document.querySelectorAll("main details:not(.valores):not([open])");

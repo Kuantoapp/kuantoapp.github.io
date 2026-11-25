@@ -47,7 +47,7 @@ Abreviaturas de origen: **AJ** = `app/datos/analisis.json`; **BI** = `data/proce
 | Lo que rinde la hora extra, mediana (cuartiles) en €/h: SMI −0,34 (−5,65 a 4,99); teleoperador −0,18 (−5,30 a 5,25); pareja −0,33 (−4,23 a 3,41); madre, joven y enfermera −0,34 (−5,65 a 4,99) (G8) | AJ `titulares` | E |
 | Ahorro por hora extra con el SMI: 1,90 a 4,65 € en B3, C1 y C2; −8,30 € en A | INF; AJ | E |
 | Zonas con sobrante negativo: SMI 18 de 158 (8 a 33); teleoperador 18 (8 a 30); madre 7 (0 a 14); joven 2 (0 a 8); pareja 0; enfermera 0 (hasta 3) | INF; AJ | E |
-| Sobrecarga de inquilinos: 36,0 % [28,6; 43,4]; 562 hogares en la muestra | INF; DEC 2026-11-18 | E |
+| Sobrecarga de inquilinos: 36,0 % [28,6; 43,4]; 580 hogares inquilinos en la muestra, 562 con gasto de vivienda | INF; DEC 2026-11-18 | E |
 | Modelo por zona: 47,2 % (47,0–47,3), fuera del intervalo; renta de inquilinos −11 % | DEC 2026-11-18; INF | E |
 
 ## Bono Alquiler Joven (cap. 8 y 9)
