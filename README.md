@@ -74,6 +74,7 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 | Si quieres… | Empieza por |
 |---|---|
 | Entender qué hace Kuanto, con un ejemplo | [Cómo funciona Kuanto](docs/como-funciona.md) y [preguntas frecuentes](docs/preguntas-frecuentes.md) |
+| Ver en qué se diferencia de preguntar a una IA | [Kuanto frente a preguntar a una IA](docs/kuanto-frente-a-ia.md) |
 | Saber qué significa un término | [Glosario](docs/glosario.md) |
 | Saber de qué fuente sale cada pieza | [Datos y fuentes](docs/datos-y-fuentes.md) |
 | Saber por qué Kuanto es como es | [Decisiones clave](docs/decisiones-clave.md) |

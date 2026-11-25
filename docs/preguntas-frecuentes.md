@@ -40,7 +40,7 @@ Sí. El código es abierto (MIT) y un comando regenera los datos de la web desde
 
 ## ¿Puedo preguntarle a un asistente de IA?
 
-Sí, con el servidor MCP de Kuanto, que da a un asistente las mismas cifras que la web, con sus fuentes y supuestos ([Asistente MCP](reproducir.md#5-asistente-mcp)).
+Sí. Orienta bien sobre dónde mirar, pero en [nuestra prueba](kuanto-frente-a-ia.md) falló en el neto y en alguna zona tarifaria, y no se podía saber de dónde salía cada importe. Con el servidor MCP de Kuanto el asistente recibe las mismas cifras que la web, con sus fuentes y supuestos ([Asistente MCP](reproducir.md#5-asistente-mcp)). Ten en cuenta que lo que escribas en un asistente en la nube, sueldo incluido, llega a su proveedor.
 
 ## He encontrado un error. ¿Dónde aviso?
 

@@ -65,7 +65,9 @@ La cuenta final está escrita dos veces, en Python (`src/mesobra/calculo.py`) y 
 
 ## 5. Asistente MCP
 
-`mesobra-mcp` es un servidor [MCP](https://modelcontextprotocol.io/) local (stdio) con tres herramientas: `calcular_sobrante`, `ranking_zonas` e `indicadores_zona`. Lee los mismos ficheros de `app/datos/` que la web, sin red y sin que el sueldo salga del equipo, y cada respuesta lleva unidades, año del dato, fuentes y supuestos.
+`mesobra-mcp` es un servidor [MCP](https://modelcontextprotocol.io/) local (stdio) con tres herramientas: `calcular_sobrante`, `ranking_zonas` e `indicadores_zona`. Lee los mismos ficheros de `app/datos/` que la web, sin red, y cada respuesta lleva unidades, año del dato, fuentes y supuestos.
+
+La ventaja de combinarlo con una IA es que ella entiende la pregunta y explica, y las cifras las calcula Kuanto con su fuente ([Kuanto frente a preguntar a una IA](kuanto-frente-a-ia.md#kuanto-y-la-ia-juntos-con-mcp)). Sobre la privacidad: el servidor no envía nada, pero lo que escribes en el chat llega al proveedor del modelo. El sueldo solo se queda en tu equipo si el modelo también es local.
 
 Con uv no hace falta clonar nada:
 
