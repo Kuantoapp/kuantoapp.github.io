@@ -77,6 +77,7 @@ El paquete se llama `mesobra` (el nombre de trabajo de Kuanto). Cada módulo hac
 | `vista.js` | Validación del formulario, escalas de color, leyenda y textos, en funciones puras sin DOM |
 | `calculo.js` | La cuenta final, la misma que `src/mesobra/calculo.py` |
 | `saber-mas.html`, `metodologia.html`, `informe.html`, `indice.js` | Las explicaciones públicas y el índice que resalta la sección que se lee |
+| `informe.js`, `informe.pdf`, `img/g01.svg` a `g14.svg` | Los gráficos interactivos del informe técnico (de `mesobra.informe_figuras`) y su versión en PDF |
 | `datos/` | La API estática, descrita en [`app/datos/LEEME.md`](../app/datos/LEEME.md) |
 | `mapa/`, `fuentes/`, `vendor/` | El mapa base, las tipografías y MapLibre, servidos desde la propia web |
 

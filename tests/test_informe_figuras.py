@@ -20,7 +20,10 @@ def test_guardar_pone_globo_accesible_y_escapa(tmp_path):
     ruta = tmp_path / "a.svg"
     f.guardar(fig, ruta, globos)
     svg = ruta.read_text(encoding="utf-8")
-    assert 'tabindex="0"' in svg
+    assert 'class="marca" role="img"' in svg
+    assert (
+        "style=" not in svg and "<style" not in svg
+    )  # la CSP del informe los bloquearía
     assert "<title>Móstoles: 15,3 % &lt;&quot;x&quot;&gt;</title>" in svg
     assert "font-family" in svg and "Instrument Sans" in svg  # texto vivo, no trazos
 

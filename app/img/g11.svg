@@ -2,21 +2,8 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" width="542.929345pt" height="295.735508pt" viewBox="0 0 542.929345 295.735508" xmlns="http://www.w3.org/2000/svg" version="1.1">
- <metadata>
-  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-   <cc:Work>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:format>image/svg+xml</dc:format>
-    <dc:creator>
-     <cc:Agent>
-      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
-     </cc:Agent>
-    </dc:creator>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
  <defs>
-  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+  
  </defs>
  <g id="figure_1">
   <g id="patch_1">
@@ -26,7 +13,7 @@ L 542.929345 0
 L 0 0 
 L 0 295.735508 
 z
-" style="fill: none"/>
+" fill="none"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
@@ -36,194 +23,194 @@ L 535.729345 9.510844
 L 133.969345 9.510844 
 L 133.969345 264.534844 
 z
-" style="fill: none"/>
+" fill="none"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
       <path d="M 133.969345 264.534844 
 L 133.969345 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_2"/>
      <g id="text_1">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="133.969345" y="274.112969" transform="rotate(-0 133.969345 274.112969)">0 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="133.969345" y="274.112969" transform="rotate(-0 133.969345 274.112969)">0 €</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_3">
       <path d="M 198.250945 264.534844 
 L 198.250945 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_4"/>
      <g id="text_2">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="198.250945" y="274.112969" transform="rotate(-0 198.250945 274.112969)">20 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="198.250945" y="274.112969" transform="rotate(-0 198.250945 274.112969)">20 €</text>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_5">
       <path d="M 262.532545 264.534844 
 L 262.532545 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_6"/>
      <g id="text_3">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="262.532545" y="274.112969" transform="rotate(-0 262.532545 274.112969)">40 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="262.532545" y="274.112969" transform="rotate(-0 262.532545 274.112969)">40 €</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_7">
       <path d="M 326.814145 264.534844 
 L 326.814145 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_8"/>
      <g id="text_4">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="326.814145" y="274.112969" transform="rotate(-0 326.814145 274.112969)">60 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="326.814145" y="274.112969" transform="rotate(-0 326.814145 274.112969)">60 €</text>
      </g>
     </g>
     <g id="xtick_5">
      <g id="line2d_9">
       <path d="M 391.095745 264.534844 
 L 391.095745 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_10"/>
      <g id="text_5">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="391.095745" y="274.112969" transform="rotate(-0 391.095745 274.112969)">80 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="391.095745" y="274.112969" transform="rotate(-0 391.095745 274.112969)">80 €</text>
      </g>
     </g>
     <g id="xtick_6">
      <g id="line2d_11">
       <path d="M 455.377345 264.534844 
 L 455.377345 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_12"/>
      <g id="text_6">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="455.377345" y="274.112969" transform="rotate(-0 455.377345 274.112969)">100 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="455.377345" y="274.112969" transform="rotate(-0 455.377345 274.112969)">100 €</text>
      </g>
     </g>
     <g id="xtick_7">
      <g id="line2d_13">
       <path d="M 519.658945 264.534844 
 L 519.658945 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #d9dbe0; stroke-width: 0.6; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#d9dbe0" stroke-width="0.6" stroke-linecap="round"/>
      </g>
      <g id="line2d_14"/>
      <g id="text_7">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #5c6069" x="519.658945" y="274.112969" transform="rotate(-0 519.658945 274.112969)">120 €</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5c6069" x="519.658945" y="274.112969" transform="rotate(-0 519.658945 274.112969)">120 €</text>
      </g>
     </g>
     <g id="text_8">
-     <text style="font-size: 8.5px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #474a52" x="334.849345" y="286.493516" transform="rotate(-0 334.849345 286.493516)">€ al mes en que el alquiler mediano de 69 m² pasa del tope del Bono (estimado)</text>
+     <text font-size="8.5px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#474a52" x="334.849345" y="286.493516" transform="rotate(-0 334.849345 286.493516)">€ al mes en que el alquiler mediano de 69 m² pasa del tope del Bono (estimado)</text>
     </g>
    </g>
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
      <g id="line2d_15"/>
      <g id="text_9">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="28.442219" transform="rotate(-0 130.469345 28.442219)">Pozuelo de Alarcón</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="28.442219" transform="rotate(-0 130.469345 28.442219)">Pozuelo de Alarcón</text>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_16"/>
      <g id="text_10">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="42.082219" transform="rotate(-0 130.469345 42.082219)">Las Rozas de Madrid</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="42.082219" transform="rotate(-0 130.469345 42.082219)">Las Rozas de Madrid</text>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_17"/>
      <g id="text_11">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="55.882219" transform="rotate(-0 130.469345 55.882219)">Madrid</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="55.882219" transform="rotate(-0 130.469345 55.882219)">Madrid</text>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_18"/>
      <g id="text_12">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="69.682219" transform="rotate(-0 130.469345 69.682219)">Majadahonda</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="69.682219" transform="rotate(-0 130.469345 69.682219)">Majadahonda</text>
      </g>
     </g>
     <g id="ytick_5">
      <g id="line2d_19"/>
      <g id="text_13">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="83.642219" transform="rotate(-0 130.469345 83.642219)">Villaviciosa de Odón</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="83.642219" transform="rotate(-0 130.469345 83.642219)">Villaviciosa de Odón</text>
      </g>
     </g>
     <g id="ytick_6">
      <g id="line2d_20"/>
      <g id="text_14">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="97.282219" transform="rotate(-0 130.469345 97.282219)">Boadilla del Monte</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="97.282219" transform="rotate(-0 130.469345 97.282219)">Boadilla del Monte</text>
      </g>
     </g>
     <g id="ytick_7">
      <g id="line2d_21"/>
      <g id="text_15">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="127.642219" transform="rotate(-0 130.469345 127.642219)">Valdemorillo</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="127.642219" transform="rotate(-0 130.469345 127.642219)">Valdemorillo</text>
      </g>
     </g>
     <g id="ytick_8">
      <g id="line2d_22"/>
      <g id="text_16">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="141.442219" transform="rotate(-0 130.469345 141.442219)">Hoyo de Manzanares</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="141.442219" transform="rotate(-0 130.469345 141.442219)">Hoyo de Manzanares</text>
      </g>
     </g>
     <g id="ytick_9">
      <g id="line2d_23"/>
      <g id="text_17">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="155.242219" transform="rotate(-0 130.469345 155.242219)">Manzanares el Real</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="155.242219" transform="rotate(-0 130.469345 155.242219)">Manzanares el Real</text>
      </g>
     </g>
     <g id="ytick_10">
      <g id="line2d_24"/>
      <g id="text_18">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="169.042219" transform="rotate(-0 130.469345 169.042219)">Sevilla la Nueva</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="169.042219" transform="rotate(-0 130.469345 169.042219)">Sevilla la Nueva</text>
      </g>
     </g>
     <g id="ytick_11">
      <g id="line2d_25"/>
      <g id="text_19">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="182.842219" transform="rotate(-0 130.469345 182.842219)">Villalbilla</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="182.842219" transform="rotate(-0 130.469345 182.842219)">Villalbilla</text>
      </g>
     </g>
     <g id="ytick_12">
      <g id="line2d_26"/>
      <g id="text_20">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="197.312219" transform="rotate(-0 130.469345 197.312219)">El Álamo</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="197.312219" transform="rotate(-0 130.469345 197.312219)">El Álamo</text>
      </g>
     </g>
     <g id="ytick_13">
      <g id="line2d_27"/>
      <g id="text_21">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="210.442219" transform="rotate(-0 130.469345 210.442219)">Navacerrada</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="210.442219" transform="rotate(-0 130.469345 210.442219)">Navacerrada</text>
      </g>
     </g>
     <g id="ytick_14">
      <g id="line2d_28"/>
      <g id="text_22">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="224.242219" transform="rotate(-0 130.469345 224.242219)">Pedrezuela</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="224.242219" transform="rotate(-0 130.469345 224.242219)">Pedrezuela</text>
      </g>
     </g>
     <g id="ytick_15">
      <g id="line2d_29"/>
      <g id="text_23">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="238.042219" transform="rotate(-0 130.469345 238.042219)">Collado Mediano</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="238.042219" transform="rotate(-0 130.469345 238.042219)">Collado Mediano</text>
      </g>
     </g>
     <g id="ytick_16">
      <g id="line2d_30"/>
      <g id="text_24">
-      <text style="font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #5c6069" x="130.469345" y="251.842219" transform="rotate(-0 130.469345 251.842219)">El Molar</text>
+      <text font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5c6069" x="130.469345" y="251.842219" transform="rotate(-0 130.469345 251.842219)">El Molar</text>
      </g>
     </g>
    </g>
    <g id="line2d_31">
     <path d="M 133.969345 25.242844 
 L 481.861364 25.242844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #474a52; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#474a52" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t0" class="marca" tabindex="0" role="img" aria-label="Pozuelo de Alarcón: 108,24 € al mes por encima del tope de 900 € (estimado)"><title>Pozuelo de Alarcón: 108,24 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t0" class="marca" role="img" aria-label="Pozuelo de Alarcón: 108,24 € al mes por encima del tope de 900 € (estimado)"><title>Pozuelo de Alarcón: 108,24 € al mes por encima del tope de 900 € (estimado)</title>
     <defs>
      <path id="m1b30bf09e7" d="M 0 3 
 C 0.795609 3 1.55874 2.683901 2.12132 2.12132 
@@ -235,28 +222,28 @@ C -2.683901 -1.55874 -3 -0.795609 -3 0
 C -3 0.795609 -2.683901 1.55874 -2.12132 2.12132 
 C -1.55874 2.683901 -0.795609 3 0 3 
 z
-" style="stroke: #ffffff; stroke-width: 0.8"/>
+" stroke="#ffffff" stroke-width="0.8"/>
     </defs>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m1b30bf09e7" x="481.861364" y="25.242844" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m1b30bf09e7" x="481.861364" y="25.242844" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_32">
     <path d="M 133.969345 39.042844 
 L 418.736833 39.042844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #474a52; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#474a52" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t1" class="marca" tabindex="0" role="img" aria-label="Las Rozas de Madrid: 88,60 € al mes por encima del tope de 900 € (estimado)"><title>Las Rozas de Madrid: 88,60 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t1" class="marca" role="img" aria-label="Las Rozas de Madrid: 88,60 € al mes por encima del tope de 900 € (estimado)"><title>Las Rozas de Madrid: 88,60 € al mes por encima del tope de 900 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m1b30bf09e7" x="418.736833" y="39.042844" style="fill: #474a52; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m1b30bf09e7" x="418.736833" y="39.042844" fill="#474a52" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_33">
     <path d="M 133.969345 52.842844 
 L 389.520846 52.842844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t2" class="marca" tabindex="0" role="img" aria-label="Madrid: 79,51 € al mes por encima del tope de 900 € (estimado)"><title>Madrid: 79,51 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t2" class="marca" role="img" aria-label="Madrid: 79,51 € al mes por encima del tope de 900 € (estimado)"><title>Madrid: 79,51 € al mes por encima del tope de 900 € (estimado)</title>
     <defs>
      <path id="m8c2d921bd3" d="M 0 3 
 C 0.795609 3 1.55874 2.683901 2.12132 2.12132 
@@ -268,220 +255,220 @@ C -2.683901 -1.55874 -3 -0.795609 -3 0
 C -3 0.795609 -2.683901 1.55874 -2.12132 2.12132 
 C -1.55874 2.683901 -0.795609 3 0 3 
 z
-" style="stroke: #ffffff; stroke-width: 0.8"/>
+" stroke="#ffffff" stroke-width="0.8"/>
     </defs>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="389.520846" y="52.842844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="389.520846" y="52.842844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_34">
     <path d="M 133.969345 66.642844 
 L 372.80763 66.642844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t3" class="marca" tabindex="0" role="img" aria-label="Majadahonda: 74,31 € al mes por encima del tope de 900 € (estimado)"><title>Majadahonda: 74,31 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t3" class="marca" role="img" aria-label="Majadahonda: 74,31 € al mes por encima del tope de 900 € (estimado)"><title>Majadahonda: 74,31 € al mes por encima del tope de 900 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="372.80763" y="66.642844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="372.80763" y="66.642844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_35">
     <path d="M 133.969345 80.442844 
 L 300.876519 80.442844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t4" class="marca" tabindex="0" role="img" aria-label="Villaviciosa de Odón: 51,93 € al mes por encima del tope de 900 € (estimado)"><title>Villaviciosa de Odón: 51,93 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t4" class="marca" role="img" aria-label="Villaviciosa de Odón: 51,93 € al mes por encima del tope de 900 € (estimado)"><title>Villaviciosa de Odón: 51,93 € al mes por encima del tope de 900 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="300.876519" y="80.442844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="300.876519" y="80.442844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_36">
     <path d="M 133.969345 94.242844 
 L 236.755623 94.242844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t5" class="marca" tabindex="0" role="img" aria-label="Boadilla del Monte: 31,98 € al mes por encima del tope de 900 € (estimado)"><title>Boadilla del Monte: 31,98 € al mes por encima del tope de 900 € (estimado)</title>
+   <g id="t5" class="marca" role="img" aria-label="Boadilla del Monte: 31,98 € al mes por encima del tope de 900 € (estimado)"><title>Boadilla del Monte: 31,98 € al mes por encima del tope de 900 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="236.755623" y="94.242844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="236.755623" y="94.242844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_37">
     <path d="M 133.969345 124.602844 
 L 377.24306 124.602844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t7.2" class="marca" tabindex="0" role="img" aria-label="Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)"><title>Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t7.2" class="marca" role="img" aria-label="Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)"><title>Valdemorillo: 75,69 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="377.24306" y="124.602844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="377.24306" y="124.602844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_38">
     <path d="M 133.969345 138.402844 
 L 362.490433 138.402844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t8.2" class="marca" tabindex="0" role="img" aria-label="Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)"><title>Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t8.2" class="marca" role="img" aria-label="Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)"><title>Hoyo de Manzanares: 71,10 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="362.490433" y="138.402844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="362.490433" y="138.402844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_39">
     <path d="M 133.969345 152.202844 
 L 303.737051 152.202844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t9.2" class="marca" tabindex="0" role="img" aria-label="Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)"><title>Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t9.2" class="marca" role="img" aria-label="Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)"><title>Manzanares el Real: 52,82 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="303.737051" y="152.202844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="303.737051" y="152.202844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_40">
     <path d="M 133.969345 166.002844 
 L 298.88379 166.002844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t10.2" class="marca" tabindex="0" role="img" aria-label="Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)"><title>Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t10.2" class="marca" role="img" aria-label="Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)"><title>Sevilla la Nueva: 51,31 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="298.88379" y="166.002844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="298.88379" y="166.002844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_41">
     <path d="M 133.969345 179.802844 
 L 238.973339 179.802844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t11.2" class="marca" tabindex="0" role="img" aria-label="Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)"><title>Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t11.2" class="marca" role="img" aria-label="Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)"><title>Villalbilla: 32,67 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="238.973339" y="179.802844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="238.973339" y="179.802844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_42">
     <path d="M 133.969345 193.602844 
 L 237.302017 193.602844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t12.2" class="marca" tabindex="0" role="img" aria-label="El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)"><title>El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t12.2" class="marca" role="img" aria-label="El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)"><title>El Álamo: 32,15 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="237.302017" y="193.602844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="237.302017" y="193.602844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_43">
     <path d="M 133.969345 207.402844 
 L 218.1461 207.402844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t13.2" class="marca" tabindex="0" role="img" aria-label="Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)"><title>Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t13.2" class="marca" role="img" aria-label="Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)"><title>Navacerrada: 26,19 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="218.1461" y="207.402844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="218.1461" y="207.402844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_44">
     <path d="M 133.969345 221.202844 
 L 217.149735 221.202844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t14.2" class="marca" tabindex="0" role="img" aria-label="Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)"><title>Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t14.2" class="marca" role="img" aria-label="Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)"><title>Pedrezuela: 25,88 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="217.149735" y="221.202844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="217.149735" y="221.202844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_45">
     <path d="M 133.969345 235.002844 
 L 212.52146 235.002844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t15.2" class="marca" tabindex="0" role="img" aria-label="Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)"><title>Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t15.2" class="marca" role="img" aria-label="Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)"><title>Collado Mediano: 24,44 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="212.52146" y="235.002844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="212.52146" y="235.002844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_46">
     <path d="M 133.969345 248.802844 
 L 155.85723 248.802844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke: #0b4f9c; stroke-opacity: 0.8; stroke-width: 1.4; stroke-linecap: round"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke="#0b4f9c" stroke-opacity="0.8" stroke-width="1.4" stroke-linecap="round"/>
    </g>
-   <g id="t16.2" class="marca" tabindex="0" role="img" aria-label="El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)"><title>El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)</title>
+   <g id="t16.2" class="marca" role="img" aria-label="El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)"><title>El Molar: 6,81 € al mes por encima del tope de 600 € (estimado)</title>
     <g clip-path="url(#pf6803f61c2)">
-     <use xlink:href="#m8c2d921bd3" x="155.85723" y="248.802844" style="fill: #0b4f9c; stroke: #ffffff; stroke-width: 0.8"/>
+     <use xlink:href="#m8c2d921bd3" x="155.85723" y="248.802844" fill="#0b4f9c" stroke="#ffffff" stroke-width="0.8"/>
     </g>
    </g>
    <g id="line2d_47">
     <path d="M 391.095745 264.534844 
 L 391.095745 9.510844 
-" clip-path="url(#pf6803f61c2)" style="fill: none; stroke-dasharray: 1.6,1.6; stroke-dashoffset: 0; stroke: #474a52; stroke-width: 0.8"/>
+" clip-path="url(#pf6803f61c2)" fill="none" stroke-dasharray="1.6,1.6" stroke-dashoffset="0" stroke="#474a52" stroke-width="0.8"/>
    </g>
    <g id="line2d_48">
     <path d="M 68.080705 21.102844 
 L 68.080705 98.382844 
-" style="fill: none; stroke: #d9dbe0; stroke-width: 1.2; stroke-linecap: round"/>
+" fill="none" stroke="#d9dbe0" stroke-width="1.2" stroke-linecap="round"/>
    </g>
    <g id="line2d_49">
     <path d="M 68.080705 120.462844 
 L 68.080705 252.942844 
-" style="fill: none; stroke: #d9dbe0; stroke-width: 1.2; stroke-linecap: round"/>
+" fill="none" stroke="#d9dbe0" stroke-width="1.2" stroke-linecap="round"/>
    </g>
    <g id="patch_3">
     <path d="M 133.969345 264.534844 
 L 535.729345 264.534844 
-" style="fill: none; stroke: #d9dbe0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+" fill="none" stroke="#d9dbe0" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
    </g>
    <g id="text_25">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="489.896564" y="27.217062" transform="rotate(-0 489.896564 27.217062)">108,24 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="489.896564" y="27.217062" transform="rotate(-0 489.896564 27.217062)">108,24 €</text>
    </g>
    <g id="text_26">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="426.772033" y="41.017063" transform="rotate(-0 426.772033 41.017063)">88,60 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="426.772033" y="41.017063" transform="rotate(-0 426.772033 41.017063)">88,60 €</text>
    </g>
    <g id="text_27">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="397.556046" y="54.817063" transform="rotate(-0 397.556046 54.817063)">79,51 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="397.556046" y="54.817063" transform="rotate(-0 397.556046 54.817063)">79,51 €</text>
    </g>
    <g id="text_28">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="380.84283" y="68.617063" transform="rotate(-0 380.84283 68.617063)">74,31 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="380.84283" y="68.617063" transform="rotate(-0 380.84283 68.617063)">74,31 €</text>
    </g>
    <g id="text_29">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="308.911719" y="82.417063" transform="rotate(-0 308.911719 82.417063)">51,93 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="308.911719" y="82.417063" transform="rotate(-0 308.911719 82.417063)">51,93 €</text>
    </g>
    <g id="text_30">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="244.790823" y="96.217063" transform="rotate(-0 244.790823 96.217063)">31,98 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="244.790823" y="96.217063" transform="rotate(-0 244.790823 96.217063)">31,98 €</text>
    </g>
    <g id="text_31">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="385.27826" y="126.577063" transform="rotate(-0 385.27826 126.577063)">75,69 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="385.27826" y="126.577063" transform="rotate(-0 385.27826 126.577063)">75,69 €</text>
    </g>
    <g id="text_32">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="370.525633" y="140.377063" transform="rotate(-0 370.525633 140.377063)">71,10 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="370.525633" y="140.377063" transform="rotate(-0 370.525633 140.377063)">71,10 €</text>
    </g>
    <g id="text_33">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="311.772251" y="154.177063" transform="rotate(-0 311.772251 154.177063)">52,82 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="311.772251" y="154.177063" transform="rotate(-0 311.772251 154.177063)">52,82 €</text>
    </g>
    <g id="text_34">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="306.91899" y="167.977063" transform="rotate(-0 306.91899 167.977063)">51,31 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="306.91899" y="167.977063" transform="rotate(-0 306.91899 167.977063)">51,31 €</text>
    </g>
    <g id="text_35">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="247.008539" y="181.777063" transform="rotate(-0 247.008539 181.777063)">32,67 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="247.008539" y="181.777063" transform="rotate(-0 247.008539 181.777063)">32,67 €</text>
    </g>
    <g id="text_36">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="245.337217" y="195.577063" transform="rotate(-0 245.337217 195.577063)">32,15 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="245.337217" y="195.577063" transform="rotate(-0 245.337217 195.577063)">32,15 €</text>
    </g>
    <g id="text_37">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="226.1813" y="209.377063" transform="rotate(-0 226.1813 209.377063)">26,19 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="226.1813" y="209.377063" transform="rotate(-0 226.1813 209.377063)">26,19 €</text>
    </g>
    <g id="text_38">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="225.184935" y="223.177063" transform="rotate(-0 225.184935 223.177063)">25,88 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="225.184935" y="223.177063" transform="rotate(-0 225.184935 223.177063)">25,88 €</text>
    </g>
    <g id="text_39">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="220.55666" y="236.977063" transform="rotate(-0 220.55666 236.977063)">24,44 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="220.55666" y="236.977063" transform="rotate(-0 220.55666 236.977063)">24,44 €</text>
    </g>
    <g id="text_40">
-    <text style="font-size: 7.6px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="163.89243" y="250.777063" transform="rotate(-0 163.89243 250.777063)">6,81 €</text>
+    <text font-size="7.6px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="163.89243" y="250.777063" transform="rotate(-0 163.89243 250.777063)">6,81 €</text>
    </g>
    <g id="text_41">
-    <text style="font-size: 7.4px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #474a52" x="393.667009" y="12.822844" transform="rotate(-0 393.667009 12.822844)">80 € al mes</text>
+    <text font-size="7.4px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#474a52" x="393.667009" y="12.822844" transform="rotate(-0 393.667009 12.822844)">80 € al mes</text>
    </g>
    <g id="text_42">
-    <text style="font-weight: 600; font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #474a52" transform="translate(7.2 57.0205)">Tope de</text>
-    <text style="font-weight: 600; font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #474a52" transform="translate(12.165625 66.622063)">900 €</text>
+    <text font-weight="600" font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" fill="#474a52" transform="translate(7.2 57.0205)">Tope de</text>
+    <text font-weight="600" font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" fill="#474a52" transform="translate(12.165625 66.622063)">900 €</text>
    </g>
    <g id="text_43">
-    <text style="font-weight: 600; font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #474a52" transform="translate(7.2 183.9805)">Tope de</text>
-    <text style="font-weight: 600; font-size: 8px; font-family: 'Instrument Sans', 'DejaVu Sans', sans-serif; fill: #474a52" transform="translate(12.165625 193.582063)">600 €</text>
+    <text font-weight="600" font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" fill="#474a52" transform="translate(7.2 183.9805)">Tope de</text>
+    <text font-weight="600" font-size="8px" font-family="'Instrument Sans', 'DejaVu Sans', sans-serif" fill="#474a52" transform="translate(12.165625 193.582063)">600 €</text>
    </g>
   </g>
  </g>

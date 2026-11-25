@@ -682,3 +682,100 @@ a { color: var(--acento); text-underline-offset: 2px; }
     animation: revela-mapa 1400ms var(--curva) 120ms backwards;
   }
 }
+
+/* Informe técnico en tres capas (#468): estructura de consultora con la identidad de Kuanto. Capítulos, gráficos y
+   recomendaciones se numeran con contadores CSS (el número no es una cifra del texto); el PDF sale de @media print. */
+.tecnico { counter-reset: capitulo grafico; }
+.tecnico h1 { max-width: 20ch; }
+.tecnico .lamina h1 { color: var(--tinta-texto); }
+.tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2, .tecnico .anexos h2 { max-width: 34ch; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.12; }
+.antetitulo { margin: 0 0 24px; color: var(--tinta-acento); font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.ficha { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 16px 32px; margin: 40px 0 0; padding-top: 24px; border-top: 1px solid var(--tinta-linea); }
+.ficha dt { color: var(--tinta-acento); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.ficha dd { margin: 4px 0 0; color: var(--tinta-texto-2); font-size: 15px; }
+.acciones-portada { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+.resumen, .capitulo { counter-increment: capitulo; }
+.capitulo-n { margin: 0 0 12px; color: var(--acento); font-size: 0; font-weight: 600; } /* el número lo pone el contador */
+.capitulo-n::before { content: "Capítulo " counter(capitulo); font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.claves { margin: 32px 0 0; padding: 0; list-style: none; counter-reset: clave; }
+.claves li { position: relative; max-width: 62rem; padding: 20px 0 20px 56px; border-top: 1px solid var(--linea); color: var(--texto-2); counter-increment: clave; }
+.claves li::before { content: counter(clave); position: absolute; left: 0; top: 14px; color: var(--acento); font-family: var(--fuente-titular); font-size: 36px; line-height: 1; }
+.claves strong { color: var(--texto); }
+.cifras-clave { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 24px; margin: 32px 0 40px; }
+.cifras-clave p { margin: 0; padding-top: 16px; border-top: 2px solid var(--acento); color: var(--texto-2); font-size: 15px; }
+.cifras-clave .cifra { display: block; margin-bottom: 8px; color: var(--texto); font-family: var(--fuente-titular); font-size: clamp(36px, 4vw, 48px); line-height: 1; font-variant-numeric: tabular-nums; }
+.scqa { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 24px 32px; margin-bottom: 40px; }
+.scqa h3 { color: var(--acento); }
+.scqa p { margin: 0; color: var(--texto-2); font-size: 16px; }
+.recomendaciones-breve { columns: 2 22rem; column-gap: 32px; margin: 16px 0 0; padding-left: 24px; }
+.recomendaciones-breve li { margin: 0 0 8px; break-inside: avoid; }
+.esencial { max-width: 62rem; margin: 32px 0; padding: 24px 28px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.esencial h3, .implica h3 { margin: 0 0 8px; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+.esencial h3 { color: var(--acento); }
+.esencial ul { margin: 0; padding-left: 20px; color: var(--texto-2); }
+.esencial li { margin: 8px 0; }
+.implica { max-width: 62rem; margin: 32px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--acento); }
+.implica p { margin: 0; color: var(--texto-2); }
+.grafico { counter-increment: grafico; max-width: 56rem; margin: 48px 0; padding: 24px 24px 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); }
+.grafico header { margin-bottom: 16px; }
+.grafico-n { margin: 0 0 4px; color: var(--acento); font-size: 0; font-weight: 600; }
+.grafico-n::before { content: "Gráfico " counter(grafico); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.grafico h3 { margin: 0; font-size: 20px; line-height: 1.25; }
+.grafico-sub { margin: 6px 0 0; color: var(--texto-3); font-size: 14px; }
+.grafico img, .grafico svg { display: block; width: 100%; height: auto; }
+.grafico .marca { cursor: pointer; }
+.grafico .marca:focus { outline: none; }
+.grafico .marca:focus-visible > * { stroke: var(--texto); stroke-width: 2px; }
+.grafico figcaption { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--linea); color: var(--texto-3); font-size: 13px; }
+.grafico figcaption p { max-width: none; margin: 0 0 4px; }
+.grafico .valores ul { max-height: 18rem; margin: 0 0 8px; padding-left: 20px; overflow-y: auto; color: var(--texto-2); font-size: 14px; }
+.globo { position: absolute; z-index: 30; max-width: min(22rem, 100vw - 16px); padding: 8px 12px; background: var(--tinta); color: var(--tinta-texto); border-radius: var(--r-1); font-size: 14px; line-height: 1.35; pointer-events: none; }
+.detalle { max-width: 62rem; margin-top: 24px; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
+.detalle > :not(summary) { color: var(--texto-2); }
+.motor { max-width: 62rem; margin: 32px 0; padding: 0; list-style: none; }
+.motor li { display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid var(--linea); }
+.motor .motor-total { border-top: 2px solid var(--acento); }
+.motor-paso { color: var(--texto); font-family: var(--fuente-titular); font-size: 26px; line-height: 1.1; }
+.motor-total .motor-paso { color: var(--acento); }
+.motor-de { color: var(--texto-2); font-size: 15px; }
+.fichas-rec { display: grid; gap: 24px; margin: 32px 0 0; padding: 0; list-style: none; counter-reset: rec; }
+.ficha-rec { max-width: 62rem; padding: 24px 28px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--r-3); counter-increment: rec; scroll-margin-top: calc(var(--alto-nav) + var(--alto-indice) + 16px); }
+.ficha-rec h3 { margin: 0 0 8px; font-size: 22px; }
+.ficha-rec h3::before { content: counter(rec) ". "; color: var(--acento); }
+.evidencia { display: inline-block; margin: 0 0 16px; padding: 2px 10px; border: 1px solid currentcolor; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.evidencia.solida { color: var(--ganas); }
+.evidencia.indicio { color: var(--diferencia); }
+.evidencia.supuesto { color: var(--texto-3); }
+.ficha-rec dl { display: grid; gap: 12px; margin: 0; }
+.ficha-rec dl div { display: grid; grid-template-columns: 10rem 1fr; gap: 16px; }
+.ficha-rec dt { color: var(--texto-3); font-size: 14px; font-weight: 600; }
+.ficha-rec dd { margin: 0; color: var(--texto-2); font-size: 15px; }
+.anexo { max-width: 62rem; margin-top: 40px; }
+.glosario dt { margin-top: 16px; color: var(--texto); font-weight: 600; }
+.glosario dd { margin: 4px 0 0; color: var(--texto-2); }
+@media (max-width: 40rem) {
+  .motor li, .ficha-rec dl div { grid-template-columns: 1fr; gap: 4px; }
+  .grafico { padding: 16px 12px 12px; }
+  .claves li { padding-left: 40px; }
+}
+@page { size: A4; margin: 16mm 14mm 18mm; }
+@page {
+  @bottom-left { content: "Kuanto · Informe técnico"; font: 8pt sans-serif; color: #5c6069; }
+  @bottom-right { content: counter(page); font: 8pt sans-serif; color: #5c6069; }
+}
+@page :first { @bottom-left { content: none; } @bottom-right { content: none; } }
+@media print {
+  html, body, .pagina { background: #fff; }
+  .navegacion, .indice, .cierre, .acciones-portada, .globo, .grafico .valores { display: none; }
+  .recomendaciones-breve { columns: auto; }
+  .pagina { font-size: 10.5pt; }
+  .pagina .bloque, .pagina .bloque.lamina { width: auto; margin: 0; padding: 0 0 8mm; border: 0; }
+  .pagina .bloque.lamina.portada { min-height: 255mm; padding: 24mm 14mm; border-radius: 0; break-after: page; }
+  .puntos-clave, .resumen, .capitulo, .anexos { break-before: page; }
+  .tecnico .capitulo h2, .tecnico .resumen h2, .tecnico .puntos-clave h2 { font-size: 22pt; }
+  .grafico, .ficha-rec, .esencial, .implica, .motor li, .claves li, .cifras-clave p { break-inside: avoid; }
+  .grafico { margin: 6mm 0; padding: 4mm; }
+  .detalle { border: 0; }
+  .pagina a { color: inherit; text-decoration: none; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

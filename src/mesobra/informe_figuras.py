@@ -102,18 +102,36 @@ def guardar(fig: plt.Figure, ruta: Path, globos: dict) -> None:
         metadata={"Date": None},
     )
     plt.close(fig)
-    svg = ruta.read_text(encoding="utf-8")
+    svg = sin_estilos(ruta.read_text(encoding="utf-8"))
     for gid, texto in globos.items():
         t = html.escape(texto, quote=True)
         svg, n = re.subn(
             f'<g id="{re.escape(gid)}">',
-            f'<g id="{gid}" class="marca" tabindex="0" role="img" aria-label="{t}"><title>{t}</title>',
+            f'<g id="{gid}" class="marca" role="img" aria-label="{t}"><title>{t}</title>',
             svg,
             count=1,
         )
         if n != 1:
             raise ValueError(f"{ruta.name}: la marca {gid} no está en el SVG")
     ruta.write_text(svg, encoding="utf-8")
+
+
+def sin_estilos(svg: str) -> str:
+    """`style="a: b; …"` → atributos de presentación `a="b"`, sin `<style>`: la CSP del informe
+    (`style-src 'self'`) bloquea los estilos en línea del SVG insertado en la página."""
+
+    def atributos(m: re.Match) -> str:
+        pares = (p.split(":", 1) for p in m.group(1).split(";") if p.strip())
+        return " ".join(f'{k.strip()}="{v.strip()}"' for k, v in pares)
+
+    svg = re.sub(r"<style[^>]*>.*?</style>", "", svg, flags=re.DOTALL)
+    svg = re.sub(
+        r"\s*<metadata>.*?</metadata>", "", svg, flags=re.DOTALL
+    )  # RDF de matplotlib, sin uso
+    svg = re.sub(r'style="([^"]*)"', atributos, svg)
+    if "style=" in svg:
+        raise ValueError("Queda un estilo en línea en el SVG")
+    return svg
 
 
 def leer_publicado() -> dict:
@@ -924,10 +942,13 @@ def g12_matriz(sim: pd.DataFrame, ruta: Path) -> None:
 
 
 def g13_descuento(sim: pd.DataFrame, zonas: gpd.GeoDataFrame, ruta: Path) -> None:
-    coronas = zonas[zonas["tipo"] == "municipio"].set_index("municipio_id")["corona"]
+    # Madrid solo está por distritos, todos en la corona A: un municipio por fila, como en pipeline_analisis
+    coronas = zonas.drop_duplicates("municipio_id").set_index("municipio_id")["corona"]
     f = sim[sim["criterio"].str.startswith("fin_")].assign(
         corona=lambda x: x["municipio_id"].map(coronas)
     )
+    if f["corona"].isna().any():
+        raise ValueError("Municipios del fin del descuento sin corona")
     t = f.groupby(["corona", "criterio", "perfil"])["eur_mes"].agg(["min", "max"])
     if (t["min"] != t["max"]).any():
         raise ValueError("El fin del descuento cambia dentro de una corona")
