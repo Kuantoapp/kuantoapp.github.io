@@ -44,7 +44,7 @@ Kuanto compara cada zona con una de referencia: por defecto, la zona desde la qu
 - Te sobran unos 176 € más al mes (467 − 291).
 - Cada hora extra de viaje te deja, por tanto, unos 176 ÷ 13,9 ≈ 12,7 € (estimado; fuente: el ejemplo de arriba).
 
-Para saber si eso es mucho o poco, compáralo con lo que ganas por hora de trabajo. Esta persona cobra unos 10,7 € netos por hora (1.617 € al mes entre 40 horas a la semana durante las 3,78 semanas laborables del mes; estimado, que es lo que la web muestra en la ficha). Cada hora que pasa en el tren hacia Parla le rinde más que una hora trabajando, así que el traslado le sale a cuenta en dinero. Si la cifra fuera de 3 €, estaría cambiando su tiempo muy barato.
+Para saber si eso es mucho o poco, compáralo con lo que ganas por hora de trabajo. Esta persona cobra unos 10,7 € netos por hora (1.617 € al mes entre 40 horas a la semana durante las 3,78 semanas laborables del mes; estimado, que es lo que la web muestra en la ficha). Cada hora de viaje de más hacia Parla le rinde más que una hora trabajando, así que el traslado le sale a cuenta en dinero. Si la cifra fuera de 3 €, estaría cambiando su tiempo muy barato.
 
 Cuando la cifra es negativa, la zona es peor por los dos lados: viajas más y te sobra menos. Es lo que pasa en el distrito Centro: tarda unas 14 horas más que desde Getafe y le sobran unos 669 € menos al mes. Si una zona tarda casi lo mismo que la de referencia (menos de 5 horas de diferencia al mes), no se calcula y sale en gris claro.
 
@@ -52,7 +52,7 @@ Lo que aporta: el alquiler solo, o el sobrante solo, esconden el tiempo. Esta ci
 
 ### Qué es el ajuste a contrato nuevo
 
-El alquiler que publica el SERPAVI es lo que pagan todos los inquilinos que declaran su alquiler a Hacienda, también quienes firmaron hace años y pagan menos que el precio de hoy. Si alguien busca piso ahora, firma un contrato nuevo, y eso suele costar más.
+El alquiler que publica el SERPAVI es lo que se paga en los alquileres declarados a Hacienda, también los firmados hace años, que pagan menos que el precio de hoy. Si alguien busca piso ahora, firma un contrato nuevo, y eso suele costar más.
 
 Para acercarse a ese precio, Kuanto usa una estadística de la Agencia Tributaria que compara, en cada municipio, lo que se paga por metro cuadrado en los contratos firmados en 2024 con lo que se paga en todos los contratos. Si en un municipio los nuevos son un 19 % más caros, el alquiler de esa zona se multiplica por 1,19. Es lo que pasa en Getafe: en el ejemplo, lo que paga un inquilino de siempre ronda los 753 € al mes y un contrato nuevo, los 896 € (estimado; fuente: `alquiler.json`, Agencia Tributaria).
 
@@ -64,11 +64,11 @@ Aun así, la cifra es un suelo y no el precio de un anuncio: sale de contratos d
 
 Para calcular lo que te sobra, Kuanto necesita datos que dicen mucho de ti: cuánto ganas, dónde trabajas, con quién vives y cuántos hijos tienes. Por eso Kuanto nunca los recibe.
 
-Los datos de las 199 zonas ya están calculados y publicados como ficheros abiertos. La web los descarga y hace la última resta en tu dispositivo, con lo que escribes. Lo que escribes no se envía a ningún servidor ni se guarda en ningún sitio. No hay registro, ni cuentas, ni analítica, ni recursos de otras webs, y una vez abierta la página funciona sin conexión ([Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
+Los datos de las 199 zonas ya están calculados y publicados como ficheros abiertos. La web los descarga y hace la última resta en tu dispositivo, con lo que escribes. Lo que escribes no se envía a ningún servidor. Solo queda en tu navegador: en la dirección de la página (para que puedas volver atrás o guardar el enlace) y en la pestaña mientras la tengas abierta. Si compartes el enlace, compartes también lo que escribiste. No hay registro, ni cuentas, ni analítica, ni recursos de otras webs, y una vez abierta la página funciona sin conexión ([Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
 
 La alternativa habitual es preguntar a un chat de inteligencia artificial o rellenar una calculadora en una web. En ese caso, tu sueldo y tu situación familiar viajan a los servidores de otra empresa. Según el servicio y su configuración, pueden quedarse guardados en tu historial, revisarse o usarse para entrenar modelos, y dejas de controlar dónde acaban. Con Kuanto ese riesgo no existe, porque no hay ningún servidor que los reciba. Además, el código es abierto: cualquiera puede comprobar que es así.
 
-Si usas el asistente MCP de Kuanto, la cuenta también se hace en tu equipo. Pero la pregunta que le escribes la lee el asistente de IA que uses, con sus propias condiciones de privacidad.
+Si usas el asistente MCP de Kuanto, la cuenta también se hace en tu equipo. Pero la pregunta que le escribes, con tu sueldo y tu situación, la lee el asistente de IA que uses, con sus propias condiciones de privacidad.
 
 ## Qué significa «estimado»
 

@@ -4,7 +4,7 @@ Las dudas más habituales sobre Kuanto, con una respuesta corta y dónde ampliar
 
 ## ¿Mi sueldo sale de mi ordenador?
 
-No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión ([Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
+No. La web descarga los datos de las zonas y hace la cuenta en tu navegador, sin enviar lo que escribes a ningún sitio. No hay registro, ni analítica, ni recursos de otras webs, y una vez abierta funciona sin conexión. Lo que escribes solo queda en tu navegador, en la dirección de la página: si compartes el enlace, compartes también tus datos ([por qué importa](como-funciona.md#por-qué-la-cuenta-se-hace-en-tu-navegador), [Hecho para que lo compruebes](https://yeraybc.github.io/DataMad-hackaton-2026/saber-mas.html#titulo-confianza)).
 
 ## ¿De qué año son los datos?
 
@@ -28,7 +28,7 @@ Los contratos declarados tienen una ventaja: son lo que la gente paga de verdad,
 
 Porque «lo que sobra» no es lo que ahorras: es el margen que te queda para todo lo que Kuanto no cuenta. La cuenta solo resta tres gastos (el alquiler, el transporte al trabajo y una cesta básica), y deja fuera muchos otros:
 
-- La cesta básica es comida, luz, gas, agua, teléfono e Internet, y nada más. No incluye ropa, ocio, salud, seguros, gastos de la comunidad ni deudas. Tampoco las comidas fuera de casa, que en Madrid suman de media 1.852 € al año por unidad de consumo (fuente: INE, EPF de 2025; `hogares.json`).
+- La cesta básica es comida, luz, gas, agua, teléfono e Internet, y nada más. No incluye ropa, ocio, salud, seguros, gastos de la comunidad ni deudas. Tampoco las comidas fuera de casa, que en Madrid suman de media 1.852 € al año por unidad de consumo (fuente: INE, EPF de 2025, vía el catálogo de la Comunidad de Madrid; `hogares.json`).
 - Es el gasto medio de los hogares de Madrid, no el tuyo. Si tu calefacción gasta más (en la sierra, por ejemplo) o comes fuera a diario, tu gasto real será mayor.
 - El transporte solo cuenta los viajes al trabajo, salvo que añadas viajes de ocio en el formulario.
 - El alquiler es un suelo (ver la pregunta anterior). Si firmas hoy, probablemente pagues más.
