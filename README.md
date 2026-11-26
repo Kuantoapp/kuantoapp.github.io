@@ -14,7 +14,7 @@
 
 [![Vídeo explicativo de Kuanto: «¿Cuánto te sobra al mes? según dónde vivas en la Comunidad de Madrid». Pulsa para verlo](docs/img/video-explicativo.jpg)](https://kuantoapp.github.io/video/explicativo.mp4)
 
-[▶ Ver el vídeo explicativo](https://kuantoapp.github.io/video/explicativo.mp4) (1 min, sin sonido, con subtítulos; también en [`app/video/explicativo.mp4`](app/video/explicativo.mp4)). <!-- sin-fuente: duración del vídeo -->
+[▶ Ver el vídeo explicativo](https://kuantoapp.github.io/video/explicativo.mp4) (1 min, sin sonido, con subtítulos; también en [`app/video/explicativo.mp4`](app/video/explicativo.mp4)). Datos del vídeo: INE, Comunidad de Madrid, MIVAU, AEAT, CRTM (Powered by CRTM), BOE y © OpenStreetMap contributors (ODbL); detalle en [`data/README.md`](data/README.md). <!-- sin-fuente: duración del vídeo -->
 
 ## El problema
 
