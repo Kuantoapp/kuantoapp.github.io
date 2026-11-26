@@ -96,13 +96,13 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 >
 > Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.
 >
-> Y también es rigor lo que no hacemos. No damos un índice de «dónde vivir» con pesos que alguien elige. No usamos precios de anuncios. No pintamos ceros donde no hay datos. No extrapolamos. Porque llegar a fin de mes es una decisión demasiado seria para darla a medias. No es que no sepamos hacerlo: es que no queremos hacerlo a medias. Está en nuestra hoja de ruta, con las mismas reglas.
+> Y también es rigor lo que no hacemos. No damos un índice de «dónde vivir» con pesos que alguien elige. No usamos precios de anuncios. No pintamos ceros donde no hay datos. No calculamos el neto fuera de lo validado, y lo que se imputa sale marcado como estimado. Porque llegar a fin de mes es una decisión demasiado seria para darla a medias. No es que no sepamos hacerlo: es que no queremos hacerlo a medias. Está en nuestra hoja de ruta, con las mismas reglas.
 >
 > Y esto no se queda en un mapa. Tres decisiones que la Administración puede tomar mañana: publicar por qué se rechaza cada solicitud del Bono, decir qué renta cuenta para quien no declara, que cambia el resultado de 122 municipios a ninguno, y anunciar ya si el descuento del abono sigue en 2027. [^recomendaciones]
 >
 > Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en otra región, con sus propias fuentes. [^sdm]
 >
-> Y no lo decimos solo nosotros. Félix Peralta y Alberto Martos revisaron el proyecto y nos dieron feedback durante el desarrollo. Y cuando lo contamos en LinkedIn: 40 reacciones, 17 comentarios positivos. La gente busca esto: saber, antes de firmar, si va a llegar a fin de mes. [^linkedin]
+> Félix Peralta y Alberto Martos revisaron el proyecto y nos dieron feedback durante el desarrollo. Y cuando lo contamos en LinkedIn, tuvo 40 reacciones y 17 comentarios positivos, según nuestro recuento. ¿Saber, antes de firmar, si vas a llegar a fin de mes? [^linkedin]
 >
 > Datos de la Comunidad dentro del cálculo. Viable. Abierto. Con valor social.
 >
