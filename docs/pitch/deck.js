@@ -398,7 +398,10 @@ if (ESTATICO) {
   iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO);
   iso(document.getElementById('isoLucia'), RENDER_LUCIA);
 }
-if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.add('ligero');
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.body.classList.add('ligero');
+  document.querySelectorAll('svg').forEach((s) => s.pauseAnimations());
+}
 if (ES_ORADOR) iniciarOrador();
 else {
   addEventListener('resize', encajar);
