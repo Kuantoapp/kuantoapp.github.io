@@ -36,7 +36,7 @@ const NOTAS = {
   'no-hacemos': { s: 18, texto: '«Y también es rigor lo que no hacemos. No damos un índice de ‹dónde vivir› con pesos que alguien elige. No usamos precios de anuncios. No pintamos ceros donde no hay datos. No calculamos el neto fuera de lo validado, y lo que se imputa sale marcado como estimado. Porque llegar a fin de mes es una decisión demasiado seria para darla a medias. No es que no sepamos hacerlo: es que no queremos hacerlo a medias. Está en nuestra hoja de ruta, con las mismas reglas.»' },
   'apoyo': { s: 15, texto: '«Félix Peralta y Alberto Martos revisaron el proyecto y nos dieron feedback durante el desarrollo. Y cuando lo contamos en LinkedIn, tuvo 40 reacciones y 17 comentarios positivos, según nuestro recuento. ¿Saber, antes de firmar, si vas a llegar a fin de mes?»', cue: 'Cuando lleguen sus frases literales, se leen aquí.' },
   'c-apertura': { s: 60, texto: '«Una ciudad es muchas cosas.» [→] «Es una luz que se enciende en una ventana. Es el trayecto de cada mañana. Es el sitio al que vuelves.» [→] «Y vivir en ella se ha convertido en una cuenta que no sale.» [→] «En la Comunidad de Madrid, uno de cada tres hogares que viven de alquiler dedica más del 40 % de lo que ingresa a la vivienda. En la ciudad de Madrid, el alquiler mediano ya pesa un 19,6 %.» [→] «Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía. Que el tiempo en el transporte público también es un precio. Y que una decisión así merece algo más que un presentimiento.» [→] «Merece una respuesta.» [→] «Esto es Kuanto. Alex.»', cue: 'Con ?corto en la URL, el corto se ve primero dentro de esta diapositiva.' },
-  'c-directo': { s: 210, texto: '«Os presento a Lucía: 30 años, 24.000 euros brutos, trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» [→ capas] «Siete capas en una sola cifra.» Tecla W o el botón: demo en directo. [→ al volver] «Getafe, 291 euros y doce horas; Parla, 467 pero veintiséis horas; en Centro no le llega. Ahora lo decide sabiendo. Izan.»', cue: 'W abre kuantoapp.github.io con el estado de Lucía en otra pestaña.' },
+  'c-directo': { s: 210, texto: '«Os presento a Lucía: 30 años, 24.000 euros brutos, trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» [→ capas] «Siete capas en una sola cifra.» Tecla W o el botón: demo en directo. [→ al volver] «Getafe, 291 euros y doce horas; Parla, 467 pero veintiséis horas; en Centro no le llega. Ahora lo decide sabiendo. Izan.»', cue: 'W abre la portada de kuantoapp.github.io en otra pestaña; desde ahí, «Ver cuánto me sobra» y el estado de Lucía.' },
   'c-porque': { s: 120, texto: '«La misma Lucía, con el mismo sueldo: de menos 482 euros en Salamanca a más 703 en Villarejo, con casi 70 horas de transporte público.» [→] «Mirar solo el alquiler engaña: Chamartín es más caro y pesa menos.» [→] «Con el sueldo mínimo, vivir lejos compensa en una de cada siete combinaciones.» [→] «Casi cuatro de cada cinco solicitudes del Bono, sin ayuda; Madrid capital fuera del tope por 79 euros.» [→] «¿Y si sube el alquiler y se acaba el descuento? Un 35 % menos cada mes.» [→] «Y una IA miró entre cuatro y seis zonas; Kuanto, 99. Yeray os cuenta cómo.»' },
   'c-rigor': { s: 90, texto: '«Quince días, cuatro líneas de trabajo y nueve hitos, con las reglas y la CI antes de analizar un solo dato.» [→] «De 89 descargas oficiales y abiertas a cinco salidas, sin servidor.» [→] «Detrás de cada número: casi medio millón de alquileres, 42.785 trayectos, viviendas cuadradas con Hacienda al 99,9 %, 393 veredictos de agentes y cero cifras sin fuente.» [→] «Tres personas y un equipo de agentes que audita cada cambio.» [→] «Cada capa, con su validación. Y lo que no hacemos, todavía, porque no queremos hacerlo a medias.»' },
   'c-cierre': { s: 60, texto: '«Tu sueldo nunca sale de tu móvil.» [→] «Tres decisiones que la Administración puede tomar mañana.» [→] «Un motor, tres mercados, cero euros de servidor.» [→] «Félix Peralta y Alberto Martos revisaron el proyecto; el post de LinkedIn tuvo 40 reacciones, según nuestro recuento.» [→] «Lo que DataMad pide, cumplido.» [→] «Nadie debería descubrir demasiado tarde cuánto le cuesta su casa. Esto es Kuanto. Gracias.»' },
@@ -100,10 +100,20 @@ function aplicarPasos(s) {
   // data-oculto: pasos en los que un bloque sale un momento y luego vuelve (versión corta).
   s.querySelectorAll('[data-oculto]').forEach((el) => el.classList.toggle('fuera', el.dataset.oculto.split(',').map(Number).includes(paso)));
   s.classList.toggle('completa', paso === pasosDe(s));
+  moverCarril(s, paso);
+}
+
+// === CINTA VERTICAL (apertura de la versión corta): sube hasta centrar el tramo del paso ===
+function moverCarril(s, n) {
+  const carril = s.querySelector('.carril');
+  if (!carril) return;
+  const tramos = [...carril.querySelectorAll('.tramo')], t = tramos[Math.min(n, tramos.length - 1)];
+  carril.style.transform = `translateY(${540 - (t.offsetTop + t.offsetHeight / 2)}px)`;
+  tramos.forEach((x, k) => x.classList.toggle('actual', k === n));
 }
 
 // === DEMO EN DIRECTO: la web con el estado de Lucía (tecla W o botón [data-demo]) ===
-const DEMO_URL = 'https://kuantoapp.github.io/?herramienta#metrica=sobra&fuente=bruto&bruto=24000&neto=&pagas=12&edad=30&disc=no&fuente2=bruto&bruto2=24000&neto2=&pagas2=12&edad2=30&disc2=no&destino2=Getafe&dias2=5&viajes2=2&modo2=tp&perfil=solo&adultos=1&hijos=0&hijo1=&hijo2=&hijo3=&hijo4=&hijo5=&familia=ordinario&m2=69&personas=1&destino=Getafe&dias=5&viajes=2&modo=tp&nolab=0&ref=&tarifas=vigente_2026&subida=0&cumple26=no&dias_esc=&cesta=media';
+const DEMO_URL = 'https://kuantoapp.github.io/';
 document.querySelectorAll('[data-demo]').forEach((a) => { a.href = DEMO_URL; });
 
 // === CORTO DENTRO DE LA PRIMERA DIAPOSITIVA (versión corta, con ?corto) ===
@@ -451,6 +461,8 @@ if (ESTATICO) {
   iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO);
   iso(document.getElementById('isoLucia'), RENDER_LUCIA);
 }
+// La exportación ve la cinta en su último tramo.
+if (ESTATICO) document.querySelectorAll('.slide').forEach((x) => { if (x.querySelector('.carril')) { x.querySelector('.carril').style.transition = 'none'; moverCarril(x, pasosDe(x)); } });
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.body.classList.add('ligero');
   document.querySelectorAll('svg').forEach((s) => s.pauseAnimations());
