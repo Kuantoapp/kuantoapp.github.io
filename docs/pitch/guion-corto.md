@@ -42,7 +42,7 @@ Demo con `W`, igual que en `guion.md`.
 >
 > [→] Mirar solo el alquiler engaña: Chamartín es más caro y pesa menos. [→] Con el sueldo mínimo, vivir lejos compensa en una de cada siete combinaciones. [^horas]
 >
-> [→] Casi cuatro de cada cinco solicitudes del Bono, sin ayuda; Madrid capital, fuera del tope por 79 euros. [^bono]
+> [→] Casi cuatro de cada cinco solicitudes del Bono, sin ayuda; con el sueldo mínimo, Madrid capital queda fuera del tope por 79 euros. [^bono]
 >
 > [→] ¿Y si sube el alquiler y se acaba el descuento? Un 35 % menos cada mes. [^escenarios]
 >
@@ -52,7 +52,7 @@ Demo con `W`, igual que en `guion.md`.
 
 > Quince días, cuatro líneas de trabajo y nueve hitos, con las reglas y la CI antes de analizar un solo dato. [→] De 89 descargas oficiales y abiertas a cinco salidas, sin servidor. [^git]
 >
-> [→] Detrás de cada número: casi medio millón de alquileres, 42.785 trayectos, viviendas cuadradas con Hacienda al 99,9 %, 393 veredictos de agentes y cero cifras sin fuente. [^met]
+> [→] Detrás de cada número: casi medio millón de alquileres, 42.785 trayectos, las viviendas arrendadas de Madrid capital cuadradas con Hacienda al 99,9 %, 393 veredictos de agentes y cero cifras sin fuente. [^met]
 >
 > [→] Tres personas y un equipo de agentes que audita cada cambio. [→] Cada capa, con su validación. Y lo que no hacemos, todavía, porque no queremos hacerlo a medias.
 

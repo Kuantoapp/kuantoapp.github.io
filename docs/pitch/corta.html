@@ -113,15 +113,15 @@
   <div class="a" data-paso="0">
     <p class="kicker" style="top:60px;left:100px">Por qué Kuanto</p>
     <h2 class="tit" style="left:100px;top:100px;width:820px;font-size:62px">Misma persona, mismo sueldo: de <span class="rojo">−482 €</span> a <span class="verde">+703 €</span> al mes.</h2> <!-- [^lucia] -->
-    <p class="sub" style="left:100px;top:300px;width:800px;font-size:30px">Lo que le sobra a Lucía según dónde viva. En 10 de las 99 zonas, no le llega. <small class="est">estimado</small></p> <!-- [^lucia] -->
+    <p class="sub" style="left:100px;top:300px;width:800px;font-size:30px">Lo que le sobra a Lucía según dónde viva; en Villarejo de Salvanés, con unas 69 h de viaje al mes. En 10 de las 99 zonas, no le llega. <small class="est">estimado</small></p> <!-- [^lucia] -->
     <canvas class="render" id="isoLucia" width="1000" height="800" style="left:-10px;top:330px"></canvas>
   </div>
   <div class="tablero">
     <div class="panel a" data-paso="1"><div class="k">Mirar solo el alquiler engaña</div><b>16 % <span class="gris">vs</span> 24 %</b><span>Chamartín es más caro que Centro y pesa menos: allí se gana un 78 % más.</span></div> <!-- [^chamartin] -->
-    <div class="panel a" data-paso="2"><div class="k">El tiempo también cuesta</div><b>1 de cada 7</b><span>Con el sueldo mínimo, vivir lejos solo compensa las horas de transporte público. <small class="est">estimado</small></span></div> <!-- [^horas] -->
-    <div class="panel a" data-paso="3"><div class="k">Bono Alquiler Joven</div><b class="rojo">Casi 4 de 5</b><span>solicitudes sin ayuda. Madrid capital, fuera del tope por 79,51 €. <small class="est">estimado</small></span></div> <!-- [^bono] -->
+    <div class="panel a" data-paso="2"><div class="k">El tiempo también cuesta</div><b>1 de cada 7</b><span>Con el sueldo mínimo, lo que ahorras viviendo lejos solo paga las horas de transporte, a lo que ganas por hora, en 1 de cada 7 combinaciones. <small class="est">estimado</small></span></div> <!-- [^horas] -->
+    <div class="panel a" data-paso="3"><div class="k">Bono Alquiler Joven</div><b class="rojo">Casi 4 de 5</b><span>solicitudes sin ayuda. Con el sueldo mínimo, Madrid capital queda fuera del tope por 79,51 €. <small class="est">estimado</small></span></div> <!-- [^bono] -->
     <div class="panel a" data-paso="4"><div class="k">¿Y si…?</div><b class="rojo">−35 %</b><span>Alquiler +10 % y sin descuento del abono: a Lucía le sobran 188 € en vez de 291. <small class="est">estimado</small></span></div> <!-- [^escenarios] -->
-    <div class="panel a ancho" data-paso="5"><div class="k">Frente a una IA</div><b><span class="brillo">99</span> <span class="gris">vs 4–6</span></b><span>zonas con cifra en Kuanto frente a las que miraron ChatGPT y Gemini, que además erraron el neto.</span></div> <!-- [^ia] -->
+    <div class="panel a ancho" data-paso="5"><div class="k">Frente a una IA</div><b><span class="brillo">99</span> <span class="gris">vs 4–6</span></b><span>zonas con cifra en Kuanto frente a las que miraron ChatGPT y Gemini. Prueba del 25-11-2026 con cuatro respuestas: ilustra, no mide.</span></div> <!-- [^ia] -->
   </div>
 </section>
 
@@ -149,7 +149,7 @@
   <div class="muro muro-mini a" data-paso="2">
     <div class="clave" style="--k:0s"><b class="brillo num">474.823</b><span>alquileres declarados, no anuncios</span></div> <!-- [^testigos] -->
     <div class="clave" style="--k:.3s"><b class="brillo num">42.785</b><span>trayectos en transporte público</span></div> <!-- [^met] -->
-    <div class="clave" style="--k:.6s"><b class="brillo num">99,9 %</b><span>de las viviendas cuadradas con Hacienda</span></div> <!-- [^conciliacion] -->
+    <div class="clave" style="--k:.6s"><b class="brillo num">99,9 %</b><span>los códigos postales de Madrid suman las viviendas arrendadas de Hacienda</span></div> <!-- [^conciliacion] -->
     <div class="clave" style="--k:.9s"><b class="brillo num">393</b><span>veredictos de agentes revisores</span></div> <!-- [^revisiones] -->
     <div class="clave" style="--k:1.2s"><b class="brillo num">0</b><span>cifras públicas sin fuente</span></div> <!-- sin-fuente: regla de la CI -->
   </div>
@@ -163,7 +163,7 @@
       <span><b>Neto</b>8 casos al céntimo</span> <!-- [^met] -->
       <span><b>Transporte</b>1.890 combinaciones</span> <!-- [^tarifas] -->
       <span><b>Tiempos</b>494 viajes de control</span> <!-- [^met] -->
-      <span><b>Alquiler</b>±10 % declarado <small class="est">estimado</small></span> <!-- [^met] -->
+      <span><b>Alquiler</b>±10 % con 70 alquileres <small class="est">estimado</small></span> <!-- [^met] -->
       <span><b>Cesta</b>EPF por tramo</span>
       <span><b>Bono</b>registro previo</span>
     </div>
