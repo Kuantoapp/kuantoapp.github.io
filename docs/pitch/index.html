@@ -34,8 +34,11 @@
     </figure>
     <figure class="a" data-paso="1">
       <svg viewBox="0 0 340 280" aria-hidden="true">
-        <path class="trazo" d="M20 240 C 90 240, 100 150, 170 150 S 250 60, 320 40"/>
-        <circle class="punto-viaje" r="9"><animateMotion dur="3s" repeatCount="indefinite" path="M20 240 C 90 240, 100 150, 170 150 S 250 60, 320 40"/></circle>
+        <path class="trazo" d="M0 236 H340 M0 252 H340"/>
+        <g class="tren">
+          <path class="trazo" d="M40 226 V150 Q40 120 70 120 H250 Q290 120 300 160 L310 226 Z M60 236 a10 10 0 1 0 0.1 0 M270 236 a10 10 0 1 0 0.1 0"/>
+          <rect class="ventana luz" x="66" y="140" width="40" height="34"/><rect class="ventana luz" x="122" y="140" width="40" height="34"/><rect class="ventana luz" x="178" y="140" width="40" height="34"/><path class="trazo" d="M236 140 H272 L282 174 H236 Z"/>
+        </g>
       </svg>
       <figcaption>El trayecto de cada mañana.</figcaption>
     </figure>
@@ -55,15 +58,15 @@
   </div>
 </section>
 
-<section class="slide foco" data-id="cifra" data-quien="Yeray" data-pasos="1" style="--fx:72%;--fy:52%">
+<section class="slide foco" data-id="cifra" data-quien="Yeray" data-pasos="2" style="--fx:72%;--fy:52%">
   <canvas class="render" id="isoEsfuerzo" width="1100" height="1000" style="left:790px;top:60px"></canvas>
   <div style="position:absolute;left:140px;top:150px;width:760px">
-    <p class="gigante brillo a num" id="contador196" style="font-size:230px;white-space:nowrap">19,6 %</p> <!-- [^serpavi] -->
-    <p class="a" style="--d:.6s;font:500 38px/1.25 var(--fuente);letter-spacing:-0.6px;margin:40px 0 0">del ingreso neto de un hogar de la ciudad de Madrid se va en el alquiler mediano.</p>
-    <p class="a" data-paso="1" style="font:500 38px/1.25 var(--fuente);letter-spacing:-0.6px;margin:30px 0 0">Y no pesa igual en todas partes: del <span class="azul">12,6 %</span> de Villanueva de la Cañada al <span class="rojo">24,0 %</span> de Centro.</p> <!-- [^rango] -->
+    <p class="gigante brillo a num" id="contador196" style="font-size:150px;white-space:nowrap;letter-spacing:-6px">1 de cada 3</p> <!-- [^ecv] -->
+    <p class="a" style="--d:.6s;font:500 38px/1.25 var(--fuente);letter-spacing:-0.6px;margin:40px 0 0">hogares que viven de alquiler en la Comunidad de Madrid dedican más del 40 % de lo que ingresan a la vivienda. <small class="est">estimado</small></p> <!-- [^ecv] -->
+    <p class="a" data-paso="1" style="font:500 34px/1.3 var(--fuente);letter-spacing:-0.4px;margin:30px 0 0;color:var(--texto-2)">En la ciudad de Madrid, el alquiler mediano ya pesa un 19,6 % de la renta neta de los hogares.</p> <!-- [^serpavi] -->
+    <p class="a" data-paso="2" style="font:500 34px/1.3 var(--fuente);letter-spacing:-0.4px;margin:22px 0 0;color:var(--texto-2)">Y no pesa igual en todas partes: del <span class="azul">12,6 %</span> de Villanueva de la Cañada al <span class="rojo">24,0 %</span> de Centro.</p> <!-- [^rango] -->
   </div>
   <div class="leyenda a" style="left:140px;bottom:120px;--d:1s"><span><i style="background:linear-gradient(90deg,#2f7cf6,#9cc2f5,#ff6b6b);width:90px"></i>Altura (desde cero) y color: lo que pesa el alquiler en cada zona</span></div>
-  <p class="pie">Fuente: SERPAVI (MIVAU) y Atlas de Distribución de Renta de los Hogares (INE), 2024. Extremos entre zonas con al menos 70 alquileres declarados. Elaboración propia.</p>
 </section>
 
 <section class="slide" data-id="creemos-1" data-quien="Yeray">
@@ -71,7 +74,7 @@
 </section>
 
 <section class="slide" data-id="creemos-2" data-quien="Yeray">
-  <div class="frase"><p class="a">Creemos que el tiempo que pasas en un tren también es un precio.</p></div>
+  <div class="frase"><p class="a">Creemos que el tiempo que pasas en el transporte público también es un precio.</p></div>
 </section>
 
 <section class="slide" data-id="creemos-3" data-quien="Yeray">
@@ -105,10 +108,9 @@
     </div>
     <div class="chip" style="left:120px;top:660px;animation-delay:-1s">Neto con el IRPF de <b>2026</b></div> <!-- sin-fuente: año de la norma -->
     <div class="chip" style="right:10px;top:-10px;animation-delay:-2s"><b>Abono</b> más barato para ti</div>
-    <div class="chip" style="right:420px;top:-20px;animation-delay:-3s">Horas de tren en <b>euros</b></div>
+    <div class="chip" style="right:420px;top:-20px;animation-delay:-3s">Horas de transporte en <b>euros</b></div>
     <div class="chip" style="right:40px;top:600px;animation-delay:-4s">Alquiler de <b>contrato nuevo</b></div>
   </div>
-  <p class="pie">Captura de la herramienta, 26-11-2026. Fuente: Kuanto, estimado.</p>
 </section>
 
 <!-- ============ IZAN · POR QUÉ (1:45) ============ -->
@@ -134,15 +136,13 @@
     <li class="a" style="--d:1.7s"><b>Hogar</b><span>solo, en pareja, con hijos, con dos sueldos</span></li>
     <li class="a" style="--d:2s"><b>Tu trabajo</b><span>todo, desde donde trabajas tú</span></li>
   </ol>
-  <p class="pie">En gris, las dos capas que suelen calcular otras herramientas. Fuente: nota metodológica de Kuanto (app/metodologia.html).</p>
 </section>
 
 <section class="slide foco" data-id="lucia-mapa" data-quien="Izan" style="--fx:70%;--fy:58%">
   <canvas class="render" id="isoLucia" width="1100" height="1000" style="left:800px;top:90px"></canvas>
   <h2 class="tit a" style="width:820px">Misma persona, mismo sueldo: de <span class="rojo">−482 €</span> a <span class="verde">+703 €</span> al mes.</h2> <!-- [^lucia] -->
-  <p class="sub a" style="top:470px;width:660px;--d:.4s">Lo que le sobra a Lucía según dónde viva. En 10 de las 99 zonas con dato, no le llega.</p> <!-- [^lucia] -->
+  <p class="sub a" style="top:470px;width:660px;--d:.4s">Lo que le sobra a Lucía según dónde viva. En 10 de las 99 zonas con dato, no le llega. <small class="est">estimado</small></p> <!-- [^lucia] -->
   <div class="leyenda a" style="left:140px;top:700px;flex-direction:column;gap:14px;--d:.8s"><span><i style="background:var(--ganas)"></i>Le sobra (hacia arriba)</span><span><i style="background:var(--pierdes)"></i>No le llega (hacia abajo)</span></div>
-  <p class="pie">Lucía: 30 años, 24.000 € brutos, trabaja en Getafe. Extremos entre zonas con al menos 70 alquileres declarados: Salamanca y Villarejo de Salvanés, este con unas 69 h de viaje al mes. Fuente: cálculo de Kuanto (mesobra.calculo), estimado.</p>
 </section>
 
 <section class="slide" data-id="engana" data-quien="Izan" data-pasos="1">
@@ -152,7 +152,6 @@
     <div class="a" style="--d:.6s"><h3>Centro</h3><div class="gr num">950 €</div><p>de alquiler mediano. Pesa el <b class="rojo">24,0 %</b> de la renta.</p><div class="medidor"><i style="--w:100%;background:var(--pierdes);--d:.8s"></i></div></div> <!-- [^chamartin] -->
   </div>
   <p class="aparte a" data-paso="1" style="top:830px">El piso caro pesa menos porque allí se gana un 78 % más.</p> <!-- [^chamartin] -->
-  <p class="pie">La barra es el peso del alquiler sobre la renta. Fuente: SERPAVI (MIVAU) y ADRH (INE), 2024. Elaboración propia.</p>
 </section>
 
 <section class="slide" data-id="horas" data-quien="Izan">
@@ -166,19 +165,17 @@
     <svg aria-hidden="true" class="casa" viewBox="0 0 190 210"><path d="M15 95 L95 22 L175 95 V195 H15 Z"/></svg>
     <svg aria-hidden="true" class="casa" viewBox="0 0 190 210"><path d="M15 95 L95 22 L175 95 V195 H15 Z"/></svg>
   </div>
-  <p class="aparte a" style="--d:1.4s;top:720px">Lo que ahorras en alquiler por irte lejos solo paga las horas de tren, a lo que ganas por hora, en 1 de cada 7 combinaciones de casa y trabajo.</p> <!-- [^horas] -->
-  <p class="pie">1.218 de 8.620 pares de zona de casa y de trabajo (14,1 %). Fuente: Kuanto, analisis.json, estimado.</p>
+  <p class="aparte a" style="--d:1.4s;top:720px">Lo que ahorras en alquiler por irte lejos solo paga las horas de transporte público, a lo que ganas por hora, en 1 de cada 7 combinaciones de casa y trabajo.</p> <!-- [^horas] -->
 </section>
 
 <section class="slide foco" data-id="bono" data-quien="Izan" data-pasos="1" style="--fx:30%;--fy:52%">
-  <h2 class="tit a">El Bono Alquiler Joven no acepta más donde más pesa el alquiler.</h2>
+  <h2 class="tit a"><span class="brillo">4 de cada 5</span> solicitudes del Bono Alquiler Joven se quedaron sin ayuda.</h2> <!-- [^bono] -->
   <div class="embudo">
     <div class="barra total" style="--w:100%"><span class="num" data-cuenta="51735">51.735</span> <small>solicitudes en 2022</small></div> <!-- [^bono] -->
-    <div class="barra si" style="--w:22.2%;--d:1.2s"><span class="num" data-cuenta="11477">11.477</span> <small>aceptadas · 22,2 %</small></div> <!-- [^bono] -->
+    <div class="barra si" style="--w:22.2%;--d:1.2s"><span class="num" data-cuenta="11477">11.477</span> <small>aceptadas · 22,2 %; 40.258 sin ayuda</small></div> <!-- [^bono] -->
   </div>
-  <p class="aparte a" style="--d:2.4s;top:690px">La proporción aceptada no cambia con lo que pesa el alquiler (p = 0,82; estimado).</p> <!-- [^bono] -->
-  <p class="aparte a" data-paso="1" style="top:860px;color:var(--texto-2);font-size:42px">Con el sueldo mínimo, 16 municipios quedan fuera del tope del Bono. 14, por menos de 80 €.</p> <!-- [^bono] -->
-  <p class="pie">Fuente: catálogo de datos abiertos de la Comunidad de Madrid (Bono Alquiler Joven 2022); GLM y simulación de Kuanto, estimado.</p>
+  <p class="aparte a" style="--d:2.4s;top:690px">Y no llega más donde más pesa el alquiler (p = 0,82). <small class="est">estimado</small></p> <!-- [^bono] -->
+  <p class="aparte a" data-paso="1" style="top:800px;font-size:56px">Con el sueldo mínimo, Madrid capital queda fuera del tope por <span class="rojo">79,51 €</span>. <small class="est">estimado</small></p> <!-- [^bono] -->
 </section>
 
 <section class="slide foco" data-id="abono" data-quien="Izan" style="--fx:25%;--fy:50%">
@@ -193,7 +190,19 @@
     <div class="rango a" style="--d:.7s"><b>B3, C1, C2</b><div class="pista"><div class="tramo" style="--a:46.6%;--w:53.4%;--d:1s"><em>15,26 €</em><span>32,76 €</span></div></div></div> <!-- [^abono] -->
     <div class="rango a" style="--d:.9s"><b>Joven</b><div class="pista"><div class="tramo" style="--a:28.4%;--w:1.2%;--d:1.2s"><span>9,30 €</span></div></div></div> <!-- [^abono] -->
   </div>
-  <p class="pie">Subida al mes por adulto: el extremo bajo, si se retira solo la parte del RDL 17/2025; el alto, si se retira todo el descuento. Fuente: BOCM-20251231-2 y -3; simulación de Kuanto, estimado.</p>
+</section>
+
+<section class="slide foco" data-id="ysi" data-quien="Izan" style="--fx:50%;--fy:58%">
+  <p class="kicker a">¿Y si…?</p>
+  <h2 class="tit a" style="--d:.1s">Lo que le puede pasar a Lucía el año que viene.</h2>
+  <div class="metodos" style="grid-template-columns:repeat(4,1fr);top:330px">
+    <div class="metodo a" style="--d:.2s"><div class="k">El alquiler sube un 10 %</div><h3 class="rojo" style="font-size:72px;letter-spacing:-2px">−89 €</h3><p>al mes en Getafe: un <b>31 %</b> menos de lo que le sobra.</p><span class="ok est">estimado</span></div> <!-- [^escenarios] -->
+    <div class="metodo a" style="--d:.4s"><div class="k">Acaba el descuento</div><h3 class="rojo" style="font-size:72px;letter-spacing:-2px">×1,7</h3><p>su transporte pasa de 19,30 a 32,92 € al mes.</p><span class="ok est">estimado</span></div> <!-- [^escenarios] -->
+    <div class="metodo a" style="--d:.6s"><div class="k">Si tuviera 25 y cumpliera 26</div><h3 class="rojo" style="font-size:72px;letter-spacing:-2px">+17 €</h3><p>al mes en Parla al perder el Abono Joven; +10 € en Getafe.</p><span class="ok est">estimado</span></div> <!-- [^escenarios] -->
+    <div class="metodo a" style="--d:.8s"><div class="k">Alquiler +10 % y sin descuento</div><h3 class="rojo" style="font-size:72px;letter-spacing:-2px">−35 %</h3><p>lo que le sobra en Getafe: de 291 a 188 € al mes.</p><span class="ok est">estimado</span></div> <!-- [^escenarios] -->
+  </div>
+  <p class="aparte a" style="--d:1.2s;top:760px">Y no es teoría: en 2024, los contratos nuevos subieron un <span class="rojo">9,2 %</span>; los ya firmados, un 2,7 %.</p> <!-- [^ipva] -->
+  <p class="sub a" style="--d:1.5s;top:900px">Kuanto calcula cada «¿y si…?» antes de que ocurra.</p>
 </section>
 
 <section class="slide" data-id="ia" data-quien="Izan">
@@ -202,20 +211,25 @@
     <div class="a" style="--d:.3s"><h3>Los asistentes</h3><div class="gr num gris">4–6</div><p>zonas miradas. Erraron el neto un 2,1 % y un 3,9 %, y cada uno puso un municipio en la zona de abono equivocada.</p></div> <!-- [^ia] -->
     <div class="a" style="--d:.8s"><h3>Kuanto</h3><div class="gr num brillo" data-cuenta="99">99</div><p>zonas con cifra, con el neto de la ley y las horas junto al dinero.</p></div> <!-- [^ia] -->
   </div>
-  <p class="pie">Prueba del 25-11-2026 con cuatro respuestas: ilustra, no mide. Fuente: docs/kuanto-frente-a-ia.md.</p>
 </section>
 
 <!-- ============ YERAY · CÓMO, NEGOCIO Y CIERRE (2:15) ============ -->
 
 <section class="slide" data-id="timeline" data-quien="Yeray">
   <p class="kicker a">Cómo lo hicimos</p>
-  <h2 class="tit a" style="--d:.1s">De cero a producto en quince días. <span class="gris">Con las reglas primero.</span></h2>
+  <h2 class="tit a" style="--d:.1s">Quince días. Cuatro líneas. <span class="gris">Nueve puertas de calidad.</span></h2>
   <div class="linea-tiempo" id="lineaTiempo">
     <div class="eje"><i></i></div>
     <div class="dias" id="dias"></div>
     <div class="prs" id="prs"></div>
   </div>
-  <p class="pie">Barras: pull requests fusionados por día (259). Fuente: GitHub del 11 al 25 de noviembre y docs/decisiones.md.</p> <!-- [^git] -->
+  <div class="kpis a" style="--d:3.6s">
+    <span><b>259</b>pull requests</span> <!-- [^git] -->
+    <span><b>215</b>issues, 200 cerradas</span> <!-- [^issues] -->
+    <span><b>415</b>veredictos de agentes</span> <!-- [^revisiones] -->
+    <span><b>993</b>tests</span> <!-- [^git] -->
+    <span><b>0</b>fusiones sin CI</span> <!-- sin-fuente: regla de la CI -->
+  </div>
 </section>
 
 <section class="slide" data-id="tuberia" data-quien="Yeray">
@@ -233,12 +247,11 @@
     <div class="nodo-t salida a" style="left:1360px;top:396px;--d:1.3s"><div class="k">Portales</div><b>DCAT-AP</b></div>
     <div class="nodo-t salida a" style="left:1360px;top:528px;--d:1.4s"><div class="k">Administración</div><b>Informe técnico</b></div>
   </div>
-  <p class="pie">Fuente: data/README.md, src/mesobra y app/datos del repositorio.</p>
 </section>
 
 <section class="slide" data-id="muro" data-quien="Yeray">
   <p class="kicker a">El rigor, en cifras</p>
-  <h2 class="tit a" style="--d:.1s">Detrás de cada número, todos estos.</h2>
+  <h2 class="tit a" style="--d:.1s">Detrás de cada número.</h2>
   <div class="muro">
     <div class="a" style="--d:.1s"><b class="brillo num" data-cuenta="89">89</b><span>descargas de fuentes oficiales y abiertas, cada una con su SHA-256</span></div> <!-- [^fuentes] -->
     <div class="a" style="--d:.2s"><b class="brillo num" data-cuenta="474823">474.823</b><span>alquileres declarados detrás del precio por zona</span></div> <!-- [^testigos] -->
@@ -252,8 +265,11 @@
     <div class="a" style="--d:1s"><b class="brillo num" data-cuenta="259">259</b><span>pull requests, todos con la CI en verde</span></div> <!-- [^git] -->
     <div class="a" style="--d:1.1s"><b class="brillo num" data-cuenta="131">131</b><span>decisiones fechadas y justificadas</span></div> <!-- [^git] -->
     <div class="a" style="--d:1.2s"><b class="brillo num">0</b><span>cifras públicas sin fuente: la CI las rechaza</span></div> <!-- sin-fuente: regla de la CI -->
+    <div class="a" style="--d:1.3s"><b class="brillo num" data-cuenta="415">415</b><span>veredictos de agentes revisores en los PR</span></div> <!-- [^revisiones] -->
+    <div class="a" style="--d:1.4s"><b class="brillo num" data-cuenta="310359">310.359</b><span>viviendas arrendadas conciliadas con la AEAT, al 99,9 %</span></div> <!-- [^conciliacion] -->
+    <div class="a" style="--d:1.5s"><b class="brillo num" data-cuenta="1890">1.890</b><span>combinaciones de tarifa por ruta, edad y colectivo</span></div> <!-- [^tarifas] -->
+    <div class="a" style="--d:1.6s"><b class="brillo num" data-cuenta="18">18</b><span>decisiones con auditoría adversarial independiente</span></div> <!-- [^decisiones] -->
   </div>
-  <p class="pie">Fuente: data/README.md, docs/decisiones.md, nota metodológica, docs/informe/cifras.md, app/datos/sdm y GitHub.</p>
 </section>
 
 <section class="slide" data-id="metodos" data-quien="Yeray">
@@ -267,7 +283,20 @@
     <div class="metodo a" style="--d:.5s"><div class="k">Espacial</div><h3>Patrón y vecindad</h3><p>I de Moran, LISA e imputación con validación espacial.</p><span class="ok">Unas 7 zonas «claras» por azar, y lo decimos (estimado)</span></div> <!-- [^met] -->
     <div class="metodo a" style="--d:.6s"><div class="k">Bono</div><h3>Inferencia con registro previo</h3><p>GLM binomial negativa y SEM heterocedástico (GMM).</p><span class="ok">9 especificaciones publicadas, también las que no salen</span></div> <!-- [^met] -->
   </div>
-  <p class="pie">Fuente: app/metodologia.html, docs/informe/cifras.md y docs/decisiones.md.</p>
+</section>
+
+<section class="slide" data-id="del-dato" data-quien="Yeray">
+  <p class="kicker a">Metodología, capa a capa</p>
+  <h2 class="tit a" style="--d:.1s">Del dato a la cifra. <span class="gris">Sin cajas negras.</span></h2>
+  <table class="tabla a desglose" style="--d:.3s">
+    <tr><th>Capa</th><th>Fuente</th><th>Método</th><th>Validación</th><th>Incertidumbre declarada</th></tr> <!-- sin-fuente: cabecera -->
+    <tr><td>Sueldo neto</td><td>BOE y BOCM, normas de 2026</td><td>IRPF estatal y de Madrid y cotizaciones; rejilla con interpolación</td><td>8 casos calculados aparte, al céntimo</td><td>Rejilla a menos de 1 €/mes</td></tr> <!-- [^met] -->
+    <tr><td>Transporte</td><td>Tarifas del BOCM, RDL 17/2025 y coronas del CRTM</td><td>El título más barato entre 1.890 combinaciones</td><td>Zona tarifaria de cada polo de empleo comprobada</td><td>Descuento solo garantizado en 2026</td></tr> <!-- [^tarifas] -->
+    <tr><td>Tiempos</td><td>6 redes GTFS del CRTM y OpenStreetMap</td><td>r5py sobre 42.785 pares</td><td>494 viajes de control; cociente 1,06</td><td>Error medio de 20,7 min (estimado)</td></tr> <!-- [^met] -->
+    <tr><td>Alquiler</td><td>SERPAVI (474.823 alquileres), AEAT e IPC del INE</td><td>Mediana × IPC × brecha de los contratos nuevos</td><td>Conciliación con la AEAT al 99,9 %</td><td>±10 % con 70 alquileres; 39 zonas marcadas</td></tr> <!-- [^conciliacion] -->
+    <tr><td>Cesta</td><td>EPF del catálogo de la Comunidad de Madrid</td><td>Unidades de consumo OCDE y tramo de ingresos</td><td>Mismo cálculo en Python y en el navegador</td><td>Media del tramo, no del hogar</td></tr> <!-- sin-fuente: descripción del método -->
+    <tr><td>Bono</td><td>Catálogo de la Comunidad de Madrid (2022)</td><td>GLM binomial negativa y SEM heterocedástico</td><td>Registro previo; 9 especificaciones publicadas</td><td>p = 0,82 (estimado)</td></tr> <!-- [^bono] -->
+  </table>
 </section>
 
 <section class="slide foco" data-id="maquinas" data-quien="Yeray" style="--fx:28%;--fy:62%">
@@ -276,11 +305,19 @@
   <svg class="bucle a" style="--d:.3s" viewBox="0 0 820 720" id="bucle" aria-hidden="true"></svg>
   <div class="piezas">
     <div class="pieza a" style="--d:.6s"><b class="brillo num" data-cuenta="12">12</b><span>skills de dominio: normativa, cartografía, modelos, fuentes</span></div> <!-- [^harness] -->
-    <div class="pieza a" style="--d:.9s"><b class="brillo num" data-cuenta="8">8</b><span>agentes revisores, abogado del diablo incluido</span></div> <!-- [^harness] -->
+    <div class="pieza a" style="--d:.9s"><b class="brillo num" data-cuenta="8">8</b><span>agentes revisores, con auditoría adversarial</span></div> <!-- [^harness] -->
     <div class="pieza a" style="--d:1.2s"><b class="brillo num" data-cuenta="16">16</b><span>hooks: datos originales intocables, formato, contexto</span></div> <!-- [^harness] -->
     <div class="pieza a" style="--d:1.5s"><b class="brillo num">2</b><span>flujos de CI: sin el veredicto del revisor de su área, no hay merge</span></div> <!-- [^harness] -->
+    <div class="pieza a" style="--d:1.8s"><b class="brillo num" data-cuenta="415">415</b><span>veredictos documentados en los PR: 252 aptos, 139 con reservas</span></div> <!-- [^revisiones] -->
+    <div class="pieza a" style="--d:2.1s"><b class="brillo num" data-cuenta="5233">5.233</b><span>líneas de conocimiento experto en skills y agentes, con 32 guías</span></div> <!-- [^conocimiento] -->
   </div>
-  <p class="pie">Fuente: .claude/ y .github/ del repositorio; AGENTS.md.</p>
+  <div class="revisores a" style="--d:2.4s">
+    <div><span>Código</span><i style="--w:100%"></i><b>116</b></div> <!-- [^revisiones] -->
+    <div><span>Cálculos normativos</span><i style="--w:92%"></i><b>107</b></div> <!-- [^revisiones] -->
+    <div><span>Cifras</span><i style="--w:63%"></i><b>73</b></div> <!-- [^revisiones] -->
+    <div><span>Espacial</span><i style="--w:53%"></i><b>62</b></div> <!-- [^revisiones] -->
+    <div><span>Fuentes</span><i style="--w:38%"></i><b>44</b></div> <!-- [^revisiones] -->
+  </div>
 </section>
 
 <section class="slide foco" data-id="privacidad" data-quien="Yeray" style="--fx:74%;--fy:52%">
@@ -300,7 +337,17 @@
     <text class="eti" x="220" y="690">tu sueldo</text>
     <text class="eti" x="220" y="726">se queda aquí</text>
   </svg>
-  <p class="pie">Fuente: app/index.html (Content-Security-Policy) y nota metodológica.</p>
+</section>
+
+<section class="slide" data-id="recomendaciones" data-quien="Yeray">
+  <p class="kicker a">Para la Administración</p>
+  <h2 class="tit a" style="--d:.1s">Tres decisiones que se pueden tomar mañana.</h2>
+  <div class="mercados">
+    <div class="mercado a" style="--d:.2s"><div class="k">Bono Alquiler Joven</div><h3>Publicar por municipio por qué se rechaza cada solicitud</h3><ul><li>Hoy se mezclan los que no cumplen y los que llegaron con el crédito agotado</li></ul><span class="canal">Evidencia sólida · coste bajo</span></div>
+    <div class="mercado a" style="--d:.4s"><div class="k">Bono Alquiler Joven</div><h3>Decir qué renta cuenta para quien no hace la declaración</h3><ul><li>Según cómo se mida, la pareja y el joven cumplen en 122 municipios o en ninguno <small class="est">estimado</small></li></ul><span class="canal">Coste nulo: una frase en la norma</span></div> <!-- [^recomendaciones] -->
+    <div class="mercado a" style="--d:.6s"><div class="k">Abono de transporte</div><h3>Anunciar ya si el descuento sigue en 2027</h3><ul><li>Sin prórroga, de 9,23 a 32,76 € más al mes por adulto <small class="est">estimado</small></li></ul><span class="canal">Evidencia sólida en la norma</span></div> <!-- [^recomendaciones] -->
+  </div>
+  <p class="sub a" style="--d:.9s;top:790px">Son tres de las ocho recomendaciones del informe técnico, ordenadas por la solidez de su prueba.</p> <!-- sin-fuente: recuento de recomendaciones del informe -->
 </section>
 
 <section class="slide" data-id="negocio" data-quien="Yeray">
@@ -316,7 +363,6 @@
     <div class="a" style="--d:1s"><b class="brillo">Un comando</b>para actualizar todas las fuentes</div>
     <div class="a" style="--d:1.2s"><b class="brillo">Replicable</b>en otra región, con sus propias fuentes</div>
   </div>
-  <p class="pie">Fuente: nota metodológica (Mantenimiento), src/mesobra/mcp_servidor.py e informe técnico.</p>
 </section>
 
 <section class="slide" data-id="datamad" data-quien="Yeray">
@@ -328,7 +374,6 @@
     <li class="a" style="--d:.8s">Código abierto<span>repositorio público, código MIT y datos CC BY 4.0 y ODbL</span></li>
     <li class="a" style="--d:1s">Valor social<span>ocho recomendaciones a la Administración, ordenadas por la solidez de la prueba</span></li>
   </ul>
-  <p class="pie">Criterios de la formación oficial de DataMad y de las convocatorias publicadas por la Comunidad de Madrid; las bases completas no se han publicado.</p>
 </section>
 
 <section class="slide foco" data-id="cierre" data-quien="Yeray" data-pasos="1" style="--fx:50%;--fy:62%">
@@ -353,7 +398,6 @@
     <tr><td>MIVAU</td><td>5</td><td>SERPAVI: alquiler de contratos declarados, 2011-2024</td><td>Citando la fuente</td></tr> <!-- [^fuentes] -->
     <tr><td>Otros</td><td>7</td><td>Comisión Europea, Natural Earth, Instituto de Estadística de la Comunidad, Renfe, OpenStreetMap</td><td>Según fuente; OSM, ODbL</td></tr> <!-- [^fuentes] -->
   </table>
-  <p class="pie">Descartadas por licencia o método: Idealista, Fotocasa, fianzas. Fuente: data/README.md y docs/decisiones.md.</p>
 </section>
 
 <section class="slide anexo oculta" data-id="anexo-metodo" data-quien="Preguntas">
@@ -368,7 +412,6 @@
     <li><b>Registro previo.</b> El criterio se fija antes de ver el resultado; si se cambia después, se declara.</li>
     <li><b>Lo que falta, en gris.</b> Una zona sin dato nunca sale como cero.</li>
   </ul>
-  <p class="pie">Fuente: app/metodologia.html, docs/informe/cifras.md y docs/decisiones.md.</p>
 </section>
 
 <section class="slide anexo oculta" data-id="anexo-harness" data-quien="Preguntas">
@@ -381,7 +424,6 @@
     <li><b>Decisiones.</b> Cada elección de fuente, método o umbral queda fechada, con su porqué y quién la tomó.</li>
     <li><b>Humanos.</b> Deciden, aprueban cambios en las reglas y responden las dudas reales.</li>
   </ul>
-  <p class="pie">Fuente: AGENTS.md, .claude/README.md y .github/workflows.</p>
 </section>
 
 </main>
@@ -391,6 +433,16 @@
 
 <!--
 Notas de las cifras (las comprueba .github/scripts/cifras_con_fuente.py):
+[^issues]: GitHub: 215 issues del repositorio, 200 cerradas (gh issue list, 26-11-2026).
+[^ecv]: Sobrecarga de los hogares inquilinos (más del 40 % de la renta en vivienda): 36,0 % [28,6; 43,4], Comunidad de Madrid, ECV 2025 (IECM, microdatos); 580 hogares inquilinos. Estimado. docs/informe/cifras.md e informe técnico.
+[^escenarios]: mesobra.calculo con app/datos para Lucía (sola, 24.000 € brutos, Getafe, 5 días): base 291 € en Getafe y 467 € en Parla; alquiler +10 %: 202 y 396; sin descuento: transporte de 19,30 a 32,92 €/mes; con 25 años, transporte de 9,31 € (+9,99 en Getafe y +17,40 en Parla al cumplir 26); alquiler +10 % y sin descuento: 188 y 377. Estimado.
+[^ipva]: INE, Índice de Precios de Vivienda en Alquiler (IPVA), provincia de Madrid, 2024: contratos nuevos +9,2 %, contratos en vigor +2,7 % (tabla 59005, series IPVA9948 e IPVA9947); informe técnico, nota 84.
+[^revisiones]: Cuerpos de los 259 PR fusionados (gh pr list): 415 veredictos de agentes (252 APTO, 139 APTO CON RESERVAS, 22 NO APLICA, 2 NO APTO); por revisor: código 116, cálculos normativos 107, cifras 73, espacial 62, fuentes 44.
+[^conciliacion]: Los 54 códigos postales de Madrid capital suman 310.359 de las 310.601 viviendas arrendadas de la AEAT (99,9 %). docs/decisiones.md (2026-11-19).
+[^tarifas]: 1.890 celdas de tarifa: 21 claves de ruta × 6 colectivos × 5 días × 3 niveles de ocio. docs/decisiones.md (2026-11-20).
+[^decisiones]: docs/decisiones.md: 18 entradas con revisión de dm-abogado-del-diablo.
+[^conocimiento]: .claude/skills y .claude/agents: 5.233 líneas de SKILL.md, agentes y guías de referencia (32 guías). Recuento del 26-11-2026.
+[^recomendaciones]: Informe técnico (app/informe-tecnico.html), «Recomendaciones»: rechazo del Bono por motivo (sólida, coste bajo); renta del Bono para quien no declara (122 municipios o ninguno, estimado; coste nulo); prórroga del descuento (9,23 a 32,76 €/mes, estimado).
 [^serpavi]: Alquiler mediano entre renta neta media mensual del hogar, ciudad de Madrid, 2024: 19,6 %. SERPAVI (MIVAU) y ADRH (INE), app/datos/analisis.json (titulares); docs/informe/cifras.md.
 [^rango]: Esfuerzo 2024 entre zonas con al menos 70 alquileres declarados: Villanueva de la Cañada 12,6 %, Centro y Puente de Vallecas 24,0 %. docs/informe/cifras.md.
 [^ejemplo]: Persona de 30 años, sola, 24.000 € brutos, trabaja en Getafe cinco días. docs/como-funciona.md; estimado.

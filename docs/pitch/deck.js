@@ -8,28 +8,31 @@ const NOTAS = {
   'ciudad': { s: 5, texto: '«Una ciudad es muchas cosas.» [PAUSA]' },
   'luz': { s: 12, texto: '«Es una luz que se enciende en una ventana.» [→] «Es el trayecto de cada mañana.» [→] «Es el sitio al que vuelves cuando todo lo demás ha terminado.» [PAUSA]' },
   'cuenta': { s: 7, texto: '«Y durante años, vivir en ella se ha convertido en una cuenta que no sale.» [→ fórmula] [PAUSA LARGA]' },
-  'cifra': { s: 14, texto: '«En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares.» [→] «Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro.» [PAUSA]', cue: 'El render: cada columna es una zona; altura y color, lo que pesa el alquiler.' },
+  'cifra': { s: 16, texto: '«En la Comunidad de Madrid, uno de cada tres hogares que viven de alquiler dedica más del 40 % de lo que ingresa a la vivienda.» [→] «En la ciudad de Madrid, el alquiler mediano ya pesa un 19,6 % de la renta de los hogares.» [→] «Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro.» [PAUSA]', cue: '1 de cada 3 = 36,0 % (ECV 2025, intervalo 28,6–43,4; estimado). El render: altura y color, lo que pesa el alquiler en cada zona.' },
   'creemos-1': { s: 4, texto: '«Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía.»' },
-  'creemos-2': { s: 4, texto: '«Creemos que el tiempo que pasas en un tren también es un precio.»' },
+  'creemos-2': { s: 4, texto: '«Creemos que el tiempo que pasas en el transporte público también es un precio.»' },
   'creemos-3': { s: 4, texto: '«Y creemos que una decisión así merece algo más que un presentimiento.» [PAUSA]' },
   'respuesta': { s: 6, texto: '«Merece una respuesta.» [→ el mapa y el logo] «Esto es Kuanto. Alex.»' },
-  'directo': { s: 210, texto: '«Os presento a Lucía. Treinta años, vive sola, gana 24.000 euros brutos y trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» Demo en directo. Cierre: «176 euros más al mes en Parla, a cambio de catorce horas más de tren. ¿Le compensa? Ahora lo decide sabiendo. Izan.»', cue: 'Pestaña del túnel ya abierta con el estado de Lucía. Recorrido: tarjetas → «Ver el mapa» con «Lo que sobra» → Parla (467 €, 25,9 h) → «Horas de viaje» y «Precio de la hora» → «Otros escenarios»: fin del descuento. Vuelve aquí y avanza.' },
+  'directo': { s: 210, texto: '«Os presento a Lucía. Treinta años, vive sola, gana 24.000 euros brutos y trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» Demo en directo. Cierre: «176 euros más al mes en Parla, a cambio de catorce horas más de transporte público. ¿Le compensa? Ahora lo decide sabiendo. Izan.»', cue: 'Pestaña del túnel ya abierta con el estado de Lucía. Recorrido: tarjetas → «Ver el mapa» con «Lo que sobra» → Parla (467 €, 25,9 h) → «Horas de viaje» y «Precio de la hora» → «Otros escenarios»: fin del descuento. Vuelve aquí y avanza.' },
   'capas': { s: 18, texto: '«Hay muchos proyectos que miran el alquiler. Algunos añaden el tiempo. Nosotros hacemos la cuenta entera: siete capas. El neto con el IRPF de 2026, el abono más barato para cada persona, la cesta según ingresos, el hogar y, sobre todo, desde dónde trabajas tú.»' },
-  'lucia-mapa': { s: 20, texto: '«Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703, pero con casi 70 horas de tren al mes. En diez zonas, directamente, no le llega.»', cue: 'Verde hacia arriba: le sobra. Rojo hacia abajo: no le llega. Etiquetas en Getafe, Parla y Centro.' },
+  'lucia-mapa': { s: 20, texto: '«Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703, pero con casi 70 horas de transporte público al mes. En diez zonas, directamente, no le llega.»', cue: 'Verde hacia arriba: le sobra. Rojo hacia abajo: no le llega.' },
   'engana': { s: 14, texto: '«Mirar solo el alquiler engaña. En Chamartín el alquiler es más caro que en Centro, y aun así pesa menos: 16 % frente a 24 %.» [→] «Allí se gana un 78 % más.»' },
-  'horas': { s: 12, texto: '«Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren, valoradas a lo que ganas por hora, en una de cada siete combinaciones.»' },
-  'bono': { s: 18, texto: '«No es solo un problema de cada persona. 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y la proporción aceptada no cambia con lo que pesa el alquiler en cada municipio.» [→] «Con el sueldo mínimo, 16 municipios quedan fuera del tope; catorce, por menos de 80 euros.»' },
+  'horas': { s: 12, texto: '«Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de transporte público, valoradas a lo que ganas por hora, en una de cada siete combinaciones.»' },
+  'bono': { s: 18, texto: '«Cuatro de cada cinco solicitudes del Bono Alquiler Joven se quedaron sin ayuda: más de 40.000. Y no llega más donde más pesa el alquiler.» [→] «Y con el sueldo mínimo, Madrid capital se queda fuera del tope del Bono por 79 euros.»', cue: '51.735 solicitudes, 11.477 aceptadas (22,2 %). Son solicitudes, no personas.' },
   'abono': { s: 11, texto: '«Y lo que viene: si todo el descuento del abono termina con 2026, hasta 33 euros más al mes por adulto. A 21 de noviembre no se había publicado ninguna prórroga. Kuanto ya lo calcula, corona a corona.»' },
   'ia': { s: 12, texto: '«¿Y una IA? Lo probamos. ChatGPT y Gemini miraron entre cuatro y seis zonas, erraron el neto y cada uno puso un municipio en la zona de abono equivocada. Kuanto da cifra en 99. Yeray os cuenta cómo.»', cue: 'Cuatro respuestas: ilustra, no mide.' },
-  'timeline': { s: 20, texto: '«Lo construimos en quince días. Y empezamos por donde nadie empieza: por las reglas. Antes de analizar un solo dato, ya teníamos las skills de normativa, cartografía y fuentes, siete revisores y una CI que no perdona. Luego los datos, los modelos, el producto, y el 21 y el 23 congelamos los datos. 259 cambios, todos con la CI en verde.»' },
+  'timeline': { s: 22, texto: '«Lo organizamos como una empresa. Cuatro líneas de trabajo con un responsable cada una, y nueve puertas de calidad: nada pasaba a la siguiente fase sin cumplir la anterior. Primero las reglas y la CI; luego los contratos de datos, la API, el cálculo validado, el MCP; dos congelaciones de datos y el informe. 259 pull requests, 215 issues, 415 veredictos de agentes, 993 tests. Y ni una fusión sin la CI en verde.»' },
   'tuberia': { s: 16, texto: '«Así funciona por dentro. 89 fuentes oficiales, cada una con su huella. Un motor de trece mil quinientas líneas que aplica la ley y los horarios. Una API estática y congelada. Y de ahí, cinco salidas: la web, un MCP para asistentes de IA, Smart Data Models, DCAT-AP y el informe técnico. Sin servidor.»' },
-  'muro': { s: 14, texto: '«Detrás de cada cifra que habéis visto hay todo esto: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, microdatos de la ECV, 993 tests. Y cero cifras públicas sin fuente.»' },
+  'muro': { s: 16, texto: '«Detrás de cada número: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, trescientas diez mil viviendas conciliadas con Hacienda al 99,9 %, 1.890 combinaciones de tarifa, 415 veredictos de agentes. Y cero cifras públicas sin fuente.»' },
   'metodos': { s: 16, texto: '«Cada cifra tiene su método y su prueba. El neto, contra ocho casos calculados aparte sobre el BOE. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen.»' },
-  'maquinas': { s: 14, texto: '«Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, dieciséis guardias automáticos. Ningún cambio de un área con revisor entra sin su veredicto.»' },
+  'maquinas': { s: 16, texto: '«Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores con auditoría adversarial, dieciséis guardias automáticos. 415 veredictos documentados y más de cinco mil líneas de conocimiento experto escrito. Ningún cambio de un área con revisor entra sin su veredicto.»' },
   'privacidad': { s: 11, texto: '«Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.»' },
   'negocio': { s: 18, texto: '«Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en otra región, con sus propias fuentes.»' },
   'datamad': { s: 6, texto: '«Datos de la Comunidad dentro del cálculo. Viable. Abierto. Con valor social.»' },
   'cierre': { s: 12, texto: '«Empezamos diciendo que una ciudad es muchas cosas. Para demasiada gente, también es una cuenta que no sale.» [PAUSA] «Nadie debería descubrir demasiado tarde cuánto le cuesta su casa.» [→] «Esto es Kuanto. Gracias.»', cue: 'Tecla A: anexo para las preguntas.' },
+  'ysi': { s: 16, texto: '«Y lo que asusta es lo que viene. Si el alquiler sube un 10 %, a Lucía le sobran 89 euros menos: un 31 %. Si acaba el descuento del abono, su transporte casi se duplica. Si tuviera 25 años, al cumplir 26 perdería el Abono Joven. Y todo junto: un 35 % menos cada mes. No es teoría: en 2024 los contratos nuevos subieron un 9,2 %. Kuanto calcula cada ¿y si…? antes de que ocurra.»', cue: 'Escenarios del motor de la app, estimados.' },
+  'del-dato': { s: 12, texto: '«Y sin cajas negras: cada capa tiene su fuente, su método, su validación y su incertidumbre declarada. Si algo no lo sabemos, lo decimos.»', cue: 'Una mirada a la tabla; el detalle, para las preguntas.' },
+  'recomendaciones': { s: 14, texto: '«Y esto no se queda en un mapa. Tres decisiones que la Administración puede tomar mañana: publicar por qué se rechaza cada solicitud del Bono, decir qué renta cuenta para quien no declara, que cambia el resultado de 122 municipios a ninguno, y anunciar ya si el descuento del abono sigue en 2027.»' },
   'anexo-fuentes': { s: 0, texto: 'Anexo: fuentes por publicador. Esc para volver al cierre.' },
   'anexo-metodo': { s: 0, texto: 'Anexo: método y validación.' },
   'anexo-harness': { s: 0, texto: 'Anexo: cómo trabajan los agentes.' },
@@ -120,7 +123,7 @@ function pintarNotas() {
 // === ANIMACIONES POR DIAPOSITIVA ===
 const entradas = {
   corto(s) { const v = s.querySelector('video'); v.currentTime = 0; v.play().catch(() => {}); v.onended = () => { if (lista[i] === s) siguiente(); }; },
-  cifra() { contar(document.getElementById('contador196'), 19.6, 1, ' %', 2200); iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO); },
+  cifra() { iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO); },
   respuesta(s) { s.querySelector('#mereceFrase').style.opacity = 1; limpiar('particulas'); },
   'lucia-mapa'() { iso(document.getElementById('isoLucia'), RENDER_LUCIA); },
 };
@@ -238,19 +241,21 @@ function particulas() {
 
 // === TIMELINE: días, PR fusionados por día (gh pr list) y fases según los PR y docs/decisiones.md ===
 const PR_DIA = [5, 7, 20, 24, 23, 28, 10, 19, 20, 31, 9, 10, 18, 19, 16];
-const FASES = [
-  { ini: 11, fin: 13, fila: 0, t: 'Las reglas', s: 'skills, revisores, hooks y CI antes que los datos', c: '#9cc2f5' },
-  { ini: 14, fin: 15, fila: 1, t: 'Los datos', s: 'fuentes con huella; neto, tarifas y tiempos', c: '#2f7cf6' },
-  { ini: 16, fin: 19, fila: 0, t: 'Los modelos', s: 'esfuerzo, Bono (GLM y SEM), imputación espacial, MCP', c: '#3ddc97' },
-  { ini: 17, fin: 23, fila: 1, t: 'El producto', s: 'cálculo en el navegador, escenarios y seis tarjetas', c: '#ffd27a' },
-  { ini: 21, fin: 23, fila: 0, t: 'Datos congelados', s: 'zonas y tiempos el 21; euros y análisis el 23', c: '#bfad95' },
-  { ini: 24, fin: 25, fila: 1, t: 'El informe', s: 'técnico, estilo consultora, en web y PDF', c: '#ff9b6b' },
-  { ini: 26, fin: 26, fila: 0, t: 'Jurado', s: 'hoy', c: '#f5f5f7' },
+// Líneas de trabajo (fechas de los PR de cada responsable) y puertas de calidad (PR que las cierran).
+const LINEAS = [
+  { ini: 11, fin: 25, t: 'Gobierno, datos y euros', q: 'Yeray', c: '#9cc2f5' },
+  { ini: 11, fin: 25, t: 'Territorio, tiempos, web y MCP', q: 'Izan', c: '#2f7cf6' },
+  { ini: 22, fin: 25, t: 'Diseño y marca', q: 'Alex', c: '#ffd27a' },
+  { ini: 12, fin: 26, t: 'Calidad automatizada', q: 'agentes', c: '#3ddc97' },
 ];
-const HITOS = [13, 15, 17, 19, 21, 23, 25, 26];
+const PUERTAS = [
+  [13, 'G1', 'Reglas y CI'], [14, 'G2', 'Contratos de datos'], [15, 'G3', 'API estática v1'],
+  [17, 'G4', 'Cálculo validado'], [19, 'G5', 'MCP'], [21, 'G6', 'Datos congelados I'],
+  [23, 'G7', 'Datos congelados II'], [25, 'G8', 'Informe técnico'], [26, 'G9', 'Jurado'],
+];
 function construirTimeline() {
   const caja = document.getElementById('lineaTiempo');
-  if (caja.querySelector('.fase')) return;
+  if (caja.querySelector('.linea')) return;
   const x = (d) => ((d - 11) / 15) * 1600, retardo = (d) => `${0.4 + ((d - 11) / 15) * 3.2}s`;
   const dias = document.getElementById('dias'), prs = document.getElementById('prs');
   for (let d = 11; d <= 26; d++) {
@@ -263,32 +268,36 @@ function construirTimeline() {
     const b = document.createElement('i');
     b.dataset.n = n;
     b.style.left = `${x(11 + k)}px`;
-    b.style.setProperty('--h', `${(n / 31) * 150}px`);
+    b.style.setProperty('--h', `${(n / 31) * 110}px`);
     b.style.setProperty('--d', retardo(11 + k));
     prs.appendChild(b);
   });
-  for (const f of FASES) {
-    const final = f.ini === 26, el = document.createElement('div');
-    el.className = 'fase';
-    Object.assign(el.style, { left: `${final ? x(26) - 160 : x(f.ini)}px`, top: `${f.fila ? 250 : 40}px`, width: `${final ? 160 : 300}px`, textAlign: final ? 'right' : 'left' });
-    el.style.setProperty('--d', retardo(f.ini));
-    el.style.setProperty('--c', f.c);
-    const banda = document.createElement('div');
-    banda.className = 'banda';
-    banda.style.width = `${Math.max(18, x(f.fin) - x(f.ini))}px`;
-    if (final) banda.style.marginLeft = 'auto';
-    const t = document.createElement('b'); t.textContent = f.t;
-    const s = document.createElement('span'); s.textContent = f.s;
-    el.append(banda, t, s);
+  LINEAS.forEach((l, k) => {
+    const el = document.createElement('div');
+    el.className = 'linea';
+    Object.assign(el.style, { left: `${x(l.ini)}px`, top: `${10 + k * 68}px`, width: `${x(l.fin) - x(l.ini)}px` });
+    el.style.setProperty('--d', `${0.3 + k * 0.25}s`);
+    el.style.setProperty('--c', l.c);
+    const t = document.createElement('b'); t.textContent = `${l.t} `;
+    const q = document.createElement('span'); q.textContent = `· ${l.q}`;
+    t.appendChild(q);
+    el.append(t, document.createElement('i'));
     caja.appendChild(el);
-  }
-  for (const d of HITOS) {
+  });
+  PUERTAS.forEach(([d, g, texto], k) => {
+    const p = document.createElement('div');
+    p.className = 'puerta';
+    Object.assign(p.style, { left: `${x(d)}px`, top: `${k % 2 ? 418 : 380}px` });
+    p.style.setProperty('--d', retardo(d));
+    const e = document.createElement('em'); e.textContent = g;
+    p.append(e, texto);
+    caja.appendChild(p);
     const h = document.createElement('div');
     h.className = 'hito';
     h.style.left = `${x(d)}px`;
     h.style.setProperty('--d', retardo(d));
     caja.appendChild(h);
-  }
+  });
 }
 
 // === ARQUITECTURA: conectores con datos que fluyen ===

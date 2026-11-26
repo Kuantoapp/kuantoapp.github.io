@@ -281,3 +281,40 @@ body.ligero canvas.capa, body.ligero .metodo::after { display: none; }
 .estatico .placa { opacity: 1; transform: translateZ(var(--z)); }
 .estatico #mereceFrase { display: none; }
 .estatico .metodo::after { display: none; }
+
+/* === RONDA 3: contenido nuevo con el mismo sistema visual === */
+.est { font: 500 0.42em var(--fuente); letter-spacing: 0.5px; color: var(--texto-3); vertical-align: middle; white-space: nowrap; }
+.metodo .ok.est { font-size: 20px; color: var(--texto-3); }
+/* El tren recorre la vía de izquierda a derecha, en bucle */
+.tren { animation: tren 4.5s linear infinite; }
+@keyframes tren { from { transform: translateX(-340px); } to { transform: translateX(340px); } }
+.tres figure:nth-child(2) svg { overflow: hidden; }
+/* Muro de 16 cifras */
+.muro { gap: 22px 40px; }
+.muro b { font-size: 64px; }
+.muro div { padding-top: 14px; }
+/* Desglose metodológico */
+.tabla.desglose { top: 290px; font-size: 24px; }
+.tabla.desglose td { padding: 15px 14px; }
+.tabla.desglose td:first-child { font-weight: 600; color: var(--acento); white-space: nowrap; }
+/* Equipo: piezas en 3 filas y barras de revisores */
+.piezas { gap: 26px 40px; }
+.pieza b { font-size: 86px; letter-spacing: -3px; }
+.pieza span { font-size: 24px; }
+.revisores { position: absolute; left: 1010px; top: 830px; width: 780px; }
+.revisores div { display: grid; grid-template-columns: 240px 1fr 60px; align-items: center; gap: 16px; height: 40px; font: 500 22px var(--fuente); color: var(--texto-2); }
+.revisores i { display: block; height: 14px; border-radius: 7px; background: linear-gradient(90deg, var(--azul), var(--acento)); width: 0; transition: width 1.2s var(--curva) 2.6s; }
+.slide.active .revisores i, .estatico .revisores i { width: var(--w); }
+.revisores b { color: var(--texto); font-weight: 600; text-align: right; }
+/* Timeline corporativo: líneas de trabajo, puertas y KPIs */
+.prs i { max-height: 110px; }
+.linea { position: absolute; opacity: 0; transform: translateX(-20px); transition: opacity .6s ease var(--d), transform .8s var(--curva) var(--d); }
+.slide.active .linea, .estatico .linea { opacity: 1; transform: none; }
+.linea b { display: block; font: 600 24px var(--fuente); letter-spacing: -0.3px; margin-bottom: 8px; white-space: nowrap; }
+.linea b span { color: var(--texto-3); font-weight: 500; }
+.linea i { display: block; height: 10px; border-radius: 5px; background: var(--c); box-shadow: 0 0 16px var(--c); }
+.puerta { position: absolute; transform: translateX(-50%); font: 600 20px var(--fuente); white-space: nowrap; color: var(--texto-2); opacity: 0; transition: opacity .5s ease var(--d); }
+.puerta em { font-style: normal; color: var(--acento); margin-right: 6px; }
+.slide.active .puerta, .estatico .puerta { opacity: 1; }
+.kpis { position: absolute; left: 140px; right: 140px; top: 960px; display: flex; justify-content: space-between; font: 400 24px var(--fuente); color: var(--texto-2); border-top: 1px solid var(--linea); padding-top: 18px; }
+.kpis b { font: 700 34px var(--fuente); color: var(--texto); margin-right: 8px; letter-spacing: -1px; }
