@@ -72,27 +72,27 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 >
 > Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de transporte público, valoradas a lo que ganas por hora, en una de cada siete combinaciones. [^horas]
 >
-> No es solo un problema de cada persona. Cuatro de cada cinco solicitudes del Bono Alquiler Joven se quedaron sin ayuda: más de 40.000. Y no llega más donde más pesa el alquiler. [→] Y con el sueldo mínimo, Madrid capital se queda fuera del tope del Bono por 79 euros. [^bono]
+> No es solo un problema de cada persona. Casi cuatro de cada cinco solicitudes del Bono Alquiler Joven se quedaron sin ayuda: más de 40.000. Y la proporción aceptada no cambia con lo que pesa el alquiler. [→] Y con el sueldo mínimo, Madrid capital se queda fuera del tope del Bono por 79 euros. [^bono]
 >
 > Y lo que viene: si todo el descuento del abono termina con 2026, hasta 33 euros más al mes por adulto. A 21 de noviembre no se había publicado ninguna prórroga. Kuanto ya lo calcula, corona a corona. [^abono]
 >
-> Y lo que asusta es lo que viene. Si el alquiler sube un 10 %, a Lucía le sobran 89 euros menos: un 31 %. Si acaba el descuento del abono, su transporte casi se duplica. Si tuviera 25 años, al cumplir 26 perdería el Abono Joven. Y todo junto, un 35 % menos cada mes. No es teoría: en 2024 los contratos nuevos subieron un 9,2 %. Kuanto calcula cada «¿y si…?» antes de que ocurra. [^escenarios]
+> Y lo que asusta es lo que viene. Si el alquiler sube un 10 %, a Lucía le sobran 90 euros menos: un 31 %. Si acaba el descuento del abono, su transporte sube un 70 %. Si tuviera 25 años, al cumplir 26 perdería el Abono Joven. Y todo junto, un 35 % menos cada mes. Y un 10 % no es exagerado: en 2024 el precio de los contratos nuevos subió un 9,2 %. Kuanto calcula cada «¿y si…?» antes de que ocurra. [^escenarios]
 >
 > ¿Y una IA? Lo probamos. ChatGPT y Gemini miraron entre cuatro y seis zonas, erraron el neto y cada uno puso un municipio en la zona de abono equivocada. Kuanto da cifra en 99. Yeray os cuenta cómo. [^ia]
 
 ## 4. Yeray · Cómo, negocio y cierre (2:15)
 
-> Lo organizamos como una empresa. Cuatro líneas de trabajo con un responsable cada una, y nueve puertas de calidad: nada pasaba a la siguiente fase sin cumplir la anterior. Primero las reglas y la CI, antes de analizar un solo dato; luego los contratos de datos, la API, el cálculo validado, el MCP; dos congelaciones de datos y el informe. 259 pull requests, 215 issues, 415 veredictos de agentes, 993 tests. Y ni una fusión sin la CI en verde. [^git]
+> Lo organizamos como una empresa. Cuatro líneas de trabajo con un responsable cada una, y nueve hitos: las reglas y la CI antes de analizar un solo dato; luego los contratos de datos, la API, el cálculo validado, el MCP; dos congelaciones de datos y el informe. 259 pull requests, 215 issues, 393 veredictos de agentes, 993 tests. Y ni una fusión sin la CI en verde. [^git]
 >
 > Así funciona por dentro. 89 descargas de fuentes oficiales y abiertas, cada una con su huella. Un motor de trece mil quinientas líneas que aplica la ley y los horarios. Una API estática y congelada. Y de ahí, cinco salidas: la web, un MCP para asistentes de IA, Smart Data Models, DCAT-AP y el informe técnico. Sin servidor. [^codigo]
 >
-> Detrás de cada número: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, trescientas diez mil viviendas conciliadas con Hacienda al 99,9 %, 1.890 combinaciones de tarifa, 415 veredictos de agentes. Y cero cifras públicas sin fuente. [^met]
+> Detrás de cada número: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, trescientas diez mil viviendas conciliadas con Hacienda al 99,9 %, 1.890 combinaciones de tarifa, 393 veredictos de agentes. Y cero cifras públicas sin fuente. [^met]
 >
 > Cada cifra tiene su método y su prueba. El neto, contra ocho casos calculados aparte sobre el BOE. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen. [^met]
 >
 > Y sin cajas negras: cada capa tiene su fuente, su método, su validación y su incertidumbre declarada. Si algo no lo sabemos, lo decimos.
 >
-> Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores con auditoría adversarial, dieciséis guardias automáticos. 415 veredictos documentados y más de cinco mil líneas de conocimiento experto escrito. Ningún cambio de un área con revisor entra sin su veredicto. [^harness]
+> Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores con auditoría adversarial, dieciséis guardias automáticos. 393 veredictos documentados y más de cinco mil líneas de conocimiento experto escrito. Ningún cambio de un área con revisor entra sin su veredicto. [^harness]
 >
 > Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.
 >

@@ -61,7 +61,7 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 - Lo único que se guarda en el equipo es si prefieres el tema claro u oscuro.
 
 **¿Qué significa «auditoría adversarial»?**
-- Es el agente `dm-abogado-del-diablo`: busca los supuestos sin comprobar y las alternativas que no se vieron antes de cerrar una decisión. Revisó 18 decisiones de `docs/decisiones.md`. [^decisiones]
+- Es el agente `dm-abogado-del-diablo`: busca los supuestos sin comprobar y las alternativas que no se vieron antes de cerrar una decisión. Revisó 17 decisiones de `docs/decisiones.md`. [^decisiones]
 
 **¿Lo ha hecho una IA?**
 - El código lo escriben agentes, sí. Pero otros agentes lo auditan: un abogado del diablo, un auditor de cálculos normativos y un trazador de cifras, entre otros.
@@ -79,4 +79,4 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 [^sdm]: `app/datos/sdm` (158 + 1.512 entidades); nota metodológica, «Mantenimiento».
 [^fuentes]: `data/README.md` y `docs/decisiones.md` (2026-11-16, requisito del catálogo).
 [^ia]: `docs/kuanto-frente-a-ia.md`, prueba del 25-11-2026 con cuatro respuestas.
-[^decisiones]: `docs/decisiones.md`: 18 entradas revisadas por `dm-abogado-del-diablo`.
+[^decisiones]: `docs/decisiones.md`: 17 entradas revisadas por `dm-abogado-del-diablo`.
