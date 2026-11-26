@@ -69,6 +69,16 @@ python -m mesobra
 
 Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](docs/reproducir.md).
 
+## Lo que no hemos podido implementar
+
+- **Un chatbot con IA dentro de la web:** los proveedores de modelos no dejan claro qué hacen con las conversaciones, y en ellas iría el sueldo y el hogar de quien pregunta. En su lugar hay un asistente MCP local.
+- **La tarifa por la ruta real de cada trayecto:** el cálculo de rutas se queda sin memoria; la tarifa se estima y se marca como estimada.
+- **Horarios fiables de todas las líneas del CRTM:** parte de los GTFS traen horarios de relleno u horas imposibles; esos viajes se reconstruyen como estimados.
+- **Cercanías con ruta propia, y coche con tráfico, aparcamiento y peajes:** no hay datos de calidad suficiente ni una fuente primaria general.
+- **El precio de oferta del alquiler:** los portales prohíben el scraping y no hay fuente pública por barrio.
+
+El motivo de cada una y lo que hace Kuanto en su lugar están en [Lo que no hemos podido implementar](docs/no-implementado.md).
+
 ## Documentación
 
 | Si quieres… | Empieza por |
@@ -85,6 +95,7 @@ Los pasos previos, los tests y el asistente MCP están en [Reproducir Kuanto](do
 | Comprobar una cifra hasta su origen | [Trazabilidad](docs/trazabilidad.md) |
 | Ejecutar el código o los tests | [Reproducir Kuanto](docs/reproducir.md) |
 | Ver a dónde va Kuanto | [Hoja de ruta](docs/hoja-de-ruta.md) |
+| Saber qué se quedó fuera y por qué | [Lo que no hemos podido implementar](docs/no-implementado.md) |
 | Colaborar en el repositorio | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Ver todo lo que hay | [Mapa de la documentación](docs/README.md) |
 
