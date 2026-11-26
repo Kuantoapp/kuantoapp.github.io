@@ -1,6 +1,6 @@
 # Guion del pitch de Kuanto (DataMad 2026, ante el jurado)
 
-Duración prevista: 9:45, unos 45 s por encima de los 9:00 (aceptado por el equipo). Orden: Yeray, Alex, Izan, Yeray. <!-- sin-fuente: duración y orden del equipo -->
+Duración prevista: 10:20, unos 80 s por encima de los 9:00 (aceptado por el equipo). Orden: Yeray, Alex, Izan, Yeray. <!-- sin-fuente: duración y orden del equipo -->
 
 Se presenta con `docs/pitch/index.html`. Teclas:
 - `→` o espacio: siguiente diapositiva, o siguiente paso dentro de ella.
@@ -18,7 +18,7 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 | Apertura | Yeray | 1:30 | corto → «Merece una respuesta» |
 | Demo en directo | Alex | 3:30 | una sola: «En directo» |
 | Por qué | Izan | 2:00 | capas → mapa de Lucía → Chamartín → horas → Bono → abono → «¿Y si…?» → IA |
-| Cómo, negocio y cierre | Yeray | 2:45 | timeline → arquitectura → cifras → métodos → del dato a la cifra → equipo → privacidad → recomendaciones → mercados → DataMad → cierre |
+| Cómo, negocio y cierre | Yeray | 3:20 | timeline → arquitectura → cifras → métodos → del dato a la cifra → equipo → privacidad → lo que no hacemos → recomendaciones → mercados → apoyo → DataMad → cierre |
 
 <!-- sin-fuente: tiempos del guion -->
 
@@ -96,9 +96,13 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 >
 > Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.
 >
+> Y también es rigor lo que no hacemos. No damos un índice de «dónde vivir» con pesos que alguien elige. No usamos precios de anuncios. No pintamos ceros donde no hay datos. No extrapolamos. Porque llegar a fin de mes es una decisión demasiado seria para darla a medias. No es que no sepamos hacerlo: es que no queremos hacerlo a medias. Está en nuestra hoja de ruta, con las mismas reglas.
+>
 > Y esto no se queda en un mapa. Tres decisiones que la Administración puede tomar mañana: publicar por qué se rechaza cada solicitud del Bono, decir qué renta cuenta para quien no declara, que cambia el resultado de 122 municipios a ninguno, y anunciar ya si el descuento del abono sigue en 2027. [^recomendaciones]
 >
 > Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en otra región, con sus propias fuentes. [^sdm]
+>
+> Y no lo decimos solo nosotros. Félix Peralta y Alberto Martos revisaron el proyecto y nos dieron feedback durante el desarrollo. Y cuando lo contamos en LinkedIn: 40 reacciones, 17 comentarios positivos. La gente busca esto: saber, antes de firmar, si va a llegar a fin de mes. [^linkedin]
 >
 > Datos de la Comunidad dentro del cálculo. Viable. Abierto. Con valor social.
 >
@@ -111,6 +115,7 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 - Proyector en espejo. Modo orador (`P`) en el portátil si se puede extender la pantalla; si no, este guion impreso.
 - `docs/pitch/pitch.pdf` es el respaldo, sin animaciones.
 
+[^linkedin]: Post de Kuanto en LinkedIn: 40 reacciones, 4 compartidos y 17 comentarios positivos, según el equipo a 26-11-2026.
 [^ecv]: Sobrecarga de los hogares inquilinos: 36,0 % [28,6; 43,4], Comunidad de Madrid, ECV 2025, estimado. `docs/informe/cifras.md`.
 [^escenarios]: `mesobra.calculo` para Lucía: alquiler +10 %, de 291 a 202 € en Getafe; sin descuento, transporte de 19,30 a 32,92 €; con 25 años, +9,99 € en Getafe y +17,40 € en Parla al cumplir 26; las dos cosas juntas, 188 €. Contratos nuevos +9,2 % y en vigor +2,7 % en 2024 (INE, IPVA, provincia de Madrid). Estimado.
 [^recomendaciones]: Informe técnico, «Recomendaciones» (122 municipios o ninguno, estimado).

@@ -63,6 +63,12 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 **¿Qué significa «auditoría adversarial»?**
 - Es el agente `dm-abogado-del-diablo`: busca los supuestos sin comprobar y las alternativas que no se vieron antes de cerrar una decisión. Revisó 17 decisiones de `docs/decisiones.md`. [^decisiones]
 
+**¿Por qué no hay un filtro multicriterio de «dónde vivir»?**
+- Porque los pesos los elegiría alguien y cambian el ranking, y cada indicador (ruido, servicios, seguridad) necesita fuente, licencia y escala comprobadas. Está en la hoja de ruta («Calidad de vida») con las mismas reglas: si un indicador solo existe por municipio, se dice.
+
+**¿Quién os ha dado feedback?**
+- Félix Peralta y Alberto Martos revisaron el proyecto durante el desarrollo, y el post de LinkedIn tuvo 40 reacciones y 17 comentarios positivos (según el equipo, a 26-11-2026). [^linkedin]
+
 **¿Lo ha hecho una IA?**
 - El código lo escriben agentes, sí. Pero otros agentes lo auditan: un abogado del diablo, un auditor de cálculos normativos y un trazador de cifras, entre otros.
 - La CI no deja fusionar nada sin el veredicto del revisor de su área.
@@ -80,3 +86,4 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 [^fuentes]: `data/README.md` y `docs/decisiones.md` (2026-11-16, requisito del catálogo).
 [^ia]: `docs/kuanto-frente-a-ia.md`, prueba del 25-11-2026 con cuatro respuestas.
 [^decisiones]: `docs/decisiones.md`: 17 entradas revisadas por `dm-abogado-del-diablo`.
+[^linkedin]: Post de Kuanto en LinkedIn, cifras aportadas por el equipo a 26-11-2026.
