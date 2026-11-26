@@ -10,6 +10,12 @@
 
 [![Portada de Kuanto: «Cuánto te sobra al mes, zona a zona», con el mapa de zonas de la Comunidad de Madrid](docs/img/portada.png)](https://kuantoapp.github.io/)
 
+## Kuanto en un minuto
+
+[![Vídeo explicativo de Kuanto: «¿Cuánto te sobra al mes? según dónde vivas en la Comunidad de Madrid». Pulsa para verlo](docs/img/video-explicativo.jpg)](https://kuantoapp.github.io/video/explicativo.mp4)
+
+[▶ Ver el vídeo explicativo](https://kuantoapp.github.io/video/explicativo.mp4) (1 min, sin sonido, con subtítulos; también en [`app/video/explicativo.mp4`](app/video/explicativo.mp4)). Datos del vídeo: INE, Comunidad de Madrid, MIVAU, AEAT, CRTM (Powered by CRTM), BOE y © OpenStreetMap contributors (ODbL); detalle en [`data/README.md`](data/README.md). <!-- sin-fuente: duración del vídeo -->
+
 ## El problema
 
 Al elegir dónde vivir se compara el alquiler, pero el alquiler es solo una parte. Un piso más barato lejos del trabajo puede salir caro en abono y en horas de viaje, y lo que de verdad importa es lo que queda a fin de mes. Ese dato no lo publica nadie zona a zona: está repartido entre el INE, el Ministerio de Vivienda, la Agencia Tributaria, el Consorcio de Transportes y el BOE.
