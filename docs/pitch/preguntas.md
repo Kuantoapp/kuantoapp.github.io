@@ -4,10 +4,10 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 
 ## Rigor (Lorenzo Escot)
 
-**¿El 19,6 % y las 68 zonas que suben no exageran?** [^serpavi]
+**¿El esfuerzo del alquiler está subiendo?** [^serpavi]
 - El 19,6 % es de la ciudad de Madrid: alquiler mediano de contratos declarados entre la renta neta media del hogar. [^serpavi]
 - De las 142 zonas con dato en los dos años, sube en 68. [^cambio]
-- Solo 31 suben más que su margen de error, y la mediana del cambio es casi cero. Lo decimos en el informe: el mensaje es que el esfuerzo no baja, no que se dispare. [^cambio]
+- Solo 31 suben más que su margen de error, y la mediana del cambio es casi cero. Lo decimos en el informe: el esfuerzo se mantiene; no se dispara. [^cambio]
 
 **¿Cómo sabéis que el neto está bien?**
 - Hemos calculado a mano 8 casos completos, de 17.094 a 80.000 € brutos, con el IRPF estatal y el de Madrid y las cotizaciones de 2026. [^metodo]
@@ -19,7 +19,7 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 - La web enseña la horquilla P25–P75, y donde no hay dato sale en gris, nunca como cero. [^metodo]
 
 **¿p = 0,82 quiere decir que el Bono funciona igual en todas partes?** [^bono]
-- Quiere decir que la proporción de solicitudes aceptadas no se mueve con el esfuerzo del alquiler del municipio.
+- Quiere decir que no se aprecia relación entre la proporción aceptada y el esfuerzo del alquiler del municipio. No prueba que no la haya, y hay un indicio de que se pide más donde el alquiler pesa más (estimado). [^bono]
 - Publicamos 9 especificaciones, también las que no salen significativas, con el registro previo hecho antes de ver el resultado. [^bono]
 
 **¿Cuánto os fiáis de los tiempos de viaje?**

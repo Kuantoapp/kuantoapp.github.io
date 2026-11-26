@@ -14,7 +14,7 @@
 <!-- ============ YERAY · APERTURA (1:30) ============ -->
 
 <section class="slide" data-id="corto" data-quien="Yeray">
-  <video id="corto" src="video/corto.mp4" playsinline preload="auto"></video>
+  <video id="corto" src="video/corto.mp4" playsinline preload="auto" aria-label="Corto de presentación de Kuanto"></video>
 </section>
 
 <section class="slide" data-id="ciudad" data-quien="Yeray">
@@ -59,10 +59,11 @@
   <div style="position:absolute;left:150px;top:200px;width:820px">
     <p class="gigante a num" id="contador196">19,6 %</p> <!-- [^serpavi] -->
     <p class="a" style="--d:.6s;font:400 46px/1.25 var(--serif);margin:56px 0 0">del ingreso neto de un hogar de la ciudad de Madrid se va en el alquiler mediano.</p>
-    <p class="a" data-paso="1" style="font:400 46px/1.25 var(--serif);margin:40px 0 0">En <span class="rojo">68 de 142 zonas</span>, ese peso ha subido desde 2015.</p> <!-- [^cambio] -->
+    <p class="a" data-paso="1" style="font:400 46px/1.25 var(--serif);margin:40px 0 0">Y no pesa igual en todas partes: del <span class="verde">12,6 %</span> de Villanueva de la Cañada al <span class="rojo">24,0 %</span> de Centro.</p> <!-- [^rango] -->
   </div>
-  <svg class="mapa" id="mapaSube" viewBox="0 0 900 900" style="left:990px;top:110px"></svg>
-  <p class="pie">Fuente: SERPAVI (MIVAU) y Atlas de Distribución de Renta de los Hogares (INE), 2015 y 2024. Elaboración propia.</p>
+  <svg class="mapa" id="mapaSube" viewBox="0 0 900 900" style="left:990px;top:110px" role="img" aria-label="Mapa de la Comunidad de Madrid con las zonas donde el alquiler pesa más del 18 % de la renta"></svg>
+  <div class="leyenda-mapa a" data-paso="1"><span><i style="background:var(--pierdes)"></i>Más del 18 % (quintil alto)</span><span><i style="background:#13233a"></i>Menos</span><span><i style="background:#2a313c"></i>Sin dato</span></div> <!-- [^rango] -->
+  <p class="pie">Fuente: SERPAVI (MIVAU) y Atlas de Distribución de Renta de los Hogares (INE), 2024. Zonas con al menos 70 alquileres declarados en el rango. Elaboración propia.</p>
 </section>
 
 <section class="slide" data-id="creemos-1" data-quien="Yeray">
@@ -80,8 +81,8 @@
 <section class="slide fondo" data-id="respuesta" data-quien="Yeray" data-pasos="1">
   <canvas class="capa" id="particulas" width="1920" height="1080"></canvas>
   <div class="frase" id="mereceFrase"><p class="a">Merece una respuesta.</p></div>
-  <img class="logo-k a" data-paso="1" style="--d:1.6s" src="img/logo.svg" alt="Logotipo de Kuanto">
-  <p class="marca a" data-paso="1" style="--d:2s">Kuanto</p>
+  <img class="logo-k a" data-paso="1" style="--d:1.6s" src="img/logo.svg" alt="">
+  <h1 class="marca a" data-paso="1" style="--d:2s">Kuanto</h1>
   <p class="lema a" data-paso="1" style="--d:2.6s">Cuánto te <b>sobra</b> al mes, zona a zona.</p>
 </section>
 
@@ -108,21 +109,25 @@
 <section class="slide fondo oculta" data-id="planb-tarjetas" data-quien="Alex">
   <h2 class="tit" style="font-size:60px;top:90px">Seis tarjetas: hogar, sueldo, trabajo y escenarios.</h2>
   <img class="captura" src="capturas/tarjeta-2026-11-26.png" alt="Captura de la herramienta: tarjeta del recorrido guiado">
+  <p class="pie">Captura de la herramienta, 26-11-2026. Fuente: Kuanto, estimado.</p>
 </section>
 
 <section class="slide fondo oculta" data-id="planb-mapa" data-quien="Alex">
   <h2 class="tit" style="font-size:60px;top:90px">Lo que le sobra a Lucía, zona a zona.</h2>
   <img class="captura" src="capturas/mapa-sobra-2026-11-26.png" alt="Captura de la herramienta: mapa de lo que sobra al mes para Lucía">
+  <p class="pie">Captura de la herramienta, 26-11-2026. Fuente: Kuanto, estimado.</p>
 </section>
 
 <section class="slide fondo oculta" data-id="planb-parla" data-quien="Alex">
-  <h2 class="tit" style="font-size:60px;top:90px">Parla: más dinero, más horas.</h2>
+  <h2 class="tit" style="font-size:60px;top:90px">Parla: 467 € al mes y 25,9 h de tren.</h2> <!-- [^ejemplo] -->
   <img class="captura" src="capturas/ficha-parla-2026-11-26.png" alt="Captura de la herramienta: ficha de Parla con lo que sobra y las horas de viaje">
+  <p class="pie">Captura de la herramienta, 26-11-2026. Fuente: Kuanto, estimado.</p>
 </section>
 
 <section class="slide fondo oculta" data-id="planb-hora" data-quien="Alex">
   <h2 class="tit" style="font-size:60px;top:90px">¿Cuánto vale cada hora de tren?</h2>
   <img class="captura" src="capturas/mapa-precio-hora-2026-11-26.png" alt="Captura de la herramienta: mapa del precio de la hora de viaje">
+  <p class="pie">Captura de la herramienta, 26-11-2026. Fuente: Kuanto, estimado.</p>
 </section>
 
 <section class="slide fondo" data-id="tres-zonas" data-quien="Alex" data-pasos="1">
@@ -170,36 +175,36 @@
 </section>
 
 <section class="slide" data-id="horas" data-quien="Izan">
-  <h2 class="tit a">Vivir lejos solo compensa en <em>1 de cada 7</em> casos.</h2> <!-- [^horas] -->
+  <h2 class="tit a">Con el sueldo mínimo, vivir lejos compensa en <em>1 de cada 7</em> casos.</h2> <!-- [^horas] -->
   <div class="siete a" style="--d:.4s">
-    <svg class="casa una" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
-    <svg class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa una" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
+    <svg aria-hidden="true" class="casa" viewBox="0 0 170 190"><path d="M15 85 L85 20 L155 85 V175 H15 Z"/></svg>
   </div>
-  <p class="aparte a" style="--d:1.4s;top:700px">Con el sueldo mínimo, lo que ahorras en alquiler por vivir lejos solo paga las horas de tren en 1 de cada 7 combinaciones de casa y trabajo.</p> <!-- [^horas] -->
+  <p class="aparte a" style="--d:1.4s;top:700px">Con el sueldo mínimo, lo que ahorras en alquiler por vivir lejos solo paga las horas de tren, a lo que ganas por hora trabajada, en 1 de cada 7 combinaciones de casa y trabajo.</p> <!-- [^horas] -->
   <p class="pie">1.218 de 8.620 pares de zona de casa y de trabajo (14,1 %). Fuente: Kuanto, analisis.json, estimado.</p>
 </section>
 
 <section class="slide fondo" data-id="bono" data-quien="Izan" data-pasos="1">
-  <h2 class="tit a">El Bono Alquiler Joven no llega más donde más cuesta vivir.</h2>
+  <h2 class="tit a">El Bono Alquiler Joven no acepta más donde más pesa el alquiler.</h2>
   <div class="embudo">
     <div class="barra total" style="--w:100%">51.735 <small>solicitudes en 2022</small></div> <!-- [^bono] -->
     <div class="barra si" style="--w:22.2%;--d:1.2s">11.477 <small>aceptadas · 22,2 %</small></div> <!-- [^bono] -->
   </div>
-  <p class="aparte a" style="--d:2.4s;top:640px">Y cuánto se acepta no depende de lo que pesa el alquiler (p = 0,82).</p> <!-- [^bono] -->
+  <p class="aparte a" style="--d:2.4s;top:640px">La proporción aceptada no cambia con lo que pesa el alquiler (p = 0,82; estimado).</p> <!-- [^bono] -->
   <p class="aparte a" data-paso="1" style="top:790px;color:var(--texto-2);font-size:44px">Con el sueldo mínimo, 16 municipios quedan fuera del tope del Bono. 14, por menos de 80 €.</p> <!-- [^bono] -->
   <p class="pie">Fuente: catálogo de datos abiertos de la Comunidad de Madrid (Bono Alquiler Joven 2022); modelo y simulación de Kuanto, estimado.</p>
 </section>
 
 <section class="slide" data-id="abono" data-quien="Izan">
-  <h2 class="tit a">2027: la subida que nadie ha anunciado.</h2>
+  <h2 class="tit a">2027: lo que subiría el abono si no se prorroga el descuento.</h2>
   <div style="position:absolute;left:150px;top:300px">
     <p class="gigante a num" style="--d:.4s"><span class="rojo">+33 €</span></p> <!-- [^abono] -->
-    <p class="a" style="--d:1s;font:400 46px/1.3 var(--serif);width:1400px;margin:50px 0 0">al mes por adulto, como mucho, si el descuento del abono termina con 2026. Desde 9 € en la zona A. Lo sabemos zona a zona.</p> <!-- [^abono] -->
+    <p class="a" style="--d:1s;font:400 46px/1.3 var(--serif);width:1400px;margin:50px 0 0">al mes por adulto, como mucho, si termina todo el descuento con 2026. En la zona A, de 9 a 20 € según qué parte se retire. Lo sabemos zona a zona.</p> <!-- [^abono] -->
   </div>
   <p class="pie">De 9,23 a 32,76 €/mes según la zona; 9,30 € con el Abono Joven. Fuente: BOCM-20251231-2 y -3, RDL 17/2025; simulación de Kuanto, estimado.</p>
 </section>
@@ -229,7 +234,7 @@
 <section class="slide" data-id="traza" data-quien="Yeray" data-pasos="1">
   <h2 class="tit a">Cada cifra se puede seguir hasta su origen.</h2>
   <div class="cadena">
-    <div class="eslabon a" style="--d:.3s"><div class="k">La cifra</div><div class="v">+467 €</div><p>lo que le sobra a Lucía en Parla</p></div> <!-- [^ejemplo] -->
+    <div class="eslabon a" style="--d:.3s"><div class="k">La cifra</div><div class="v">+467 €</div><p>lo que le sobra a Lucía en Parla (estimado)</p></div> <!-- [^ejemplo] -->
     <div class="eslabon a" style="--d:.8s"><div class="k">El cálculo</div><div class="v">calculo.js</div><p>neto − alquiler − abono − cesta, en tu navegador</p></div>
     <div class="eslabon a" style="--d:1.3s"><div class="k">El dato</div><div class="v">alquiler.json</div><p>contratos declarados, IPC y brecha de los contratos nuevos (AEAT)</p></div>
     <div class="eslabon a" style="--d:1.8s"><div class="k">El origen</div><div class="v">SERPAVI</div><code>sha256 f00ca4d7f27d23f8 11b229d97e65e385</code><p>Ministerio de Vivienda, descargado el 15-11-2026</p></div> <!-- sin-fuente: huella y fecha de descarga, no cifras -->
@@ -244,8 +249,8 @@
   <div class="piezas">
     <div class="pieza a" style="--d:.6s"><b>12</b><span>skills de dominio: normativa, cartografía, modelos, fuentes</span></div> <!-- [^harness] -->
     <div class="pieza a" style="--d:.9s"><b>8</b><span>agentes revisores, abogado del diablo incluido</span></div> <!-- [^harness] -->
-    <div class="pieza a" style="--d:1.2s"><b>11</b><span>hooks: datos originales intocables, formato, contexto</span></div> <!-- [^harness] -->
-    <div class="pieza a" style="--d:1.5s"><b>3</b><span>flujos de CI: sin veredicto del revisor, no hay merge</span></div>
+    <div class="pieza a" style="--d:1.2s"><b>16</b><span>hooks: datos originales intocables, formato, contexto</span></div> <!-- [^harness] -->
+    <div class="pieza a" style="--d:1.5s"><b>2</b><span>flujos de CI: sin veredicto del revisor de su área, no hay merge</span></div> <!-- [^harness] -->
   </div>
   <p class="pie">Fuente: .claude/ y .github/ del repositorio; AGENTS.md.</p>
 </section>
@@ -257,7 +262,7 @@
   <div class="cifras-lado">
     <div class="a" style="--d:.4s"><b class="num">259</b><span>pull requests fusionados</span></div> <!-- [^git] -->
     <div class="a" style="--d:.7s"><b class="num">993</b><span>tests automáticos</span></div> <!-- [^git] -->
-    <div class="a" style="--d:1s"><b class="num">130</b><span>decisiones fechadas y justificadas</span></div> <!-- [^git] -->
+    <div class="a" style="--d:1s"><b class="num">131</b><span>decisiones fechadas y justificadas</span></div> <!-- [^git] -->
   </div>
   <p class="pie">Fuente: GitHub (pull requests fusionados del 11 al 25 de noviembre), pytest y docs/decisiones.md.</p>
 </section>
@@ -306,7 +311,7 @@
 
 <section class="slide fondo" data-id="cierre" data-quien="Yeray" data-pasos="1">
   <div class="frase" style="top:330px;transform:none"><p class="a lenta">Nadie debería descubrir demasiado tarde<br>cuánto le cuesta su casa.</p></div>
-  <img class="logo-k a" data-paso="1" style="top:610px;width:120px" src="img/logo.svg" alt="Logotipo de Kuanto">
+  <img class="logo-k a" data-paso="1" style="top:610px;width:120px" src="img/logo.svg" alt="">
   <p class="lema a" data-paso="1" style="--d:.5s;top:770px;font:400 64px var(--serif);color:var(--texto)">Kuanto</p>
   <p class="lema a" data-paso="1" style="--d:.9s;top:870px">Yeray · Alex · Izan</p>
 </section>
@@ -333,9 +338,9 @@
   <h2 class="tit">Anexo · Método y validación</h2>
   <ul class="lista-anexo">
     <li><b>Neto.</b> IRPF estatal y de Madrid y cotizaciones de 2026; 8 casos completos calculados a mano, de 17.094 a 80.000 €; la interpolación se separa menos de 1 €/mes.</li> <!-- [^metodo] -->
-    <li><b>Tiempos.</b> r5py sobre los GTFS del CRTM; horarios reconstruidos en el 21,5 % de los pares con ruta, error medio de 20,7 minutos en 494 viajes.</li> <!-- [^metodo] -->
+    <li><b>Tiempos.</b> r5py sobre los GTFS del CRTM; horarios reconstruidos en el 21,5 % de los pares con ruta, error medio de 20,7 minutos en 494 viajes (estimado).</li> <!-- [^metodo] -->
     <li><b>Alquiler.</b> Mediana de contratos declarados; zonas con menos de 70 alquileres marcadas como imprecisas (39 de 158); horquilla P25–P75.</li> <!-- [^metodo] -->
-    <li><b>Incertidumbre.</b> IC del 95 % de la mediana por estadísticos de orden; con 142 contrastes, unas 7 zonas saldrían claras por azar, y lo decimos.</li> <!-- [^metodo] -->
+    <li><b>Incertidumbre.</b> IC del 95 % de la mediana por estadísticos de orden; con 142 contrastes, unas 7 zonas saldrían claras por azar (estimado), y lo decimos.</li> <!-- [^metodo] -->
     <li><b>Espacial.</b> I de Moran y LISA; Bayes empírico para tasas de zonas pequeñas.</li>
     <li><b>Bono.</b> GLM binomial negativa con offset y SEM espacial; 9 especificaciones publicadas, también las que no salen significativas.</li> <!-- [^metodo] -->
     <li><b>Registro previo.</b> El criterio se fija antes de ver el resultado; si se cambia después, se declara.</li>
@@ -364,6 +369,7 @@
 
 <!--
 Notas de las cifras (las comprueba .github/scripts/cifras_con_fuente.py):
+[^rango]: Esfuerzo 2024 entre zonas con al menos 70 alquileres declarados: Villanueva de la Cañada 12,6 %, Centro y Puente de Vallecas 24,0 %; corte del quintil alto 18,2 %. docs/informe/cifras.md.
 [^serpavi]: Alquiler mediano entre renta neta media mensual del hogar, ciudad de Madrid, 2024: 19,6 %. SERPAVI (MIVAU) y ADRH (INE), app/datos/analisis.json (titulares); docs/informe/cifras.md.
 [^cambio]: 142 zonas con dato en 2015 y 2024; el esfuerzo sube en 68. Solo 31 suben más que su error; mediana del cambio −0,06 p. p. (estimado). docs/informe/cifras.md.
 [^ejemplo]: Persona de 30 años, sola, 24.000 € brutos, trabaja en Getafe cinco días. Sobra: Getafe 291 €, Parla 467 €, Centro −378 €; horas al mes: 12, 26 y 26. docs/como-funciona.md y ficha de Parla de la herramienta (26-11-2026); estimado.
@@ -373,8 +379,8 @@ Notas de las cifras (las comprueba .github/scripts/cifras_con_fuente.py):
 [^abono]: Fin del descuento del RDL 17/2025: de 9,23 a 32,76 €/mes por adulto según la zona; joven 9,30 €. BOCM-20251231-2 y -3; app/datos/analisis.json (simulacion); estimado.
 [^ia]: Prueba del 25-11-2026 con Gemini y ChatGPT: error medio del neto 2,1 % y 3,9 %; un municipio en zona tarifaria equivocada cada uno; miraron de 4 a 6 zonas; Kuanto da cifra en 99 de 199. docs/kuanto-frente-a-ia.md.
 [^fuentes]: 89 filas con SHA-256 en data/README.md: INE 23, CRTM 13, BOCM 13, catálogo de la Comunidad de Madrid 12, BOE 9, AEAT 7, MIVAU 5, otros 7 (recuento por URL de cada fila, 26-11-2026).
-[^harness]: .claude/skills (12 dm-*), .claude/agents (8), .claude/hooks (11 ficheros), .github/workflows (3).
-[^git]: GitHub: 259 pull requests fusionados del 11 al 25-11-2026; pytest --collect-only: 993 tests; docs/decisiones.md: 130 entradas.
+[^harness]: .claude/skills (12 dm-*), .claude/agents (8), 16 hooks configurados en .claude/settings.json; CI: ci.yml y revision.yml (pages.yml es el despliegue).
+[^git]: GitHub: 259 pull requests fusionados del 11 al 25-11-2026; pytest --collect-only: 993 tests; docs/decisiones.md: 131 entradas.
 [^sdm]: app/datos/sdm: 158 entidades de alquiler y 1.512 de esfuerzo (1.670); alojamiento en GitHub Pages sin coste (app/metodologia.html, Mantenimiento).
 [^metodo]: app/metodologia.html (Validación y Límites) y docs/informe/cifras.md (cap. 8 y 12); estimado donde lo indica el registro.
 -->

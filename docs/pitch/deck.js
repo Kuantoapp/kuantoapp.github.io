@@ -8,7 +8,7 @@ const NOTAS = {
   'ciudad': { s: 5, texto: '«Una ciudad es muchas cosas.» [PAUSA]' },
   'luz': { s: 12, texto: '«Es una luz que se enciende en una ventana.» [→] «Es el trayecto de cada mañana.» [→] «Es el sitio al que vuelves cuando todo lo demás ha terminado.» [PAUSA]' },
   'cuenta': { s: 7, texto: '«Y durante años, vivir en ella se ha convertido en una cuenta que no sale.» [→ aparece la fórmula] [PAUSA LARGA]' },
-  'cifra': { s: 14, texto: '«En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares.» [→] «Y no pesa igual en todas partes: en 68 de 142 zonas, ese esfuerzo ha subido.» [PAUSA]', cue: 'Si preguntan: solo 31 suben más que su margen de error; es «ha subido», no «sube mucho».' },
+  'cifra': { s: 14, texto: '«En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares.» [→] «Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro.» [PAUSA]', cue: 'En rojo, las zonas donde el alquiler pesa más del 18 % (quintil alto).' },
   'creemos-1': { s: 4, texto: '«Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía.»' },
   'creemos-2': { s: 4, texto: '«Creemos que el tiempo que pasas en un tren también es un precio.»' },
   'creemos-3': { s: 4, texto: '«Y creemos que una decisión así merece algo más que un presentimiento.» [PAUSA]' },
@@ -22,14 +22,14 @@ const NOTAS = {
   'tres-zonas': { s: 35, texto: '«Getafe: le sobran 291 euros, con doce horas de viaje al mes. Parla: 467. Parece mejor… pero son veintiséis horas. Y en Centro, directamente, no le llega: le faltan 378.» [→] «176 euros más al mes a cambio de catorce horas más de tren. ¿Le compensa? Eso lo decide Lucía. Pero ahora lo decide sabiendo. Izan.»' },
   'capas': { s: 20, texto: '«Hay muchos proyectos que miran el alquiler. Algunos añaden el tiempo de viaje. Nosotros hacemos la cuenta entera: el neto con el IRPF de 2026 del BOE, el abono más barato para cada persona, la cesta según ingresos, el hogar y, sobre todo, desde dónde trabajas tú. Siete capas. Una sola cifra.»' },
   'engana': { s: 17, texto: '«¿Por qué hace falta? Porque mirar solo el alquiler engaña. En Chamartín el alquiler mediano es de 1.126 euros, más que en Centro. Y aun así pesa menos: un 16 % frente a un 24 %.» [→] «No es más barato. Es que allí se gana un 78 % más.»' },
-  'horas': { s: 13, texto: '«Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren en una de cada siete combinaciones. En las otras seis, lo pagas con tu tiempo.»' },
-  'bono': { s: 22, texto: '«Y no es solo un problema de cada persona. En 2022 hubo 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y cuánto se acepta no depende de lo que pesa el alquiler en cada municipio.» [→] «Con el sueldo mínimo, 16 municipios quedan fuera del tope del Bono. Catorce, por menos de 80 euros.»' },
-  'abono': { s: 13, texto: '«Y lo que viene. Si el descuento del abono termina con 2026, cada adulto puede pagar hasta 33 euros más al mes. Nadie lo ha anunciado todavía. Kuanto ya lo calcula, zona a zona.»' },
-  'ia': { s: 20, texto: '«¿Por qué no preguntárselo a una IA? Lo hicimos. ChatGPT y Gemini miraron entre cuatro y seis zonas, fallaron el sueldo neto y la zona del abono. Kuanto da cifra en 99 zonas, con la ley en la mano. Yeray os cuenta cómo.»', cue: 'Son cuatro respuestas: ilustra, no mide. Dilo si preguntan.' },
+  'horas': { s: 13, texto: '«Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren, valoradas a lo que ganas por hora, en una de cada siete combinaciones. En las otras seis, lo pagas con tu tiempo.»' },
+  'bono': { s: 22, texto: '«Y no es solo un problema de cada persona. En 2022 hubo 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y la proporción aceptada no cambia con lo que pesa el alquiler en cada municipio.» [→] «Con el sueldo mínimo, 16 municipios quedan fuera del tope del Bono. Catorce, por menos de 80 euros.»' },
+  'abono': { s: 13, texto: '«Y lo que viene. Si todo el descuento del abono termina con 2026, cada adulto puede pagar hasta 33 euros más al mes. A 21 de noviembre no se había publicado ninguna prórroga. Kuanto ya lo calcula, zona a zona.»' },
+  'ia': { s: 20, texto: '«¿Por qué no preguntárselo a una IA? Lo hicimos. ChatGPT y Gemini miraron entre cuatro y seis zonas, erraron el neto y cada uno puso un municipio en la zona de abono equivocada. Kuanto da cifra en 99 zonas, con la ley en la mano. Yeray os cuenta cómo.»', cue: 'Son cuatro respuestas: ilustra, no mide. Dilo si preguntan.' },
   'fuentes': { s: 17, texto: '«Detrás de cada cifra hay una fuente oficial. 89 descargas: INE, Consorcio de Transportes, BOE, BOCM, el catálogo de la Comunidad, Hacienda, el Ministerio de Vivienda. Cada una con su huella digital: si cambia un solo byte, lo sabemos.»' },
   'traza': { s: 20, texto: '«Y cada cifra se puede seguir hasta su origen. Los 467 euros de Lucía salen de un cálculo en su navegador, de un fichero de alquileres y de una descarga del Ministerio con esta huella.» [→] «Si alguien intenta publicar una cifra sin fuente, el sistema la rechaza.»' },
-  'maquinas': { s: 22, texto: '«Somos tres personas. Pero hemos construido un equipo: agentes de IA que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, un abogado del diablo incluido, y once guardias automáticos. Ningún cambio entra sin el visto bueno del revisor de su área.»' },
-  'ritmo': { s: 10, texto: '«En quince días: 259 cambios fusionados, 993 tests y 130 decisiones fechadas y justificadas. Rápido. Y revisado.»' },
+  'maquinas': { s: 22, texto: '«Somos tres personas. Pero hemos construido un equipo: agentes de IA que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, un abogado del diablo incluido, y dieciséis guardias automáticos. Ningún cambio de un área con revisor entra sin su veredicto.»' },
+  'ritmo': { s: 10, texto: '«En quince días: 259 cambios fusionados, 993 tests y 131 decisiones fechadas y justificadas. Rápido. Y revisado.»' },
   'privacidad': { s: 15, texto: '«Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil. Sin servidor, sin cuentas, sin rastreo.»' },
   'conectar': { s: 20, texto: '«Kuanto está hecho para conectarse: el estándar europeo DCAT-AP, 1.670 entidades de Smart Data Models y un servidor MCP para que cualquier IA responda con nuestras cifras. Y para durar: cero euros de servidor y un comando que lo regenera todo.»' },
   'datamad': { s: 10, texto: '«Datos de la Comunidad dentro del cálculo. Viable. Abierto. Y útil para quien busca piso y para quien hace política de vivienda.»' },
@@ -77,6 +77,7 @@ function siguiente() {
   const s = lista[i];
   if (paso < pasosDe(s)) { paso++; aplicarPasos(s); alPaso(s); pintarNotas(); canal?.postMessage({ tipo: 'estado', id: idDe(s), paso, i, total: lista.length }); return; }
   if (i < lista.length - 1) mostrar(i + 1);
+  else if (modo === 'planb') cambiarModo('normal', 'tres-zonas');
 }
 function anterior() {
   if (paso > 0) { paso--; aplicarPasos(lista[i]); pintarNotas(); return; }
@@ -135,7 +136,7 @@ const entradas = {
   ritmo() { construirRitmo(); },
 };
 const pasos = {
-  cifra() { document.querySelectorAll('#mapaSube path').forEach((p, k) => { if (p.dataset.sube === 'true') { p.style.setProperty('--d', `${(k % 60) * 25}ms`); p.classList.add('sube'); } }); },
+  cifra() { document.querySelectorAll('#mapaSube path').forEach((p, k) => { if (p.dataset.alto === 'true') { p.style.setProperty('--d', `${(k % 60) * 25}ms`); p.classList.add('sube'); } }); },
   respuesta(s) { s.querySelector('#mereceFrase').style.opacity = 0.0; particulas(); },
 };
 function entrar(s) { generacion++; entradas[idDe(s)]?.(s); if (paso) alPaso(s); }
@@ -162,7 +163,8 @@ function construirMapa() {
     const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     p.setAttribute('d', z.d);
     p.dataset.sube = String(z.sube);
-    if (z.sube === null) p.classList.add('sin');
+    if (z.e === null) p.classList.add('sin');
+    p.dataset.alto = String(z.e !== null && z.e >= 0.182); // corte del quintil alto (cifras.md)
     svg.appendChild(p);
   }
 }
@@ -187,7 +189,7 @@ function particulas() {
 }
 
 // Publicadores de data/README.md (89 filas con SHA-256, recuento por URL): radio ∝ √descargas.
-const PUBLICADORES = [['INE', 23, 1250, 430], ['CRTM', 13, 1600, 400], ['BOE', 9, 1800, 640], ['BOCM', 13, 1530, 700], ['Comunidad de Madrid', 12, 1180, 760], ['AEAT', 7, 1400, 920], ['MIVAU', 5, 1700, 930], ['Otros', 7, 970, 560]];
+const PUBLICADORES = [['INE', 23, 1250, 430], ['CRTM', 13, 1600, 400], ['BOE', 9, 1790, 610], ['BOCM', 13, 1530, 700], ['Comunidad de Madrid', 12, 1180, 760], ['AEAT', 7, 1400, 920], ['MIVAU', 5, 1700, 930], ['Otros', 7, 970, 560]];
 function construirNodos() {
   const caja = document.getElementById('nodos');
   if (caja.childElementCount) return;
@@ -308,6 +310,7 @@ if (navigator.webdriver && !new URLSearchParams(location.search).has('animado'))
   document.body.classList.add('estatico');
   construirMapa(); construirNodos(); construirBucle(); construirRitmo();
 }
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.add('ligero');
 if (ES_ORADOR) iniciarOrador();
 else {
   addEventListener('resize', encajar);

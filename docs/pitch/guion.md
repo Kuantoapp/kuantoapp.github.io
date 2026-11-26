@@ -36,7 +36,7 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 >
 > En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares. [^serpavi]
 >
-> [→] Y no pesa igual en todas partes: en 68 de 142 zonas, ese esfuerzo ha subido. [PAUSA] [^cambio]
+> [→] Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro. [PAUSA] [^rango]
 >
 > Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía.
 >
@@ -80,15 +80,15 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 >
 > [→] No es más barato. Es que allí se gana un 78 % más. [^chamartin]
 >
-> Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren en una de cada siete combinaciones. En las otras seis, lo pagas con tu tiempo. [^horas]
+> Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren, valoradas a lo que ganas por hora, en una de cada siete combinaciones. En las otras seis, lo pagas con tu tiempo. [^horas]
 >
-> Y no es solo un problema de cada persona. En 2022 hubo 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y cuánto se acepta no depende de lo que pesa el alquiler en cada municipio. [^bono]
+> Y no es solo un problema de cada persona. En 2022 hubo 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y la proporción aceptada no cambia con lo que pesa el alquiler en cada municipio. [^bono]
 >
 > [→] Con el sueldo mínimo, 16 municipios quedan fuera del tope del Bono. Catorce, por menos de 80 euros. [^bono]
 >
-> Y lo que viene. Si el descuento del abono termina con 2026, cada adulto puede pagar hasta 33 euros más al mes. Nadie lo ha anunciado todavía. Kuanto ya lo calcula, zona a zona. [^abono]
+> Y lo que viene. Si todo el descuento del abono termina con 2026, cada adulto puede pagar hasta 33 euros más al mes. A 21 de noviembre no se había publicado ninguna prórroga. Kuanto ya lo calcula, zona a zona. [^abono]
 >
-> ¿Por qué no preguntárselo a una IA? Lo hicimos. ChatGPT y Gemini miraron entre cuatro y seis zonas, fallaron el sueldo neto y la zona del abono. Kuanto da cifra en 99 zonas, con la ley en la mano. Yeray os cuenta cómo. [^ia]
+> ¿Por qué no preguntárselo a una IA? Lo hicimos. ChatGPT y Gemini miraron entre cuatro y seis zonas, erraron el neto y cada uno puso un municipio en la zona de abono equivocada. Kuanto da cifra en 99 zonas, con la ley en la mano. Yeray os cuenta cómo. [^ia]
 
 ## 4. Yeray · Cómo y despedida (2:15)
 
@@ -98,9 +98,9 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 >
 > [→] Si alguien intenta publicar una cifra sin fuente, el sistema la rechaza.
 >
-> Somos tres personas. Pero hemos construido un equipo: agentes de IA que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, un abogado del diablo incluido, y once guardias automáticos. Ningún cambio entra sin el visto bueno del revisor de su área. [^harness]
+> Somos tres personas. Pero hemos construido un equipo: agentes de IA que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, un abogado del diablo incluido, y dieciséis guardias automáticos. Ningún cambio de un área con revisor entra sin su veredicto. [^harness]
 >
-> En quince días: 259 cambios fusionados, 993 tests y 130 decisiones fechadas y justificadas. Rápido. Y revisado. [^git]
+> En quince días: 259 cambios fusionados, 993 tests y 131 decisiones fechadas y justificadas. Rápido. Y revisado. [^git]
 >
 > Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil. Sin servidor, sin cuentas, sin rastreo.
 >
@@ -119,6 +119,7 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 - **PDF de respaldo:** `docs/pitch/pitch.pdf`, sin animaciones.
 
 [^serpavi]: SERPAVI (MIVAU) y ADRH (INE), 2024: alquiler mediano entre renta neta media mensual del hogar en la ciudad de Madrid. `app/datos/analisis.json` (titulares) y `docs/informe/cifras.md`.
+[^rango]: Esfuerzo 2024 entre zonas con al menos 70 alquileres declarados: Villanueva de la Cañada 12,6 %, Centro 24,0 %. `docs/informe/cifras.md`.
 [^cambio]: 142 zonas con dato en 2015 y 2024; sube en 68. Solo 31 suben más que su margen de error y la mediana del cambio es −0,06 puntos (estimado). `docs/informe/cifras.md`.
 [^ejemplo]: Caso de ejemplo de `docs/como-funciona.md` y ficha de Parla de la herramienta (26-11-2026). Lo que sobra es de 291 € en Getafe, 467 € en Parla y −378 € en Centro; las horas al mes, 12, 26 y 26. Estimado.
 [^chamartin]: Chamartín: 1.126 €/mes de alquiler y 16,0 %. Centro: 950 € y 24,0 %. La renta de Chamartín es un 78 % mayor. SERPAVI y ADRH 2024, `docs/informe/cifras.md`.
@@ -127,6 +128,6 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 [^abono]: Fin del descuento del RDL 17/2025: de 9,23 a 32,76 €/mes por adulto; 9,30 € con el Abono Joven. BOCM-20251231-2 y -3; simulación de Kuanto, estimado.
 [^ia]: `docs/kuanto-frente-a-ia.md`, prueba del 25-11-2026. Son cuatro respuestas: ilustra, no mide.
 [^fuentes]: `data/README.md`: 89 filas con SHA-256.
-[^harness]: `.claude/skills`, `.claude/agents` y `.claude/hooks` del repositorio.
-[^git]: GitHub, del 11 al 25-11-2026: 259 PR fusionados. `pytest --collect-only`: 993 tests. `docs/decisiones.md`: 130 entradas.
+[^harness]: `.claude/skills` (12), `.claude/agents` (8) y 16 hooks configurados en `.claude/settings.json`.
+[^git]: GitHub, del 11 al 25-11-2026: 259 PR fusionados. `pytest --collect-only`: 993 tests. `docs/decisiones.md`: 131 entradas.
 [^sdm]: `app/datos/sdm`: 158 + 1.512 entidades. GitHub Pages sin coste (nota metodológica, «Mantenimiento»).
