@@ -26,6 +26,7 @@ Qué documento leer según lo que busques. Si no sabes nada de Kuanto, empieza p
 | [`trazabilidad.md`](trazabilidad.md) | Cómo se sigue una cifra hasta su descarga original y cómo comprobarla |
 | [`reproducir.md`](reproducir.md) | Guía para regenerar los datos, ejecutar los tests y usar el asistente MCP |
 | [`hoja-de-ruta.md`](hoja-de-ruta.md) | Lo que Kuanto hace hoy y las ideas para más adelante, por horizontes. Intenciones, sin fechas |
+| [`no-implementado.md`](no-implementado.md) | Lo que se quedó fuera (chatbot con IA, ruta real, horarios del CRTM, coche, precio de oferta), por qué y qué se hace en su lugar |
 | [`decisiones-clave.md`](decisiones-clave.md) | Las decisiones que dan forma a Kuanto, en llano y por tema |
 | [`decisiones.md`](decisiones.md) | Registro de todo lo que ha decidido el equipo, con fecha, motivo y PR. Es un registro de trabajo, extenso y técnico |
 | [`verificaciones/`](verificaciones/README.md) | Contraste de fuentes, normas y licencias con el publicador original: qué se comprobó, con qué evidencia y qué se corrigió |
