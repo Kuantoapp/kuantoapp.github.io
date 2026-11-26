@@ -97,6 +97,8 @@ function aplicarPasos(s) {
     el.classList.toggle('actual', n === paso);
   });
   s.querySelectorAll('[data-hasta]').forEach((el) => el.classList.toggle('fuera', paso > Number(el.dataset.hasta)));
+  // data-oculto: pasos en los que un bloque sale un momento y luego vuelve (versión corta).
+  s.querySelectorAll('[data-oculto]').forEach((el) => el.classList.toggle('fuera', el.dataset.oculto.split(',').map(Number).includes(paso)));
   s.classList.toggle('completa', paso === pasosDe(s));
 }
 

@@ -394,3 +394,10 @@ body.ligero canvas.capa, body.ligero .metodo::after { display: none; }
 /* Estado final para exportar */
 .estatico [data-hasta], .estatico .solo-directo, .estatico .capa-corto { display: none !important; }
 .estatico.corta [data-paso] { opacity: 1 !important; }
+
+/* Apertura de la versión corta: cada momento entra desde abajo y sale por arriba */
+.corta .escalon { position: absolute; inset: 0; }
+.corta .escalon.a { transform: translateY(110px); filter: blur(6px); transition: opacity 0.9s var(--curva), transform 1.2s var(--curva), filter 0.9s var(--curva); }
+.corta .escalon.a.ya, .corta .slide.active .escalon.a:not([data-paso]) { transform: none; filter: none; }
+.corta .escalon.a.fuera { transform: translateY(-160px) !important; }
+.corta .slide.completa .escalon.a.ya:not(.fuera) { opacity: 1; }
