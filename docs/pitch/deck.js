@@ -15,19 +15,19 @@ const NOTAS = {
   'respuesta': { s: 6, texto: '«Merece una respuesta.» [→ el mapa y el logo] «Esto es Kuanto. Alex.»' },
   'directo': { s: 210, texto: '«Os presento a Lucía. Treinta años, vive sola, gana 24.000 euros brutos y trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» Demo en directo. Cierre: «176 euros más al mes en Parla, a cambio de catorce horas más de tren. ¿Le compensa? Ahora lo decide sabiendo. Izan.»', cue: 'Pestaña del túnel ya abierta con el estado de Lucía. Recorrido: tarjetas → «Ver el mapa» con «Lo que sobra» → Parla (467 €, 25,9 h) → «Horas de viaje» y «Precio de la hora» → «Otros escenarios»: fin del descuento. Vuelve aquí y avanza.' },
   'capas': { s: 18, texto: '«Hay muchos proyectos que miran el alquiler. Algunos añaden el tiempo. Nosotros hacemos la cuenta entera: siete capas. El neto con el IRPF de 2026, el abono más barato para cada persona, la cesta según ingresos, el hogar y, sobre todo, desde dónde trabajas tú.»' },
-  'lucia-mapa': { s: 20, texto: '«Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703. En diez zonas, directamente, no le llega.»', cue: 'Verde hacia arriba: le sobra. Rojo hacia abajo: no le llega. Etiquetas en Getafe, Parla y Centro.' },
+  'lucia-mapa': { s: 20, texto: '«Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703, pero con casi 70 horas de tren al mes. En diez zonas, directamente, no le llega.»', cue: 'Verde hacia arriba: le sobra. Rojo hacia abajo: no le llega. Etiquetas en Getafe, Parla y Centro.' },
   'engana': { s: 14, texto: '«Mirar solo el alquiler engaña. En Chamartín el alquiler es más caro que en Centro, y aun así pesa menos: 16 % frente a 24 %.» [→] «Allí se gana un 78 % más.»' },
   'horas': { s: 12, texto: '«Y el tiempo. Con el sueldo mínimo, irse lejos para pagar menos solo compensa las horas de tren, valoradas a lo que ganas por hora, en una de cada siete combinaciones.»' },
   'bono': { s: 18, texto: '«No es solo un problema de cada persona. 51.735 solicitudes del Bono Alquiler Joven. Se aceptó el 22 %. Y la proporción aceptada no cambia con lo que pesa el alquiler en cada municipio.» [→] «Con el sueldo mínimo, 16 municipios quedan fuera del tope; catorce, por menos de 80 euros.»' },
   'abono': { s: 11, texto: '«Y lo que viene: si todo el descuento del abono termina con 2026, hasta 33 euros más al mes por adulto. A 21 de noviembre no se había publicado ninguna prórroga. Kuanto ya lo calcula, corona a corona.»' },
   'ia': { s: 12, texto: '«¿Y una IA? Lo probamos. ChatGPT y Gemini miraron entre cuatro y seis zonas, erraron el neto y cada uno puso un municipio en la zona de abono equivocada. Kuanto da cifra en 99. Yeray os cuenta cómo.»', cue: 'Cuatro respuestas: ilustra, no mide.' },
-  'timeline': { s: 20, texto: '«Lo construimos en quince días. Y empezamos por donde nadie empieza: por las reglas. Antes de descargar un solo dato, doce skills, ocho revisores y una CI que no perdona. Luego los datos, los modelos, el producto, y el 21 y el 23 congelamos los datos. 259 cambios, todos revisados.»' },
+  'timeline': { s: 20, texto: '«Lo construimos en quince días. Y empezamos por donde nadie empieza: por las reglas. Antes de analizar un solo dato, ya teníamos las skills de normativa, cartografía y fuentes, siete revisores y una CI que no perdona. Luego los datos, los modelos, el producto, y el 21 y el 23 congelamos los datos. 259 cambios, todos con la CI en verde.»' },
   'tuberia': { s: 16, texto: '«Así funciona por dentro. 89 fuentes oficiales, cada una con su huella. Un motor de trece mil quinientas líneas que aplica la ley y los horarios. Una API estática y congelada. Y de ahí, cinco salidas: la web, un MCP para asistentes de IA, Smart Data Models, DCAT-AP y el informe técnico. Sin servidor.»' },
   'muro': { s: 14, texto: '«Detrás de cada cifra que habéis visto hay todo esto: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, microdatos de la ECV, 993 tests. Y cero cifras públicas sin fuente.»' },
-  'metodos': { s: 16, texto: '«Cada cifra tiene su método y su prueba. El neto, contra ocho casos a mano. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen.»' },
+  'metodos': { s: 16, texto: '«Cada cifra tiene su método y su prueba. El neto, contra ocho casos calculados aparte sobre el BOE. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen.»' },
   'maquinas': { s: 14, texto: '«Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, dieciséis guardias automáticos. Ningún cambio de un área con revisor entra sin su veredicto.»' },
   'privacidad': { s: 11, texto: '«Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.»' },
-  'negocio': { s: 18, texto: '«Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en cualquier región.»' },
+  'negocio': { s: 18, texto: '«Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en otra región, con sus propias fuentes.»' },
   'datamad': { s: 6, texto: '«Datos de la Comunidad dentro del cálculo. Viable. Abierto. Con valor social.»' },
   'cierre': { s: 12, texto: '«Empezamos diciendo que una ciudad es muchas cosas. Para demasiada gente, también es una cuenta que no sale.» [PAUSA] «Nadie debería descubrir demasiado tarde cuánto le cuesta su casa.» [→] «Esto es Kuanto. Gracias.»', cue: 'Tecla A: anexo para las preguntas.' },
   'anexo-fuentes': { s: 0, texto: 'Anexo: fuentes por publicador. Esc para volver al cierre.' },
@@ -151,7 +151,7 @@ const POLIGONOS = window.MAPA.zonas.map((z) => z.d.split('Z').filter(Boolean).ma
 const mezcla = (a, b, k) => a.map((v, j) => Math.round(v + (b[j] - v) * k));
 const RENDER_ESFUERZO = {
   valor: (z) => z.e,
-  altura: (v) => Math.max(4, (v - 0.09) * 1250),
+  altura: (v) => v * 1100, // proporcional desde cero
   color: (v) => { const k = Math.min(1, Math.max(0, (v - 0.12) / 0.12)); return k < 0.5 ? mezcla([47, 124, 246], [156, 194, 245], k * 2) : mezcla([156, 194, 245], [255, 107, 107], (k - 0.5) * 2); },
   etiquetas: { '2807901': ['Centro', 120, 120], '28176': ['Villanueva de la Cañada', 140, -190] },
 };
@@ -239,8 +239,8 @@ function particulas() {
 // === TIMELINE: días, PR fusionados por día (gh pr list) y fases según los PR y docs/decisiones.md ===
 const PR_DIA = [5, 7, 20, 24, 23, 28, 10, 19, 20, 31, 9, 10, 18, 19, 16];
 const FASES = [
-  { ini: 11, fin: 13, fila: 0, t: 'Las reglas', s: '12 skills, 8 revisores, hooks y CI antes que los datos', c: '#9cc2f5' },
-  { ini: 14, fin: 15, fila: 1, t: 'Los datos', s: '89 fuentes con huella; neto, tarifas y tiempos', c: '#2f7cf6' },
+  { ini: 11, fin: 13, fila: 0, t: 'Las reglas', s: 'skills, revisores, hooks y CI antes que los datos', c: '#9cc2f5' },
+  { ini: 14, fin: 15, fila: 1, t: 'Los datos', s: 'fuentes con huella; neto, tarifas y tiempos', c: '#2f7cf6' },
   { ini: 16, fin: 19, fila: 0, t: 'Los modelos', s: 'esfuerzo, Bono (GLM y SEM), imputación espacial, MCP', c: '#3ddc97' },
   { ini: 17, fin: 23, fila: 1, t: 'El producto', s: 'cálculo en el navegador, escenarios y seis tarjetas', c: '#ffd27a' },
   { ini: 21, fin: 23, fila: 0, t: 'Datos congelados', s: 'zonas y tiempos el 21; euros y análisis el 23', c: '#bfad95' },

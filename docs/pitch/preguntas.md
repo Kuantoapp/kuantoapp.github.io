@@ -10,7 +10,7 @@ Una respuesta corta, en voz alta, y la diapositiva del anexo que la apoya (tecla
 - Solo 31 suben más que su margen de error, y la mediana del cambio es casi cero. Lo decimos en el informe: el esfuerzo se mantiene; no se dispara. [^cambio]
 
 **¿Cómo sabéis que el neto está bien?**
-- Hemos calculado a mano 8 casos completos, de 17.094 a 80.000 € brutos, con el IRPF estatal y el de Madrid y las cotizaciones de 2026. [^metodo]
+- Hemos calculado aparte del código, sobre el BOE, 8 casos completos, de 17.094 a 80.000 € brutos, con el IRPF estatal y el de Madrid y las cotizaciones de 2026. [^metodo]
 - La interpolación de la web se separa menos de 1 € al mes del cálculo exacto. [^metodo]
 
 **¿Qué fiabilidad tiene el alquiler por zona?**

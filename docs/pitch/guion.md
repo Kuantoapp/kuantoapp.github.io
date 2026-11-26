@@ -64,7 +64,7 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 
 > Hay muchos proyectos que miran el alquiler. Algunos añaden el tiempo. Nosotros hacemos la cuenta entera: siete capas. El neto con el IRPF de 2026, el abono más barato para cada persona, la cesta según ingresos, el hogar y, sobre todo, desde dónde trabajas tú. <!-- sin-fuente: año de la norma y número de capas -->
 >
-> Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703. En diez zonas, directamente, no le llega. [^lucia]
+> Y esto es lo que cambia. La misma Lucía, con el mismo sueldo: en Salamanca le faltan 482 euros al mes. En Villarejo de Salvanés le sobran 703, pero con casi 70 horas de tren al mes. En diez zonas, directamente, no le llega. [^lucia]
 >
 > Mirar solo el alquiler engaña. En Chamartín el alquiler es más caro que en Centro, y aun así pesa menos: 16 % frente a 24 %. [→] Allí se gana un 78 % más. [^chamartin]
 >
@@ -78,19 +78,19 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 
 ## 4. Yeray · Cómo, negocio y cierre (2:15)
 
-> Lo construimos en quince días. Y empezamos por donde nadie empieza: por las reglas. Antes de descargar un solo dato, doce skills, ocho revisores y una CI que no perdona. Luego los datos, los modelos, el producto, y el 21 y el 23 congelamos los datos. 259 cambios, todos revisados. [^git]
+> Lo construimos en quince días. Y empezamos por donde nadie empieza: por las reglas. Antes de analizar un solo dato, ya teníamos las skills de normativa, cartografía y fuentes, siete revisores y una CI que no perdona. Luego los datos, los modelos, el producto, y el 21 y el 23 congelamos los datos. 259 cambios, todos con la CI en verde. [^git]
 >
-> Así funciona por dentro. 89 fuentes oficiales, cada una con su huella. Un motor de trece mil quinientas líneas que aplica la ley y los horarios. Una API estática y congelada. Y de ahí, cinco salidas: la web, un MCP para asistentes de IA, Smart Data Models, DCAT-AP y el informe técnico. Sin servidor. [^codigo]
+> Así funciona por dentro. 89 descargas de fuentes oficiales y abiertas, cada una con su huella. Un motor de trece mil quinientas líneas que aplica la ley y los horarios. Una API estática y congelada. Y de ahí, cinco salidas: la web, un MCP para asistentes de IA, Smart Data Models, DCAT-AP y el informe técnico. Sin servidor. [^codigo]
 >
 > Detrás de cada cifra que habéis visto hay todo esto: casi medio millón de alquileres declarados, cuarenta y dos mil trayectos calculados, microdatos de la ECV, 993 tests. Y cero cifras públicas sin fuente. [^met]
 >
-> Cada cifra tiene su método y su prueba. El neto, contra ocho casos a mano. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen. [^met]
+> Cada cifra tiene su método y su prueba. El neto, contra ocho casos calculados aparte sobre el BOE. Los tiempos, contra 494 viajes. El alquiler, de contratos, no de anuncios. Horquillas en vez de puntos. Y en el Bono, registro previo y nueve especificaciones publicadas, también las que no salen. [^met]
 >
 > Somos tres personas. Pero hemos construido un equipo: agentes que escriben el código y otros que lo auditan. Doce especialistas, ocho revisores, dieciséis guardias automáticos. Ningún cambio de un área con revisor entra sin su veredicto. [^harness]
 >
 > Y en un momento en que nuestros datos valen más que nunca, una promesa sencilla: tu sueldo nunca sale de tu móvil.
 >
-> Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en cualquier región. [^sdm]
+> Un motor, tres mercados. Las personas, gratis, para decidir dónde vivir. La Administración, para medir dónde no llega su política de vivienda. Y empresas e IA, que pueden usar nuestra cifra dentro de sus productos. Coste de servir: cero euros de servidor. Replicable en otra región, con sus propias fuentes. [^sdm]
 >
 > Datos de la Comunidad dentro del cálculo. Viable. Abierto. Con valor social.
 >
@@ -106,7 +106,7 @@ Una sola diapositiva, «En directo», con Lucía y el portátil. La demo se hace
 [^serpavi]: SERPAVI (MIVAU) y ADRH (INE), 2024: alquiler mediano entre renta neta media mensual del hogar en la ciudad de Madrid. `app/datos/analisis.json` (titulares) y `docs/informe/cifras.md`.
 [^rango]: Esfuerzo 2024 entre zonas con al menos 70 alquileres declarados: Villanueva de la Cañada 12,6 %, Centro 24,0 %. `docs/informe/cifras.md`.
 [^ejemplo]: Caso de ejemplo de `docs/como-funciona.md` y ficha de Parla de la herramienta (26-11-2026). Lo que sobra: 291 € en Getafe, 467 € en Parla y −378 € en Centro. Horas al mes: 12, 26 y 26. Estimado.
-[^lucia]: `mesobra.calculo` con `app/datos` para Lucía en las 99 zonas con cifra. Entre las zonas con al menos 70 alquileres declarados: Salamanca −482 €, Villarejo de Salvanés +703 €. 10 zonas con sobrante negativo. Estimado.
+[^lucia]: `mesobra.calculo` con `app/datos` para Lucía en las 99 zonas con cifra. Entre las zonas con al menos 70 alquileres declarados: Salamanca −482 €, Villarejo de Salvanés +703 € con unas 69 h de viaje al mes. 10 zonas con sobrante negativo. Estimado.
 [^chamartin]: Chamartín: 1.126 €/mes de alquiler y 16,0 %. Centro: 950 € y 24,0 %. La renta de Chamartín es un 78 % mayor. SERPAVI y ADRH 2024, `docs/informe/cifras.md`.
 [^horas]: 1.218 de 8.620 pares con el SMI (14,1 %). `app/datos/analisis.json`, estimado.
 [^bono]: Bono Alquiler Joven 2022: 51.735 solicitudes y 11.477 aceptadas (22,2 %); p = 0,82 (GLM, estimado). 16 de 138 municipios quedan fuera del tope, 14 de ellos por menos de 80 € (simulación, estimado). Catálogo regional y `docs/informe/cifras.md`.
