@@ -8,7 +8,7 @@ const NOTAS = {
   'ciudad': { s: 5, texto: '«Una ciudad es muchas cosas.» [PAUSA]' },
   'luz': { s: 12, texto: '«Es una luz que se enciende en una ventana.» [→] «Es el trayecto de cada mañana.» [→] «Es el sitio al que vuelves cuando todo lo demás ha terminado.» [PAUSA]' },
   'cuenta': { s: 7, texto: '«Y durante años, vivir en ella se ha convertido en una cuenta que no sale.» [→ aparece la fórmula] [PAUSA LARGA]' },
-  'cifra': { s: 14, texto: '«En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares.» [→] «Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro.» [PAUSA]', cue: 'En rojo, las zonas donde el alquiler pesa más del 18 % (quintil alto).' },
+  'cifra': { s: 14, texto: '«En la ciudad de Madrid, el alquiler mediano pesa un 19,6 % de la renta neta de los hogares.» [→] «Y no pesa igual en todas partes: del 12,6 % de Villanueva de la Cañada al 24,0 % de Centro.» [PAUSA]', cue: 'En rojo, las zonas donde el alquiler pesa el 18,2 % o más (quintil alto).' },
   'creemos-1': { s: 4, texto: '«Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía.»' },
   'creemos-2': { s: 4, texto: '«Creemos que el tiempo que pasas en un tren también es un precio.»' },
   'creemos-3': { s: 4, texto: '«Y creemos que una decisión así merece algo más que un presentimiento.» [PAUSA]' },

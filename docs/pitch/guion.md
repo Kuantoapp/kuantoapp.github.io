@@ -125,7 +125,7 @@ Se presenta con `docs/pitch/index.html`. Teclas:
 [^chamartin]: Chamartín: 1.126 €/mes de alquiler y 16,0 %. Centro: 950 € y 24,0 %. La renta de Chamartín es un 78 % mayor. SERPAVI y ADRH 2024, `docs/informe/cifras.md`.
 [^horas]: 1.218 de 8.620 pares con el SMI (14,1 %). `app/datos/analisis.json`, estimado.
 [^bono]: Bono Alquiler Joven 2022: 51.735 solicitudes y 11.477 aceptadas (22,2 %); p = 0,82 (GLM, estimado). 16 de 138 municipios quedan fuera del tope, 14 de ellos por menos de 80 € (simulación, estimado). Catálogo regional y `docs/informe/cifras.md`.
-[^abono]: Fin del descuento del RDL 17/2025: de 9,23 a 32,76 €/mes por adulto; 9,30 € con el Abono Joven. BOCM-20251231-2 y -3; simulación de Kuanto, estimado.
+[^abono]: Fin del descuento: de 9,23 €/mes (solo la parte del RDL 17/2025) a 32,76 €/mes (todo el descuento) por adulto; 9,30 € con el Abono Joven. BOCM-20251231-2 y -3; simulación de Kuanto, estimado.
 [^ia]: `docs/kuanto-frente-a-ia.md`, prueba del 25-11-2026. Son cuatro respuestas: ilustra, no mide.
 [^fuentes]: `data/README.md`: 89 filas con SHA-256.
 [^harness]: `.claude/skills` (12), `.claude/agents` (8) y 16 hooks configurados en `.claude/settings.json`.
