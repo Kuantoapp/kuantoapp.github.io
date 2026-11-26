@@ -35,6 +35,11 @@ const NOTAS = {
   'recomendaciones': { s: 14, texto: '«Y esto no se queda en un mapa. Tres decisiones que la Administración puede tomar mañana: publicar por qué se rechaza cada solicitud del Bono, decir qué renta cuenta para quien no declara, que cambia el resultado de 122 municipios a ninguno, y anunciar ya si el descuento del abono sigue en 2027.»' },
   'no-hacemos': { s: 18, texto: '«Y también es rigor lo que no hacemos. No damos un índice de ‹dónde vivir› con pesos que alguien elige. No usamos precios de anuncios. No pintamos ceros donde no hay datos. No calculamos el neto fuera de lo validado, y lo que se imputa sale marcado como estimado. Porque llegar a fin de mes es una decisión demasiado seria para darla a medias. No es que no sepamos hacerlo: es que no queremos hacerlo a medias. Está en nuestra hoja de ruta, con las mismas reglas.»' },
   'apoyo': { s: 15, texto: '«Félix Peralta y Alberto Martos revisaron el proyecto y nos dieron feedback durante el desarrollo. Y cuando lo contamos en LinkedIn, tuvo 40 reacciones y 17 comentarios positivos, según nuestro recuento. ¿Saber, antes de firmar, si vas a llegar a fin de mes?»', cue: 'Cuando lleguen sus frases literales, se leen aquí.' },
+  'c-apertura': { s: 60, texto: '«Una ciudad es muchas cosas.» [→] «Es una luz que se enciende en una ventana. Es el trayecto de cada mañana. Es el sitio al que vuelves.» [→] «Y vivir en ella se ha convertido en una cuenta que no sale.» [→] «En la Comunidad de Madrid, uno de cada tres hogares que viven de alquiler dedica más del 40 % de lo que ingresa a la vivienda. En la ciudad de Madrid, el alquiler mediano ya pesa un 19,6 %.» [→] «Creemos que nadie debería descubrir demasiado tarde que su casa cuesta más de lo que parecía. Que el tiempo en el transporte público también es un precio. Y que una decisión así merece algo más que un presentimiento.» [→] «Merece una respuesta.» [→] «Esto es Kuanto. Alex.»', cue: 'Con ?corto en la URL, el corto se ve primero dentro de esta diapositiva.' },
+  'c-directo': { s: 210, texto: '«Os presento a Lucía: 30 años, 24.000 euros brutos, trabaja en Getafe. Todos los portales le dicen cuánto cuesta el alquiler. Kuanto le dice cuánto le sobra.» [→ capas] «Siete capas en una sola cifra.» Tecla W o el botón: demo en directo. [→ al volver] «Getafe, 291 euros y doce horas; Parla, 467 pero veintiséis horas; en Centro no le llega. Ahora lo decide sabiendo. Izan.»', cue: 'W abre kuantoapp.github.io con el estado de Lucía en otra pestaña.' },
+  'c-porque': { s: 120, texto: '«La misma Lucía, con el mismo sueldo: de menos 482 euros en Salamanca a más 703 en Villarejo, con casi 70 horas de transporte público.» [→] «Mirar solo el alquiler engaña: Chamartín es más caro y pesa menos.» [→] «Con el sueldo mínimo, vivir lejos compensa en una de cada siete combinaciones.» [→] «Casi cuatro de cada cinco solicitudes del Bono, sin ayuda; Madrid capital fuera del tope por 79 euros.» [→] «¿Y si sube el alquiler y se acaba el descuento? Un 35 % menos cada mes.» [→] «Y una IA miró entre cuatro y seis zonas; Kuanto, 99. Yeray os cuenta cómo.»' },
+  'c-rigor': { s: 90, texto: '«Quince días, cuatro líneas de trabajo y nueve hitos, con las reglas y la CI antes de analizar un solo dato.» [→] «De 89 descargas oficiales y abiertas a cinco salidas, sin servidor.» [→] «Detrás de cada número: casi medio millón de alquileres, 42.785 trayectos, viviendas cuadradas con Hacienda al 99,9 %, 393 veredictos de agentes y cero cifras sin fuente.» [→] «Tres personas y un equipo de agentes que audita cada cambio.» [→] «Cada capa, con su validación. Y lo que no hacemos, todavía, porque no queremos hacerlo a medias.»' },
+  'c-cierre': { s: 60, texto: '«Tu sueldo nunca sale de tu móvil.» [→] «Tres decisiones que la Administración puede tomar mañana.» [→] «Un motor, tres mercados, cero euros de servidor.» [→] «Félix Peralta y Alberto Martos revisaron el proyecto; el post de LinkedIn tuvo 40 reacciones, según nuestro recuento.» [→] «Lo que DataMad pide, cumplido.» [→] «Nadie debería descubrir demasiado tarde cuánto le cuesta su casa. Esto es Kuanto. Gracias.»' },
   'anexo-fuentes': { s: 0, texto: 'Anexo: fuentes por publicador. Esc para volver al cierre.' },
   'anexo-metodo': { s: 0, texto: 'Anexo: método y validación.' },
   'anexo-harness': { s: 0, texto: 'Anexo: cómo trabajan los agentes.' },
@@ -75,6 +80,7 @@ function mostrar(n, p = 0) {
   avisar();
 }
 function siguiente() {
+  if (cerrarCorto()) return;
   const s = lista[i];
   if (paso < pasosDe(s)) { paso++; aplicarPasos(s); alPaso(s); pintarNotas(); avisar(); return; }
   if (i < lista.length - 1) mostrar(i + 1);
@@ -83,7 +89,36 @@ function anterior() {
   if (paso > 0) { paso--; aplicarPasos(lista[i]); pintarNotas(); avisar(); return; }
   if (i > 0) mostrar(i - 1, pasosDe(lista[i - 1]));
 }
-function aplicarPasos(s) { s.querySelectorAll('[data-paso]').forEach((el) => el.classList.toggle('ya', Number(el.dataset.paso) <= paso)); }
+function aplicarPasos(s) {
+  // .ya: ya ha entrado; .actual: es el paso en curso (foco en la versión corta); data-hasta: desaparece después de ese paso.
+  s.querySelectorAll('[data-paso]').forEach((el) => {
+    const n = Number(el.dataset.paso);
+    el.classList.toggle('ya', n <= paso);
+    el.classList.toggle('actual', n === paso);
+  });
+  s.querySelectorAll('[data-hasta]').forEach((el) => el.classList.toggle('fuera', paso > Number(el.dataset.hasta)));
+  s.classList.toggle('completa', paso === pasosDe(s));
+}
+
+// === DEMO EN DIRECTO: la web con el estado de Lucía (tecla W o botón [data-demo]) ===
+const DEMO_URL = 'https://kuantoapp.github.io/?herramienta#metrica=sobra&fuente=bruto&bruto=24000&neto=&pagas=12&edad=30&disc=no&fuente2=bruto&bruto2=24000&neto2=&pagas2=12&edad2=30&disc2=no&destino2=Getafe&dias2=5&viajes2=2&modo2=tp&perfil=solo&adultos=1&hijos=0&hijo1=&hijo2=&hijo3=&hijo4=&hijo5=&familia=ordinario&m2=69&personas=1&destino=Getafe&dias=5&viajes=2&modo=tp&nolab=0&ref=&tarifas=vigente_2026&subida=0&cumple26=no&dias_esc=&cesta=media';
+document.querySelectorAll('[data-demo]').forEach((a) => { a.href = DEMO_URL; });
+
+// === CORTO DENTRO DE LA PRIMERA DIAPOSITIVA (versión corta, con ?corto) ===
+const capaCorto = document.getElementById('cortoCapa');
+if (capaCorto && !new URLSearchParams(location.search).has('corto')) capaCorto.remove();
+function cerrarCorto() {
+  const c = document.getElementById('cortoCapa');
+  if (!c) return false;
+  c.querySelector('video').pause();
+  c.remove();
+  return true;
+}
+if (document.getElementById('cortoCapa')) {
+  const v = document.querySelector('#cortoCapa video');
+  v.onended = cerrarCorto;
+  v.play().catch(() => {});
+}
 function cambiarModo(nuevo, volverA) {
   modo = nuevo;
   lista = recorrido();
@@ -105,6 +140,7 @@ addEventListener('keydown', (e) => {
   else if (k === 'a' || k === 'A') modo === 'anexo' ? cambiarModo('normal', 'cierre') : cambiarModo('anexo');
   else if (k === 'Escape' && modo !== 'normal') cambiarModo('normal', 'cierre');
   else if (k === 'l' || k === 'L') document.body.classList.toggle('ligero');
+  else if (k === 'w' || k === 'W') window.open(DEMO_URL, '_blank', 'noopener');
 });
 addEventListener('click', (e) => { if (!ES_ORADOR && !e.target.closest('a,button,video')) (e.clientX > innerWidth / 3 ? siguiente : anterior)(); });
 let toqueX = null;
@@ -128,9 +164,13 @@ const entradas = {
   cifra() { iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO); },
   respuesta(s) { s.querySelector('#mereceFrase').style.opacity = 1; limpiar('particulas'); },
   'lucia-mapa'() { iso(document.getElementById('isoLucia'), RENDER_LUCIA); },
+  'c-porque'() { iso(document.getElementById('isoLucia'), RENDER_LUCIA); },
 };
 const pasos = {
   respuesta(s) { s.querySelector('#mereceFrase').style.opacity = 0; particulas(); },
+  'c-apertura'() {
+    if (paso === 3) iso(document.getElementById('isoEsfuerzo'), RENDER_ESFUERZO);
+  },
 };
 function entrar(s) {
   generacion++;
@@ -257,7 +297,7 @@ const PUERTAS = [
 ];
 function construirTimeline() {
   const caja = document.getElementById('lineaTiempo');
-  if (caja.querySelector('.linea')) return;
+  if (!caja || caja.querySelector('.linea')) return;
   const x = (d) => ((d - 11) / 15) * 1600, retardo = (d) => `${0.4 + ((d - 11) / 15) * 3.2}s`;
   const dias = document.getElementById('dias'), prs = document.getElementById('prs');
   for (let d = 11; d <= 26; d++) {
@@ -305,7 +345,7 @@ function construirTimeline() {
 // === ARQUITECTURA: conectores con datos que fluyen ===
 function construirTuberia() {
   const svg = document.getElementById('tuberiaSvg');
-  if (svg.childElementCount) return;
+  if (!svg || svg.childElementCount) return;
   const ns = 'http://www.w3.org/2000/svg';
   const rutas = [[280, 320, 340, 320], [620, 320, 680, 320], [960, 320, 1020, 320], ...[0, 132, 264, 396, 528].map((y) => [1300, 320, 1360, y + 50])];
   rutas.forEach(([x1, y1, x2, y2], k) => {
@@ -329,7 +369,7 @@ function construirTuberia() {
 const BUCLE = ['Issue', 'Worktree', 'Skill del área', 'Hooks y tests', 'Commit', 'Revisor', 'Pull request', 'CI y merge'];
 function construirBucle() {
   const svg = document.getElementById('bucle');
-  if (svg.childElementCount) return;
+  if (!svg || svg.childElementCount) return;
   const cx = 410, cy = 360, r = 250, ns = 'http://www.w3.org/2000/svg';
   for (const [cls, largo] of [['arco', ''], ['vivo', '2000']]) {
     const c = document.createElementNS(ns, 'circle');
